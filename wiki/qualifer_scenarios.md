@@ -99,7 +99,7 @@ In it teams will be presented with a previously unseen scenario to test system a
 
 Trial configs for Part B will have the following characteristics:
 
-* Any or all [agility challenges](./agility_challenges) may be present.
+* Any or all [agility challenges](agility_challenges.md) may be present.
     * Faulty products
     * High-priority order interruption
     * Flipped products (only the `pulley_part` can be flipped)

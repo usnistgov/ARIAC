@@ -57,7 +57,9 @@ Orders must be placed on a tray at one of two AGVs.
 Teams programmatically signal the AGVs when a kit is ready to be delivered.
 The tray is shallow and measures **0.5 x 0.7 m**
 
-**Needs to be changed**
+```diff
+- Needs to be changed
+```
 There are two robot arms mounted on a linear actuator that operates parallel to the conveyor belt.
 The linear actuator measures **4.6 m**, but the travel of each arm is limited to **2.76 m**.
 A single arm can reach one AGV and four of the six product bins.

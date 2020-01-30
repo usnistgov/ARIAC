@@ -41,6 +41,9 @@ The simulation environment is a representation of an order fulfillment workcell 
 
 ![Environment](figures/2020_environment.png)
 
+```diff
+- Needs to be changed
+```
 The conveyor belt is a **0.65 m wide** plane that transports objects across the work environment.
 
 The following properties impact teams' interaction with the belt:

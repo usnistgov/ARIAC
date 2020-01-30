@@ -1,7 +1,7 @@
 # Overview #
 
-When ARIAC starts, it adds two UR10 arms and with controllers that accept [trajectory_msgs/JointTrajectory](http://docs.ros.org/melodic/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
-The [GEAR interface tutorial](./gear_interface) has already shown you that these messages can be sent manually using the command line.
+When ARIAC starts, it adds a dual-arm robot mounted on rails. Each arm of the robot is a UR10 arm with controllers that accept [trajectory_msgs/JointTrajectory](http://docs.ros.org/melodic/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
+The [GEAR interface tutorial](gear_interface.md) has already shown you that these messages can be sent manually using the command line.
 
 MoveIt is a tool that can generate these trajectories programmatically.
 It feeds the robot's current state and the state of the environment around it to a motion planning algorithm. 

@@ -67,7 +67,9 @@ A single arm can reach one AGV and four of the six product bins.
 
 # Robot Arms
 
-**Needs to be changed**
+```diff
+- Needs to be changed
+```
 Two robot arms will be in the environment for each trial.
 The arm used is a Universal Robots UR10.
 
@@ -91,15 +93,14 @@ view.
 Sensors can be placed in any free space in the workcell, they do not need to be mounted so that they are touching the conveyor belt/support frame of the storage bin.
 Sensors must be used in a realistic manner and must not exploit any simulation technicalities such as the logical camera seeing through obstructions.
 
-For the details about how to configure the sensor locations, see the [Configuration Specifications](https://bitbucket.org/osrf/ariac/wiki/2019/configuration_spec).
+For the details about how to configure the sensor locations, see the [Configuration Specifications](configuration_spec.md).
 
 # Order
-An order is an instruction containing kits for the robot system to complete.
 
-Each order will specify the list of products to be put in the shipment, including the type and position/orientation of each product.
-An order may require being delivered to a particular AGV.
-
-For more details see [the product specification](frame_specifications.md) page.
+- An order is an instruction containing kits for the robot system to complete.
+- Each order will specify the list of products to be put in the shipment, including the type and position/orientation of each product.
+- An order may require being delivered to a particular AGV.
+- For more details see [the product specification](frame_specifications.md) page.
 
 # Faulty products
 

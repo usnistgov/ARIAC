@@ -2,10 +2,10 @@
 - Back to [Wiki|Documentation](documentation.md)
 -------------------------------------------------
 
-
 This page outlines the specifications for [the Agile Robotics for Industrial Automation Competition](https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation) (ARIAC) 2020.
 
 The following terminology is frequently used in this document:
+ is highlighted in red
 
 1. **Order**: A set of shipments.
 1. **Product**: One element of an order.

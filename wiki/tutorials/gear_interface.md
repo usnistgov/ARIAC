@@ -1,11 +1,11 @@
 # Overview #
-The purpose of this tutorial is to introduce you to the [competition interface](../competition_interface_documentation) that is used to interact with GEAR, the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC).
+The purpose of this tutorial is to introduce you to the [competition interface](../competition_interface_documentation.md) that is used to interact with GEAR, the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC).
 
 ![ariac_overview_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4277201198-ariac_overview_labeled.png)
 
 # Running GEAR #
 
-After [setting up a system](./installation), you should have GEAR installed.
+After [setting up a system](installation.md), you should have GEAR installed.
 To set up your terminal for running GEAR you will have to run:
 
 ```bash
@@ -284,7 +284,7 @@ Repeat the procedure replacing `arm1` with `arm2` to control the second arm.
 
 ### MoveIt ###
 
-See the [ARIAC 2019 MoveIt tutorial](./moveit_interface).
+See the [ARIAC 2019 MoveIt tutorial](moveit_interface.md).
 
 # Visualization in RViz #
 

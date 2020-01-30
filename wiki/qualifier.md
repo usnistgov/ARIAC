@@ -31,7 +31,9 @@ Teams will have one attempt: if their system fails, there are no opportunities f
 Teams will be able to test their system against Part A "at home", but Part B will be previously-unseen and will test system autonomy.
 
 # Important Dates
-
+```diff
+- needs to be changed
+```
 **Submissions open:** April 1 2019
 
 **Submissions close:** April 14, 2019 

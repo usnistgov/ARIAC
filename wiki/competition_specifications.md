@@ -7,10 +7,10 @@ This page outlines the specifications for [the Agile Robotics for Industrial Aut
 
 The following terminology is frequently used in this document:
 
-1. Order: A set of shipments.
-1. Product: One element of an order.
-1. Tray: A surface that hold products.
-1. Kit: A tray and set of products that make up an order.
+1. **Order**: A set of shipments.
+1. **Product**: One element of an order.
+1. **Tray**: A surface that hold products.
+1. **Kit**: A tray and set of products that make up an order.
 
 
 # Competition Scenarios
@@ -37,7 +37,7 @@ Details of the agility challenges used in these scenarios can be found on the [A
 
 # Environment
 
-The simulation environment is a representation of an order fulfillment workcell with two robot arms, a conveyor belt, product bins, and trays.
+The simulation environment is a representation of an order fulfillment workcell with a gantry robot, a conveyor belt, product bins, and trays.
 
 ![Environment](figures/2020_environment.png)
 
@@ -49,7 +49,7 @@ The following properties impact teams' interaction with the belt:
 1. Teams can control the conveyor belt during development, but not during the final competition.
 1. There is a limited supply of products on the belt, and any products placed on the belt are automatically removed if they reach the end of the belt. Products will not be replaced once removed.
 
-There are six product bins that may be used for building kits. Products in these bins will not be replaced once used. 
+There are 16 product bins that may be used for building kits. Products in these bins will not be replaced once used. 
 All products in a particular storage bin are of the same type and have the same orientation.
 The product bins are shallow boxes measuring **0.6 x 0.6 m**. 
 
@@ -57,6 +57,7 @@ Orders must be placed on a tray at one of two AGVs.
 Teams programmatically signal the AGVs when a kit is ready to be delivered.
 The tray is shallow and measures **0.5 x 0.7 m**
 
+**Needs to be changed**
 There are two robot arms mounted on a linear actuator that operates parallel to the conveyor belt.
 The linear actuator measures **4.6 m**, but the travel of each arm is limited to **2.76 m**.
 A single arm can reach one AGV and four of the six product bins.
@@ -64,6 +65,7 @@ A single arm can reach one AGV and four of the six product bins.
 
 # Robot Arms
 
+**Needs to be changed**
 Two robot arms will be in the environment for each trial.
 The arm used is a Universal Robots UR10.
 
@@ -77,10 +79,10 @@ Teams can place sensors around the environment in static locations. Each sensor 
 
 Available sensors are:
 
-1. Break beam: reports when a beam is broken by an object. It does not provide distance information.
-1. Laser scanner: provides an array of distances to a sensed object.
-1. Depth camera: provides a point cloud of sensed distances.
-1. Cognex logical camera: provides information about the pose and type of all models within its field of 
+1. **Break beam**: reports when a beam is broken by an object. It does not provide distance information.
+1. **Laser scanner**: provides an array of distances to a sensed object.
+1. **Depth camera**: provides a point cloud of sensed distances.
+1. **Cognex logical camera**: provides information about the pose and type of all models within its field of 
 view.
 1. Proximity: detects the range to an object.
 

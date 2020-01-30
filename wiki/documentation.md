@@ -1,6 +1,4 @@
-```diff
-! Back to [Wiki|Home](../README.md)
-```
+- Back to [Wiki|Home](../README.md)
 -----------------------------------------------------
 # Documentation for Gazebo Environment for Agile Robotics (GEAR) 2019
 

@@ -2,7 +2,7 @@
 - Back to [Wiki|Documentation](documentation.md)
 
 
-This page outlines the specifications for [the Agile Robotics for Industrial Automation Competition](https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation) (ARIAC) 2019.
+This page outlines the specifications for [the Agile Robotics for Industrial Automation Competition](https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation) (ARIAC) 2020.
 
 The following terminology is frequently used in this document:
 

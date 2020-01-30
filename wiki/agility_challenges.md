@@ -1,3 +1,6 @@
+- Back to [Wiki|Home](../README.md)
+-----------------------------------------------------
+
 # Details of agility challenges
 
 This page explains the details of agility challenges that may be present in trials.

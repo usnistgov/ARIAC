@@ -11,6 +11,6 @@ A set of tutorials to help you get started with the NIST Agile Robotics for Indu
 Details of the released qualification tasks for ARIAC.
 ## [Finals](wiki/finals.md)
 Details of how the ARIAC Finals will run.
-## [News](wiki/updates.md)
+## [**News](wiki/updates.md)
 Details of changes from ARIAC 2019.
 

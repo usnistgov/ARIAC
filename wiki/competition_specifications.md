@@ -39,7 +39,7 @@ Details of the agility challenges used in these scenarios can be found on the [A
 
 The simulation environment is a representation of an order fulfillment workcell with two robot arms, a conveyor belt, product bins, and trays.
 
-![Environment](figures/environment.png))
+![Environment](figures/2020_environment.png))
 
 The conveyor belt is a **0.65 m wide** plane that transports objects across the work environment.
 

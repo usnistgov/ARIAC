@@ -1,6 +1,6 @@
 # Tutorials
 
-## [Installing GEAR](./tutorials/installation.md)
+## [Installing GEAR](tutorials/installation.md)
 
 This tutorial describes how to install the Gazebo Environment for Agile Robots (GEAR).
 

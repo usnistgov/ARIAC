@@ -3,19 +3,19 @@
 GEAR is the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC) hosted by the National Institute of Standards and Technology (NIST).
 
 
-## [Documentation](wiki/documentation.md)
+## [Documentation](documentation.md)
 Specifications of the NIST Agile Robotics for Industrial Automation Competition (ARIAC) and the GEAR software.
 
-## [Tutorials](wiki/tutorials.md)
+## [Tutorials](tutorials.md)
 A set of tutorials to help you get started with the NIST Agile Robotics for Industrial Automation Competition (ARIAC).
 
-## [Qualifiers](wiki/qualifier.md)
+## [Qualifiers](qualifier.md)
 Details of the released qualification tasks for ARIAC.
 
-## [Finals](wiki/finals.md)
+## [Finals](finals.md)
 Details of how the ARIAC Finals will run.
 
-## [News](wiki/updates.md)
+## [News](updates.md)
 Details of changes to the ARIAC software and documentation.
 
 ## Additional resources

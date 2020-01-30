@@ -10,5 +10,5 @@ Details of the released qualification tasks for ARIAC.
 ## [Finals](wiki/finals.md)
 Details of how the ARIAC Finals will run.
 ## [News](wiki/updates.md)
-Details of changes to the ARIAC software and documentation.
+Details of changes from ARIAC 2019.
 

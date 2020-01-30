@@ -33,7 +33,7 @@ There are three different test scenarios that all involve moving products from a
 
 The competition will consist of 15 trials: 5 trials of each of the 3 scenarios. Each trial will receive a score based on completion and efficiency metrics outlined in the Scoring section.
 
-Details of the agility challenges used in these scenarios can be found on the [Agility Challenge](https://bitbucket.org/osrf/ariac/wiki/2019/agility_challenges) page.
+Details of the agility challenges used in these scenarios can be found on the [Agility Challenge](agility_challenges.md) page.
 
 # Environment
 
@@ -95,7 +95,7 @@ An order is an instruction containing kits for the robot system to complete.
 Each order will specify the list of products to be put in the shipment, including the type and position/orientation of each product.
 An order may require being delivered to a particular AGV.
 
-For more details see [the product specification](https://bitbucket.org/osrf/ariac/wiki/2019/frame_specifications) page.
+For more details see [the product specification](frame_specifications.md) page.
 
 # Faulty products
 
@@ -107,7 +107,7 @@ Faulty products will not count for any points when the shipment is submitted, an
 
 Performance scores will be automatically calculated for each trial as a combination of performance metrics and costs.
 These will be combined with scores from judges to determine the final winners.
-See [the Scoring Metrics page](https://bitbucket.org/osrf/ariac/wiki/2019/scoring) for more details.
+See [the Scoring Metrics page](scoring.md) for more details.
 
 # Competition process
 
@@ -127,7 +127,7 @@ Each trial will consist of the following steps:
 
 1. The robot system will be notified that the trial is over. The trial is over when time runs out or all Orders have been fulfilled.
 
-For details on how the communication with the competition system is performed during the trial, see the [Competition Interface](https://bitbucket.org/osrf/ariac/wiki/2019/competition_interface_documentation).
+For details on how the communication with the competition system is performed during the trial, see the [Competition Interface](competition_interface_documentation.md).
 
 There are no time limits for individual orders, but each trial has a time limit.
 This information is not broadcast by the ARIAC server.

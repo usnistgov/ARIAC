@@ -1,19 +1,19 @@
 # Details of Qualifier Scenarios
 
-This page describes the scenarios that are used in [ARIAC 2019 qualification](./qualifier).
+This page describes the scenarios that are used in [ARIAC 2020 qualification](qualifier.md).
 
 The following applies to both scenarios:
 
 * The trials have a time limit of 500 simulation seconds
   * Any unfulfilled shipments when the time limit is reached will not be scored
   * Subscribe to `/clock` to know the current simulation time
-* The use of any "cheat" interfaces is forbidden, and will be blocked in the [automated evaluation setup](./automated_evaluation)
+* The use of any "cheat" interfaces is forbidden, and will be blocked in the [automated evaluation setup](automated_evaluation.md)
 
 # Part A
 Part A is released for teams to practice with, and is also part of a teams qualification score.
 There are 3 trial config files.
 
-In the commands below, replace `<path/to/your/config/file.yaml>` with the path to your team's [environment configuration file](./configuration_spec#markdown-header-competitor-configuration-file).
+In the commands below, replace `<path/to/your/config/file.yaml>` with the path to your team's [environment configuration file](configuration_spec.md#markdown-header-competitor-configuration-file).
 
 **Note:** By default simulation state logging is enabled in the trial config files. To disable it during development you can add `--state-logging=no` to the commands below.
 

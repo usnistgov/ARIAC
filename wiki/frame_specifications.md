@@ -20,12 +20,19 @@ As specified on the [competition interface](./competition_interface_documentatio
 * It is communicated in a [geometry_msgs/Pose](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Pose.html) message.
 
 ### Frame of the tray
-The following image depicts the frame of the kit tray on AGV1.
-The x, y, and z axes are represented by red, green and blue markers, respectively.
-It has a `gear_part` with its origin at `(x, y, z) = (0, 0.15, 0)` (units in meters) and a `piston_rod_part` at `(0.1, -0.2, 0)`.
-Both parts have an orientation of `(roll, pitch, yaw) = (0, 0, 0)` (units in radians) with respect to the frame of the tray.
+* The following image depicts the frame of the kit tray on AGV1.
+* The x, y, and z axes are represented by red, green and blue markers, respectively.
 
-![https://bytebucket.org/osrf/ariac/wiki/2017/img/agv1_frame_scaled.png](https://bytebucket.org/osrf/ariac/wiki/2017/img/agv1_frame_scaled.png)
+<img src="figures/agv_link_frame.png" alt="alt text" width="600" class="center">
+
+* The following image depicts kit tray for AGV1 that contains two parts.
+ * One `gear_part_blue`with its origin at `(x, y, z) = (0, 0.15, 0)` (units in meters)
+ * One `piston_rod_part_red` with its origin at `(x, y, z) = (0.1, -0.2, 0)` (units in meters)
+ * Both parts have an orientation of `(roll, pitch, yaw) = (0, 0, 0)` (units in radians) with respect to the frame of the tray.
+
+<img src="figures/agv1_frame.png" alt="alt text" width="600" class="center">
+  
+
 
 The following image shows the kit tray on AGV1 with two parts on it. In this case,`gear_part` has a position `(x, y, z) = (0, 0.15, 0)` (units in meters) and an orientation `(roll, pitch, yaw) = (0, 0, 1.57)` (units in radians). `Piston_rod_part` has a position `(x, y, z) = (0.1, -0.2, 0)` and an orientation `(roll, pitch, yaw) = (0, 0, 1.57)`.
 

@@ -38,7 +38,7 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
       * The location of the 9 remaining shelves can be customized to a certain extent. The following figure depicts two different configurations for the 9 shelves.
          * The configuration for those shelves can be specified in osrf_gear/config/sample.yaml. Participants are allowed to change these configurations during testing but not during qualifiers and finals.
 
- <img src="figures/shelf_configs.png" alt="alt text" width="600" class="center">
+ <img src="figures/shelf_configs.png" alt="alt text" width="400" class="center">
 
 
 -------------------------------------------------

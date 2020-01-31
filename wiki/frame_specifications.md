@@ -23,32 +23,27 @@ As specified on the [competition interface](./competition_interface_documentatio
 * The following image depicts the frame of the kit tray on AGV1.
 * The x, y, and z axes are represented by red, green and blue markers, respectively.
 
-<img src="figures/agv_link_frame.png" alt="alt text" width="600" class="center">
+<img src="figures/agv_link_frame.png" alt="alt text" width="350" class="center">
 
-* The following image depicts kit tray for AGV1 that contains two parts.
- * One `gear_part_blue`with its origin at `(x, y, z) = (0, 0.15, 0)` (units in meters)
- * One `piston_rod_part_red` with its origin at `(x, y, z) = (0.1, -0.2, 0)` (units in meters)
- * Both parts have an orientation of `(roll, pitch, yaw) = (0, 0, 0)` (units in radians) with respect to the frame of the tray.
+* The following image depicts kit tray for AGV1 that contains two parts:
+   * One `gear_part_blue`with its origin at `(x, y, z) = (0, 0.15, 0)` (units in meters)
+   * One `piston_rod_part_red` with its origin at `(x, y, z) = (0.1, -0.2, 0)` (units in meters)
+   * Both parts have an orientation of `(roll, pitch, yaw) = (0, 0, 0)` (units in radians) with respect to the frame of the tray.
 
-<img src="figures/agv1_frame.png" alt="alt text" width="600" class="center">
+<img src="figures/agv1_frame.png" alt="alt text" width="350" class="center">
   
 
 
-The following image shows the kit tray on AGV1 with two parts on it. In this case,`gear_part` has a position `(x, y, z) = (0, 0.15, 0)` (units in meters) and an orientation `(roll, pitch, yaw) = (0, 0, 1.57)` (units in radians). `Piston_rod_part` has a position `(x, y, z) = (0.1, -0.2, 0)` and an orientation `(roll, pitch, yaw) = (0, 0, 1.57)`.
+* The following image shows the same as above but for AGV2.
+* Note that the parts still have an orientation of `(0, 0, 0)` with respect to the frame of the tray, but since the frame itself has a different orientation compared to AGV1, the parts are rotated.
 
-![parts_yaw_rotated_scaled.png](https://bitbucket.org/repo/pB4bBb/images/935090825-parts_yaw_rotated_scaled.png)
-
-The following image shows the same as above but for AGV2.
-Note that the parts still have an orientation of `(0, 0, 0)` with respect to the frame of the tray, but since the frame itself has a different orientation compared to AGV1, the parts are rotated.
-
-![https://bytebucket.org/osrf/ariac/wiki/2017/img/agv2_frame.png](https://bytebucket.org/osrf/ariac/wiki/2017/img/agv2_frame_scaled.png)
+<img src="figures/agv2_frame.png" alt="alt text" width="350" class="center">
 
 
 ### Frame of the product
-The pose of the product in the workcell environment will vary over time as the product is moved.
-The frame of each product is typically at the center of the product: it can be visualized by clicking on the product in the simulated workcell environment and pressing `t`: this will display the axes of the frame of the product.
-
-The following figure shows the frame of the `gear_part`, with the x, y and z axes represented by red, green and blue markers, respectively.
+* The pose of the product in the workcell environment will vary over time as the product is moved.
+* The frame of each product is typically at the center of the product: it can be visualized by clicking on the product in the simulated workcell environment and pressing `t`: this will display the axes of the frame of the product.
+* The following figure shows the frame of the `gear_part_blue`, with the x, y and z axes represented by red, green and blue markers, respectively.
 
 ![https://bytebucket.org/osrf/ariac/wiki/2017/img/gear_part_frame.png](https://bytebucket.org/osrf/ariac/wiki/2017/img/gear_part_frame_scaled.png)
 

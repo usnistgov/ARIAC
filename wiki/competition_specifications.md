@@ -82,7 +82,7 @@ A single arm can reach one AGV and four of the six product bins.
 
 
 
-<img src="figures/robot.png" alt="alt text" width="600" class="center">
+<img src="figures/gantry.png" alt="alt text" width="600" class="center">
 
 
 

@@ -11,8 +11,9 @@ Each product has a specified type and required position and orientation in the s
 As specified on the [competition interface](./competition_interface_documentation.md) page, Orders are communicated to teams with the `osrf_gear/Order` ROS message.
 
 ## Type of the product
-The type of the product is specified as its product name, such as `gear_part` or `piston_rod_part`.
-The availability of these products in the workcell may be determined by querying the `material_locations` ROS service as specified [in this tutorial](./tutorials/gear_interface.md).
+* The type of the product is specified as its product name, such as `gear_part_red` or `piston_rod_part_blue`.
+  * **Note**: Previous ARIAC versions considered only the type of product. This year, product colors are considered on top of product types.
+* The availability of these products in the workcell may be determined by querying the `material_locations` ROS service as specified [in this tutorial](./tutorials/gear_interface.md).
 
 ## Pose of the product in the shipping box
 The pose of the product is composed of the position and the orientation of the product **specified in the reference frame of the tray**.

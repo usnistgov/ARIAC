@@ -1,4 +1,8 @@
-# ARIAC Interface
+-------------------------------------------------
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
+-------------------------------------------------
+# Wiki | ARIAC Competition Interface
 
 GEAR provides a [ROS](http://www.ros.org/) interface to the teams participating in ARIAC.
 This interface can be used by teams to control all available actuators, read sensor information and send/receive notifications.
@@ -92,3 +96,8 @@ These are only provided for debugging/development purposes and their use is not 
 | /ariac/conveyor/control  |   Service    |  Modify power of the conveyor belt        | [osrf_gear/ConveyorBeltControl.srv ](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/srv/ConveyorBeltControl.srv)          |
 | /ariac/submit_shipment  |   Service    |  Submit a tray for evaluation without the AGV moving        | [osrf_gear/SubmitShipment.srv ](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/srv/SubmitShipment.srv)          |
 | /ariac/kit_tray_{N}/clear_tray  |   Service    |  Clear the contents of tray {N} without the AGV moving        | [std_srvs/Trigger.srv ](http://docs.ros.org/api/std_srvs/html/srv/Trigger.html)          |
+
+-------------------------------------------------
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
+-------------------------------------------------

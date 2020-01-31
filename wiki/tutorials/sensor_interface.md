@@ -29,7 +29,7 @@ roslaunch osrf_gear sample_environment.launch
 
 ## Break Beam Sensor ##
 
-![ariac_break_beam.png](https://bitbucket.org/repo/pB4bBb/images/1097779126-ariac_break_beam.png)
+<img src="../figures/break_beam.png" alt="alt text" width="900" class="center">
 
 This is a simulated photoelectric sensor, such as the Sick W9L-3.
 This sensor has a detection range of 1 meter and the binary output will tell you whether there is an object crossing the beam.
@@ -57,7 +57,7 @@ rostopic echo /ariac/break_beam_1_change
 
 ## Proximity Sensor ##
 
-![ariac_proximity_sensor.png](https://bitbucket.org/repo/pB4bBb/images/997334629-ariac_proximity_sensor.png)
+<img src="../figures/proximity_sensor.png" alt="alt text" width="900" class="center">
 
 This is a simulated ultrasound proximity sensor such as the SU2-A0-0A.
 This sensor has a detection range of ~0.15 meters and the output will tell you how far an object is from the sensor.
@@ -72,8 +72,7 @@ The proximity sensor can be visualized in RViz using the **Range** display.
 It helps to disable or decrease the marker scale on the **TF** display to see the cone of the range sensor in RViz.
 
 ## Laser Profiler ##
-
-![ariac_laser_profiler_updated.png](https://bitbucket.org/repo/pB4bBb/images/2590957860-ariac_laser_profiler_updated.png)
+<img src="../figures/laser_profiler.png" alt="alt text" width="900" class="center">
 
 This is a simulated 3D laser profiler such as the Cognex DS1300.
 The output of the sensor is an array of ranges and intensities.
@@ -92,7 +91,7 @@ There is an offset between the position of the laser profiler and the origin of 
 The position of the laser profiler is in a **tf** frame named `{sensor_name}_frame`, while the origin of the data is in a frame named `{sensor_name}_laser_source_frame`.
 
 ## Depth Camera ##
-![ariac_depth_camera.png](https://bitbucket.org/repo/pB4bBb/images/1179150255-ariac_depth_camera.png)
+<img src="../figures/depth_camera.png" alt="alt text" width="900" class="center">
 
 This is a simulated time-of-flight depth camera such as the Swissranger SR4000.
 The output of the sensor is a [sensor_msgs/Pointcloud](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html).
@@ -106,7 +105,7 @@ The output of a depth camera can be visualized in RViz using the **PointCloud** 
 
 ## Logical Camera ##
 
-![ariac_logical_camera.png](https://bitbucket.org/repo/pB4bBb/images/2463683455-ariac_logical_camera.png)
+<img src="../figures/logical_camera.png" alt="alt text" width="900" class="center">
 
 This is a simulated camera with a built-in object classification and localization system.
 The sensor reports the position and orientation of the camera in the world, as well as a collection of the objects detected within its frustum.

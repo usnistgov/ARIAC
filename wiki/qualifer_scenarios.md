@@ -1,4 +1,9 @@
-# Details of Qualifier Scenarios
+-------------------------------------------------
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
+- Back to [Wiki | Qualifier](qualifier.md)
+-------------------------------------------------
+# Wiki | Details of Qualifier Scenarios
 
 This page describes the scenarios that are used in [ARIAC 2020 qualification](qualifier.md).
 
@@ -84,7 +89,11 @@ Run with your team's config file
 ```
 rosrun osrf_gear gear.py -f $(catkin_find osrf_gear --share)/config/quals/qual_a_3.yaml <path/to/your/config/file.yaml> --development-mode --verbose
 ```
-
+-------------------------------------------------
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
+- Back to [Wiki | Qualifier](qualifier.md)
+-------------------------------------------------
 **Debugging**: visualize what perfect shipments would look like using the sample user config file
 
 ```

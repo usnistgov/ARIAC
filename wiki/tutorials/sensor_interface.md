@@ -35,9 +35,12 @@ This is a simulated photoelectric sensor, such as the Sick W9L-3.
 This sensor has a detection range of 1 meter and the binary output will tell you whether there is an object crossing the beam.
 There are two ROS topics that show the output of the sensor:
 
-* `/ariac/{sensor_name}
+* `/ariac/{sensor_name}`
 * `/ariac/{sensor_name}_change`
 
+```
++ Change this once source is pushed
+```
 An [osrf_gear/Proximity](https://bitbucket.org/osrf/ariac/src/master/osrf_gear/msg/Proximity.msg) message is periodically published on topic `/ariac/{sensor_name}`.
 Run this command to see the message on the command line:
 

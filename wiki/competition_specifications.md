@@ -71,7 +71,7 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
          * The figure below combines two screenshots of the environment (top view) where 2 shelves configurations are presented. 
          * **Configuration 1** and **Configuration 2** show 3 rows of shelves where each row has 3 shelves and 1 gap. It is mandatory that each row has **exactly** 3 shelves and 1 gap. 
             * In **Configuration 1**, the gap is located after the first shelf (row_1), at the end of the row of shelves (row_2), and after the first two shelves (row_3).
-            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 2** is represented in the Yaml code below and can be found in `config.yaml`. `base`, `collar
+            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 2** is represented in the Yaml code below and can be found in `config.yaml`.
             
 ```yaml
 shelf_layout:
@@ -133,7 +133,7 @@ view.
 - An order is an instruction containing kits for the robot system to complete.
 - Each order will specify the list of products to be put in the shipment, including the type and position/orientation of each product.
 - An order may require being delivered to a particular AGV.
-- For more details see [the product specification](frame_specifications.md) page.
+- For more details see the [product specification](frame_specifications.md) page.
 
 # Faulty products
 
@@ -145,7 +145,7 @@ Faulty products will not count for any points when the shipment is submitted, an
 
 Performance scores will be automatically calculated for each trial as a combination of performance metrics and costs.
 These will be combined with scores from judges to determine the final winners.
-See [the Scoring Metrics page](scoring.md) for more details.
+See the [Scoring Metrics](scoring.md) page for more details.
 
 # Competition process
 
@@ -165,7 +165,7 @@ Each trial will consist of the following steps:
 
 1. The robot system will be notified that the trial is over. The trial is over when time runs out or all Orders have been fulfilled.
 
-For details on how the communication with the competition system is performed during the trial, see the [Competition Interface](competition_interface_documentation.md).
+For details on how the communication with the competition system is performed during the trial, see the [Competition Interface](competition_interface_documentation.md) page.
 
 There are no time limits for individual orders, but each trial has a time limit.
 This information is not broadcast by the ARIAC server.

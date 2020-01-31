@@ -16,6 +16,7 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
     * 1 rotatory torso which rotates around the base z-axis.
     * Two 6 DoF UR10 arms attached to the torso. 
       * Each arm's base has a fixed joint to the torso.
+    * A tray is attached at one of the extremities of the torso. Participants may put parts in this tray while fetching other parts in the environment.
 
 
 ![Gantry](figures/gantry_small.png)

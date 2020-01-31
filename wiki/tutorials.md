@@ -1,6 +1,6 @@
 - Back to [Wiki|Home](../README.md)
 -------------------------------------------------
-# Tutorials
+# Wiki|Tutorials
 
 ## [Installing GEAR](tutorials/installation.md)
 

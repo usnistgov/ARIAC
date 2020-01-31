@@ -44,12 +44,10 @@ As specified on the [competition interface](./competition_interface_documentatio
 * The pose of the product in the workcell environment will vary over time as the product is moved.
 * The frame of each product is typically at the center of the product: it can be visualized by clicking on the product in the simulated workcell environment and pressing `t`: this will display the axes of the frame of the product.
 * The following figure shows the frame of the `gear_part_blue`, with the x, y and z axes represented by red, green and blue markers, respectively.
+* Not all parts have the frame origin at their center: the `piston_rod_part_green`, for example, has the origin of its frame off-center, as shown in the following figure.
 
-![https://bytebucket.org/osrf/ariac/wiki/2017/img/gear_part_frame.png](https://bytebucket.org/osrf/ariac/wiki/2017/img/gear_part_frame_scaled.png)
+<img src="figures/gear_piston_reference_frame.png"  width="350" class="center">
 
-Not all parts have the frame origin at their center: the `piston_rod_part`, for example, has the origin of its frame off-center, as shown in the following figure.
-
-![https://bytebucket.org/osrf/ariac/wiki/2017/img/piston_rod_part_frame.png](https://bytebucket.org/osrf/ariac/wiki/2017/img/piston_rod_part_frame_scaled.png)
 
 ### Flipped products
 

@@ -1,4 +1,13 @@
-# ARIAC 2019 Finals
+-------------------------------------------------
+- Go to [Wiki | Home](../README.md)
+- Go to [Wiki | Documentation](documentation.md)
+- Go to [Wiki | Tutorials](tutorials.md)
+- Go to [Wiki | Qualifiers](qualifier.md)
+- Go to [Wiki | Finals](finals.md)
+- Go to [Wiki | News](updates.md)
+-------------------------------------------------
+
+# ARIAC 2020 Finals
 
 Congratulations to the teams that successfully qualified for the competition through the Qualifiers.
 
@@ -49,3 +58,12 @@ To have your submission validated:
     - May 10, 2019 @ 4:00pm PDT: Deadline for submission for dry run testing.
 - May 12, 2019 @ 11:59pm PDT: Deadline for final submissions from qualified teams, including the optional one-page system synopsis.
 - May 13-20, 2019: Perform official competition runs.
+
+-------------------------------------------------
+- Go to [Wiki | Home](../README.md)
+- Go to [Wiki | Documentation](documentation.md)
+- Go to [Wiki | Tutorials](tutorials.md)
+- Go to [Wiki | Qualifiers](qualifier.md)
+- Go to [Wiki | Finals](finals.md)
+- Go to [Wiki | News](updates.md)
+-------------------------------------------------

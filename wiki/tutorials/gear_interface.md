@@ -5,14 +5,7 @@ The purpose of this tutorial is to introduce you to the [competition interface](
 
 # Running GEAR #
 
-After [setting up a system](installation.md), you should have GEAR installed.
-To set up your terminal for running GEAR you will have to run:
-
-```bash
-source /opt/ros/melodic/setup.bash
-```
-
-If you built gear from SOURCE, you will also have to source the setup file from your catkin workspace.
+After building GEAR from SOURCE, you will have to source the setup file from your catkin workspace.
 
 ```bash
 # Path is where you built and installed gear

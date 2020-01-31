@@ -14,7 +14,8 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
     * 1 linear actuator which allows the base of the robot to move along a small rail.
     * 1 linear actuator which allows the small rail to move along the long rails.
     * 1 rotatory torso which rotates around the base z-axis.
-    * Two 6 DoF UR10 arms attached to the torso. The base of each arm has a fixed joint with the torso.
+    * Two 6 DoF UR10 arms attached to the torso. 
+      * Each arm's base has a fixed joint to the torso.
 
 
 ![Gantry](figures/gantry_small.png)

@@ -66,7 +66,7 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
    
    * There are exactly 11 shelves in the environment.
       * 2 shelves will always be at the exact same locations (1 and 2 in the figure)
-      * The locations of the 9 remaining shelves (3 - 11) can be customized to a certain extent. 
+      * The locations of the 9 remaining shelves (3 - 11 in the figure) can be customized to a certain extent. 
          * The configuration for those shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change those shelves configuration during testing but not during qualifiers and finals.
          * The figure below combines two screenshots of the environment (top view) where 2 shelves configurations are presented. 
          * **Configuration 1** and **Configuration 2** show 3 rows of shelves where each row has 3 shelves and 1 gap. It is mandatory that each row has **exactly** 3 shelves and 1 gap. 

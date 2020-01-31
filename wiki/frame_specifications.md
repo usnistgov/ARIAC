@@ -1,4 +1,8 @@
-# Details of Products specified in Orders
+-------------------------------------------------
+- Back to [Wiki|Home](../README.md)
+- Back to [Wiki|Documentation](documentation.md)
+-------------------------------------------------
+# Wiki|Details of Products specified in Orders
 This page outlines the specifications of the pose requirements specified in each Order.
 
 As outlined in the [competition specifications](./competition_specifications), an Order specifies a list of products to be put into each shipment.
@@ -56,3 +60,7 @@ See the [sensor interface tutorial](./tutorials/sensor_interface) for details of
 
 Other sensors can also be used if combined with perception algorithms.
 Note that some parts have a raised mark on them so that their orientation can be detected.
+-------------------------------------------------
+- Back to [Wiki|Home](../README.md)
+- Back to [Wiki|Documentation](documentation.md)
+-------------------------------------------------

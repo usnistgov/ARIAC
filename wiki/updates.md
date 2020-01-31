@@ -26,13 +26,20 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
 ## Shelves
 Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
 
-* There are exactly 11 shelves in the environment.
 * Each shelf has two levels:
    * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic. **They are not graspable"
    * Parts will never be spawn on the top shelf.
    * When parts are spawn on a shelf, they will always be spawn on the bottom shelf.
    
    <img src="figures/shelf.png" alt="alt text" width="600" class="center">
+   
+   * There are exactly 11 shelves in the environment.
+      * 2 shelves will always be at the exact same locations.
+      * The location of the 9 remaining shelves can be customized to a certain extent. The following figure depicts two different configurations for the 9 shelves.
+         * The configuration for those shelves can be specified in osrf_gear/config/sample.yaml. Participants are allowed to change these configurations during testing but not during qualifiers and finals.
+
+ <img src="figures/shelf_configs.png" alt="alt text" width="600" class="center">
+
 
 -------------------------------------------------
 - Go to [Wiki | Home](../README.md)

@@ -2,7 +2,7 @@
 
 The purpose of this tutorial is to introduce you to the sensors available to you in the Agile Robotics for Industrial Automation Competition (ARIAC) and how to interface with them from the command-line.
 
-<img src="figures/sensors.png" alt="alt text" width="900" class="center">
+<img src="../figures/sensors.png" alt="alt text" width="900" class="center">
 
 # Prerequisites #
 

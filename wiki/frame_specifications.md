@@ -46,7 +46,7 @@ As specified on the [competition interface](./competition_interface_documentatio
 * The following figure shows the frame of the `gear_part_blue`, with the x, y and z axes represented by red, green and blue markers, respectively.
 * Not all parts have the frame origin at their center: the `piston_rod_part_green`, for example, has the origin of its frame off-center, as shown in the following figure.
 
-<img src="figures/gear_piston_reference_frame.png"  width="350" class="center">
+<img src="figures/gear_piston_reference_frame.png"  width="1000" class="center">
 
 
 ### Flipped products

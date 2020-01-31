@@ -40,7 +40,7 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
          * The figure combines two screenshots of the environment (top view) where 2 shelves configurations are presented. 
          * **Configuration 1** and **Configuration 2** show 3 rows of shelves with each row having 3 shelves and 1 gap. For example, in **Configuration 1**, the gap is located after the first shelf (left column), at the end of the column of shelves (middle column), and after the first two shelves (right column). In `config.yaml`, a gap is represented by the value 0.
 
- <img src="figures/shelf_configs.png" alt="alt text" width="700" class="center">
+ <img src="figures/shelf_configs_2.png" width="700" class="center">
 
 
 -------------------------------------------------

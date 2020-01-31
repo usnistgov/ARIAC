@@ -68,17 +68,25 @@ The linear actuator measures **4.6 m**, but the travel of each arm is limited to
 A single arm can reach one AGV and four of the six product bins.
 
 
-# Robot Arms
+# Robot
+* This year, competitors will have to control a 15 DoF gantry robot to complete the challenges. The robot consists of:
+    * 1 linear actuator which controls the base of the torso on the small rail.
+      * The base moves at a velocity of **4m/s** and is within the range **y=[-7, 7]**
+    * 1 linear actuator which allows the small rail to move along the long rails.
+      * The small rail moves at a velocity of **4m/s** and is within the range **x=[-14.5, 5.25]**
+    * 1 rotatory torso which rotates around the base z-axis.
+    * Two 6 DoF UR10 arms attached to the torso. 
+      * Each arm's base has a fixed joint to the torso.
+    * A tray is attached at one of the extremities of the torso. Participants may put parts in this tray while fetching other parts in the environment.
+    * The end of each arm is equipped with a vacuum gripper. The vacuum gripper is controlled in a binary manner (on/off) and reports whether or not it is successfully gripping an object.
 
-```diff
-- Needs to be changed
-```
-Two robot arms will be in the environment for each trial.
-The arm used is a Universal Robots UR10.
 
-The robot arm's position is controlled through the linear actuator on which it is mounted.
 
-The end of the arm is equipped with a vacuum gripper. The vacuum gripper is controlled in a binary manner and reports whether or not it is successfully gripping an object.
+<img src="figures/robot.png" alt="alt text" width="600" class="center">
+
+
+
+
 
 # Sensors
 

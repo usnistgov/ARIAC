@@ -140,3 +140,7 @@ For details on how the communication with the competition system is performed du
 There are no time limits for individual orders, but each trial has a time limit.
 This information is not broadcast by the ARIAC server.
 For the Finals/Qualifiers, the time limit will be set as a fixed value for all trials, which teams will be advised of in advance.
+
+-------------------------------------------------
+- Back to [Wiki|Home](../README.md)
+- Back to [Wiki|Documentation](documentation.md)

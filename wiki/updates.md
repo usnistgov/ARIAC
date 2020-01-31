@@ -38,7 +38,17 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
       * The location of the 9 remaining shelves can be customized to a certain extent. 
          * The configuration for those shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change those shelves configuration during testing but not during qualifiers and finals.
          * The figure combines two screenshots of the environment (top view) where 2 shelves configurations are presented. 
-         * **Configuration 1** and **Configuration 2** show 3 rows of shelves with each row having 3 shelves and 1 gap. For example, in **Configuration 1**, the gap is located after the first shelf (left column), at the end of the column of shelves (middle column), and after the first two shelves (right column). In `config.yaml`, a gap is represented by the value 0.
+         * **Configuration 1** and **Configuration 2** show 3 rows of shelves with each row having 3 shelves and 1 gap. 
+            * In **Configuration 1**, the gap is located after the first shelf (row_1), at the end of the row of shelves (row_2), and after the first two shelves (row_3). The 3 rows of shelves for **Configuration 1** is represented as follows in `config.yaml`
+            
+            ```yaml
+shelf_layout:
+  row_1: ['base','collar','collar',0] #shelves: 3, 4, 5
+  row_2: ['pipe',0,'base','collar']   #shelves: 6, 7, 8
+  row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
+``` 
+            
+            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 1** is represented as follows in `config.yaml`
 
  <img src="figures/shelf_configs_2.png" width="700" class="center">
 

@@ -1,6 +1,8 @@
 # Wiki | Home
 ## Gazebo Environment for Agile Robotics (GEAR) 2019
 
+**My Bold Text, in red color.**{: style="color: red; opacity: 0.80;" }
+
 GEAR is the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC) hosted by the National Institute of Standards and Technology (NIST).
 
 

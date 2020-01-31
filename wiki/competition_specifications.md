@@ -69,7 +69,7 @@ A single arm can reach one AGV and four of the six product bins.
 
 
 # Robot
-* This year, competitors will have to control a 15 DoF gantry robot to complete the challenges. The robot consists of:
+* This year, competitors will have to control a 15 DoF gantry robot to complete the challenges. The robot is depicted in the figure below and consists of:
     * 1 linear actuator which controls the base of the torso on the small rail.
       * The base moves at a velocity of **4m/s** and is within the range **y=[-7, 7]**
     * 1 linear actuator which allows the small rail to move along the long rails.

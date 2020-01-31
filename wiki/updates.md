@@ -21,7 +21,7 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
     * A tray is attached at one of the extremities of the torso. Participants may put parts in this tray while fetching other parts in the environment.
 
 
-![Gantry](figures/robot.png)
+![Gantry](figures/robot.png | width=20)
 
 -------------------------------------------------
 - Go to [Wiki | Home](../README.md)

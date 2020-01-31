@@ -1,9 +1,10 @@
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
+- Back to [Wiki | Qualifier](qualifier.md)
 -------------------------------------------------
 
-# Wiki|Scoring
+# Wiki | Scoring
 
 Scores will be made up of an automatically calculated component and a score based on judges.
 The automatically calculated component for each Trial is a combination of cost and performance metrics.
@@ -81,4 +82,5 @@ Trial Score = AAC * (
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
+- Back to [Wiki | Qualifier](qualifier.md)
 -------------------------------------------------

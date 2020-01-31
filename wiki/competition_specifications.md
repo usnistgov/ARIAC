@@ -67,8 +67,8 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
    * There are exactly 11 shelves in the environment.
       * 2 shelves will always be at the exact same locations (1 and 2 in the figure)
       * The locations of the 9 remaining shelves (3 - 11 in the figure) can be customized to a certain extent. 
-         * The configuration for those shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change those shelves configuration during testing but not during qualifiers and finals.
-         * The figure below combines two screenshots of the environment (top view) where 2 shelves configurations are presented. 
+         * The configuration for each row of shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change the configuration of each row during testing but not during qualifiers and finals.
+         * The figure below combines two screenshots of the environment (top view) where 2 configurations are presented (3 rows per configuration). 
          * **Configuration 1** and **Configuration 2** show 3 rows of shelves where each row has 3 shelves and 1 gap. It is mandatory that each row has **exactly** 3 shelves and 1 gap. 
             * In **Configuration 1**, the gap is located after the first shelf (row_1), at the end of the row of shelves (row_2), and after the first two shelves (row_3).
             * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 2** is represented in the Yaml code below and can be found in `config.yaml`.
@@ -79,7 +79,10 @@ shelf_layout:
    row_2: ['pipe',0,'base','collar']   #shelves: 6, 7, 8
    row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
    ``` 
-  
+   
+## Parts
+* ARIAC 2020 is using the same part types found in ARIAC 2019. However, each part type has 3 colors (see figure below).
+  <img src="figures/parts.png" alt="alt text" width="600" class="center">
 
 ## Trays
 * Orders must be placed on a tray at one of two AGVs.

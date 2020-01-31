@@ -85,7 +85,7 @@ The only circumstance in which re-runs will be warranted are if a bug in the sim
 This includes reported issues like #160 and potentially others at the discretion of the competition controllers.
 
 # Important notes
-Teams are advised to review the [update policy](./update_policy) and pay attention to the [updates page](updates.md) for upcoming and released changes to the software, rules and scoring metrics.
+Teams are advised to review the [update policy](update_policy.md) and pay attention to the [updates page](updates.md) for upcoming and released changes to the software, rules and scoring metrics.
 ```diff
 - needs to be changed
 ```

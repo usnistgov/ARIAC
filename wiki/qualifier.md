@@ -1,4 +1,4 @@
-# Introduction
+# Wiki|Qualifiers
 There is a single qualification round for ARIAC 2019, with top teams being chosen to participate in the Finals.
 
 Qualifier submissions will be evaluated following the [automated evaluation procedure](automated_evaluation.md).

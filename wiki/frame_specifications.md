@@ -2,7 +2,7 @@
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
 -------------------------------------------------
-# Wiki|Details of Products specified in Orders
+# Wiki | Details of Products specified in Orders
 This page outlines the specifications of the pose requirements specified in each Order.
 
 As outlined in the [competition specifications](competition_specifications.md), an Order specifies a list of products to be put into each shipment.
@@ -43,17 +43,15 @@ As specified on the [competition interface](./competition_interface_documentatio
 ### Frame of the product
 * The pose of the product in the workcell environment will vary over time as the product is moved.
 * The frame of each product is typically at the center of the product: it can be visualized by clicking on the product in the simulated workcell environment and pressing `t`: this will display the axes of the frame of the product.
-* The following figure shows the frame of the `gear_part_blue`, with the x, y and z axes represented by red, green and blue markers, respectively.
+* The following figure shows the frame of the `gear_part_blue` (left picture), with the `x`, `y` and `z` axes represented by red, green and blue markers, respectively.
+* Not all parts have the frame origin at their center. The `piston_rod_part_green` (right picture), for example, has the origin of its frame off-center.
 
-![https://bytebucket.org/osrf/ariac/wiki/2017/img/gear_part_frame.png](https://bytebucket.org/osrf/ariac/wiki/2017/img/gear_part_frame_scaled.png)
+<img src="figures/gear_piston_reference_frame.png"  width="1000" class="center">
 
-Not all parts have the frame origin at their center: the `piston_rod_part`, for example, has the origin of its frame off-center, as shown in the following figure.
-
-![https://bytebucket.org/osrf/ariac/wiki/2017/img/piston_rod_part_frame.png](https://bytebucket.org/osrf/ariac/wiki/2017/img/piston_rod_part_frame_scaled.png)
 
 ### Flipped products
 
-An order could contain a product that requires to be flipped, in which case the requested `roll` for the product will be specified as pi. The `pulley_part` is the only product in the environment designed to be flippable. It has a flat collision surface on its top and bottom ends making it ideal for grasping it with a vacuum gripper. However, the side of the product is hollow, creating a more difficult grasp because of the small contact patch that the edges provide. Teams are not permitted to directly grasp this product from the side when a product flip is required.
+An order could contain a product that requires to be flipped, in which case the requested `roll` for the product will be specified as pi. The Pulley part (`pulley_part_red`, `pulley_part_green`, and `pulley_part_blue`)  is the only product in the environment designed to be flippable. It has a flat collision surface on its top and bottom ends making it ideal for grasping it with a vacuum gripper. However, the side of the product is hollow, creating a more difficult grasp because of the small contact patch that the edges provide. Teams are not permitted to directly grasp this product from the side when a product flip is required.
 
 ![https://bitbucket.org/osrf/ariac/wiki/2018/img/flipped_frame.jpg](https://bitbucket.org/osrf/ariac/wiki/2018/img/flipped_frame.jpg) 
 

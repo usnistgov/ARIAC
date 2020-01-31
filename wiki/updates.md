@@ -41,14 +41,13 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
          * **Configuration 1** and **Configuration 2** show 3 rows of shelves with each row having 3 shelves and 1 gap. 
             * In **Configuration 1**, the gap is located after the first shelf (row_1), at the end of the row of shelves (row_2), and after the first two shelves (row_3). The 3 rows of shelves for **Configuration 1** is represented as follows in `config.yaml`
             
-            ```yaml
+```yaml
 shelf_layout:
-  row_1: ['base','collar','collar',0] #shelves: 3, 4, 5
-  row_2: ['pipe',0,'base','collar']   #shelves: 6, 7, 8
-  row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
-``` 
-            
-            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 1** is represented as follows in `config.yaml`
+   row_1: ['base','collar','collar',0] #shelves: 3, 4, 5
+   row_2: ['pipe',0,'base','collar']   #shelves: 6, 7, 8
+   row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
+   ``` 
+   * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 1** is represented as follows in `config.yaml`
 
  <img src="figures/shelf_configs_2.png" width="700" class="center">
 

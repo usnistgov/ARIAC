@@ -31,6 +31,8 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
    * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic. **They are not graspable"
    * Parts will never be spawn on the top shelf.
    * When parts are spawn on a shelf, they will always be spawn on the bottom shelf.
+   
+   <img src="figures/shelf.png" alt="alt text" width="600" class="center">
 
 -------------------------------------------------
 - Go to [Wiki | Home](../README.md)

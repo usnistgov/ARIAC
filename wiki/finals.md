@@ -8,7 +8,7 @@ A single system must be designed that is agile enough to react to any combinatio
 
 ## What to expect
 
-[The Finals specifications page](https://bitbucket.org/osrf/ariac/wiki/2019/finals_specs) has details on how the competition will be evaluated and what can be expected in the unseen competition scenarios.
+[The Finals specifications page](finals_specs.md) has details on how the competition will be evaluated and what can be expected in the unseen competition scenarios.
 
 ## Preparing your system
 

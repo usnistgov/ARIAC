@@ -39,7 +39,7 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
          * The configuration for those shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change these configurations during testing but not during qualifiers and finals.
          * The figure shows 3 columns of shelf and each column **has to have a gap**. For example, in the picture on the left, the gap is located after the first shelf (left column), at the end of the column of shelves (middle column), and after the first two shelves (right column). In `config.yaml`, a gap is represented by the value 0.
 
- <img src="figures/shelf_configs.png" alt="alt text" width="400" class="center">
+ <img src="figures/shelf_configs.png" alt="alt text" width="700" class="center">
 
 
 -------------------------------------------------

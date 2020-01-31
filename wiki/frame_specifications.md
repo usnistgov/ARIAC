@@ -16,8 +16,8 @@ As specified on the [competition interface](./competition_interface_documentatio
 * The availability of these products in the workcell may be determined by querying the `material_locations` ROS service as specified [in this tutorial](./tutorials/gear_interface.md).
 
 ## Pose of the product in AGV trays
-The pose of the product is composed of the position and the orientation of the product **specified in the reference frame of the tray**.
-It is communicated in a [geometry_msgs/Pose](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Pose.html) message.
+* The pose of the product is composed of the position and the orientation of the product **specified in the reference frame of the tray**.
+* It is communicated in a [geometry_msgs/Pose](http://docs.ros.org/melodic/api/geometry_msgs/html/msg/Pose.html) message.
 
 ### Frame of the tray
 The following image depicts the frame of the kit tray on AGV1.

@@ -1,3 +1,7 @@
+-------------------------------------------------
+- Back to [Wiki|Home](../README.md)
+- Back to [Wiki|Documentation](documentation.md)
+-------------------------------------------------
 
 # Wiki|Scoring
 
@@ -74,3 +78,7 @@ Trial Score = AAC * (
                     + EF2 * CS2 * h
               )
 ```
+-------------------------------------------------
+- Back to [Wiki|Home](../README.md)
+- Back to [Wiki|Documentation](documentation.md)
+-------------------------------------------------

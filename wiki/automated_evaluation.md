@@ -1,7 +1,7 @@
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifier](qualifier.md)
+- Back to [Wiki | Qualifiers](qualifier.md)
 -------------------------------------------------
 # Wiki | ARIAC Automated Evaluation
 
@@ -35,5 +35,5 @@ If you system does not score correctly in the mock competition setup, it will no
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifier](qualifier.md)
+- Back to [Wiki | Qualifiers](qualifier.md)
 -------------------------------------------------

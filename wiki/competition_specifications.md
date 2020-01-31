@@ -1,3 +1,4 @@
+-------------------------------------------------
 - Back to [Wiki|Home](../README.md)
 - Back to [Wiki|Documentation](documentation.md)
 -------------------------------------------------
@@ -144,3 +145,5 @@ For the Finals/Qualifiers, the time limit will be set as a fixed value for all t
 -------------------------------------------------
 - Back to [Wiki|Home](../README.md)
 - Back to [Wiki|Documentation](documentation.md)
+-------------------------------------------------
+

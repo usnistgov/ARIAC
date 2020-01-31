@@ -49,13 +49,16 @@ The simulation environment is a representation of an order fulfillment workcell 
  1. Teams can control the conveyor belt during development, but not during the final competition.
  1. There is a limited supply of products on the belt, and any products placed on the belt are automatically removed if they reach the end of the belt. Products will not be replaced once removed.
 
-There are 16 product bins that may be used for building kits. Products in these bins will not be replaced once used. 
-All products in a particular storage bin are of the same type and have the same orientation.
-The product bins are shallow boxes measuring **0.6 x 0.6 m**. 
+## Product Bins
+* There are 16 product bins that may be used for building kits. 
+* Products in these bins will not be replaced once used. 
+* All products in a particular storage bin are of the same type and have the same orientation.
+* The product bins are shallow boxes measuring **0.6 x 0.6 m**. 
 
-Orders must be placed on a tray at one of two AGVs.
-Teams programmatically signal the AGVs when a kit is ready to be delivered.
-The tray is shallow and measures **0.5 x 0.7 m**
+## Trays
+* Orders must be placed on a tray at one of two AGVs.
+* Teams programmatically signal the AGVs when a kit is ready to be delivered.
+* Each tray is shallow and measures **0.5 x 0.7 m**
 
 ```diff
 - Needs to be changed

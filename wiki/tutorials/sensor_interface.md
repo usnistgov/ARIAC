@@ -1,3 +1,12 @@
+-------------------------------------------------
+- Go to [Wiki | Home](../README.md)
+- Go to [Wiki | Documentation](documentation.md)
+- Go to [Wiki | Tutorials](tutorials.md)
+- Go to [Wiki | Qualifiers](qualifier.md)
+- Go to [Wiki | Finals](finals.md)
+- Go to [Wiki | News](updates.md)
+-------------------------------------------------
+
 # Overview #
 
 The purpose of this tutorial is to introduce you to the sensors available to you in the Agile Robotics for Industrial Automation Competition (ARIAC) and how to interface with them from the command-line.
@@ -6,7 +15,7 @@ The purpose of this tutorial is to introduce you to the sensors available to you
 
 # Prerequisites #
 
-You should have already completed the [GEAR interface tutorial](./gear_interface).
+You should have already completed the [GEAR interface tutorial](./gear_interface.md).
 
 # Reading Sensor Data #
 
@@ -26,9 +35,12 @@ This is a simulated photoelectric sensor, such as the Sick W9L-3.
 This sensor has a detection range of 1 meter and the binary output will tell you whether there is an object crossing the beam.
 There are two ROS topics that show the output of the sensor:
 
-* `/ariac/{sensor_name}
+* `/ariac/{sensor_name}`
 * `/ariac/{sensor_name}_change`
 
+```
++ Change this once source is pushed
+```
 An [osrf_gear/Proximity](https://bitbucket.org/osrf/ariac/src/master/osrf_gear/msg/Proximity.msg) message is periodically published on topic `/ariac/{sensor_name}`.
 Run this command to see the message on the command line:
 
@@ -124,3 +136,12 @@ At time 1120.405
 For more information on working with TF frames programmatically see [the tf2 tutorials](http://wiki.ros.org/tf2/Tutorials).
 
 **Note that GEAR uses tf2_msgs and not the deprecated tf_msgs. Accordingly, you should use the tf2 package instead of tf.**
+
+-------------------------------------------------
+- Go to [Wiki | Home](../README.md)
+- Go to [Wiki | Documentation](documentation.md)
+- Go to [Wiki | Tutorials](tutorials.md)
+- Go to [Wiki | Qualifiers](qualifier.md)
+- Go to [Wiki | Finals](finals.md)
+- Go to [Wiki | News](updates.md)
+-------------------------------------------------

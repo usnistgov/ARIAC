@@ -1,4 +1,4 @@
-# ARIAC Automated Evaluation
+# Wiki|ARIAC Automated Evaluation
 
 During ARIAC Qualifiers/Finals, each team will submit their system so that it can be run in the automated evaluation setup. This is to ensure that teams are not using prohibited interfaces to interact with the simulation.
 

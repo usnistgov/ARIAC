@@ -62,7 +62,7 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
    * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic, meaning **they are not graspable**. There are 3 different types of shelves. They all have the same dimensions but the type of ghost parts for those shelves are different. These shelves are named `base`, `collar`, and `pipe`.
    * When parts are spawn on a shelf, they will always be spawn on the bottom shelf, never on the top shelf.
    
-   <img src="figures/new_shelf_config.png" alt="alt text" width="600" class="center">
+   <img src="figures/new_shelf_config.png" alt="alt text" width="900" class="center">
    
    * There are exactly 11 shelves in the environment.
       * 2 shelves will always be at the exact same locations.

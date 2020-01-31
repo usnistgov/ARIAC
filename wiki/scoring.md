@@ -1,7 +1,7 @@
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifier](qualifier.md)
+- Back to [Wiki | Qualifiers](qualifier.md)
 -------------------------------------------------
 
 # Wiki | Scoring
@@ -82,5 +82,5 @@ Trial Score = AAC * (
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifier](qualifier.md)
+- Back to [Wiki | Qualifiers](qualifier.md)
 -------------------------------------------------

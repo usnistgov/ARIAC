@@ -1,7 +1,7 @@
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)
 - Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifier](qualifier.md)
+- Back to [Wiki | Qualifiers](qualifier.md)
 -------------------------------------------------
 # Wiki | Details of Qualifier Scenarios
 
@@ -125,3 +125,9 @@ Trial configs for Part B will have the following characteristics:
 * Same AGV and quality control sensor placement
 * Only pulleys can be requested to be flipped
     * All products start in the bins un-flipped
+    
+-------------------------------------------------
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
+- Back to [Wiki | Qualifiers](qualifier.md)
+-------------------------------------------------

@@ -46,14 +46,14 @@ As specified on the [competition interface](./competition_interface_documentatio
 * The following figure shows the frame of the `gear_part_blue` (left picture), with the `x`, `y` and `z` axes represented by red, green and blue markers, respectively.
 * Not all parts have the frame origin at their center. The `piston_rod_part_green` (right picture), for example, has the origin of its frame off-center.
 
-<img src="figures/gear_piston_reference_frame.png"  width="1000" class="center">
+<img src="figures/gear_piston_reference_frame.png"  width="900" class="center">
 
 
 ### Flipped products
 
 An order could contain a product that requires to be flipped, in which case the requested `roll` for the product will be specified as pi. The Pulley part (`pulley_part_red`, `pulley_part_green`, and `pulley_part_blue`)  is the only product in the environment designed to be flippable. It has a flat collision surface on its top and bottom ends making it ideal for grasping it with a vacuum gripper. However, the side of the product is hollow, creating a more difficult grasp because of the small contact patch that the edges provide. Teams are not permitted to directly grasp this product from the side when a product flip is required.
 
-![https://bitbucket.org/osrf/ariac/wiki/2018/img/flipped_frame.jpg](https://bitbucket.org/osrf/ariac/wiki/2018/img/flipped_frame.jpg) 
+<img src="figures/pulleys.png"  width="900" class="center">
 
 ### Determining the product pose in the tray programmatically
 The logical camera reports the pose of products and shipping boxes with respect to the pose of the camera.

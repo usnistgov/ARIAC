@@ -1,6 +1,6 @@
 -------------------------------------------------
-- Back to [Wiki|Home](../README.md)
-- Back to [Wiki|Documentation](documentation.md)
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
 -------------------------------------------------
 
 # Wiki|Scoring
@@ -79,6 +79,6 @@ Trial Score = AAC * (
               )
 ```
 -------------------------------------------------
-- Back to [Wiki|Home](../README.md)
-- Back to [Wiki|Documentation](documentation.md)
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
 -------------------------------------------------

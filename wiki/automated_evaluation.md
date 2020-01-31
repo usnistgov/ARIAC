@@ -25,11 +25,11 @@ It is imperative that teams use the outlined process for testing their system, a
 If you system does not score correctly in the mock competition setup, it will not score correctly when run by competition controllers.
 
 ## Uploading your submission
-Submissions will be made through secure workspaces directly with competition controllers.
+- Submissions will be made through secure workspaces directly with competition controllers.
 
-All registered teams must contact ariac@nist.gov to have their workspace prepared in advance of when they intend to submit. **This must not be left to the last minute** or teams risk missing the submission deadline.
+- All registered teams must contact ariac@nist.gov to have their workspace prepared in advance of when they intend to submit. **This must not be left to the last minute** or teams risk missing the submission deadline.
 
-If your team's code is not open source, you can include access keys in your setup script: they will not be made public.
+- If your team's code is not open source, you can include access keys in your setup script: they will not be made public.
 
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)

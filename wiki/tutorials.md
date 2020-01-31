@@ -1,5 +1,12 @@
-- Back to [Wiki|Home](../README.md)
 -------------------------------------------------
+- Go to [Wiki | Home](../README.md)
+- Go to [Wiki | Documentation](documentation.md)
+- Go to [Wiki | Tutorials](tutorials.md)
+- Go to [Wiki | Qualifiers](qualifier.md)
+- Go to [Wiki | Finals](finals.md)
+- Go to [Wiki | News](updates.md)
+-------------------------------------------------
+
 # Wiki | Tutorials
 
 ## [Installing GEAR](tutorials/installation.md)
@@ -25,3 +32,12 @@ This tutorial shows how to use MoveIt to control the two arms in ARIAC 2019.
 ## [Building from source](tutorials/building_from_source.md)
 
 This tutorial describes installing dependencies, building GEAR from source, and running tests to make sure it works.
+
+-------------------------------------------------
+- Go to [Wiki | Home](../README.md)
+- Go to [Wiki | Documentation](documentation.md)
+- Go to [Wiki | Tutorials](tutorials.md)
+- Go to [Wiki | Qualifiers](qualifier.md)
+- Go to [Wiki | Finals](finals.md)
+- Go to [Wiki | News](updates.md)
+-------------------------------------------------

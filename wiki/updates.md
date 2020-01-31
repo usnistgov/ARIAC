@@ -23,6 +23,8 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
 
 ![Gantry](figures/robot.png | width=20)
 
+<img src="figures/robot.png" alt="alt text" width="600" class="center">
+
 -------------------------------------------------
 - Go to [Wiki | Home](../README.md)
 - Go to [Wiki | Documentation](documentation.md)

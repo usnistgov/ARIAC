@@ -27,7 +27,7 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
 Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
 
 * Each shelf has two levels:
-   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic. **They are not graspable"
+   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic, meaning **they are not graspable**
    * Parts will never be spawn on the top shelf.
    * When parts are spawn on a shelf, they will always be spawn on the bottom shelf.
    

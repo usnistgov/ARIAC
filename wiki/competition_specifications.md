@@ -82,6 +82,8 @@ shelf_layout:
    
 ## Parts
 * ARIAC 2020 is using the same part types found in ARIAC 2019. However, each part type has 3 colors (see figure below).
+
+
   <img src="figures/parts.png" alt="alt text" width="600" class="center">
 
 ## Trays

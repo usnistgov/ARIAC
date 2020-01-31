@@ -1,4 +1,5 @@
-# Scoring
+
+# Wiki|Scoring
 
 Scores will be made up of an automatically calculated component and a score based on judges.
 The automatically calculated component for each Trial is a combination of cost and performance metrics.

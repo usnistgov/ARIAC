@@ -6,7 +6,7 @@ The purpose of this tutorial is to introduce you to the sensors available to you
 
 # Prerequisites #
 
-You should have already completed the [GEAR interface tutorial](./gear_interface).
+You should have already completed the [GEAR interface tutorial](./gear_interface.md).
 
 # Reading Sensor Data #
 

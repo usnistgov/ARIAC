@@ -1,6 +1,6 @@
 -------------------------------------------------
-- Back to [Wiki|Home](../README.md)
-- Back to [Wiki|Documentation](documentation.md)
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
 -------------------------------------------------
 
 
@@ -69,6 +69,6 @@ A second order is announced part-way into the completion of the first order.
 Kits from both orders can be submitted after this time, but the second order is higher priority and for maximum points it should be completed as fast as possible.
 
 -------------------------------------------------
-- Back to [Wiki|Home](../README.md)
-- Back to [Wiki|Documentation](documentation.md)
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
 -------------------------------------------------

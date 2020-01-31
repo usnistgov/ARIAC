@@ -55,6 +55,37 @@ The simulation environment is a representation of an order fulfillment workcell 
 * All products in a particular storage bin are of the same type and have the same orientation.
 * The product bins are shallow boxes measuring **0.6 x 0.6 m**. 
 
+## Product Shelves
+Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
+
+* Each shelf has two levels:
+   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic, meaning **they are not graspable**. There are 3 different types of shelves. They all have the same dimensions but the type of ghost parts for those shelves are different. These shelves are named `base`, `collar`, and `pipe`.
+   * When parts are spawn on a shelf, they will always be spawn on the bottom shelf, never on the top shelf.
+   
+   <img src="figures/shelf.png" alt="alt text" width="600" class="center">
+   
+   * There are exactly 11 shelves in the environment.
+      * 2 shelves will always be at the exact same locations.
+      * The locations of the 9 remaining shelves can be customized to a certain extent. 
+         * The configuration for those shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change those shelves configuration during testing but not during qualifiers and finals.
+         * The figure below combines two screenshots of the environment (top view) where 2 shelves configurations are presented. 
+         * **Configuration 1** and **Configuration 2** show 3 rows of shelves where each row has 3 shelves and 1 gap. It is mandatory that each row has **exactly** 3 shelves and 1 gap. 
+            * In **Configuration 1**, the gap is located after the first shelf (row_1), at the end of the row of shelves (row_2), and after the first two shelves (row_3).
+            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 2** is represented in the Yaml code below and can be found in `config.yaml`. `base`, `collar
+            
+```yaml
+shelf_layout:
+   row_1: ['base','collar','collar',0] #shelves: 3, 4, 5
+   row_2: ['pipe',0,'base','collar']   #shelves: 6, 7, 8
+   row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
+   ``` 
+   
+   
+   
+            
+
+ <img src="figures/shelf_configs_2.png" width="700" class="center">
+
 ## Trays
 * Orders must be placed on a tray at one of two AGVs.
 * Teams programmatically signal the AGVs when a kit is ready to be delivered.

@@ -27,7 +27,7 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
 Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
 
 * Each shelf has two levels:
-   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic, meaning **they are not graspable**
+   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic, meaning **they are not graspable**. There are 3 different types of shelves. They all have the same dimensions but the type of ghost parts for those shelves are different. These shelves are named `base`, `collar`, and `pipe`.
    * Parts will never be spawn on the top shelf.
    * When parts are spawn on a shelf, they will always be spawn on the bottom shelf.
    
@@ -38,9 +38,9 @@ Besides bins and the conveyor belt, we now have the possibility to spawn parts o
       * The locations of the 9 remaining shelves can be customized to a certain extent. 
          * The configuration for those shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change those shelves configuration during testing but not during qualifiers and finals.
          * The figure below combines two screenshots of the environment (top view) where 2 shelves configurations are presented. 
-         * **Configuration 1** and **Configuration 2** show 3 rows of shelves with each row having 3 shelves and 1 gap. 
+         * **Configuration 1** and **Configuration 2** show 3 rows of shelves where each row has 3 shelves and 1 gap. It is mandatory that each row has **exactly** 3 shelves and 1 gap. 
             * In **Configuration 1**, the gap is located after the first shelf (row_1), at the end of the row of shelves (row_2), and after the first two shelves (row_3).
-            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 2** is represented as follows in `config.yaml`
+            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 2** is represented in the Yaml code below and can be found in `config.yaml`. `base`, `collar
             
 ```yaml
 shelf_layout:

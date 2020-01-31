@@ -42,13 +42,12 @@ The simulation environment is a representation of an order fulfillment workcell 
 
 ![Environment](figures/2020_environment.png)
 
-The conveyor belt is a **0.65 m wide**, **9 m long** plane that transports objects across the work environment.
-
-The following properties impact teams' interaction with the belt:
-
-1. Products will travel down the belt at a fixed speed of **0.2 m/s**.
-1. Teams can control the conveyor belt during development, but not during the final competition.
-1. There is a limited supply of products on the belt, and any products placed on the belt are automatically removed if they reach the end of the belt. Products will not be replaced once removed.
+## Conveyor Belt
+* The conveyor belt is a **0.65 m wide**, **9 m long** plane that transports objects across the work environment.
+* The following properties impact teams' interaction with the belt:
+ 1. Products will travel down the belt at a fixed speed of **0.2 m/s**.
+ 1. Teams can control the conveyor belt during development, but not during the final competition.
+ 1. There is a limited supply of products on the belt, and any products placed on the belt are automatically removed if they reach the end of the belt. Products will not be replaced once removed.
 
 There are 16 product bins that may be used for building kits. Products in these bins will not be replaced once used. 
 All products in a particular storage bin are of the same type and have the same orientation.

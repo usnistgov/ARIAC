@@ -11,7 +11,7 @@
 
 # ARIAC 2019 Vs. ARIAC 2020
 This section lists all the changes that were made from ARIAC 2019. If you participated in ARIAC 2019 and plan to participate in ARIAC 2020 then you may need to be aware of the following changes:
-## New robot
+## Robot
 * This year, competitors will have to control a 15 DoF gantry robot to complete the challenges. The robot consists of:
     * 1 linear actuator which allows the base of the robot to move along a small rail.
     * 1 linear actuator which allows the small rail to move along the long rails.
@@ -22,6 +22,15 @@ This section lists all the changes that were made from ARIAC 2019. If you partic
 
 
 <img src="figures/robot.png" alt="alt text" width="600" class="center">
+
+## Shelves
+Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
+
+* There are exactly 11 shelves in the environment.
+* Each shelf has two levels:
+   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic. **They are not graspable"
+   * Parts will never be spawn on the top shelf.
+   * When parts are spawn on a shelf, they will always be spawn on the bottom shelf.
 
 -------------------------------------------------
 - Go to [Wiki | Home](../README.md)

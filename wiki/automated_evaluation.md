@@ -1,4 +1,8 @@
-# Wiki|ARIAC Automated Evaluation
+-------------------------------------------------
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
+-------------------------------------------------
+# Wiki | ARIAC Automated Evaluation
 
 During ARIAC Qualifiers/Finals, each team will submit their system so that it can be run in the automated evaluation setup. This is to ensure that teams are not using prohibited interfaces to interact with the simulation.
 
@@ -26,3 +30,8 @@ Submissions will be made through secure workspaces directly with competition con
 All registered teams must contact ariac@nist.gov to have their workspace prepared in advance of when they intend to submit. **This must not be left to the last minute** or teams risk missing the submission deadline.
 
 If your team's code is not open source, you can include access keys in your setup script: they will not be made public.
+
+-------------------------------------------------
+- Back to [Wiki | Home](../README.md)
+- Back to [Wiki | Documentation](documentation.md)
+-------------------------------------------------

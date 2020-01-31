@@ -91,12 +91,7 @@ shelf_layout:
 * Teams programmatically signal the AGVs when a kit is ready to be delivered.
 * Each tray is shallow and measures **0.5 x 0.7 m**
 
-```diff
-- Needs to be changed
-```
-There are two robot arms mounted on a linear actuator that operates parallel to the conveyor belt.
-The linear actuator measures **4.6 m**, but the travel of each arm is limited to **2.76 m**.
-A single arm can reach one AGV and four of the six product bins.
+
 
 
 # Robot
@@ -121,6 +116,7 @@ A single arm can reach one AGV and four of the six product bins.
 
 # Sensors
 
+
 Teams can place sensors around the environment in static locations. Each sensor has a cost that factors into the final score.
 
 Available sensors are:
@@ -130,12 +126,12 @@ Available sensors are:
 1. **Depth camera**: provides a point cloud of sensed distances.
 1. **Cognex logical camera**: provides information about the pose and type of all models within its field of 
 view.
+  * **Note**: The range of the logical camera has been increased to cover 4 bins at a time (instead of 1 bin previously). With this new range, 2 logical cameras should be sufficient to cover the surface of a shelf.
 1. Proximity: detects the range to an object.
 
-Sensors can be placed in any free space in the workcell, they do not need to be mounted so that they are touching the conveyor belt/support frame of the storage bin.
-Sensors must be used in a realistic manner and must not exploit any simulation technicalities such as the logical camera seeing through obstructions.
-
-For the details about how to configure the sensor locations, see the [Configuration Specifications](configuration_spec.md).
+* Sensors can be placed in any free space in the workcell, they do not need to be mounted so that they are touching the conveyor belt/support frame of the storage bin.
+* Sensors must be used in a realistic manner and must not exploit any simulation technicalities such as the logical camera seeing through obstructions.
+* For the details about how to configure the sensor locations, see the [Configuration Specifications](configuration_spec.md).
 
 # Order
 

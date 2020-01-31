@@ -79,12 +79,7 @@ shelf_layout:
    row_2: ['pipe',0,'base','collar']   #shelves: 6, 7, 8
    row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
    ``` 
-   
-   
-   
-            
-
- <img src="figures/shelf_configs_2.png" width="700" class="center">
+  
 
 ## Trays
 * Orders must be placed on a tray at one of two AGVs.

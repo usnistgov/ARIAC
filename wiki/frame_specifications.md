@@ -5,14 +5,14 @@
 # Wiki|Details of Products specified in Orders
 This page outlines the specifications of the pose requirements specified in each Order.
 
-As outlined in the [competition specifications](./competition_specifications), an Order specifies a list of products to be put into each shipment.
+As outlined in the [competition specifications](competition_specifications.md), an Order specifies a list of products to be put into each shipment.
 Each product has a specified type and required position and orientation in the shipping box.
 
-As specified on the [competition interface](./competition_interface_documentation) page, Orders are communicated to teams with the `osrf_gear/Order` ROS message.
+As specified on the [competition interface](./competition_interface_documentation.md) page, Orders are communicated to teams with the `osrf_gear/Order` ROS message.
 
 ## Type of the product
 The type of the product is specified as its product name, such as `gear_part` or `piston_rod_part`.
-The availability of these products in the workcell may be determined by querying the `material_locations` ROS service as specified [in this tutorial](./tutorials/gear_interface).
+The availability of these products in the workcell may be determined by querying the `material_locations` ROS service as specified [in this tutorial](./tutorials/gear_interface.md).
 
 ## Pose of the product in the shipping box
 The pose of the product is composed of the position and the orientation of the product **specified in the reference frame of the tray**.
@@ -56,7 +56,7 @@ An order could contain a product that requires to be flipped, in which case the 
 
 ### Determining the product pose in the tray programmatically
 The logical camera reports the pose of products and shipping boxes with respect to the pose of the camera.
-See the [sensor interface tutorial](./tutorials/sensor_interface) for details of how to use this sensor to programmatically determine the pose of products on the trays.
+See the [sensor interface tutorial](./tutorials/sensor_interface.md) for details of how to use this sensor to programmatically determine the pose of products on the trays.
 
 Other sensors can also be used if combined with perception algorithms.
 Note that some parts have a raised mark on them so that their orientation can be detected.

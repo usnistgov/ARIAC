@@ -65,22 +65,22 @@ catkin init
 
 ### Download source code
 
-The source code for `GEAR` is located in the [osrf/gear repository on bitbucket](https://bitbucket.org/osrf/ariac).
-GEAR also uses a custom version of [gazebo_ros_pkgs](https://github.com/ros-simulation/gazebo_ros_pkgs/).
-Follow these instructions to put the for both of these into the catkin workspace.
+* The source code for `GEAR` is located in the [usnistgov/ariac repository on github](https://github.com/usnistgov/ARIAC).
+* GEAR also uses a custom version of `gazebo_ros_pkgs` that is already part of the above repository.
+* Follow these instructions to put GEAR into the catkin workspace.
 
 ```
 cd ~/ariac_ws/src
-git clone https://bitbucket.org/osrf/ariac.git
-git clone https://github.com/osrf/ariac-gazebo_ros_pkgs -b ariac-network-melodic
+git clone git@github.com:usnistgov/ARIAC.git
+git clone https://github.com/usnistgov/ARIAC.git
 ```
 
 ### Install GEAR dependencies
 
-The cloned software has its own dependencies that need to be installed.
-The tool rosdep can do this automatically.
-If you have not used rosdep before, then it must be initialized before running the command above.
-Run this if you have not used rosdep before:
+* The cloned software has its own dependencies that need to be installed.
+* The tool rosdep can do this automatically.
+* If you have not used rosdep before, then it must be initialized before running the command above.
+* Run this if you have not used rosdep before:
 
 ```
 sudo rosdep init
@@ -96,15 +96,15 @@ rosdep install --from-paths ./src --ignore-packages-from-source -y
 
 ## Building GEAR
 
-The command `catkin` from the Catkin Command Line Tools is used to build the software.
-All of these commands must be run from the root of the workspace.
-Use `cd` to get there in a terminal.
+* The command `catkin` from the Catkin Command Line Tools is used to build the software.
+* All of these commands must be run from the root of the workspace.
+* Use `cd` to get there in a terminal.
 
 ```
 cd ~/ariac_ws
 ```
 
-For more information see the [documentation for `catkin build`](https://catkin-tools.readthedocs.io/en/latest/verbs/catkin_build.html).
+* For more information see the [documentation for `catkin build`](https://catkin-tools.readthedocs.io/en/latest/verbs/catkin_build.html).
 
 
 ### Building all packages in the workspace
@@ -131,38 +131,39 @@ catkin build --no-deps osrf_gear
 
 ### Building Release versus Debug builds
 
-To build packages in debug mode with debug symbols, add `cmake` args specifying the build type.
+* To build packages in debug mode with debug symbols, add `cmake` args specifying the build type.
 
-For example, to rebuild all package in debug mode use:
+* For example, to rebuild all package in debug mode use:
 
 ```
 catkin build --cmake-args -DCMAKE_BUILD_TYPE=Debug
 ```
 
-To build in release use:
+* To build in release use:
 
 ```
 catkin build --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
-For more info see the [documentation on CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/v3.5/variable/CMAKE_BUILD_TYPE.html).
+* For more info see the [documentation on CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/v3.5/variable/CMAKE_BUILD_TYPE.html).
+
 ## Testing GEAR
 
-Run this command to run both unit and integration tests to make sure GEAR is working correctly.
+* Run this command to run both unit and integration tests to make sure GEAR is working correctly.
 
 ```
-catkin test --no-deps osrf_gear test_ariac
+catkin test --no-deps nist_gear test_ariac
 ```
 
-The above command says to run tests for the `osrf_gear` and `test_ariac` package.
-Unit tests (shorter, but less coverage) are in `osrf_gear`.
-Long running integration tests are in `test_ariac`.
+* The above command says to run tests for the `osrf_gear` and `test_ariac` package.
+* Unit tests (shorter, but less coverage) are in `osrf_gear`.
+* Long running integration tests are in `test_ariac`.
 
 ## Running gear
 
-After building all packages, the workspace must be sourced before building.
-Always source the workspace in a new terminal.
-Never source the workspace in a terminal where you run `catkin build`.
+* After building all packages, the workspace must be sourced before building.
+* Always source the workspace in a new terminal.
+* Never source the workspace in a terminal where you run `catkin build`.
 
 
 To source the workspace:
@@ -171,10 +172,10 @@ To source the workspace:
 source ~/ariac_ws/devel/setup.bash
 ```
 
-Make sure it works by running the ARIAC sample environment.
+* Make sure it works by running the ARIAC sample environment.
 
 ```
-roslaunch osrf_gear sample_environment.launch
+roslaunch nist_gear sample_environment.launch
 ```
 
 Note the very first launch may take a while because Gazebo downloads models from the model database the first time it runs.

@@ -9,7 +9,7 @@
 
 # Wiki | Tutorials
 
-## [Installing GEAR](tutorials/installation.md)
+## [Installing GEAR](tutorials/building_from_source.md)
 
 This tutorial describes how to install the Gazebo Environment for Agile Robots (GEAR).
 
@@ -29,9 +29,6 @@ This tutorial shows all the available sensors in the competition and explains ho
 
 This tutorial shows how to use MoveIt to control the two arms in ARIAC 2019.
 
-## [Building from source](tutorials/building_from_source.md)
-
-This tutorial describes installing dependencies, building GEAR from source, and running tests to make sure it works.
 
 -------------------------------------------------
 - Go to [Wiki | Home](../README.md)

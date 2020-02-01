@@ -125,7 +125,7 @@ catkin build --no-deps PACKAGE_NAME
 For example, run this to build just the main GEAR package:
 
 ```
-catkin build --no-deps osrf_gear
+catkin build --no-deps nist_gear
 ```
 
 ### Building Release versus Debug builds
@@ -154,8 +154,8 @@ catkin build --cmake-args -DCMAKE_BUILD_TYPE=Release
 catkin test --no-deps nist_gear test_ariac
 ```
 
-* The above command says to run tests for the `osrf_gear` and `test_ariac` package.
-* Unit tests (shorter, but less coverage) are in `osrf_gear`.
+* The above command says to run tests for the `nist_gear` and `test_ariac` package.
+* Unit tests (shorter, but less coverage) are in `nist_gear`.
 * Long running integration tests are in `test_ariac`.
 
 ## Running gear

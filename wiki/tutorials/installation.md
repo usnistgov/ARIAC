@@ -16,7 +16,7 @@ You should see 18.04 Bionic Beaver in that file.
 
 ## Gazebo 9
 
-GeAR uses [Gazebo 9](http://gazebosim.org/blog/gazebo9) to simulate the environment.
+GEAR uses [Gazebo 9](http://gazebosim.org/blog/gazebo9) to simulate the environment.
 Follow [these instructions](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) to install it.
 
 **Note**, if you see a crash complaining about missing a symbol in an ignition library, run this to fix it
@@ -58,7 +58,7 @@ sudo apt-get update
 
 # Installing GEAR
 
-Run these instructions to install the latest stable version of GEAR
+Currently GEAR can only be built from source.
 
 ```
 sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable bionic main" > /etc/apt/sources.list.d/gazebo-stable.list'

@@ -71,7 +71,6 @@ catkin init
 
 ```
 cd ~/ariac_ws/src
-git clone git@github.com:usnistgov/ARIAC.git
 git clone https://github.com/usnistgov/ARIAC.git
 ```
 

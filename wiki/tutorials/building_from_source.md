@@ -1,3 +1,12 @@
+-------------------------------------------------
+- Go to [Wiki | Home](../../README.md)
+- Go to [Wiki | Documentation](../documentation.md)
+- Go to [Wiki | Tutorials](../tutorials.md)
+- Go to [Wiki | Qualifiers](../qualifier.md)
+- Go to [Wiki | Finals](../finals.md)
+- Go to [Wiki | News](../updates.md)
+-------------------------------------------------
+
 # Building GEAR from source
 
 This page describes how to build GEAR from source.
@@ -169,3 +178,12 @@ roslaunch osrf_gear sample_environment.launch
 ```
 
 Note the very first launch may take a while because Gazebo downloads models from the model database the first time it runs.
+
+-------------------------------------------------
+- Go to [Wiki | Home](../../README.md)
+- Go to [Wiki | Documentation](../documentation.md)
+- Go to [Wiki | Tutorials](../tutorials.md)
+- Go to [Wiki | Qualifiers](../qualifier.md)
+- Go to [Wiki | Finals](../finals.md)
+- Go to [Wiki | News](../updates.md)
+-------------------------------------------------

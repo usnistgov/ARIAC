@@ -1,0 +1,1 @@
+export GAZEBO_MODEL_PATH=`rospack find @PROJECT_NAME@`/models:$GAZEBO_MODEL_PATH

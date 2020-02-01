@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="gear" >
+
+  <!-- world link -->
+  <link name="world" />
+
+  <!-- sensor links and fixed joints -->
+@[for name, sensor in sensors.items()]@
+@[    if not name.startswith('logical_camera')  # logical cameras publish their own TF pose dynamically]@
+
+  <!-- a @(sensor.type) type sensor in the frame @(name)_frame -->
+  <link name="@(name)_frame" />
+  <joint name="@(name)_joint" type="fixed">
+    <parent link="world" />
+    <child link="@(name)_frame" />
+    <origin xyz="@(' '.join(sensor.pose.xyz))" rpy="@(' '.join(sensor.pose.rpy))" />
+  </joint>
+
+@[        if 'laser_profiler' == sensor.type ]@
+  <!-- Frame from which laser scan data originates -->
+  <link name="@(name)_laser_source_frame" />
+  <joint name="@(name)_laser_source_joint" type="fixed">
+    <parent link="@(name)_frame" />
+    <child link="@(name)_laser_source_frame" />
+    <origin xyz="0 0 0.06" rpy="0 0 0" />
+  </joint>
+@[        end if ]@
+
+@[end if]@
+@[end for]@
+@[for name, pose in bins.items()]@
+  <!-- a bin in the frame @(name)_frame -->
+  <link name="@(name)_frame" />
+  <joint name="@(name)_joint" type="fixed">
+    <parent link="world" />
+    <child link="@(name)_frame" />
+    <origin xyz="@(' '.join([pose.xyz[0], pose.xyz[1], str(bin_height)]))" rpy="@(' '.join(pose.rpy))" />
+  </joint>
+@[end for]@
+  <link name="belt_frame" />
+  <joint name="belt_joint" type="fixed">
+    <parent link="world" />
+    <child link="belt_frame" />
+    <origin xyz="1.24 0.15 0.91" rpy="0 0 0" />
+  </joint>
+
+</robot>

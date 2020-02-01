@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<!-- conversions -->
+<!-- I couldn't make the simulation work with realistic values, so I tweaked the conversion values -->
+<xacro:property name="mm_to_m" value="0.001"/>
+<xacro:property name="mm2_to_m2" value="0.000001"/>
+<xacro:property name="gr_to_Kg" value="0.001"/>
+
+<!-- not so negligible, otherwise simulation fails -->
+<xacro:property name="torso_mass" value="${20000*gr_to_Kg}"/>
+<xacro:property name="torso_inertia">
+    <origin xyz="0 0 0"/>
+    <mass value="${torso_mass}"/>
+    <inertia ixx="${torso_mass * 10 * mm2_to_m2}" ixy="0.0" ixz="0.0" iyy="${torso_mass * 10 * mm2_to_m2}" iyz="0.0" izz="${torso_mass * 10 * mm2_to_m2}"/>
+</xacro:property>
+
+<xacro:macro name="nist_torso" params="parent name *origin">
+  <!--todo: Make this a prismatic joint on the x axis
+  <joint name="${parent}_${name}_base_joint" type="fixed">
+    <xacro:insert_block name="origin"/>
+    <parent link="${parent}"/>
+    <child link="${name}_link"/>
+  </joint>-->
+
+
+
+
+  <link name="${name}_link">
+    <inertial>
+      <xacro:insert_block name="torso_inertia"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://nist_gear/robots/torsoMap/meshes/torsoMap.dae"/>
+      </geometry>
+      <!--<material name="NIST220/Silver"/>-->
+    </visual>
+    <collision>
+      <geometry>
+          <mesh filename="package://nist_gear/robots/torsoMap/meshes/torsoMap.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+
+  <gazebo reference="${name}_link">
+    <!-- <static>true</static> -->
+  </gazebo>
+
+</xacro:macro>
+
+</robot>

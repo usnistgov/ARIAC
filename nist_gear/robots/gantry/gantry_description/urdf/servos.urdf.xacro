@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+
+<robot>
+  <!-- gazebo ros control -->
+  <gazebo>
+    <static>false</static>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/ariac/gantry</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </gazebo>
+
+  <!--transmissions-->
+  <transmission name="small_rail_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="small_long_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="small_long_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission name="torso_rail_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="torso_rail_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="torso_rail_motor">
+      <mechanicalReduction>10</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+
+  <transmission name="torso_base_main_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="torso_base_main_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="torso_base_main_motor">
+      <mechanicalReduction>10</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+</robot>

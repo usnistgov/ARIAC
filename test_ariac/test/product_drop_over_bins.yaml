@@ -1,0 +1,11 @@
+drops:
+  drop_regions:
+    bin4_reachable:
+      min:
+        xyz: [-0.6, 0.083, 0.77]
+      max:
+        xyz: [-0.0, 0.683, 1.3]
+      destination:
+        xyz: [-0.2, 0.433, 0.724050]
+        rpy: [0, 0, 0.785397]
+      product_type_to_drop: gasket_part

@@ -1,0 +1,26 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='Surroundings_2020'>
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <visual name="visual">
+            <geometry>
+                <mesh>
+                  <scale>1 1 1</scale>
+                  <uri>model://surroundings_2020/meshes/surroundings_2020.dae</uri>
+                </mesh>
+            </geometry>
+        </visual>
+        <!--
+        <collision name="collision">
+            <geometry>
+                <mesh>
+                  <scale>1 1 1</scale>
+                  <uri>model://surroundings_2020/meshes/surroundings_2020.dae</uri>
+                </mesh>
+            </geometry>
+        </collision>-->
+    </link>
+  </model>
+</sdf>

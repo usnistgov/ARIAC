@@ -1,0 +1,8 @@
+<launch>
+  <node name="ariac_sim" pkg="osrf_gear" type="gear.py"
+        args="-f
+              $(find osrf_gear)/config/sample.yaml
+              --verbose --no-gui"/>
+  <test pkg="test_ariac" type="test_gripper.py" test-name="test_gripper"
+        time-limit="60.0"/>
+</launch>

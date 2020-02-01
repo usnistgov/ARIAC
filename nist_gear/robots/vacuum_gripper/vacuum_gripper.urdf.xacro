@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:macro name="create_vacuum_gripper" params="prefix wrist_link arm_namespace *origin **grippable_model_types **drops_info">
+
+  <link name="${prefix}vacuum_gripper_link">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <inertia ixx="0.0000063" ixy="0" ixz="0"
+               iyy="0.0000063" iyz="0"
+               izz="0.000025" />
+      <mass value="0.01" />
+    </inertial>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <cylinder radius="0.05" length="0.01" />
+      </geometry>
+      <material name="SomeColor">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.05" length="0.01"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- Gazebo will collapse consecutive fixed joints.
+       To avoid that happening when parts are attached to the gripper, it is a
+       null revolute joint instead. -->
+  <joint name="${prefix}vacuum_gripper_joint" type="revolute">
+    <xacro:insert_block name="origin" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="0" effort="0" velocity="0" />
+    <parent link="${wrist_link}" />
+    <child link="${prefix}vacuum_gripper_link" />
+
+    <dynamics damping="0.0" friction="0.0"/>
+  </joint>
+  <!--this removes a complaint from moveit about a missing joint tf--> 
+  <transmission name="${prefix}fake_vacuum_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${prefix}vacuum_gripper_joint">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="fake_motor">
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <gazebo reference="${prefix}vacuum_gripper_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="ros_vacuum_gripper_${arm_namespace}" filename="libROSVacuumGripperPlugin.so">
+      <grasp_check>
+        <detach_steps>40</detach_steps>
+        <attach_steps>1</attach_steps>
+        <min_contact_count>1</min_contact_count>
+      </grasp_check>
+
+      <xacro:insert_block name="grippable_model_types" />
+
+      <xacro:insert_block name="drops_info" />
+
+      <suction_cup_link>${prefix}vacuum_gripper_link</suction_cup_link>
+
+      <!-- ROS -->
+      <robot_namespace>${arm_namespace}</robot_namespace>
+      <control_topic>gripper/control</control_topic>
+      <state_topic>gripper/state</state_topic>
+    </plugin>
+  </gazebo>
+
+</xacro:macro>
+
+</robot>

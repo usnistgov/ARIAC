@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:arg name="use_velocity_interface" default="false" />
+  <xacro:arg name="use_effort_interface" default="false" />
+
+  <xacro:macro name="ur_arm_transmission" params="prefix">
+
+    <!-- if use_position_interface create PositionJointInterface based transmissions -->
+    <xacro:unless value="$(arg use_velocity_interface)">
+    <xacro:unless value="$(arg use_effort_interface)">
+      <!-- option1 -->
+      <xacro:ur_arm_transmission_impl prefix="${prefix}" joint_interface="hardware_interface/PositionJointInterface" />
+    </xacro:unless>
+    </xacro:unless>
+    <!-- if use_velocity_interface create VelocityJointInterface based transmissions -->
+    <xacro:if value="$(arg use_velocity_interface)">
+      <!-- option2 -->
+      <xacro:ur_arm_transmission_impl prefix="${prefix}" joint_interface="hardware_interface/VelocityJointInterface" />
+    </xacro:if>
+    <!-- if use_effort_interface create EffortJointInterface based transmissions -->
+    <xacro:if value="$(arg use_effort_interface)">
+      <!-- option3 -->
+      <xacro:ur_arm_transmission_impl prefix="${prefix}" joint_interface="hardware_interface/EffortJointInterface" />
+    </xacro:if>
+
+  </xacro:macro>
+
+  <xacro:macro name="ur_arm_transmission_impl" params="prefix joint_interface">
+
+    <transmission name="${prefix}shoulder_pan_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}shoulder_pan_joint">
+        <hardwareInterface>${joint_interface}</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}shoulder_pan_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${prefix}shoulder_lift_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}shoulder_lift_joint">
+        <hardwareInterface>${joint_interface}</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}shoulder_lift_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${prefix}elbow_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}elbow_joint">
+        <hardwareInterface>${joint_interface}</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}elbow_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${prefix}wrist_1_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}wrist_1_joint">
+        <hardwareInterface>${joint_interface}</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}wrist_1_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${prefix}wrist_2_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}wrist_2_joint">
+        <hardwareInterface>${joint_interface}</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}wrist_2_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="${prefix}wrist_3_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="${prefix}wrist_3_joint">
+        <hardwareInterface>${joint_interface}</hardwareInterface>
+      </joint>
+      <actuator name="${prefix}wrist_3_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+  </xacro:macro>
+
+</robot>

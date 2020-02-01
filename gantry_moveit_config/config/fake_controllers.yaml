@@ -1,0 +1,45 @@
+controller_list:
+  - name: fake_Left_Arm_controller
+    joints:
+      - left_shoulder_pan_joint
+      - left_shoulder_lift_joint
+      - left_elbow_joint
+      - left_wrist_1_joint
+      - left_wrist_2_joint
+      - left_wrist_3_joint
+  - name: fake_Right_Arm_controller
+    joints:
+      - right_shoulder_pan_joint
+      - right_shoulder_lift_joint
+      - right_elbow_joint
+      - right_wrist_1_joint
+      - right_wrist_2_joint
+      - right_wrist_3_joint
+  - name: fake_Left_Endeffector_controller
+    joints:
+      []
+  - name: fake_Right_Endeffector_controller
+    joints:
+      []
+  - name: fake_Gantry_controller
+    joints:
+      - small_long_joint
+      - torso_rail_joint
+      - torso_base_main_joint
+  - name: fake_Full_Robot_controller
+    joints:
+      - small_long_joint
+      - torso_rail_joint
+      - torso_base_main_joint
+      - left_shoulder_pan_joint
+      - left_shoulder_lift_joint
+      - left_elbow_joint
+      - left_wrist_1_joint
+      - left_wrist_2_joint
+      - left_wrist_3_joint
+      - right_shoulder_pan_joint
+      - right_shoulder_lift_joint
+      - right_elbow_joint
+      - right_wrist_1_joint
+      - right_wrist_2_joint
+      - right_wrist_3_joint

@@ -1,0 +1,33 @@
+<launch>
+  <arg name="verbose" default="false" />
+  <arg unless="$(arg verbose)" name="verbose_args" value="" />
+  <arg     if="$(arg verbose)" name="verbose_args" value="--verbose" />
+
+  <arg name="state_logging" default="false" />
+  <arg unless="$(arg state_logging)" name="state_logging_args" value="" />
+  <arg     if="$(arg state_logging)" name="state_logging_args" value="--state-logging=true" />
+
+  <arg name="no_gui" default="false" />
+  <arg unless="$(arg no_gui)" name="gui_args" value="" />
+  <arg     if="$(arg no_gui)" name="gui_args" value="--no-gui" />
+
+  <arg name="fill_demo_shipment" default="false" />
+  <arg unless="$(arg fill_demo_shipment)" name="fill_demo_shipment_args" value="" />
+  <arg     if="$(arg fill_demo_shipment)" name="fill_demo_shipment_args" value="--fill-demo-shipment" />
+
+  <arg name="load_moveit" default="false" />
+  <arg unless="$(arg load_moveit)" name="load_moveit_args" value="" />
+  <arg     if="$(arg load_moveit)" name="load_moveit_args" value="--load-moveit" />
+
+  <node name="ariac_sim" pkg="nist_gear" type="gear.py"
+        args="--development-mode
+          $(arg verbose_args)
+          $(arg state_logging_args)
+          $(arg gui_args)
+          $(arg load_moveit_args)
+          $(arg fill_demo_shipment_args)
+          --visualize-sensor-views
+          -f $(find nist_gear)/config/sample.yaml
+          $(find nist_gear)/config/sample_user_config.yaml
+          " required="true" output="screen" />
+</launch>

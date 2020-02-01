@@ -1,0 +1,35 @@
+# Competition configuration options
+
+options:
+  unthrottled_physics_update: true
+  insert_models_over_bins: true
+  insert_shipping_boxes: false
+  fill_demo_shipment: false
+
+orders:
+  order_0:
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    products:
+      part_0:
+        type: piston_rod_part
+        pose:
+          xyz: [0.1, 0, 0]
+          rpy: [0, 0, 0]
+      part_1:
+        type: piston_rod_part
+        pose:
+          xyz: [-0.1, 0, 0]
+          rpy: [0, 0, 'pi']
+
+models_over_bins:
+  bin3:
+    models:
+      gear_part:
+        xyz_start: [0.0, 0.0, 0.0]
+        xyz_end: [0.3, 0.6, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 3
+        num_models_y: 5
+
+time_limit: -1

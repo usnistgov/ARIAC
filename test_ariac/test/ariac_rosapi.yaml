@@ -1,0 +1,210 @@
+strict: false
+
+##########################################################
+# Topics
+topics:
+
+  #####################################
+  # System
+  - topic: /clock
+    type: rosgraph_msgs/Clock
+    num_publishers: 1
+    num_subscribers: -1
+
+# TODO(dhood): understand why this went from 1 subscriber to 0 between 2017 and 2018
+  - topic: /rosout
+    type: rosgraph_msgs/Log
+    num_publishers: -1
+    num_subscribers: 0
+
+# TODO(dhood): understand why this stopped appearing between 2017 and 2018
+#  - topic: /rosout_agg
+#    type: rosgraph_msgs/Log
+#    num_publishers: 1
+#    num_subscribers: -1
+
+  - topic: /tf
+    type: tf2_msgs/TFMessage
+    num_publishers: 4
+    num_subscribers: -1
+
+  - topic: /tf_static
+    type: tf2_msgs/TFMessage
+    num_publishers: 3
+    num_subscribers: -1
+
+
+  #####################################
+  # Competition control
+  - topic: /ariac/orders
+    type: osrf_gear/Order
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/population/state
+    type: osrf_gear/PopulationState
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/competition_state
+    type: std_msgs/String
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/quality_control_sensor_1
+    type: osrf_gear/LogicalCameraImage
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/quality_control_sensor_2
+    type: osrf_gear/LogicalCameraImage
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/conveyor/state
+    type: osrf_gear/ConveyorBeltState
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/agv1/state
+    type: std_msgs/String
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/agv2/state
+    type: std_msgs/String
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/trays
+    type: osrf_gear/DetectedShipment
+    num_publishers: 1
+    num_subscribers: 1
+
+
+  #####################################
+  # Arm + move_group
+  - topic: /ariac/arm1/arm/command
+    type: trajectory_msgs/JointTrajectory
+    num_publishers: 0
+    num_subscribers: 1
+
+  - topic: /ariac/arm1/joint_states
+    type: sensor_msgs/JointState
+    num_publishers: 1
+    num_subscribers: 1
+
+  - topic: /ariac/arm1/arm/state
+    type: control_msgs/JointTrajectoryControllerState
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/arm1/gripper/state
+    type: osrf_gear/VacuumGripperState
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/arm2/arm/command
+    type: trajectory_msgs/JointTrajectory
+    num_publishers: 0
+    num_subscribers: 1
+
+  - topic: /ariac/arm2/joint_states
+    type: sensor_msgs/JointState
+    num_publishers: 1
+    num_subscribers: 1
+
+  - topic: /ariac/arm2/arm/state
+    type: control_msgs/JointTrajectoryControllerState
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/arm2/gripper/state
+    type: osrf_gear/VacuumGripperState
+    num_publishers: 1
+    num_subscribers: 0
+
+
+  #####################################
+  # Sensors
+  - topic: /ariac/break_beam_1
+    type: osrf_gear/Proximity
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/break_beam_1_change
+    type: osrf_gear/Proximity
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/laser_profiler_1
+    type: sensor_msgs/LaserScan
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/depth_camera_1
+    type: sensor_msgs/PointCloud
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/logical_camera_1
+    type: osrf_gear/LogicalCameraImage
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/logical_camera_2
+    type: osrf_gear/LogicalCameraImage
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/logical_camera_3
+    type: osrf_gear/LogicalCameraImage
+    num_publishers: 1
+    num_subscribers: 0
+
+  - topic: /ariac/proximity_sensor_1
+    type: sensor_msgs/Range
+    num_publishers: 1
+    num_subscribers: 0
+
+
+##########################################################
+# Services
+services:
+
+  #####################################
+  # Competition control
+  - service: /ariac/start_competition
+    type: std_srvs/Trigger
+
+  - service: /ariac/agv1
+    type: osrf_gear/AGVControl
+
+  - service: /ariac/agv2
+    type: osrf_gear/AGVControl
+
+  - service: /ariac/end_competition
+    type: std_srvs/Trigger
+
+  - service: /ariac/submit_shipment
+    type: osrf_gear/SubmitShipment
+
+  - service: /ariac/agv1/animate
+    type: std_srvs/Trigger
+
+  - service: /ariac/agv2/animate
+    type: std_srvs/Trigger
+
+  - service: /ariac/kit_tray_1/get_content
+    type: osrf_gear/DetectShipment
+
+  - service: /ariac/kit_tray_2/get_content
+    type: osrf_gear/DetectShipment
+
+  #####################################
+  # Arm
+  - service: /ariac/arm1/gripper/control
+    type: osrf_gear/VacuumGripperControl
+
+  - service: /ariac/arm2/gripper/control
+    type: osrf_gear/VacuumGripperControl

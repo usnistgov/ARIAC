@@ -1,0 +1,27 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='Shelf'>
+    <static>true</static>
+    <link name="link">
+      <!--pose>0 0 0 0 0 0</pose-->
+      <visual name="visual">
+      <pose>-6.467512 1.214089 0 0 0 0</pose>
+            <geometry>
+                <mesh>
+                  <!--scale>1 1 1</scale-->
+                  <uri>model://workcell_shelf/meshes/shelf.dae</uri>
+                </mesh>
+            </geometry>
+        </visual>
+        <collision name="collision">
+      <pose>-6.467512 1.214089 0 0 0 0</pose>
+            <geometry>
+                <mesh>
+                  <!--scale>1 1 1</scale-->
+                  <uri>model://workcell_shelf/meshes/shelf.dae</uri>
+                </mesh>
+            </geometry>
+        </collision>
+    </link>
+  </model>
+</sdf>

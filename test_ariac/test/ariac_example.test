@@ -1,0 +1,10 @@
+<launch>
+  <!-- use a sample comp+user config, and a supplementary config file that
+      causes shipping_box_0 to be filled when the comp starts -->
+  <node name="ariac_sim" pkg="osrf_gear" type="gear.py"
+        args="-f
+              $(find osrf_gear)/config/sample.yaml
+              $(find osrf_gear)/config/sample_user_config.yaml
+              --verbose --no-gui"/>
+  <test pkg="test_ariac" type="test_example_node.py" test-name="test_ariac_example"/>
+</launch>

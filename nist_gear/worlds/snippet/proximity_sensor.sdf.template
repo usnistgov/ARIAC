@@ -1,0 +1,90 @@
+    <model name="@(name)">
+      <pose>@(' '.join(sensor.pose.xyz)) @(' '.join(sensor.pose.rpy))</pose>
+      <static>true</static>
+      <link name="body">
+        <visual name="visual">
+          <pose>0 0 0 0 1.5708 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.006</radius> <!-- diameter of sensing head -->
+              <length>0.046</length> <!-- length of sensor body -->
+            </cylinder>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <pose>0 0 0 0 1.5708 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.006</radius> <!-- diameter of sensing head -->
+              <length>0.046</length> <!-- length of sensor body -->
+            </cylinder>
+          </geometry>
+        </collision>
+        <sensor name="@(name)" type="ray">
+          <pose>0.023 0 0 0 0 0</pose>
+          <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
+            <activation_topic>/ariac/sensor_enable</activation_topic>
+          </plugin>
+          <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+            <gaussianNoise>0.001</gaussianNoise>
+            <alwaysOn>true</alwaysOn>
+            <update_rate>10</update_rate>
+            <topicName>@(name)</topicName>
+            <frameName>@(name)_frame</frameName>
+            <robotNamespace>ariac</robotNamespace>
+            <fov>0.125</fov>
+            <radiation>ultrasound</radiation>
+          </plugin>
+
+          <ray>
+            <range>
+              <min>0.01</min>
+              <max>0.15</max>
+              <resolution>0.01</resolution>
+            </range>
+            <scan>
+              <horizontal>
+                  <samples>5</samples>
+                  <resolution>1.0</resolution>
+                  <min_angle>-0.0625</min_angle>
+                  <max_angle>0.0625</max_angle>
+                </horizontal>
+                <vertical>
+                  <samples>5</samples>
+                  <resolution>1</resolution>
+                  <min_angle>-0.0625</min_angle>
+                  <max_angle>0.0625</max_angle>
+                </vertical>
+            </scan>
+          </ray>
+
+          <always_on>1</always_on>
+          <visualize>@(options['visualize_sensor_views'])</visualize>
+        </sensor>
+        <gravity>false</gravity>
+        <inertial>
+          <mass>0.1</mass>
+        </inertial>
+      </link>
+      <link name="cord">
+        <gravity>false</gravity>
+        <visual name="visual">
+          <pose>-0.025 0 0 0 1.5708 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.001</radius> <!-- diameter of sensing head -->
+              <length>0.02</length> <!-- length of sensor body -->
+            </cylinder>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <pose>-0.025 0 0 0 1.5708 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.001</radius> <!-- diameter of sensing head -->
+              <length>0.02</length> <!-- length of sensor body -->
+            </cylinder>
+          </geometry>
+        </collision>
+      </link>
+    </model>

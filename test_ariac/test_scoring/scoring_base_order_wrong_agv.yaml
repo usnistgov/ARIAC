@@ -1,0 +1,42 @@
+options:
+  fill_demo_shipment: false
+  insert_models_over_bins: true
+  spawn_extra_models: true
+  start_box_at_belt_center: true
+  model_type_aliases:
+    order_part1: piston_rod_part
+    order_part2: gear_part
+
+orders:
+  order_0:
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    shipment_count: 2
+    destinations: [agv2, agv1]
+    products:
+      part_0:
+        type: order_part1
+        pose:
+          xyz: [0.1, -0.2, 0]
+          rpy: [0, 0, 0]
+      part_1:
+        type: order_part1
+        pose:
+          xyz: [-0.1, -0.2, 0]
+          rpy: [0, 0, 0]
+      part_2:
+        type: order_part2
+        pose:
+          xyz: [0.15, 0.15, 0]
+          rpy: [0, 0, 0]
+      part_3:
+        type: order_part2
+        pose:
+          xyz: [-0.15, 0.15, 0]
+          rpy: [0, 0, 0]
+      part_4:
+        type: order_part2
+        pose:
+          xyz: [0.0, 0.15, 0]
+          rpy: [0, 0, 0]
+

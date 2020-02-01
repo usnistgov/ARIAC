@@ -1,0 +1,6 @@
+# Drone Control
+
+string shipment_type
+
+---
+bool success

@@ -1,0 +1,78 @@
+    <model name="@(name)">
+      <pose>@(' '.join(sensor.pose.xyz)) @(' '.join(sensor.pose.rpy))</pose>
+      <static>true</static>
+      <link name="link">
+        <visual name="visual">
+          <pose>0.007 0 -0.033 0 0 0</pose>
+            <geometry>
+            <mesh>
+                <uri>model://swissranger_camera_ariac/meshes/SR4000.stl</uri>
+            </mesh>
+            </geometry>
+            <material>
+                <ambient>0.15 0.15 0.15 1</ambient>
+                <diffuse>0.15 0.15 0.15 1</diffuse>
+                <specular>0.1 0.1 0.1 1</specular>
+                <emissive>0 0 0 0</emissive>
+            </material>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <box>
+              <size>0.07 0.065 0.065</size>
+            </box>
+          </geometry>
+        </collision>
+        <sensor name="laser_profiler" type="ray">
+          <update_rate>5</update_rate>
+          <pose>0 0 0.0 0 0 0</pose>
+          <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
+            <activation_topic>/ariac/sensor_enable</activation_topic>
+          </plugin>
+          <plugin name="proximity_ray_plugin" filename="libgazebo_ros_block_laser.so" >
+            <!-- If the namespace is set to ariac, the frame will also be namespaced -->
+            <!-- So, we manually namespace the topic only -->
+            <robotNamespace>/</robotNamespace>
+            <frameName>@(name)_frame</frameName>
+            <topicName>ariac/@(name)</topicName>
+            <alwaysOn>true</alwaysOn>
+          </plugin>
+          <ray>
+            <range>
+              <min>0.4</min>
+              <max>1.0</max>
+              <resolution>0.001</resolution>
+            </range>
+            <scan>
+              <horizontal>
+                <samples>50</samples>
+                <resolution>1</resolution>
+                <min_angle>-0.3</min_angle>
+                <max_angle>0.3</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>50</samples>
+                <resolution>1</resolution>
+                <min_angle>-0.4</min_angle>
+                <max_angle>0.4</max_angle>
+              </vertical>
+            </scan>
+
+            <!-- nothing below this line really needs to be modified upon change of sensor model -->
+
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </ray>
+
+          <always_on>1</always_on>
+          <visualize>@(options['visualize_sensor_views'])</visualize>
+        </sensor>
+        <gravity>false</gravity>
+        <inertial>
+          <mass>0.1</mass>
+        </inertial>
+      </link>
+    </model>

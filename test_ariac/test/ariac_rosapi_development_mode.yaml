@@ -1,0 +1,32 @@
+strict: false
+
+##########################################################
+# Topics
+topics:
+
+  #####################################
+  # Competition control
+
+  - topic: /ariac/current_score
+    type: std_msgs/Float32
+    num_publishers: 1
+    num_subscribers: 0
+
+
+##########################################################
+# Services
+services:
+
+  #####################################
+  # Competition control
+  - service: /ariac/material_locations
+    type: osrf_gear/GetMaterialLocations
+
+  - service: /ariac/kit_tray_1/clear_tray
+    type: std_srvs/Trigger
+
+  - service: /ariac/kit_tray_2/clear_tray
+    type: std_srvs/Trigger
+
+  - service: /ariac/submit_shipment
+    type: osrf_gear/SubmitShipment

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="state_log_path" default="$(env HOME)/.ariac/log/gazebo/state.log" />
+
+  <!-- start gazebo with 'verbose' by default because otherwise exceptions aren't printed to screen -->
+  <arg name="extra_gazebo_args" default="--verbose" />
+  <arg name="no_gui" default="false" />
+
+  <node name="gazebo" pkg="gazebo_ros" type="gzserver"
+    args="-p $(arg state_log_path) -s $(find nist_gear)/../../lib/libLogPlaybackPlugin.so --pause $(arg extra_gazebo_args)" required="true" />
+
+  <!-- start gazebo client -->
+  <group unless="$(arg no_gui)">
+    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
+  </group>
+
+</launch>

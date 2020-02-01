@@ -1,0 +1,11 @@
+# ID used to say which tray or AGV this is
+# allowed values are "1", or "2" to indicate which agv
+# or the name of the tray on the agv
+string destination_id
+# ID used to say which order and shipment this is
+string shipment_type
+
+---
+bool success
+# The score added by the submitted shipment
+float32 inspection_result

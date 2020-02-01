@@ -1,0 +1,11 @@
+<launch>
+  <node name="ariac_sim" pkg="osrf_gear" type="gear.py"
+        args="-f
+              $(find osrf_gear)/config/sample_user_config.yaml
+              $(find test_ariac)/test_scoring/scoring_base_order.yaml
+              $(find test_ariac)/test_scoring/scoring_faulty_parts.yaml
+              $(find test_ariac)/test_scoring/scoring_perfect_shipment.yaml
+              --verbose --no-gui"/>
+  <test pkg="test_ariac" type="test_sensors.py" test-name="test_sensors"
+        time-limit="60.0"/>
+</launch>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ariac</name>
+  <version>0.0.0</version>
+  <description>The ariac package</description>
+
+  <maintainer email="pavel.piliptchak@nist.gov"></maintainer>
+  <license>TODO</license>
+
+
+  <exec_depend>nist_gear</exec_depend>
+  <exec_depend>test_ariac</exec_depend>
+  <exec_depend>ariac_example</exec_depend>
+  <exec_depend>gantry_moveit_config</exec_depend>
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>

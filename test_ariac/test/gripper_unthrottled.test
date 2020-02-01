@@ -1,0 +1,11 @@
+<launch>
+  <!-- Regression test for segfault on gripper detach https://bitbucket.org/osrf/ariac/issues/61 -->
+  <!-- Use a configuration that has only the necessary models and unthrottled physics updates.
+    This is to make race conditions more likely to occur when detaching products from the gripper. -->
+  <node name="ariac_sim" pkg="osrf_gear" type="gear.py"
+        args="-f
+              $(find test_ariac)/test/minimal_sample_unthrottled.yaml
+              --verbose --no-gui"/>
+  <test pkg="test_ariac" type="test_gripper_unthrottled.py" test-name="test_gripper_unthrottled"
+        time-limit="300.0"/>
+</launch>

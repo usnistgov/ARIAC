@@ -1,0 +1,9 @@
+# AGV Control
+
+# A name used to identify the shipment being submitted
+# This name was included in the shipment in the order
+string shipment_type
+
+---
+bool success
+string message

@@ -1,0 +1,70 @@
+    <model name="@(name)">
+      <pose>@(' '.join(sensor.pose.xyz)) @(' '.join(sensor.pose.rpy))</pose>
+      <link name="link">
+        <sensor name="@(name)" type="ray">
+          <update_rate>10</update_rate>
+          <pose>0.025 0 0 0 0 0</pose>
+@[if name == 'congestion_sensor']@
+          <!-- publishes the state on a gazebo topic for internal use -->
+          <plugin name="proximity_ray_plugin" filename="libProximityRayPlugin.so" >
+            <output_state_topic>/ariac/congestion_sensor</output_state_topic>
+          </plugin>
+@[else]@
+          <!-- publishes the state on a ROS topic for use by users -->
+          <plugin name="ros_proximity_ray_plugin" filename="libROSProximityRayPlugin.so" >
+            <robotNamespace>ariac</robotNamespace>
+            <time_delay>0.05</time_delay><!-- this modifies the update rate of the ray sensor -->
+            <activation_topic>/ariac/sensor_enable</activation_topic>
+          </plugin>
+          <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
+            <activation_topic>/ariac/sensor_enable</activation_topic>
+          </plugin>
+@[end if]@
+          <ray>
+            <range>
+              <min>0.0</min>
+              <max>1.0</max> <!-- this represents the distance at which the reflector's placed. max 12m -->
+              <resolution>0.001</resolution>
+            </range>
+
+            <!-- nothing below this line really needs to be modified upon change of sensor model -->
+
+            <scan>
+              <horizontal>
+                <samples>1</samples>
+                <resolution>1</resolution>
+                <min_angle>0</min_angle>
+                <max_angle>0</max_angle>
+              </horizontal>
+            </scan>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+          </ray>
+
+          <always_on>1</always_on>
+          <visualize>@(options['visualize_sensor_views'])</visualize>
+        </sensor>
+        <gravity>false</gravity>
+        <inertial>
+          <mass>0.1</mass>
+        </inertial>
+        <visual name="visual">
+          <geometry>
+            <mesh>
+              <uri>model://hokuyo_ariac/meshes/hokuyo.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>model://hokuyo_ariac/meshes/hokuyo.dae</uri>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+      <static>true</static>
+    </model>

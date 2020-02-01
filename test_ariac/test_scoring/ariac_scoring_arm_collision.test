@@ -1,0 +1,13 @@
+<launch>
+  <!-- use a config file that will fill shipping_box_0 on startup -->
+  <node name="ariac_sim" pkg="osrf_gear" type="gear.py"
+        args="-f
+              $(find test_ariac)/test_scoring/scoring_base_order.yaml
+              $(find test_ariac)/test_scoring/scoring_perfect_shipment.yaml
+              $(find osrf_gear)/config/sample_user_config.yaml
+              --development-mode --verbose --no-gui"/>
+  <test pkg="test_ariac" type="test_scoring_against_expected_score.py"
+        test-name="test_scoring_arm_collision"
+        time-limit="60.0" args="0 collide_arms: wait:5 submit_agv1:order_0_shipment_0 wait:5"/>
+</launch>
+

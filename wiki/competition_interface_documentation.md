@@ -10,9 +10,9 @@ This interface can be used by teams to control all available actuators, read sen
 During the competition, it is against the rules to control the ARIAC simulation using anything other than the interface specified below.
 **Teams are not permitted to use any of the topics or services in the `/gazebo/` namespace prefix to control the Gazebo simulation or get information about the simulation state. These interfaces will be blocked during the Finals.**
 
-***Comming soon: hands-on tutorial on interfacing with GEAR through command line tools***
+***Coming soon: hands-on tutorial on interfacing with GEAR through command line tools***
 
-***Comming soon: tutorial on interfacing with GEAR through a ROS node***
+***Coming soon: tutorial on interfacing with GEAR through a ROS node***
 
 
 ## Sensors

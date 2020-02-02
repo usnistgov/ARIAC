@@ -4,8 +4,8 @@ options:
   spawn_extra_models: true
   start_box_at_belt_center: true
   model_type_aliases:
-    order_part1: piston_rod_part
-    order_part2: gear_part
+    order_part1: piston_rod_part_green
+    order_part2: gear_part_red
 
 orders:
   order_0:

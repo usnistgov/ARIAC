@@ -9,8 +9,8 @@ import rospy
 import rostest
 from test_example_node import ExampleNodeTester
 
-from osrf_gear.msg import LogicalCameraImage
-from osrf_gear.msg import Proximity
+from nist_gear.msg import LogicalCameraImage
+from nist_gear.msg import Proximity
 from sensor_msgs.msg import Range
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import PointCloud

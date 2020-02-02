@@ -12,12 +12,12 @@ orders:
     announcement_condition_value: 0.0
     products:
       part_0:
-        type: piston_rod_part
+        type: piston_rod_part_red
         pose:
           xyz: [0.1, 0, 0]
           rpy: [0, 0, 0]
       part_1:
-        type: piston_rod_part
+        type: piston_rod_part_blue
         pose:
           xyz: [-0.1, 0, 0]
           rpy: [0, 0, 'pi']
@@ -25,7 +25,7 @@ orders:
 models_over_bins:
   bin3:
     models:
-      gear_part:
+      gear_part_green:
         xyz_start: [0.0, 0.0, 0.0]
         xyz_end: [0.3, 0.6, 0.0]
         rpy: [0, 0, 0]

@@ -1,6 +1,6 @@
 faulty_products:
-  - gear_part_75
-  - piston_rod_part_145
+  - gear_part_red_75
+  - piston_rod_part_blue_145
 random_seed: 5
 models_to_spawn:
   # Spawn some models on startup

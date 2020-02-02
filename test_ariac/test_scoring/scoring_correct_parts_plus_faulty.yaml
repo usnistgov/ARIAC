@@ -1,6 +1,6 @@
 faulty_products:
-  - gear_part_4
-  - gear_part_5
+  - gear_part_red_4
+  - gear_part_red_5
 models_to_spawn:
   # Spawn some models on startup
   agv1::kit_tray_1:

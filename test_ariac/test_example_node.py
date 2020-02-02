@@ -7,7 +7,7 @@ import time
 import unittest
 
 from ariac_example import ariac_example
-from osrf_gear.srv import SubmitTray
+from nist_gear.srv import SubmitTray
 from std_msgs.msg import Float32
 import rospy
 import rostest
@@ -42,7 +42,7 @@ class ExampleNodeTester(unittest.TestCase):
         print("checking that an order is received")
         self._test_order_reception()
 
-        # Submit the trays 
+        # Submit the trays
         print("asking agv to deliver a tray")
         self._test_agv1_control()
         time.sleep(5.0)
@@ -114,4 +114,4 @@ if __name__ == '__main__':
     time.sleep(20.0)
     print('OK, starting test.')
 
-    rostest.run('osrf_gear', 'test_example_node', ExampleNodeTester, sys.argv)
+    rostest.run('nist_gear', 'test_example_node', ExampleNodeTester, sys.argv)

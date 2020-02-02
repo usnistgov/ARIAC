@@ -222,4 +222,4 @@ if __name__ == '__main__':
     time.sleep(25.0)
     print('OK, starting test.')
 
-    rostest.run('osrf_gear', 'api_check', Tester, sys.argv)
+    rostest.run('nist_gear', 'api_check', Tester, sys.argv)

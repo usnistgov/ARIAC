@@ -20,7 +20,7 @@ services:
   #####################################
   # Competition control
   - service: /ariac/material_locations
-    type: osrf_gear/GetMaterialLocations
+    type: nist_gear/GetMaterialLocations
 
   - service: /ariac/kit_tray_1/clear_tray
     type: std_srvs/Trigger
@@ -29,4 +29,4 @@ services:
     type: std_srvs/Trigger
 
   - service: /ariac/submit_shipment
-    type: osrf_gear/SubmitShipment
+    type: nist_gear/SubmitShipment

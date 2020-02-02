@@ -4,11 +4,11 @@
     second order are in the shipping box -->
   <!-- if this interruption never occurs (as in this test), the second order
     will be published once the first order is complete -->
-  <node name="ariac_sim" pkg="osrf_gear" type="gear.py"
+  <node name="ariac_sim" pkg="nist_gear" type="gear.py"
         args="-f
               $(find test_ariac)/test_scoring/scoring_base_order_interrupted.yaml
               $(find test_ariac)/test_scoring/scoring_partial_shipment_both_shipments.yaml
-              $(find osrf_gear)/config/sample_user_config.yaml
+              $(find nist_gear)/config/sample_user_config.yaml
               --development-mode --verbose --no-gui"/>
   <test pkg="test_ariac" type="test_scoring_against_expected_score.py"
         test-name="test_scoring_not_interrupted_order"

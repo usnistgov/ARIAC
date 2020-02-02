@@ -8,4 +8,4 @@ drops:
       destination:
         xyz: [-0.2, 0.433, 0.724050]
         rpy: [0, 0, 0.785397]
-      product_type_to_drop: gasket_part
+      product_type_to_drop: gasket_part_red

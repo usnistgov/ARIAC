@@ -37,12 +37,12 @@ topics:
   #####################################
   # Competition control
   - topic: /ariac/orders
-    type: osrf_gear/Order
+    type: nist_gear/Order
     num_publishers: 1
     num_subscribers: 0
 
   - topic: /ariac/population/state
-    type: osrf_gear/PopulationState
+    type: nist_gear/PopulationState
     num_publishers: 1
     num_subscribers: 0
 
@@ -52,17 +52,17 @@ topics:
     num_subscribers: 0
 
   - topic: /ariac/quality_control_sensor_1
-    type: osrf_gear/LogicalCameraImage
+    type: nist_gear/LogicalCameraImage
     num_publishers: 1
     num_subscribers: 0
 
   - topic: /ariac/quality_control_sensor_2
-    type: osrf_gear/LogicalCameraImage
+    type: nist_gear/LogicalCameraImage
     num_publishers: 1
     num_subscribers: 0
 
   - topic: /ariac/conveyor/state
-    type: osrf_gear/ConveyorBeltState
+    type: nist_gear/ConveyorBeltState
     num_publishers: 1
     num_subscribers: 0
 
@@ -77,7 +77,7 @@ topics:
     num_subscribers: 0
 
   - topic: /ariac/trays
-    type: osrf_gear/DetectedShipment
+    type: nist_gear/DetectedShipment
     num_publishers: 1
     num_subscribers: 1
 
@@ -100,7 +100,7 @@ topics:
     num_subscribers: 0
 
   - topic: /ariac/arm1/gripper/state
-    type: osrf_gear/VacuumGripperState
+    type: nist_gear/VacuumGripperState
     num_publishers: 1
     num_subscribers: 0
 
@@ -120,7 +120,7 @@ topics:
     num_subscribers: 0
 
   - topic: /ariac/arm2/gripper/state
-    type: osrf_gear/VacuumGripperState
+    type: nist_gear/VacuumGripperState
     num_publishers: 1
     num_subscribers: 0
 
@@ -128,12 +128,12 @@ topics:
   #####################################
   # Sensors
   - topic: /ariac/break_beam_1
-    type: osrf_gear/Proximity
+    type: nist_gear/Proximity
     num_publishers: 1
     num_subscribers: 0
 
   - topic: /ariac/break_beam_1_change
-    type: osrf_gear/Proximity
+    type: nist_gear/Proximity
     num_publishers: 1
     num_subscribers: 0
 
@@ -148,17 +148,17 @@ topics:
     num_subscribers: 0
 
   - topic: /ariac/logical_camera_1
-    type: osrf_gear/LogicalCameraImage
+    type: nist_gear/LogicalCameraImage
     num_publishers: 1
     num_subscribers: 0
 
   - topic: /ariac/logical_camera_2
-    type: osrf_gear/LogicalCameraImage
+    type: nist_gear/LogicalCameraImage
     num_publishers: 1
     num_subscribers: 0
 
   - topic: /ariac/logical_camera_3
-    type: osrf_gear/LogicalCameraImage
+    type: nist_gear/LogicalCameraImage
     num_publishers: 1
     num_subscribers: 0
 
@@ -178,16 +178,16 @@ services:
     type: std_srvs/Trigger
 
   - service: /ariac/agv1
-    type: osrf_gear/AGVControl
+    type: nist_gear/AGVControl
 
   - service: /ariac/agv2
-    type: osrf_gear/AGVControl
+    type: nist_gear/AGVControl
 
   - service: /ariac/end_competition
     type: std_srvs/Trigger
 
   - service: /ariac/submit_shipment
-    type: osrf_gear/SubmitShipment
+    type: nist_gear/SubmitShipment
 
   - service: /ariac/agv1/animate
     type: std_srvs/Trigger
@@ -196,15 +196,15 @@ services:
     type: std_srvs/Trigger
 
   - service: /ariac/kit_tray_1/get_content
-    type: osrf_gear/DetectShipment
+    type: nist_gear/DetectShipment
 
   - service: /ariac/kit_tray_2/get_content
-    type: osrf_gear/DetectShipment
+    type: nist_gear/DetectShipment
 
   #####################################
   # Arm
   - service: /ariac/arm1/gripper/control
-    type: osrf_gear/VacuumGripperControl
+    type: nist_gear/VacuumGripperControl
 
   - service: /ariac/arm2/gripper/control
-    type: osrf_gear/VacuumGripperControl
+    type: nist_gear/VacuumGripperControl

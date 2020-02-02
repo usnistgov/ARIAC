@@ -19,12 +19,12 @@ During the competition, it is against the rules to control the ARIAC simulation 
 
 |Topic name|Message/Service|Description|Message definition|
 |----------|-----------|------------------|---------------|
-|/ariac/{name}  | Message|  Break beam's output    |  [nist_gear/Proximity.msg](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/msg/Proximity.msg)  |
-|/ariac/{name}_change  | Message|  Break beam's output (output changes only)    |  [osrf_gear/Proximity.msg](https://bitbucket.org/osrf/ariac/raw/master/nist_gear/msg/Proximity.msg)  |
+|/ariac/{name}  | Message|  Break beam's output    |  [nist_gear/Proximity.msg](https://raw.githubusercontent.com/usnistgov/ARIAC/master/nist_gear/msg/Proximity.msg)  |
+|/ariac/{name}_change  | Message|  Break beam's output (output changes only)    |  [nist_gear/Proximity.msg](https://raw.githubusercontent.com/usnistgov/ARIAC/master/nist_gear/msg/Proximity.msg)  |
 |/ariac/{name}  | Message|  Proximity sensor's output    |  [sensor_msgs/Range.msg](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)  |
 |/ariac/{name}  | Message|  Laser profiler's output    |  [sensor_msgs/LaserScan.msg](http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html)  |
 |/ariac/{name}  | Message|  Depth camera's output    |  [sensor_msgs/PointCloud.msg](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html)  |
-|/ariac/{name}  | Message|  Logical camera's output    |  [osrf_gear/LogicalCameraImage.msg](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/msg/LogicalCameraImage.msg)  |
+|/ariac/{name}  | Message|  Logical camera's output    |  [nist_gear/LogicalCameraImage.msg](https://raw.githubusercontent.com/usnistgov/ARIAC/master/nist_gear/msg/LogicalCameraImage.msg)  |
 
 
 Note: The string `{name}` is replaced with the name you give the sensor in the config file. See: https://bitbucket.org/osrf/ariac/wiki/2019/configuration_spec Since the sensor names are unique, it ensures that all sensors publish data to unique topics.

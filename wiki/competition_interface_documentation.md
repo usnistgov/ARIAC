@@ -31,9 +31,9 @@ Note: The string `{name}` is replaced with the name you give the sensor in the c
 
 
 ## TF frames
-TF frames for static key points of the workcell are published by the ARIAC simulation.
-Dynamic TF frames for the arm and faulty products are also published by the simulation.
-Other dynamic TF frames can be accessed through logical cameras.
+* TF frames for static key points of the workcell are published by the ARIAC simulation.
+* Dynamic TF frames for the robot and faulty products are also published by the simulation.
+* Other dynamic TF frames can be accessed through logical cameras.
 
 The following frames are published on the global `/tf` and `/tf_static` topics.
 

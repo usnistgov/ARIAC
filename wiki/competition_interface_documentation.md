@@ -27,7 +27,7 @@ During the competition, it is against the rules to control the ARIAC simulation 
 |/ariac/{name}  | Message|  Logical camera's output    |  [nist_gear/LogicalCameraImage.msg](https://raw.githubusercontent.com/usnistgov/ARIAC/master/nist_gear/msg/LogicalCameraImage.msg)  |
 
 
-Note: The string `{name}` is replaced with the name you give the sensor in the config file. See: https://bitbucket.org/osrf/ariac/wiki/2019/configuration_spec Since the sensor names are unique, it ensures that all sensors publish data to unique topics.
+Note: The string `{name}` is replaced with the name you give the sensor in the config file. See [Configuration of the environment and trials] (configuration_spec.md). Since the sensor names are unique, it ensures that all sensors publish data to unique topics.
 
 
 ## TF frames

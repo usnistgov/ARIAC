@@ -19,8 +19,8 @@ During the competition, it is against the rules to control the ARIAC simulation 
 
 |Topic name|Message/Service|Description|Message definition|
 |----------|-----------|------------------|---------------|
-|/ariac/{name}  | Message|  Break beam's output    |  [osrf_gear/Proximity.msg](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/msg/Proximity.msg)  |
-|/ariac/{name}_change  | Message|  Break beam's output (output changes only)    |  [osrf_gear/Proximity.msg](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/msg/Proximity.msg)  |
+|/ariac/{name}  | Message|  Break beam's output    |  [nist_gear/Proximity.msg](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/msg/Proximity.msg)  |
+|/ariac/{name}_change  | Message|  Break beam's output (output changes only)    |  [osrf_gear/Proximity.msg](https://bitbucket.org/osrf/ariac/raw/master/nist_gear/msg/Proximity.msg)  |
 |/ariac/{name}  | Message|  Proximity sensor's output    |  [sensor_msgs/Range.msg](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)  |
 |/ariac/{name}  | Message|  Laser profiler's output    |  [sensor_msgs/LaserScan.msg](http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html)  |
 |/ariac/{name}  | Message|  Depth camera's output    |  [sensor_msgs/PointCloud.msg](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html)  |
@@ -67,8 +67,8 @@ Additionally arm TF frames without the `arm{N}_` prefix are published on topics 
 |/ariac/arm{N}/arm/command  |   Message    | Command arm to move | [trajectory_msgs/JointTrajectory.msg](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html)
 |/ariac/arm{N}/joint_states  |   Message    | Arm joint states | [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html)
 |/ariac/arm{N}/arm/state  |   Message    | Arm Controller's state | [control_msgs/JointTrajectoryControllerState.msg](http://docs.ros.org/api/control_msgs/html/msg/JointTrajectoryControllerState.html)
-| /ariac/conveyor/state  |   Topic    |  Conveyor belt's state        | [osrf_gear/ConveyorBeltState.msg ](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/msg/ConveyorBeltState.msg)          |
-|/ariac/arm{N}/gripper/control  |   Service    |  Enable/disable gripper's suction| [osrf_gear/VacuumGripperControl.srv](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/srv/VacuumGripperControl.srv)|
+| /ariac/conveyor/state  |   Topic    |  Conveyor belt's state        | [nist_gear/ConveyorBeltState.msg ](https://raw.githubusercontent.com/usnistgov/ARIAC/master/nist_gear/msg/ConveyorBeltState.msg)          |
+|/ariac/arm{N}/gripper/control  |   Service    |  Enable/disable gripper's suction| [nist_gear/VacuumGripperControl.srv](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/srv/VacuumGripperControl.srv)|
 |/ariac/arm{N}/gripper/state  |   Message    | Gripper's state| [osrf_gear/VacuumGripperState.msg](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/msg/VacuumGripperState.msg)|
 
 ## Process management

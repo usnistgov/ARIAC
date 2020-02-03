@@ -1,3 +1,7 @@
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+-------------------------------------------------
+
 # Building GEAR from source
 
 Currently, GEAR can only be built from source. We are working on a debian package for GEAR.
@@ -169,3 +173,7 @@ roslaunch osrf_gear sample_environment.launch
 ```
 
 Note the very first launch may take a while because Gazebo downloads models from the model database the first time it runs.
+
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+-------------------------------------------------

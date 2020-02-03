@@ -8,7 +8,7 @@
 This page explains the details of agility challenges that may be present in trials.
 Each challenge has at least one accompanying sample trial config file provided in the `config` directory that can be used to practice.
 The sample trial config files explain the expected behavior at the top of the file.
-See the [configuration tutorial](https://bitbucket.org/osrf/ariac/wiki/2019/configuration_spec) for how to use these trial config files.
+See the [configuration tutorial](configuration_spec.md) for how to use these trial config files.
 
 ## Faulty products
 

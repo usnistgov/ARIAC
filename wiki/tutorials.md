@@ -4,7 +4,7 @@
 
 # Wiki | Tutorials
 
-## [Installing GEAR](tutorials/building_from_source.md)
+## [Installation](tutorials/building_from_source.md)
 
 This tutorial describes how to install the Gazebo Environment for Agile Robots (GEAR).
 

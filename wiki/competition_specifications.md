@@ -39,7 +39,7 @@ Details of the agility challenges used in these scenarios can be found on the [A
 
 The simulation environment is a representation of an order fulfillment workcell with a gantry robot, a conveyor belt, product bins, product shelves, AGVs, and trays.
 
-  <img src="figures/2020_environment.png" alt="alt text" width="900" class="center">
+  <img src="figures/2020_environment.png" alt="alt text" width="1100" class="center">
 
 
 ## Conveyor Belt

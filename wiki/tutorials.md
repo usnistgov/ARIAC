@@ -22,7 +22,7 @@ This tutorial shows all the available sensors in the competition and explains ho
 
 ## [Controlling the arms with MoveIt](tutorials/moveit_interface.md)
 
-This tutorial shows how to use MoveIt to control the two arms in ARIAC 2019.
+This tutorial shows how to use MoveIt to control the two arms in ARIAC 2020.
 
 -------------------------------------------------
 - Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)

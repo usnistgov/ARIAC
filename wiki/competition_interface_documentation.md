@@ -52,12 +52,12 @@ The following frames are published on the global `/tf` and `/tf_static` topics.
 
 |Topic name|Message/Service|Description|Message definition|
 |----------|-----------|------------------|---------------|
-|/ariac/arm{N}/arm/command  |   Message    | Command arm to move | [trajectory_msgs/JointTrajectory.msg](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html)
-|/ariac/arm{N}/joint_states  |   Message    | Arm joint states | [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html)
-|/ariac/arm{N}/arm/state  |   Message    | Arm Controller's state | [control_msgs/JointTrajectoryControllerState.msg](http://docs.ros.org/api/control_msgs/html/msg/JointTrajectoryControllerState.html)
+|/ariac/gantry/{gantry/left_arm/right_arm}_controller/command  |   Message    | Command arm to move | [trajectory_msgs/JointTrajectory.msg](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html)
+|/ariac/gantry/joint_states  |   Message    | Arm joint states | [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html)
+|/ariac/{gantry/left_arm/right_arm}_controller/state  |   Message    | Arm Controller's state | [control_msgs/JointTrajectoryControllerState.msg](http://docs.ros.org/api/control_msgs/html/msg/JointTrajectoryControllerState.html)
 | /ariac/conveyor/state  |   Topic    |  Conveyor belt's state        | [nist_gear/ConveyorBeltState.msg ](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/ConveyorBeltState.msg)          |
-|/ariac/arm{N}/gripper/control  |   Service    |  Enable/disable gripper's suction| [nist_gear/VacuumGripperControl.srv](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/VacuumGripperControl.srv)|
-|/ariac/arm{N}/gripper/state  |   Message    | Gripper's state| [osrf_gear/VacuumGripperState.msg](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/VacuumGripperState.msg)|
+|/ariac/{left_arm/right_arm}/gripper/control  |   Service    |  Enable/disable gripper's suction| [nist_gear/VacuumGripperControl.srv](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/VacuumGripperControl.srv)|
+|/ariac/{left_arm/right_arm}/gripper/state  |   Message    | Gripper's state| [nist_gear/VacuumGripperState.msg](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/VacuumGripperState.msg)|
 
 ## Process management
 
@@ -67,9 +67,9 @@ The following frames are published on the global `/tf` and `/tf_static` topics.
 |/ariac/start_competition  |Service        |Start the competition|  [std_srvs/Trigger.srv](http://docs.ros.org/api/std_srvs/html/srv/Trigger.html)       |
 |/ariac/end_competition  |Service        |End the competition early|  [std_srvs/Trigger.srv](http://docs.ros.org/api/std_srvs/html/srv/Trigger.html)       |
 |/ariac/competition_state  |Message        |State of the competition (`init`, `ready`, `go`, `end_game`, `done`)|  [std_msgs/String.msg](http://docs.ros.org/api/std_msgs/html/msg/String.html)       |
-|/ariac/orders  |   Message     |New order to be completed       |  [osrf_gear/Order.msg](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/msg/Order.msg)|
-|/ariac/quality_control_sensor_{N}  | Message|  Output of quality control sensor {N} (N=1,2), model names anonymized    |  [osrf_gear/LogicalCameraImage.msg](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/msg/LogicalCameraImage.msg)  |
-|/ariac/agv{N}  |Service        |Notify AGV{N} that the kit is ready (N=1,2)|  [osrf_gear/AGVControl.srv](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/AGVControl.srv)       |
+|/ariac/orders  |   Message     |New order to be completed       |  [nist_gear/Order.msg](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/msg/Order.msg)|
+|/ariac/quality_control_sensor_{N}  | Message|  Output of quality control sensor {N} (N=1,2), model names anonymized    |  [nist_gear/LogicalCameraImage.msg](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/msg/LogicalCameraImage.msg)  |
+|/ariac/agv{N}  |Service        |Notify AGV{N} that the kit is ready (N=1,2)|  [nist_gear/AGVControl.srv](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/AGVControl.srv)       |
 |/ariac/agv{N}/state  |Message        |State of AGV {N} (N=1,2)|  [std_msgs/String.msg](http://docs.ros.org/api/std_msgs/html/msg/String.html)       |
 
 ## Cheats
@@ -80,10 +80,10 @@ These are only provided for debugging/development purposes and their use is not 
 | Topic name | Message/Service | Description | Message definition |
 | ---------- |----------- | ------------------ | --------------- |
 | /ariac/current_score  |   Topic    |  Current completion score        |   [std_msgs/Float32.msg](http://docs.ros.org/api/std_msgs/html/msg/Float32.html)      |
-| /ariac/trays  |   Message    | State of the kit being built on each tray        | [osrf_gear/TrayContents.msg ](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/msg/TrayContents.msg)          |
-|/ariac/material_locations |Service        |Query storage locations for a material (e.g. disk_part, pulley_part)|  [osrf_gear/GetMaterialLocations.srv](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/GetMaterialLocations.srv)       |
-| /ariac/conveyor/control  |   Service    |  Modify power of the conveyor belt        | [osrf_gear/ConveyorBeltControl.srv ](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/ConveyorBeltControl.srv)          |
-| /ariac/submit_shipment  |   Service    |  Submit a tray for evaluation without the AGV moving        | [osrf_gear/SubmitShipment.srv ](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/SubmitShipment.srv)          |
+| /ariac/trays  |   Message    | State of the kit being built on each tray        | [nist_gear/TrayContents.msg ](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/msg/TrayContents.msg)          |
+|/ariac/material_locations |Service        |Query storage locations for a material (e.g. disk_part, pulley_part)|  [nist_gear/GetMaterialLocations.srv](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/GetMaterialLocations.srv)       |
+| /ariac/conveyor/control  |   Service    |  Modify power of the conveyor belt        | [nist_gear/ConveyorBeltControl.srv ](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/ConveyorBeltControl.srv)          |
+| /ariac/submit_shipment  |   Service    |  Submit a tray for evaluation without the AGV moving        | [nist_gear/SubmitShipment.srv ](https://github.com/usnistgov/ARIAC/tree/master/nist_gear/srv/SubmitShipment.srv)          |
 | /ariac/kit_tray_{N}/clear_tray  |   Service    |  Clear the contents of tray {N} without the AGV moving        | [std_srvs/Trigger.srv ](http://docs.ros.org/api/std_srvs/html/srv/Trigger.html)          |
 
 -------------------------------------------------

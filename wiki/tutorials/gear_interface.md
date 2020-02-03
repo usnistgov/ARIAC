@@ -91,12 +91,12 @@ rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 
 ## Faulty Products ##
 * There are quality control sensors above each AGV that publish the pose of faulty parts that they see on the tray. The quality control sensors:
- * have an equivalent interface to logical camera sensors
- * publish tf frames of faulty parts
- * are positioned above each AGV in pre-defined locations
- * users cannot specify the locations of these sensors
- * report faulty parts only once they are in the tray of an AGV
- * do not report any information about non-faulty parts
+  * have an equivalent interface to logical camera sensors
+  * publish tf frames of faulty parts
+  * are positioned above each AGV in pre-defined locations
+  * users cannot specify the locations of these sensors
+  * report faulty parts only once they are in the tray of an AGV
+  * do not report any information about non-faulty parts
 
 * As an example (this command will not work during the qualifier or finals), spawn a known faulty part on AGV 1's tray:
 

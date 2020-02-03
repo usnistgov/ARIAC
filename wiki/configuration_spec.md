@@ -42,11 +42,11 @@ When testing your own system you will replace `sample_user_config.yaml` with the
 * Each sensor should have a **unique** name followed by the type of sensor and the sensor's position and orientation.
 
 * Available sensor types include:
- 1. break_beam
- 1. proximity
- 1. logical_camera
- 1. laser_profiler
- 1. depth_camera
+  1. break_beam
+  1. proximity
+  1. logical_camera
+  1. laser_profiler
+  1. depth_camera
 
 * A sensor's position and orientation is specified in global coordinates using and XYZ vector and Euler angles (roll, pitch, yaw).
 

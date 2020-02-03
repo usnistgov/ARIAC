@@ -9,7 +9,13 @@ GEAR is the software used by teams participating in the Agile Robotics for Indus
 1. [Competition Specifications](competition_specifications.md)
     * The specifications of the ARIAC competition.
         * Competition scenarios.
-        * Sensors available.
+        * Environment.
+        * Robot.
+        * Sensors.
+        * Order.
+        * Faulty products.
+        * Scoring.
+        * Competition process.
     * [Scoring Metrics](scoring.md)
     * [Agility Challenges](agility_challenges.md)
     * [Product and Coordinate Frame Specifications](frame_specifications.md)

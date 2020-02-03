@@ -1,4 +1,8 @@
-# Configuration of the environment and trials
+-------------------------------------------------
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
+-------------------------------------------------
+
+# Wiki | Configuration of the environment and trials
 This page describes how to configure the simulated workcell environment by selecting and placing sensors.
 Additionally, how to configure the behavior/challenges of trials is described (only available for development, not available during the competition).
 
@@ -130,3 +134,7 @@ For users experiencing low real-time factors, reducing the number of products th
 
 - If you are focusing on grasping products from the bins, you can set `belt_population_cycles` to `0` to avoid spawning parts on the conveyor belt.
 - If you are focusing on grasping products from a particular bin, you can comment out the other bins listed in `models_over_bins` to temporarily not spawn them.
+
+-------------------------------------------------
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
+-------------------------------------------------

@@ -1,3 +1,8 @@
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+-------------------------------------------------
+
+
 # Overview #
 
 This tutorial covers creating a [ROS Package](http://wiki.ros.org/Packages) and [Node](http://wiki.ros.org/ROS/Tutorials/UnderstandingNodes) to interface with the competition.

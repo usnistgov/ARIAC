@@ -246,7 +246,7 @@ The first argument is the name of the topic, `/ariac/orders`.
 The second argument is the queue size, which is how many messages to save if your callback is slow to handle them.
 The last two arguments say a function `order_callback()` on an instance of `MyCompetitionClass` stored in `comp_class` should be called every time a new order is received.
 
-## 2.4. Starting the Competition ##
+### 2.4. Starting the Competition ###
 
 You may have noticed the main function called `start_competition()`.
 

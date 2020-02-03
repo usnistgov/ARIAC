@@ -15,42 +15,42 @@ Both of these files are passed to an invocation of `gear.py` which parses the da
 The general format of the invocation is:
 
 ```
-rosrun osrf_gear gear.py -f <trial_config_file> <competitor_config_file>
+rosrun nist_gear gear.py -f <trial_config_file> <competitor_config_file>
 ```
 
 As an example:
 
 ```
-rosrun osrf_gear gear.py -f \
-  `catkin_find --share --first-only osrf_gear`/config/sample.yaml \
-  `catkin_find --share --first-only osrf_gear`/config/sample_user_config.yaml
+rosrun nist_gear gear.py -f \
+  `catkin_find --share --first-only nist_gear`/config/sample.yaml \
+  `catkin_find --share --first-only nist_gear`/config/sample_user_config.yaml
 ```
 
 When testing your own system you will replace `sample_user_config.yaml` with the path to your own config file.
 
 # Competitor configuration file
 
-As a competitor, you are allowed to select the quantity, type, and location of sensors.
-Sensors can only be placed in static locations, they cannot be attached to the arm or otherwise be moved around the environment.
+* As a competitor, you are allowed to select the quantity, type, and location of sensors.
+* Sensors can only be placed in static locations, they cannot be attached to the arm or otherwise be moved around the environment.
 
-Your choices must be written using the [YAML](http://yaml.org/) syntax in a configuration file.
-Here is an [example configuration file](https://bitbucket.org/osrf/ariac/raw/master/ariac_example/config/sample_gear_conf.yaml).
+* Your choices must be written using the [YAML](http://yaml.org/) syntax in a configuration file.
+* Here is an [example configuration file](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample_user_config.yaml).
 
 ## How to add sensors
 
-The configuration YAML file contains a list of sensors denoted by the ``sensors:`` tag. Each sensor should have a **unique** name followed by the type of sensor and the sensor's position and orientation.
+* The configuration YAML file contains a list of sensors denoted by the ``sensors:`` tag. 
+* Each sensor should have a **unique** name followed by the type of sensor and the sensor's position and orientation.
 
-Available sensor types include:
+* Available sensor types include:
+ 1. break_beam
+ 1. proximity
+ 1. logical_camera
+ 1. laser_profiler
+ 1. depth_camera
 
-1. break_beam
-1. proximity
-1. logical_camera
-1. laser_profiler
-1. depth_camera
+* A sensor's position and orientation is specified in global coordinates using and XYZ vector and Euler angles (roll, pitch, yaw).
 
-A sensor's position and orientation is specified in global coordinates using and XYZ vector and Euler angles (roll, pitch, yaw).
-
-The following is the specification of one `break_beam` sensor
+* The following is the specification of one `break_beam` sensor
 
 
 ```
@@ -63,7 +63,7 @@ sensors:
       rpy: [0, 0, 'pi']
 ```
 
-The following is the specification of both a `break_beam` and `logical_camera` sensor.
+* The following is the specification of both a `break_beam` and `logical_camera` sensor.
 
 ```
 #!yaml
@@ -95,12 +95,12 @@ A number of example trials are provided with the ARIAC software in the `config` 
 You can find the location of the `config` directory by running:
 
 ```
-echo `catkin_find --first-only --share osrf_gear`/config
+echo `catkin_find --first-only --share nist_gear`/config
 ```
 
 Each config file has a description of its behavior at the top of the file, e.g.:
 ```
-$ head `catkin_find --first-only --share osrf_gear`/config/sample_interruption1.yaml
+$ head `catkin_find --first-only --share nist_gear`/config/sample_interruption1.yaml
 # In this scenario:
 # - There are two orders of one shipment each:
 #   - The second will interrupt the first at a time that is convenient for the second order.
@@ -125,7 +125,7 @@ Various settings can be specified, including:
 
 There are also some features that have been specifically implemented for use in development, like spawning models in various reference frames.
 
-Here is a [sample development trial configuration file](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/config/example_custom_config.yaml), which explains how you can modify all of the aforementioned settings.
+Here is a [sample development trial configuration file](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/example_custom_config.yaml), which explains how you can modify all of the aforementioned settings.
 
 ## Improving real-time factor during development
 

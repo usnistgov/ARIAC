@@ -3,14 +3,14 @@
 -------------------------------------------------
 
 
-# Overview #
+# Wiki | Tutorials | Hello World #
 
 This tutorial covers creating a [ROS Package](http://wiki.ros.org/Packages) and [Node](http://wiki.ros.org/ROS/Tutorials/UnderstandingNodes) to interface with the competition.
 
 If you're new to ROS then follow the [ROS Tutorials](http://wiki.ros.org/ROS/Tutorials) first.
 The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/CreatingPackage) will be especially helpful. Afterwards, it is recommended to complete the [GEAR Interface Tutorial](gear_interface.md) before trying this one.
 
-# Creating a Competition Package #
+## 1. Creating a Competition Package ##
 
 Teams will need at least a ROS package and Node to compete.
 This is where you will put code to start the competition, receive orders, receive sensor data, and control the arms.
@@ -18,7 +18,7 @@ This is where you will put code to start the competition, receive orders, receiv
 See [this ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) for example of a package and node that interacts with ARIAC.
 This tutorial will use it as an example.
 
-## Setting up a Catkin Workspace ##
+### 1.1. Setting up a Catkin Workspace ###
 
 First set up a [Catkin workspace](http://wiki.ros.org/catkin/workspaces) in which to build your package.
 A workspace is just a set of folders with a conventional structure.
@@ -38,7 +38,7 @@ catkin_init_workspace
 
 The workspace is now ready to build packages.
 
-## Creating a New Package Using the Template ##
+### 1.2. Creating a New Package Using the Template ###
 
 [This ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) comes with build system files, a sample configuration, an example C++ node, and an example python node.
 
@@ -58,7 +58,7 @@ cd ~/helloworld_ws/src/ariac_example
 
 All the files in your package need to go into this folder.
 
-## Writing the package.xml ##
+### 1.3. Writing the package.xml ###
 
 Create a file called `package.xml` in the package folder
 
@@ -104,7 +104,7 @@ You should change a few things:
 * Change the license
 * add any additional dependencies your code will need
 
-## Writing the CMakeLists.txt ##
+### 1.4. Writing the CMakeLists.txt ###
 
 ROS packages use CMake, so next create a CMake build file.
 
@@ -122,7 +122,7 @@ You do not need to comment it out if you copied the whole `ariac_example` folder
 You should change the project name from `ariac_example` to your package name.
 For more information, see the [ROS documentation on CMakeLists.txt](http://wiki.ros.org/catkin/CMakeLists.txt).
 
-## ARIAC Competition Configuration ##
+### 1.5. ARIAC Competition Configuration ###
 
 You will need a competition config file to tell ARIAC what sensors you will be using.
 
@@ -140,7 +140,7 @@ This is just an example.
 When you write your own config file, you will want more sensors to see all of the bins.
 After this tutorial, [see this page](../configuration_spec.md) for more information about writing your config file.
 
-## Creating a C++ Node to Interface with the Competition ##
+## 2. Creating a C++ Node to Interface with the Competition ##
 
 You will need a ROS node to interface with the competition.
 Popular languages for ROS nodes are C++ and Python.
@@ -155,7 +155,7 @@ touch ~/helloworld_ws/src/ariac_example/src/ariac_example_node.cpp
 
 Copy [the content of this file](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/src/ariac_example_node.cpp) into it.
 
-### C++ Includes ###
+### 2.1. C++ Includes ###
 
 The first couple lines are including standard C++ libraries.
 These allow using some built in functions and types like `std::count_if` and `std::vector`.
@@ -191,7 +191,7 @@ You must include a file for each ROS message or service type you use in your pro
 For example, to use the ROS message [sensor_msgs/LaserScan](http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html) you must include the file called `sensor_msgs/LaserScan.h`.
 That gives you access to a C++ type `sensor_msgs::LaserScan` which you use in your code.
 
-### C++ Main Function ###
+### 2.2. C++ Main Function ###
 
 The `main()` function is the entry point for your program.
 It has the following structure:
@@ -228,7 +228,7 @@ The largest section is the creation of a bunch of subscribers and callbacks; the
 Finally, the competition is started and control is given to ROS using `ros::spin()`.
 Inside this function ROS will wait for ROS messages and call callbacks.
 
-#### C++ Creating Publishers and Subscribers ####
+### 2.3. C++ Creating Publishers and Subscribers ###
 
 The largest section of the main function is where publishers and subscribers are created.
 See [the tutorial about C++ ROS publishers and subscribers](http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28c%2B%2B%29) for more information.
@@ -246,7 +246,7 @@ The first argument is the name of the topic, `/ariac/orders`.
 The second argument is the queue size, which is how many messages to save if your callback is slow to handle them.
 The last two arguments say a function `order_callback()` on an instance of `MyCompetitionClass` stored in `comp_class` should be called every time a new order is received.
 
-#### Starting the Competition ####
+### 2.4. Starting the Competition ###
 
 You may have noticed the main function called `start_competition()`.
 
@@ -274,14 +274,14 @@ void start_competition(ros::NodeHandle & node) {
 }
 ```
 
-This function starts the competition by calling the service `/ariac/start_competition`.
-This is part of the [ARIAC competition interface](../competition_interface_documentation.md), and it must be called when your code is ready to begin a trial.
-This function waits for the service to become available first.
-It's important to do this because the service server is in another process, and may not be ready yet.
-Next, `call()` blocks until a response is received.
-The rest of the code checks if the competition was successfully started.
+* This function starts the competition by calling the service `/ariac/start_competition`.
+* This is part of the [ARIAC competition interface](../competition_interface_documentation.md), and it must be called when your code is ready to begin a trial.
+* This function waits for the service to become available first.
+* It's important to do this because the service server is in another process, and may not be ready yet.
+* Next, `call()` blocks until a response is received.
+* The rest of the code checks if the competition was successfully started.
 
-## Trying the Example ##
+## 3. Trying the Example ##
 
 Before you can run the example, you need to build it.
 

@@ -2,7 +2,7 @@
 - Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
 -------------------------------------------------
 
-# Overview #
+# Wiki | Tutorials | Interacting with GEAR #
 The purpose of this tutorial is to introduce you to the [competition interface](../competition_interface_documentation.md) that is used to interact with GEAR, the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC).
 
 <!--![ariac_overview_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4277201198-ariac_overview_labeled.png)-->
@@ -91,12 +91,12 @@ rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 
 ## Faulty Products ##
 * There are quality control sensors above each AGV that publish the pose of faulty parts that they see on the tray. The quality control sensors:
- * have an equivalent interface to logical camera sensors
- * publish tf frames of faulty parts
- * are positioned above each AGV in pre-defined locations
- * users cannot specify the locations of these sensors
- * report faulty parts only once they are in the tray of an AGV
- * do not report any information about non-faulty parts
+  * have an equivalent interface to logical camera sensors
+  * publish tf frames of faulty parts
+  * are positioned above each AGV in pre-defined locations
+  * users cannot specify the locations of these sensors
+  * report faulty parts only once they are in the tray of an AGV
+  * do not report any information about non-faulty parts
 
 * As an example (this command will not work during the qualifier or finals), spawn a known faulty part on AGV 1's tray:
 

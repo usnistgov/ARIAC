@@ -2,17 +2,17 @@
 - Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
 -------------------------------------------------
 
-# Overview #
+# Wiki | Tutorials | Sensor Interface #
 
 The purpose of this tutorial is to introduce you to the sensors available to you in the Agile Robotics for Industrial Automation Competition (ARIAC) and how to interface with them from the command-line.
 
 <img src="../figures/sensors.png" alt="alt text" width="900" class="center">
 
-# Prerequisites #
+# 1. Prerequisites #
 
 You should have already completed the [GEAR interface tutorial](./gear_interface.md).
 
-# Reading Sensor Data #
+# 2. Reading Sensor Data #
 
 As described in the competition specifications, there are sensors available for you to place in the environment. How you can select which sensors to use is covered in the competition configuration specifications.
 

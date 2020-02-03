@@ -1,3 +1,4 @@
+-------------------------------------------------
 - Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 
@@ -174,6 +175,7 @@ There are no time limits for individual orders, but each trial has a time limit.
 This information is not broadcast by the ARIAC server.
 For the Finals/Qualifiers, the time limit will be set as a fixed value for all trials, which teams will be advised of in advance.
 
+-------------------------------------------------
 - Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 

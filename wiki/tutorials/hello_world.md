@@ -316,3 +316,7 @@ rosrun ariac_example ariac_example_node
 The example prints information about the competition to the console, like sensor data being received.
 It also commands the arms to move to the zero position.
 Be sure to read through all the example code to make sure you understand it.
+
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+-------------------------------------------------

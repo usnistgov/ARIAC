@@ -82,7 +82,8 @@ shelf_layout:
    ``` 
    
 ## 2.4. Parts
-* ARIAC 2020 is using the same part types found in ARIAC 2019. However, each part type has 3 colors (see figure below).
+* ARIAC 2020 is using the same part types found in ARIAC 2019. 
+* In ARIAC 2020, each part type comes in 3 colors (see figure below).
 
 
   <img src="figures/parts.png" alt="alt text" width="600" class="center">
@@ -137,9 +138,10 @@ view.
 # 5. Order #
 
 - An order is an instruction containing kits for the robot system to complete.
-- Each order will specify the list of products to be put in the shipment, including the type and position/orientation of each product.
+- Each order will specify the list of products to be put in the shipment, including the type, color, and position/orientation of each product.
 - An order may require being delivered to a particular AGV.
 - For more details see the [product specification](frame_specifications.md) page.
+
 
 # 6. Faulty products #
 

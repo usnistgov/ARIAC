@@ -33,10 +33,8 @@ There are two ROS topics that show the output of the sensor:
 * `/ariac/{sensor_name}`
 * `/ariac/{sensor_name}_change`
 
-```
-+ Change this once source is pushed
-```
-An [osrf_gear/Proximity](https://bitbucket.org/osrf/ariac/src/master/osrf_gear/msg/Proximity.msg) message is periodically published on topic `/ariac/{sensor_name}`.
+
+An [osrf_gear/Proximity](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/Proximity.msg) message is periodically published on topic `/ariac/{sensor_name}`.
 Run this command to see the message on the command line:
 
 ```bash
@@ -104,7 +102,7 @@ The output of a depth camera can be visualized in RViz using the **PointCloud** 
 
 This is a simulated camera with a built-in object classification and localization system.
 The sensor reports the position and orientation of the camera in the world, as well as a collection of the objects detected within its frustum.
-The camera reports an object's type and pose from the camera reference frame as an [osrf_gear/LogicalCameraImage](https://bitbucket.org/osrf/ariac/src/master/osrf_gear/msg/LogicalCameraImage.msg) message.
+The camera reports an object's type and pose from the camera reference frame as an [osrf_gear/LogicalCameraImage](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/LogicalCameraImage.msg) message.
 In the sample environment there is a logical camera above one of the bins.
 Run the following command to see the output of the logical camera:
 

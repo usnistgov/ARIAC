@@ -77,33 +77,29 @@ If you are planning a submission and do not yet have a secure workspace, you mus
 # Re-run policy
 
 **Competitors will have one and only one chance to have their system automatically evaluated.**
-If your system does not install correctly, you will score 0 points.
-If your system does not run correctly, crashes/freezes during trials, or does not score as expected for any other reason, **you will not have a second chance**.
+* If your system does not install correctly, you will score 0 points.
+* If your system does not run correctly, crashes/freezes during trials, or does not score as expected for any other reason, **you will not have a second chance**.
+
 The score that your system obtains will be the score that will be used in the rankings.
 For that reason it is imperative that teams thoroughly test their submission in the mock automated evaluation setup.
 
-The only circumstance in which re-runs will be warranted are if a bug in the simulation impacts the competitor's performance in a trial.
-This includes reported issues like #160 and potentially others at the discretion of the competition controllers.
+* The only circumstance in which re-runs will be warranted are if a bug in the simulation impacts the competitor's performance in a trial.
+* This includes reported issues at the discretion of the competition controllers.
 
 # Important notes
-Teams are advised to review the [update policy](update_policy.md) and pay attention to the [updates page](updates.md) for upcoming and released changes to the software, rules and scoring metrics.
+Teams are advised to review the [update policy](update_policy.md) and pay attention to the [updates](updates.md) page for upcoming and released changes to the software, rules and scoring metrics.
 ```diff
 - needs to be changed
 ```
 Notifications of when changes to the Updates page are made can be subscribed to via [this Discourse.ros.org thread.](https://discourse.ros.org/t/ariac-code-release-updates/4009/18)
 
 # Where to go for help
-```diff
-- needs to be changed
-```
 We strive to provide responsive and high-quality support for our software.
 Please use [the GEAR/ARIAC issue tracker](https://bitbucket.org/osrf/ariac/issues?status=new&status=open) for submitting and following bugs, feature requests and enhancements.
 
 If you have any questions about competition specifics that you would like to ask in private, please contact **ariac@nist.gov**.
-```diff
-- needs to be changed
-```
-You can use the [GEAR/ARIAC support forum](https://discourse.ros.org/c/ariac-users) for public discussions about the competition in which other competition participants may participate.
+
+[comment]: # (You can use the [GEAR/ARIAC support forum](https://discourse.ros.org/c/ariac-users) for public discussions about the competition in which other competition participants may participate.)
 
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)

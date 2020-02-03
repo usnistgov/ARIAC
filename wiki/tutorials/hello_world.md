@@ -10,7 +10,7 @@ This tutorial covers creating a [ROS Package](http://wiki.ros.org/Packages) and 
 If you're new to ROS then follow the [ROS Tutorials](http://wiki.ros.org/ROS/Tutorials) first.
 The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/CreatingPackage) will be especially helpful. Afterwards, it is recommended to complete the [GEAR Interface Tutorial](gear_interface.md) before trying this one.
 
-# Creating a Competition Package #
+## Creating a Competition Package ##
 
 Teams will need at least a ROS package and Node to compete.
 This is where you will put code to start the competition, receive orders, receive sensor data, and control the arms.
@@ -18,7 +18,7 @@ This is where you will put code to start the competition, receive orders, receiv
 See [this ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) for example of a package and node that interacts with ARIAC.
 This tutorial will use it as an example.
 
-## Setting up a Catkin Workspace ##
+### Setting up a Catkin Workspace ###
 
 First set up a [Catkin workspace](http://wiki.ros.org/catkin/workspaces) in which to build your package.
 A workspace is just a set of folders with a conventional structure.
@@ -38,7 +38,7 @@ catkin_init_workspace
 
 The workspace is now ready to build packages.
 
-## Creating a New Package Using the Template ##
+### Creating a New Package Using the Template ###
 
 [This ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) comes with build system files, a sample configuration, an example C++ node, and an example python node.
 
@@ -58,7 +58,7 @@ cd ~/helloworld_ws/src/ariac_example
 
 All the files in your package need to go into this folder.
 
-## Writing the package.xml ##
+### Writing the package.xml ###
 
 Create a file called `package.xml` in the package folder
 
@@ -104,7 +104,7 @@ You should change a few things:
 * Change the license
 * add any additional dependencies your code will need
 
-## Writing the CMakeLists.txt ##
+### Writing the CMakeLists.txt ###
 
 ROS packages use CMake, so next create a CMake build file.
 
@@ -122,7 +122,7 @@ You do not need to comment it out if you copied the whole `ariac_example` folder
 You should change the project name from `ariac_example` to your package name.
 For more information, see the [ROS documentation on CMakeLists.txt](http://wiki.ros.org/catkin/CMakeLists.txt).
 
-## ARIAC Competition Configuration ##
+### ARIAC Competition Configuration ###
 
 You will need a competition config file to tell ARIAC what sensors you will be using.
 
@@ -155,7 +155,7 @@ touch ~/helloworld_ws/src/ariac_example/src/ariac_example_node.cpp
 
 Copy [the content of this file](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/src/ariac_example_node.cpp) into it.
 
-### C++ Includes ###
+#### C++ Includes ####
 
 The first couple lines are including standard C++ libraries.
 These allow using some built in functions and types like `std::count_if` and `std::vector`.

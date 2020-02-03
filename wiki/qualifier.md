@@ -1,6 +1,7 @@
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
+- Wiki | [Home](../../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
+
 # Wiki | Qualifiers
 - There is a single qualification round for ARIAC 2020, with top teams being chosen to participate in the Finals.
 - Qualifier submissions will be evaluated following the [automated evaluation procedure](automated_evaluation.md).
@@ -99,5 +100,6 @@ If you have any questions about competition specifics that you would like to ask
 <!---You can use the [GEAR/ARIAC support forum](https://discourse.ros.org/c/ariac-users) for public discussions about the competition in which other competition participants may participate.-->
 
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
+- Wiki | [Home](../../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
+

@@ -87,7 +87,7 @@ Enabling the sensor visualization may be useful while you are decided where to p
 You can enable sensor visualization by adding `--visualize-sensor-views` to the `gear.py` invocation.
 
 ## Reading sensor data
-This is covered by the [sensor interface tutorial](./tutorials/sensor_interface).
+This is covered by the [sensor interface tutorial](tutorials/sensor_interface.md).
 
 # Competition configuration file
 Each trial of the competition is specified using a separate configuration file.
@@ -109,7 +109,7 @@ $ head `catkin_find --first-only --share nist_gear`/config/sample_interruption1.
 ...
 ```
 
-These config files can be used to practice with the [various agility challenges](./agility_challenges).
+These config files can be used to practice with the [various agility challenges](agility_challenges.md).
 
 ## Custom competition configuration files
 During the competition, competitors will not have control over the settings in this configuration file. However, you may find that modifying the settings assists you during system development.

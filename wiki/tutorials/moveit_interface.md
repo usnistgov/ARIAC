@@ -63,7 +63,7 @@ To launch RViz with this plugin, we can use the following short launch file:
 
 This should bring up a visualization like the following, which shows the robot state, an "interactive marker" for moving the end effector around, and the goal position for the robot in orange. You may have to [move the RViz camera](wiki.ros.org/rviz/UserGuide#The_different_camera_types) to see the arm.
 
-![ariac_2019_moveit_labeled.png](https://bitbucket.org/repo/pB4bBb/images/14031832-ariac_2019_moveit_labeled.png)
+![ariac_2019_moveit_labeled.png](../figures/moveit_planning.png)
 
 Select the `Planning` tab in the Motion Planning plugin. In this tab, you can select the planning group used by MoveIt,
 the goal state of the robot, as well as other planning parameters.

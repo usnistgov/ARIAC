@@ -29,7 +29,7 @@ Sample trial: `sample_flipped.yaml`
 
 An order contains products that must be flipped.
 Only the `pulley_part` will ever be requested to be flipped.
-See [this page](https://bitbucket.org/osrf/ariac/wiki/2019/frame_specifications#markdown-header-flipped-products) for details on working with flipped parts.
+See [this page](frame_specifications.md#markdown-header-flipped-products) for details on working with flipped parts.
 
 ## In-process order update
 

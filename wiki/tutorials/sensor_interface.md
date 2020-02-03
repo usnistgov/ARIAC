@@ -19,7 +19,7 @@ As described in the competition specifications, there are sensors available for 
 To start with, launch ARIAC with a sample workcell environment configuration that contains an arm and some sensors in various locations:
 
 ```bash
-roslaunch osrf_gear sample_environment.launch
+roslaunch nist_gear sample_environment.launch
 ```
 
 ## Break Beam Sensor ##

@@ -1,5 +1,5 @@
-- Back to [Wiki|Home](../README.md)
-- Back to [Wiki|Tutorials](../tutorials.md)
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
 -------------------------------------------------
 
 # Overview #
@@ -141,3 +141,7 @@ See the official [MoveIt tutorials](https://ros-planning.github.io/moveit_tutori
 
 As previously stated, this tutorial is provided as a starting point.
 The ARIAC competition support team will not provide technical support for using MoveIt.
+
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+-------------------------------------------------

@@ -10,45 +10,46 @@
 # Overview #
 The purpose of this tutorial is to introduce you to the [competition interface](../competition_interface_documentation.md) that is used to interact with GEAR, the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC).
 
-![ariac_overview_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4277201198-ariac_overview_labeled.png)
+<!--![ariac_overview_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4277201198-ariac_overview_labeled.png)-->
 
 # Running GEAR #
 
-After building GEAR from SOURCE, you will have to source the setup file from your catkin workspace.
+* After building GEAR from SOURCE, you will have to source the setup file from your catkin workspace.
 
 ```bash
 # Path is where you built and installed gear
-source ~/ariac_ws/install/setup.bash
+source ~/ariac_ws/devel/setup.bash
 ```
+<!---source ~/ariac_ws/devel/setup.bash-->
 
-To launch GEAR with a sample work cell that has some sensors and parts in various locations, run:
+* To launch GEAR with a sample work cell that has some sensors and parts in various locations, run:
 
 ```bash 
-roslaunch osrf_gear sample_environment.launch
+roslaunch nist_gear sample_environment.launch
 ```
 
 # Starting and Stopping the Competition #
 
 ## Starting ##
 
-When gear is started, various competition elements will be in an inactive state.
-A service must be called to activate these components.
-Run the following command to manually start the competition:
+* When gear is started, various competition elements will be in an inactive state.
+* A service must be called to activate these components.
+* Run the following command to manually start the competition:
 
 ```bash
 rosservice call /ariac/start_competition
 ```
 
 ## Trial End ##
-When all orders have been filled, or the time limit for the trial has been exhausted, the competition state published on `/ariac/competition_state` will change to `done`. 
+* When all orders have been filled, or the time limit for the trial has been exhausted, the competition state published on `/ariac/competition_state` will change to `done`. 
 
-To check the competition state, run:
+* To check the competition state, run:
 
 ```bash
 rostopic echo /ariac/competition_state -n 1
 ```
 
-If you wish to end the trial early (e.g. you detected a fault in your system and wish to terminate), run:
+* If you wish to end the trial early (e.g. you detected a fault in your system and wish to terminate), run:
 
 ```bash
 rosservice call /ariac/end_competition
@@ -56,69 +57,67 @@ rosservice call /ariac/end_competition
 
 # Fulfilling Orders #
 
-Orders for kits will be published during the competitions.
-An order is composed of products to place onto a tray.
-Teams earn points by completing orders quickly.
+* Orders for kits will be published during the competitions.
+* An order is composed of products to place onto a tray.
+* Teams earn points by completing orders quickly.
 
 ## Receiving Orders ##
 
-Teams must subscribe to this topic to receive the initial order, as well as any future order updates.
-To see the last order that was published, run:
+* Teams must subscribe to this topic to receive the initial order, as well as any future order updates.
+* To see the last order that was published, run:
 
 ```bash
 rostopic echo /ariac/orders
 ```
 
-Note the competition must be started before an order will be published.
-You must add your sensors to detect and classify products in the storage bins or conveyor belt.
-
-The most recently received order is the highest priority.
+* Note the competition must be started before an order will be published.
+* You must add your sensors to detect and classify products in the storage bins or conveyor belt.
+* The most recently received order is the highest priority.
 
 ## Delivering Orders ##
 
-There are two AGVs carrying trays that kits can be assembled on.
-When a kit has been completed, the AGV must be commanded to deliver the kit so it can be scored.
+* There are two AGVs carrying trays that kits can be assembled on.
+* When a kit has been completed, the AGV must be commanded to deliver the kit so it can be scored.
 
-The service `/ariac/agv[N}` where N is `1` or `2` is used for this purpose.
-The type of kit that is on the tray must be specified.
-This is included in the original order.
-Call this service to submit a tray for evaluation:
+* The service `/ariac/agv[N}` where N is `1` or `2` is used for this purpose.
+* The type of kit that is on the tray must be specified.
+* This is included in the original order.
+* Call this service to submit a tray for evaluation:
 
 ```bash
 rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 ```
 
-If multiple trays need to be submitted, the AGV will return an empty tray after the submitted tray has been evaluated. 
+* If multiple trays need to be submitted, the AGV will return an empty tray after the submitted tray has been evaluated. 
 
-During the final competition the order may indicate that it must be delivered to a particular AGV.
-Orders delivered on the wrong AGV will be counted as a zero score.
+* During the final competition the order may indicate that it must be delivered to a particular AGV.
+* Orders delivered on the wrong AGV will be counted as a zero score.
 
 
 ## Faulty Products ##
-There are quality control sensors above each AGV that publish the pose of faulty parts that they see on the tray. The quality control sensors:
+* There are quality control sensors above each AGV that publish the pose of faulty parts that they see on the tray. The quality control sensors:
+ * have an equivalent interface to logical camera sensors
+ * publish tf frames of faulty parts
+ * are positioned above each AGV in pre-defined locations
+ * users cannot specify the locations of these sensors
+ * report faulty parts only once they are in the tray of an AGV
+ * do not report any information about non-faulty parts
 
-* have an equivalent interface to logical camera sensors
-* publish tf frames of faulty parts
-* are positioned above each AGV in pre-defined locations
-  * users cannot specify the locations of these sensors
-* report faulty parts only once they are in the tray of an AGV
-* do not report any information about non-faulty parts
-
-As an example (this command will not work during the qualifier or finals), spawn a known faulty part on AGV 1's tray:
+* As an example (this command will not work during the qualifier or finals), spawn a known faulty part on AGV 1's tray:
 
 ```
-rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `catkin_find osrf_gear --share --first-only`/models/piston_rod_part_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model piston_rod_part_5
+rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `catkin_find nist_gear --share --first-only`/models/piston_rod_part_red_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model piston_rod_part_red_5
 ```
 
 ![ariac_faulty_part_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4190081571-ariac_faulty_part_labeled.png)
 
-Then run this command to see the quality control sensor's output.
+* Then run this command to see the quality control sensor's output.
 
 ```bash
 rostopic echo /ariac/quality_control_sensor_1
 ```
 
-You should see that the part spawned has been detected as faulty.
+* You should see that the part spawned has been detected as faulty.
 
 ```
 models: 

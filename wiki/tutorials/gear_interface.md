@@ -5,6 +5,8 @@
 - Go to [Wiki | Qualifiers](../qualifier.md)
 - Go to [Wiki | Finals](../finals.md)
 - Go to [Wiki | News](../updates.md)
+
+- Go to Wiki | [Home](../../README.md) | [Documentation](../documentation.md)
 -------------------------------------------------
 
 # Overview #

@@ -10,7 +10,7 @@ This tutorial covers creating a [ROS Package](http://wiki.ros.org/Packages) and 
 If you're new to ROS then follow the [ROS Tutorials](http://wiki.ros.org/ROS/Tutorials) first.
 The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/CreatingPackage) will be especially helpful. Afterwards, it is recommended to complete the [GEAR Interface Tutorial](gear_interface.md) before trying this one.
 
-## Creating a Competition Package ##
+## 1. Creating a Competition Package ##
 
 Teams will need at least a ROS package and Node to compete.
 This is where you will put code to start the competition, receive orders, receive sensor data, and control the arms.
@@ -140,7 +140,7 @@ This is just an example.
 When you write your own config file, you will want more sensors to see all of the bins.
 After this tutorial, [see this page](../configuration_spec.md) for more information about writing your config file.
 
-## Creating a C++ Node to Interface with the Competition ##
+## 2. Creating a C++ Node to Interface with the Competition ##
 
 You will need a ROS node to interface with the competition.
 Popular languages for ROS nodes are C++ and Python.

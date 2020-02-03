@@ -8,7 +8,7 @@
 This tutorial covers creating a [ROS Package](http://wiki.ros.org/Packages) and [Node](http://wiki.ros.org/ROS/Tutorials/UnderstandingNodes) to interface with the competition.
 
 If you're new to ROS then follow the [ROS Tutorials](http://wiki.ros.org/ROS/Tutorials) first.
-The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/CreatingPackage) will be especially helpful. Afterwards, it is recommended to complete the [GEAR Interface Tutorial](./tutorials/gear_interface) before trying this one.
+The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/CreatingPackage) will be especially helpful. Afterwards, it is recommended to complete the [GEAR Interface Tutorial](gear_interface.md) before trying this one.
 
 # Creating a Competition Package #
 

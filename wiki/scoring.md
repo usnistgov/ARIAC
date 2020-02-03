@@ -1,7 +1,4 @@
--------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifiers](qualifier.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 
 # Wiki | Scoring
@@ -79,8 +76,5 @@ Trial Score = AAC * (
                     + EF2 * CS2 * h
               )
 ```
--------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifiers](qualifier.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------

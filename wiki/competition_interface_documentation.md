@@ -1,7 +1,7 @@
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
+
 # Wiki | ARIAC Competition Interface
 
 GEAR provides a [ROS](http://www.ros.org/) interface to the teams participating in ARIAC.
@@ -98,6 +98,5 @@ These are only provided for debugging/development purposes and their use is not 
 | /ariac/kit_tray_{N}/clear_tray  |   Service    |  Clear the contents of tray {N} without the AGV moving        | [std_srvs/Trigger.srv ](http://docs.ros.org/api/std_srvs/html/srv/Trigger.html)          |
 
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------

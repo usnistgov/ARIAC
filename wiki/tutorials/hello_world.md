@@ -79,13 +79,13 @@ Since you're probably not going to release your package, many fields can be negl
   <name>ariac_example</name>
   <version>0.1.0</version>
   <description>An example of an ARIAC competitor's package.</description>
-  <maintainer email="william@osrfoundation.org">William Woodall</maintainer>
+  <maintainer email="zeid.kootbally@nist.gov">Zeid Kootbally</maintainer>
 
   <license>Apache 2.0</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>osrf_gear</depend>
+  <depend>nist_gear</depend>
   <depend>roscpp</depend>
   <depend>sensor_msgs</depend>
   <depend>std_srvs</depend>
@@ -112,9 +112,9 @@ ROS packages use CMake, so next create a CMake build file.
 touch ~/helloworld_ws/src/ariac_example/CMakeLists.txt
 ```
 
-This must be in the same folder as your package manifest.
-Copy the content from [the example CMakeLists.txt](https://bitbucket.org/osrf/ariac/src/master/ariac_example/CMakeLists.txt).
-If you want to create more executables or libraries, you'll need to add them here to tell CMake how to build them.
+* This must be in the same folder as your package manifest.
+* Copy the content from [the example CMakeLists.txt](https://raw.githubusercontent.com/usnistgov/ARIAC/master/ariac_example/CMakeLists.txt).
+* If you want to create more executables or libraries, you'll need to add them here to tell CMake how to build them.
 
 **Important**, If you have been following the tutorial instructions then comment out the call to `catkin_python_setup()`.
 You do not need to comment it out if you copied the whole `ariac_example` folder.
@@ -135,10 +135,10 @@ mkdir -p ~/helloworld_ws/src/ariac_example/config
 touch ~/helloworld_ws/src/ariac_example/config/sample_gear_conf.yaml
 ```
 
-For the example tutorial, copy [the content of this file](https://bitbucket.org/osrf/ariac/src/master/ariac_example/config/sample_gear_conf.yaml) into it.
+For the example tutorial, copy [the content of this file](https://raw.githubusercontent.com/usnistgov/ARIAC/master/ariac_example/config/sample_gear_conf.yaml) into it.
 This is just an example.
 When you write your own config file, you will want more sensors to see all of the bins.
-After this tutorial, [see this page](../configuration_spec) for more information about writing your config file.
+After this tutorial, [see this page](../configuration_spec.md) for more information about writing your config file.
 
 ## Creating a C++ Node to Interface with the Competition ##
 
@@ -153,7 +153,7 @@ mkdir -p ~/helloworld_ws/src/ariac_example/src/
 touch ~/helloworld_ws/src/ariac_example/src/ariac_example_node.cpp
 ```
 
-Copy [the content of this file](https://bitbucket.org/osrf/ariac/src/master/ariac_example/src/ariac_example_node.cpp) into it.
+Copy [the content of this file](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/src/ariac_example_node.cpp) into it.
 
 ### C++ Includes ###
 
@@ -175,9 +175,9 @@ This lets you use types like `ros::NodeHandle` and call functions like `ros::ini
 The last block of include statements is for all the ROS message types used.
 
 ```c++
-#include <osrf_gear/LogicalCameraImage.h>
-#include <osrf_gear/Order.h>
-#include <osrf_gear/Proximity.h>
+#include <nist_gear/LogicalCameraImage.h>
+#include <nist_gear/Order.h>
+#include <nist_gear/Proximity.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/Range.h>
@@ -275,7 +275,7 @@ void start_competition(ros::NodeHandle & node) {
 ```
 
 This function starts the competition by calling the service `/ariac/start_competition`.
-This is part of the [ARIAC competition interface](https://bitbucket.org/osrf/ariac/wiki/2019/competition_interface_documentation), and it must be called when your code is ready to begin a trial.
+This is part of the [ARIAC competition interface](../competition_interface_documentation.md), and it must be called when your code is ready to begin a trial.
 This function waits for the service to become available first.
 It's important to do this because the service server is in another process, and may not be ready yet.
 Next, `call()` blocks until a response is received.
@@ -300,7 +300,7 @@ source ~/helloworld_ws/devel/setup.bash
 Now we can launch the competition with our configuration.
 
 ```bash
-rosrun osrf_gear gear.py -f `catkin_find --first-only --share osrf_gear`/config/sample.yaml ~/helloworld_ws/src/ariac_example/config/sample_gear_conf.yaml
+rosrun nist_gear gear.py -f `catkin_find --first-only --share nist_gear`/config/sample.yaml ~/helloworld_ws/src/ariac_example/config/sample_gear_conf.yaml
 ```
 
 The first config file `sample.yaml` specifies what trial will be run.

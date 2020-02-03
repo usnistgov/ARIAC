@@ -15,7 +15,7 @@ The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/Creat
 Teams will need at least a ROS package and Node to compete.
 This is where you will put code to start the competition, receive orders, receive sensor data, and control the arms.
 
-See [this ROS package template](https://bitbucket.org/osrf/ariac/src/master/ariac_example/) for example of a package and node that interacts with ARIAC.
+See [this ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) for example of a package and node that interacts with ARIAC.
 This tutorial will use it as an example.
 
 ## Setting up a Catkin Workspace ##

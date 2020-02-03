@@ -1,8 +1,7 @@
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifiers](qualifier.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
+
 # Wiki | Details of Qualifier Scenarios
 
 This page describes the scenarios that are used in [ARIAC 2020 qualification](qualifier.md).
@@ -127,7 +126,5 @@ Trial configs for Part B will have the following characteristics:
     * All products start in the bins un-flipped
     
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifiers](qualifier.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------

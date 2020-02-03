@@ -1,6 +1,4 @@
--------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 # Wiki | Details of Products specified in Orders
 This page outlines the specifications of the pose requirements specified in each Order.
@@ -62,7 +60,5 @@ See the [sensor interface tutorial](./tutorials/sensor_interface.md) for details
 Other sensors can also be used if combined with perception algorithms.
 Note that some parts have a raised mark on them so that their orientation can be detected.
 
--------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------

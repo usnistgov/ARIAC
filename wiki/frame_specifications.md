@@ -7,7 +7,7 @@ This page outlines the specifications of the pose requirements specified in each
 As outlined in the [competition specifications](competition_specifications.md#Order), an Order specifies a list of products to be put into each shipment.
 Each product has a specified type and required position and orientation in the shipping box.
 
-As specified on the [competition interface](./competition_interface_documentation.md) page, Orders are communicated to teams with the `osrf_gear/Order` ROS message.
+As specified on the [competition interface](./competition_interface_documentation.md) page, Orders are communicated to teams with the `nist_gear/Order` ROS message.
 
 ## Type of the product
 * The type of the product is specified as its product name, such as `gear_part_red` or `piston_rod_part_blue`.

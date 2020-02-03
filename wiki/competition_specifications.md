@@ -2,6 +2,7 @@
 - Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 
+# Competition Specifications #
 This page outlines the specifications for [the Agile Robotics for Industrial Automation Competition](https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation) (ARIAC) 2020.
 
 The following terminology is frequently used in this document:
@@ -13,7 +14,7 @@ The following terminology is frequently used in this document:
 1. **Kit**: A tray and set of products that make up an order.
 
 
-# Competition Scenarios
+# 1. Competition Scenarios
 
 ARIAC requires participants to complete a series of tests centered in an industrial scenario that are based around order fulfillment. The robot system will work within the environment specified in the Work Environment section.
 
@@ -35,27 +36,27 @@ The competition will consist of 15 trials: 5 trials of each of the 3 scenarios. 
 
 Details of the agility challenges used in these scenarios can be found on the [Agility Challenge](agility_challenges.md) page.
 
-# Environment
+# 2. Environment
 
 The simulation environment is a representation of an order fulfillment workcell with a gantry robot, a conveyor belt, product bins, product shelves, AGVs, and trays.
 
   <img src="figures/2020_environment.png" alt="alt text" width="1100" class="center">
 
 
-## Conveyor Belt
+## 2.1. Conveyor Belt
 * The conveyor belt is a **0.65 m wide**, **9 m long** plane that transports objects across the work environment.
 * The following properties impact teams' interaction with the belt:
  1. Products will travel down the belt at a fixed speed of **0.2 m/s**.
  1. Teams can control the conveyor belt during development, but not during the final competition.
  1. There is a limited supply of products on the belt, and any products placed on the belt are automatically removed if they reach the end of the belt. Products will not be replaced once removed.
 
-## Product Bins
+## 2.2. Product Bins
 * There are 16 product bins that may be used for building kits. 
 * Products in these bins will not be replaced once used. 
 * All products in a particular storage bin are of the same type and have the same orientation.
 * The product bins are shallow boxes measuring **0.6 x 0.6 m**. 
 
-## Product Shelves
+## 2.3. Product Shelves
 Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
 
 * Each shelf has two levels:
@@ -80,13 +81,13 @@ shelf_layout:
    row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
    ``` 
    
-## Parts
+## 2.4. Parts
 * ARIAC 2020 is using the same part types found in ARIAC 2019. However, each part type has 3 colors (see figure below).
 
 
   <img src="figures/parts.png" alt="alt text" width="600" class="center">
 
-## Trays
+## 2.5. Trays
 * Orders must be placed on a tray at one of two AGVs.
 * Teams programmatically signal the AGVs when a kit is ready to be delivered.
 * Each tray is shallow and measures **0.5 x 0.7 m**
@@ -94,7 +95,7 @@ shelf_layout:
 
 
 
-# Robot
+# 3. Robot #
 * This year, competitors will have to control a 15 DoF gantry robot to complete the challenges. The robot is depicted in the figure below and consists of:
     * 1 linear actuator which controls the base of the torso on the small rail.
       * The base moves at a velocity of **4m/s** and is within the range **y=[-7, 7]**
@@ -114,7 +115,7 @@ shelf_layout:
 
 
 
-# Sensors
+# 4. Sensors #
 
 
 Teams can place sensors around the environment in static locations. Each sensor has a cost that factors into the final score.
@@ -133,26 +134,26 @@ view.
 * Sensors must be used in a realistic manner and must not exploit any simulation technicalities such as the logical camera seeing through obstructions.
 * For the details about how to configure the sensor locations, see the [Configuration Specifications](configuration_spec.md).
 
-# Order
+# 5. Order #
 
 - An order is an instruction containing kits for the robot system to complete.
 - Each order will specify the list of products to be put in the shipment, including the type and position/orientation of each product.
 - An order may require being delivered to a particular AGV.
 - For more details see the [product specification](frame_specifications.md) page.
 
-# Faulty products
+# 6. Faulty products #
 
 Throughout the workcell are quality control sensors that detect faulty products.
 If faulty products are detected while teams are fulfilling orders, those products should be removed from the tray and replaced with another product of the same type.
 Faulty products will not count for any points when the shipment is submitted, and they will cost teams the all-products bonus if left in trays (see Scoring, below).
 
-# Scoring
+# 7. Scoring #
 
 Performance scores will be automatically calculated for each trial as a combination of performance metrics and costs.
 These will be combined with scores from judges to determine the final winners.
 See the [Scoring Metrics](scoring.md) page for more details.
 
-# Competition process
+# 8. Competition process #
 
 Each trial will consist of the following steps:
 

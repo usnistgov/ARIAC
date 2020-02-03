@@ -3,6 +3,9 @@ Wiki for ARIAC 2020, consisting of kit building in a simulated warehouse with a 
 
 NOTE: These pages are in the process of being updated. If you see something that looks like it got missed, please send us an email at ariac@nist.gov
 
+
+<img src="figures/2020_environment.png" alt="alt text" width="1100" class="center">
+
 ## [Documentation](wiki/documentation.md)
 Specifications of the NIST Agile Robotics for Industrial Automation Competition (ARIAC) and the GEAR software.
 ## [Tutorials](wiki/tutorials.md)

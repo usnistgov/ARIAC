@@ -2,7 +2,7 @@
 - Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
 -------------------------------------------------
 
-# Building GEAR from source
+# Wiki | Tutorials | Installation
 
 This page describes how to build GEAR from source.
 

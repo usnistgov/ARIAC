@@ -1,6 +1,5 @@
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 # Policy for updates to the ARIAC software
 
@@ -23,6 +22,5 @@ Where possible advanced notice of these changes is listed on the updates page.
 The final rules/scoring metrics will be confirmed to teams in advance of the competition Finals.
 
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------

@@ -1,7 +1,5 @@
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifiers](qualifier.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 # Wiki | ARIAC Automated Evaluation
 
@@ -33,7 +31,5 @@ If you system does not score correctly in the mock competition setup, it will no
 - If your team's code is not open source, you can include access keys in your setup script: they will not be made public.
 
 -------------------------------------------------
-- Back to [Wiki | Home](../README.md)
-- Back to [Wiki | Documentation](documentation.md)
-- Back to [Wiki | Qualifiers](qualifier.md)
+- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------

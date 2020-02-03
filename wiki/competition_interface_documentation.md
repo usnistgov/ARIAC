@@ -42,22 +42,10 @@ The following frames are published on the global `/tf` and `/tf_static` topics.
 | Origin of the workcell | world | static |
 | Each sensor | `{sensor_name}_frame`, e.g. `logical_camera_1_frame` | static |
 | Bin storage units | `bin{N}_frame`, where N=1..6 | static |
-| Arm links | `arm{N}_{link_name}`, where N=1..2 e.g. `arm1_wrist1_link` | dynamic |
+| Robot links | `{link_name}`, `left_arm_wrist1_link` | dynamic |
 | Products detected by logical cameras | `{logical_camera_name}_{product_name}_frame`, e.g. `logical_camera_1_piston_rod_part_1_frame` | dynamic |
 | Products detected by quality control sensors | `quality_control_sensor_{N}_{anonymize_mode_name}_frame`, where N=1..2, e.g. `quality_control_sensor_1_model_1_frame` | dynamic |
 | Trays where products are placed | `kit_tray_{N}`, where N=1..2, e.g. `kit_tray_1` | dynamic |
-
- 
-Additionally arm TF frames without the `arm{N}_` prefix are published on topics in the arm namespace.
-
-* `/ariac/arm{N}/tf` where N=1..2
-* `/ariac/arm{N}/tf_static` where N=1..2
-
-
-|Description|TF frame|Type|
-|----------|-----------|---|
-| Origin of the workcell | world | static |
-| Arm links | `{link_name}`, e.g. `wrist1_link` | dynamic |
 
 
 ## Actuators

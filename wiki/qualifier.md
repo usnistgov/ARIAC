@@ -2,15 +2,15 @@
 - Back to [Wiki | Home](../README.md)
 -------------------------------------------------
 # Wiki | Qualifiers
-- There is a single qualification round for ARIAC 2019, with top teams being chosen to participate in the Finals.
+- There is a single qualification round for ARIAC 2020, with top teams being chosen to participate in the Finals.
 - Qualifier submissions will be evaluated following the [automated evaluation procedure](automated_evaluation.md).
 
 # Overview
 
-The ARIAC qualification task has been designed to evaluate your performance in a subset of the challenges that will be present in the final competition.
-Up to **10** teams will qualify for the Finals based on their performance.
+* The ARIAC qualification task has been designed to evaluate your performance in a subset of the challenges that will be present in the final competition.
+* Up to **10** teams will qualify for the Finals based on their performance.
 
-The first qualification task is composed of two parts.
+* The first qualification task is composed of two parts.
 [Details of how to run Part A and what can be expected in Part B are available here](qualifer_scenarios.md).
 In short:
 
@@ -27,39 +27,38 @@ In short:
 * Part B: trial config file not released to participants.
     * Three config files similar to part A
 
-The qualification task will be evaluated once through the [automated evaluation procedure](automated_evaluation.md).
-Teams will submit a single system that will be automatically evaluated against Part A and Part B, with the sum of all trial scores in part A and part B being a team's score for the qualifier.
-Teams will have one attempt: if their system fails, there are no opportunities for a repeat attempt.
-Teams will be able to test their system against Part A "at home", but Part B will be previously-unseen and will test system autonomy.
+* The qualification task will be evaluated once through the [automated evaluation procedure](automated_evaluation.md).
+* Teams will submit a single system that will be automatically evaluated against Part A and Part B, with the sum of all trial scores in part A and part B being a team's score for the qualifier.
+* Teams will have one attempt: if their system fails, there are no opportunities for a repeat attempt.
+* Teams will be able to test their system against Part A "at home", but Part B will be previously-unseen and will test system autonomy.
 
 # Important Dates
 ```diff
 - needs to be changed
 ```
-**Submissions open:** April 1 2019
+**Submissions open:** coming up
 
-**Submissions close:** April 14, 2019 
+**Submissions close:** coming up
 
 # Qualifying
 
-Up to **10** teams will qualify for the Finals through their performance in the qualifier. 
-The scoring metrics that will be used for evaluating the first qualifier [are available here](scoring.md).
+* Up to **10** teams will qualify for the Finals through their performance in the qualifier. 
+* The scoring metrics that will be used for evaluating the first qualifier [are available here](scoring.md).
 Only automated evaluation metrics will be used for the qualifier.
 
-Any participants found violating submission guidelines (e.g. by moving arms to the products before starting the competition) will not be permitted to qualify for the Finals.
+* Any participants found violating submission guidelines (e.g. by moving arms to the products before starting the competition) will not be permitted to qualify for the Finals.
 
 # Developing your system
 
-Develop your system so that it can solve:
-
-* At least one of the qualification tasks in Part A.
-* all potential agility challenges that may be present in Part B:
-    * faulty products
-    * flipped products
-    * high-priority order interruption
-    * faulty gripper resulting in dropped products
-    * updates to previously requested orders
-    * transferring products between arms
+* Develop your system so that it can solve:
+   * At least one of the qualification tasks in Part A.
+   * All potential agility challenges that may be present in Part B:
+      * faulty products
+      * flipped products
+      * high-priority order interruption
+      * faulty gripper resulting in dropped products
+      * updates to previously requested orders
+      * transferring products between arms
 
 [Details of how to run Part A and what can be expected in Part B are available here.](qualifer_scenarios.md)
 
@@ -67,12 +66,12 @@ To ensure that your system can adapt to previously-unseen scenarios, we recommen
 
 # Submission procedure
 
-You will find details on how to prepare your submission, which will allow your system to undergo automated evaluation, on [the automated evaluation page.](automated_evaluation.md)
-Keep in mind that the submission process is not trivial and should be prepared in advance of the submission deadline.
+* You will find details on how to prepare your submission, which will allow your system to undergo automated evaluation, on the [automated evaluation](automated_evaluation.md) page.
+* Keep in mind that the submission process is not trivial and should be prepared in advance of the submission deadline.
 
-Submissions will be made through secure workspaces directly with competition controllers.
-All registered teams must contact **ariac@nist.gov** to have their workspace prepared in advance of when they intend to submit.
-**This must not be left to the last minute** or teams risk missing the submission deadline.
+* Submissions will be made through secure workspaces directly with competition controllers.
+* All registered teams must contact **ariac@nist.gov** to have their workspace prepared in advance of when they intend to submit.
+* **This must not be left to the last minute** or teams risk missing the submission deadline.
 If you are planning a submission and do not yet have a secure workspace, you must contact **ariac@nist.gov** ASAP; a minimum of 24 hours is required.
 
 # Re-run policy

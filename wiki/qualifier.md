@@ -92,11 +92,11 @@ Teams are advised to review the [update policy](update_policy.md) and pay attent
 
 # Where to go for help
 We strive to provide responsive and high-quality support for our software.
-Please use [the GEAR/ARIAC issue tracker](https://bitbucket.org/osrf/ariac/issues?status=new&status=open) for submitting and following bugs, feature requests and enhancements.
+Please use the [Github Issues](https://github.com/usnistgov/ARIAC/issues) for submitting and following bugs, feature requests and enhancements.
 
 If you have any questions about competition specifics that you would like to ask in private, please contact **ariac@nist.gov**.
 
-<!---You can use the [GEAR/ARIAC support forum](https://discourse.ros.org/c/ariac-users) for public discussions about the competition in which other competition participants may participate.
+<!---You can use the [GEAR/ARIAC support forum](https://discourse.ros.org/c/ariac-users) for public discussions about the competition in which other competition participants may participate.-->
 
 -------------------------------------------------
 - Back to [Wiki | Home](../README.md)

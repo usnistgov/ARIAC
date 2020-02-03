@@ -61,7 +61,7 @@ catkin init
 ### Download source code
 
 * The source code for `GEAR` is located in the [usnistgov/ariac repository on github](https://github.com/usnistgov/ARIAC).
-* GEAR also uses a custom version of `gazebo_ros_pkgs` that is already part of the above repository.
+<!---* GEAR also uses a custom version of `gazebo_ros_pkgs` that is already part of the above repository.-->
 * Follow these instructions to put GEAR into the catkin workspace.
 
 ```

@@ -40,7 +40,7 @@ The workspace is now ready to build packages.
 
 ## Creating a New Package Using the Template ##
 
-[This ROS package template](https://bitbucket.org/osrf/ariac/src/master/ariac_example/) comes with build system files, a sample configuration, an example C++ node, and an example python node.
+[This ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) comes with build system files, a sample configuration, an example C++ node, and an example python node.
 
 This tutorial will limit itself to the C++ example.
 

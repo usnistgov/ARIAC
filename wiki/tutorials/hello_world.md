@@ -246,7 +246,7 @@ The first argument is the name of the topic, `/ariac/orders`.
 The second argument is the queue size, which is how many messages to save if your callback is slow to handle them.
 The last two arguments say a function `order_callback()` on an instance of `MyCompetitionClass` stored in `comp_class` should be called every time a new order is received.
 
-## 3. Starting the Competition ##
+## 2.4. Starting the Competition ##
 
 You may have noticed the main function called `start_competition()`.
 
@@ -274,14 +274,14 @@ void start_competition(ros::NodeHandle & node) {
 }
 ```
 
-This function starts the competition by calling the service `/ariac/start_competition`.
-This is part of the [ARIAC competition interface](../competition_interface_documentation.md), and it must be called when your code is ready to begin a trial.
-This function waits for the service to become available first.
-It's important to do this because the service server is in another process, and may not be ready yet.
-Next, `call()` blocks until a response is received.
-The rest of the code checks if the competition was successfully started.
+* This function starts the competition by calling the service `/ariac/start_competition`.
+* This is part of the [ARIAC competition interface](../competition_interface_documentation.md), and it must be called when your code is ready to begin a trial.
+* This function waits for the service to become available first.
+* It's important to do this because the service server is in another process, and may not be ready yet.
+* Next, `call()` blocks until a response is received.
+* The rest of the code checks if the competition was successfully started.
 
-## 4. Trying the Example ##
+## 3. Trying the Example ##
 
 Before you can run the example, you need to build it.
 

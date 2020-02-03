@@ -191,7 +191,7 @@ You must include a file for each ROS message or service type you use in your pro
 For example, to use the ROS message [sensor_msgs/LaserScan](http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html) you must include the file called `sensor_msgs/LaserScan.h`.
 That gives you access to a C++ type `sensor_msgs::LaserScan` which you use in your code.
 
-### C++ Main Function ###
+#### C++ Main Function ####
 
 The `main()` function is the entry point for your program.
 It has the following structure:
@@ -228,7 +228,7 @@ The largest section is the creation of a bunch of subscribers and callbacks; the
 Finally, the competition is started and control is given to ROS using `ros::spin()`.
 Inside this function ROS will wait for ROS messages and call callbacks.
 
-#### C++ Creating Publishers and Subscribers ####
+##### C++ Creating Publishers and Subscribers #####
 
 The largest section of the main function is where publishers and subscribers are created.
 See [the tutorial about C++ ROS publishers and subscribers](http://wiki.ros.org/ROS/Tutorials/WritingPublisherSubscriber%28c%2B%2B%29) for more information.
@@ -246,7 +246,7 @@ The first argument is the name of the topic, `/ariac/orders`.
 The second argument is the queue size, which is how many messages to save if your callback is slow to handle them.
 The last two arguments say a function `order_callback()` on an instance of `MyCompetitionClass` stored in `comp_class` should be called every time a new order is received.
 
-#### Starting the Competition ####
+##### Starting the Competition #####
 
 You may have noticed the main function called `start_competition()`.
 
@@ -281,7 +281,7 @@ It's important to do this because the service server is in another process, and 
 Next, `call()` blocks until a response is received.
 The rest of the code checks if the competition was successfully started.
 
-## Trying the Example ##
+### Trying the Example ###
 
 Before you can run the example, you need to build it.
 

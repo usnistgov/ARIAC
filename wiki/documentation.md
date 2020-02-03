@@ -1,6 +1,7 @@
------------------------------------------------------
-- Back to [Wiki | Home](../README.md)
------------------------------------------------------
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
+-------------------------------------------------
+
 # Wiki|Documentation
 
 GEAR is the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC) hosted by the National Institute of Standards and Technology (NIST).
@@ -22,6 +23,7 @@ GEAR is the software used by teams participating in the Agile Robotics for Indus
 1. [Automated Evaluation Procedure](automated_evaluation.md)
     * Details of how submissions for Qualifiers will be automatically evaluated.
 
------------------------------------------------------
-- Back to [Wiki | Home](../README.md)
------------------------------------------------------
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
+-------------------------------------------------
+

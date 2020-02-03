@@ -6,8 +6,7 @@
 
 GEAR is the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC) hosted by the National Institute of Standards and Technology (NIST).
 
-1. [Competition Specifications](competition_specifications.md)
-    * The specifications of the ARIAC competition.
+1. [Competition Specifications](competition_specifications.md): The specifications of the ARIAC competition.
         * Competition scenarios.
         * Environment.
         * Robot.

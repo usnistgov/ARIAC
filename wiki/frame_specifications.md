@@ -1,3 +1,4 @@
+-------------------------------------------------
 - Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
 # Wiki | Details of Products specified in Orders
@@ -60,5 +61,6 @@ See the [sensor interface tutorial](./tutorials/sensor_interface.md) for details
 Other sensors can also be used if combined with perception algorithms.
 Note that some parts have a raised mark on them so that their orientation can be detected.
 
+-------------------------------------------------
 - Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------

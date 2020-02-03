@@ -4,7 +4,7 @@
 # Wiki | Details of Products specified in Orders
 This page outlines the specifications of the pose requirements specified in each Order.
 
-As outlined in the [competition specifications](competition_specifications.md), an Order specifies a list of products to be put into each shipment.
+As outlined in the [competition specifications](competition_specifications.md#Order), an Order specifies a list of products to be put into each shipment.
 Each product has a specified type and required position and orientation in the shipping box.
 
 As specified on the [competition interface](./competition_interface_documentation.md) page, Orders are communicated to teams with the `osrf_gear/Order` ROS message.

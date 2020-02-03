@@ -113,7 +113,7 @@ touch ~/helloworld_ws/src/ariac_example/CMakeLists.txt
 ```
 
 * This must be in the same folder as your package manifest.
-* Copy the content from [the example CMakeLists.txt](https://raw.githubusercontent.com/usnistgov/ARIAC/master/ariac_example/CMakeLists.txt).
+* Copy the content from [the example CMakeLists.txt](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/CMakeLists.txt).
 * If you want to create more executables or libraries, you'll need to add them here to tell CMake how to build them.
 
 **Important**, If you have been following the tutorial instructions then comment out the call to `catkin_python_setup()`.
@@ -135,7 +135,7 @@ mkdir -p ~/helloworld_ws/src/ariac_example/config
 touch ~/helloworld_ws/src/ariac_example/config/sample_gear_conf.yaml
 ```
 
-For the example tutorial, copy [the content of this file](https://raw.githubusercontent.com/usnistgov/ARIAC/master/ariac_example/config/sample_gear_conf.yaml) into it.
+For the example tutorial, copy [the content of this file](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/config/sample_gear_conf.yaml) into it.
 This is just an example.
 When you write your own config file, you will want more sensors to see all of the bins.
 After this tutorial, [see this page](../configuration_spec.md) for more information about writing your config file.

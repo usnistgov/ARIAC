@@ -16,7 +16,7 @@ NOTE: These pages are in the process of being updated. If you see something that
   * Details of the released qualification tasks for ARIAC.
 ## [Finals](wiki/finals.md)
   * Details of how the ARIAC Finals will run.
-## [Bug Reports](wiki/bug_reports.md)
+## [Bug Reports](wiki/bug_report.md)
   * Improving the software and fixing issues.
 ## [**News](wiki/updates.md)
   * Check this page to see the latest news.

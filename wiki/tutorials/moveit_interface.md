@@ -74,7 +74,15 @@ You should see that the robot move in Gazebo, and that this movement is reflecte
 
 #### Programmatically ###
 
-See the official [MoveIt tutorials](https://ros-planning.github.io/moveit_tutorials/) for information about interfacing with moveit programmatically
+We have provided an example competitor that uses MoveIt's python interface to control the robot. It can be found at [ariac_example/script/moveit_example.py](../../ariac_example/script/moveit_example.py).
+
+To run this example, launch ARIAC and MoveIt as before and then run:
+```bash
+rosrun ariac_example moveit_example.py
+```
+
+For additional information, please see the official [MoveIt tutorials](https://ros-planning.github.io/moveit_tutorials/),
+and [API](https://moveit.ros.org/documentation/source-code-api/).
 
 ### Troubleshooting  ###
 

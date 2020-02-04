@@ -2,7 +2,7 @@
 - Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
 -------------------------------------------------
 
-# Overview #
+# Wiki | Tutorials | MoveIt!#
 
 When ARIAC starts, it spawns a dual-arm robot mounted on rails. Each arm of the robot is a UR10 arm with controllers that accept [trajectory_msgs/JointTrajectory](http://docs.ros.org/melodic/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
 The [GEAR interface tutorial](gear_interface.md) has already shown you that these messages can be sent manually using the command line.

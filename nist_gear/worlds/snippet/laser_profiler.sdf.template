@@ -9,13 +9,13 @@
             </box>
           </geometry>
         </visual>
-        <collision name='collision'>
+        <!--collision name='collision'>
           <geometry>
             <box>
               <size>0.093 0.05 0.167</size>
             </box>
           </geometry>
-        </collision>
+        </collision-->
         <sensor name="laser_profiler" type="ray">
           <update_rate>30</update_rate>
           <pose>0 0 0.06 0 0 0</pose>

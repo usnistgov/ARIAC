@@ -23,23 +23,26 @@ sensors:
       xyz: [5, 3.641234, 2.49]
       rpy: [0, 'pi/2', 'pi/2']
 
-      #  depth_camera_1:
-      #    type: depth_camera
-      #    pose:
-      #      xyz: [8.939670, 5.177340, 1.2]
-      #      rpy: [0, 1.5707, 0]
-      #  laser_profiler_1:
-      #    type: laser_profiler
-      #    pose:
-      #      xyz: [1.21, 4, 1.6]
-      #      rpy: ['-pi', 'pi/2', 'pi/2']
-      #  range_finder_1:
-      #    type: proximity_sensor
-      #    pose:
-      #      xyz: [1.21, 5, 1.6]
-      #      rpy: ['-pi', 'pi/2', 'pi/2']
-      #  breakbeam_1:
-      #    type: break_beam
-      #    pose:
-      #      xyz: [1.21, 6, 1.6]
-      #      rpy: ['-pi', 'pi/2', 'pi/2']
+  depth_camera_0:
+    type: depth_camera
+    pose:
+      xyz: [5.45, 2.157, 1.48]
+      rpy: [0, 1.5707, 0]
+
+  laser_profiler_0:
+    type: laser_profiler
+    pose:
+      xyz: [0., 1.486, 1.526]
+      rpy: ['pi/2', 'pi/2', 0]
+
+  range_finder_0:
+    type: proximity_sensor
+    pose:
+      xyz: [0, 2.84, 0.97]
+      rpy: ['pi/2', 0.6, 'pi/2']
+
+  breakbeam_0:
+    type: break_beam
+    pose:
+      xyz: [-0.26, 3.36, 0.94]
+      rpy: [0, 0, 0]

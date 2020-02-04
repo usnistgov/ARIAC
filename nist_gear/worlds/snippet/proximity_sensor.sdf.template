@@ -11,15 +11,15 @@
             </cylinder>
           </geometry>
         </visual>
-        <collision name="collision">
+        <!--collision name="collision">
           <pose>0 0 0 0 1.5708 0</pose>
           <geometry>
             <cylinder>
-              <radius>0.006</radius> <!-- diameter of sensing head -->
-              <length>0.046</length> <!-- length of sensor body -->
+              <radius>0.006</radius>
+              <length>0.046</length>
             </cylinder>
           </geometry>
-        </collision>
+        </collision-->
         <sensor name="@(name)" type="ray">
           <pose>0.023 0 0 0 0 0</pose>
           <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
@@ -77,14 +77,14 @@
             </cylinder>
           </geometry>
         </visual>
-        <collision name="collision">
+        <!--collision name="collision">
           <pose>-0.025 0 0 0 1.5708 0</pose>
           <geometry>
             <cylinder>
-              <radius>0.001</radius> <!-- diameter of sensing head -->
-              <length>0.02</length> <!-- length of sensor body -->
+              <radius>0.001</radius>
+              <length>0.02</length>
             </cylinder>
           </geometry>
-        </collision>
+        </collision-->
       </link>
     </model>

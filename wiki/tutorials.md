@@ -20,7 +20,7 @@ This tutorial walks through creating a ROS package and C++ node to compete in th
 
 This tutorial shows all the available sensors in the competition and explains how to get data from them.
 
-## [Controlling the arms with MoveIt](tutorials/moveit_interface.md)
+## [MoveIt!](tutorials/moveit_interface.md)
 
 This tutorial shows how to use MoveIt to control the two arms in ARIAC 2020.
 

@@ -19,7 +19,4 @@ GEAR is the software used by teams participating in the Agile Robotics for Indus
 1. [Automated Evaluation Procedure](automated_evaluation.md)
     * Details of how submissions for Qualifiers will be automatically evaluated.
 
--------------------------------------------------
-- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
--------------------------------------------------
 

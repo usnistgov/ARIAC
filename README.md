@@ -13,4 +13,4 @@
 ## [Qualifiers](wiki/qualifier.md): Details of the released qualification tasks for ARIAC.
 ## [Finals](wiki/finals.md): Details of how the ARIAC Finals will run.
 ## [Bug Reports](wiki/bug_report.md): Improving the software and fixing issues.
-## [News](wiki/updates.md): Check this page to see the latest news.
+## [News](wiki/updates.md): Check this page for latest news.

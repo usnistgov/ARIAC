@@ -101,7 +101,7 @@ rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 * As an example (this command will not work during the qualifier or finals), spawn a known faulty part on AGV 1's tray:
 
 ```
-rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `catkin_find nist_gear --share --first-only`/models/piston_rod_part_red_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model piston_rod_part_red_5
+rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/piston_rod_part_red_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model piston_rod_part_red_5
 ```
 
 ![ariac_faulty_part_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4190081571-ariac_faulty_part_labeled.png)

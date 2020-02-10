@@ -49,7 +49,7 @@ roslaunch nist_gear sample_environment.launch load_moveit:=true
 
 RViz is a visualization tool that can represent the state of robots, both simulated and real.
 There is an RViz plugin for motion planning with MoveIt which can be used to interactively interface with the move_group.
-To launch RViz with this plugin, we can use the following short launch file: 
+To launch RViz with this plugin, we can use the following short launch file which you can create in your own package: 
 
 ```bash
 <launch>

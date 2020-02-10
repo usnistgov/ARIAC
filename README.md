@@ -1,5 +1,6 @@
 # Wiki | Home
-* Wiki for ARIAC 2020, consisting of kit building in a simulated warehouse with a dual arm gantry robot.
+
+## Wiki for ARIAC 2020, consisting of kit building in a simulated warehouse with a dual arm gantry robot.
 
 **NOTE**: These pages are in the process of being updated. If you see something that looks like it got missed, please send us an email at ariac@nist.gov
 

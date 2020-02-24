@@ -1238,7 +1238,9 @@ void ROSAriacTaskManagerPlugin::OnContactsReceived(ConstContactsPtr& _msg)
 
     // Simplified arm-arm and arm-torso collision, as all arm and torso links are prefaced with 'gantry::'
     // e.g. gantry::left_forearm_link::left_forearm_link_collision and gantry::torso_main::torso_main_collision
-    if (contact.collision1().rfind("gantry", 0) == 0 and
+    // Also - only check if competition has started, as arm is in collision when first spawned
+    if (this->dataPtr->currentState == "go" &&
+        contact.collision1().rfind("gantry", 0) == 0 &&
         contact.collision2().rfind("gantry", 0) == 0)
     {
       ROS_ERROR_STREAM("arm/arm contact detected: " << contact.collision1() << " and " << contact.collision2());

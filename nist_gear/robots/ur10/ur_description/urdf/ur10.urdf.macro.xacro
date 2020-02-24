@@ -82,6 +82,9 @@
       </xacro:cylinder_inertial>
     </link>
 
+    <gazebo reference="${prefix}base_link">
+      <selfCollide>1</selfCollide>
+    </gazebo>
 
     <!-- Joints -->
     <joint name="${prefix}arm_base_joint" type="fixed">
@@ -127,6 +130,10 @@
       </xacro:cylinder_inertial>
     </link>
 
+    <gazebo reference="${prefix}shoulder_link">
+      <selfCollide>1</selfCollide>
+    </gazebo>
+
     <joint name="${prefix}shoulder_lift_joint" type="revolute">
       <parent link="${prefix}shoulder_link" />
       <child link = "${prefix}upper_arm_link" />
@@ -166,6 +173,10 @@
       </xacro:cylinder_inertial>
     </link>
 
+    <gazebo reference="${prefix}upper_arm_link">
+      <selfCollide>1</selfCollide>
+    </gazebo>
+
     <joint name="${prefix}elbow_joint" type="revolute">
       <parent link="${prefix}upper_arm_link" />
       <child link = "${prefix}forearm_link" />
@@ -202,6 +213,10 @@
         <origin xyz="0.0 0.0 ${-ur10_a3/2.0}" rpy="0 0 0" />
       </xacro:cylinder_inertial>
     </link>
+
+    <gazebo reference="${prefix}forearm_link">
+      <selfCollide>1</selfCollide>
+    </gazebo>
 
     <joint name="${prefix}wrist_1_joint" type="revolute">
       <parent link="${prefix}forearm_link" />
@@ -240,6 +255,10 @@
       </xacro:cylinder_inertial>
     </link>
 
+    <gazebo reference="${prefix}wrist1_link">
+      <selfCollide>1</selfCollide>
+    </gazebo>
+
     <joint name="${prefix}wrist_2_joint" type="revolute">
       <parent link="${prefix}wrist_1_link" />
       <child link = "${prefix}wrist_2_link" />
@@ -277,6 +296,10 @@
       </xacro:cylinder_inertial>
     </link>
 
+    <gazebo reference="${prefix}wrist2_link">
+      <selfCollide>1</selfCollide>
+    </gazebo>
+
     <joint name="${prefix}wrist_3_joint" type="revolute">
       <parent link="${prefix}wrist_2_link" />
       <child link = "${prefix}wrist_3_link" />
@@ -313,6 +336,10 @@
         <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
       </xacro:cylinder_inertial>
     </link>
+
+    <gazebo reference="${prefix}wrist3_link">
+      <selfCollide>1</selfCollide>
+    </gazebo>
 
     <joint name="${prefix}ee_fixed_joint" type="fixed">
       <parent link="${prefix}wrist_3_link" />

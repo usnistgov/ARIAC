@@ -181,6 +181,7 @@
       <gazebo reference="torso_base">
         <!--<material>Gazebo/RustySteel</material>-->
         <turnGravityOff>true</turnGravityOff>
+        <selfCollide>1</selfCollide>
       </gazebo>
 
       <joint name="torso_rail_joint" type="prismatic">
@@ -219,6 +220,7 @@
       <gazebo reference="torso_main">
         <!--<material>Gazebo/Black</material>-->
         <turnGravityOff>true</turnGravityOff>
+        <selfCollide>1</selfCollide>
       </gazebo>
 
 

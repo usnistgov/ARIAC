@@ -1213,6 +1213,7 @@ void ROSAriacTaskManagerPlugin::OnContactsReceived(ConstContactsPtr& _msg)
   for (int i = 0; i < _msg->contact_size(); ++i)
   {
     const auto & contact = _msg->contact(i);
+    /*
     bool col_1_is_arm = false;
     bool col_2_is_arm = false;
     for (const auto & collision_name : this->dataPtr->collisionFilter)
@@ -1227,6 +1228,18 @@ void ROSAriacTaskManagerPlugin::OnContactsReceived(ConstContactsPtr& _msg)
       }
     }
     if (col_1_is_arm && col_2_is_arm)
+    {
+      ROS_ERROR_STREAM("arm/arm contact detected: " << contact.collision1() << " and " << contact.collision2());
+      std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+      common::Time time(contact.time().sec(), contact.time().nsec());
+      this->dataPtr->ariacScorer.NotifyArmArmCollision(time);
+    }
+    */
+
+    // Simplified arm-arm and arm-torso collision, as all arm and torso links are prefaced with 'gantry::'
+    // e.g. gantry::left_forearm_link::left_forearm_link_collision and gantry::torso_main::torso_main_collision
+    if (contact.collision1().rfind("gantry", 0) == 0 and
+        contact.collision2().rfind("gantry", 0) == 0)
     {
       ROS_ERROR_STREAM("arm/arm contact detected: " << contact.collision1() << " and " << contact.collision2());
       std::lock_guard<std::mutex> lock(this->dataPtr->mutex);

@@ -24,7 +24,7 @@ You should see 18.04 Bionic Beaver in that file.
 
 GEAR uses [ROS Melodic](http://www.ros.org/) and [Gazebo 9](http://gazebosim.org/blog/gazebo9) to simulate the environment
 [Follow these instructions to install ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu).
-Follow [these instructions](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) to install Gazebo 9.
+Follow [these instructions](http://gazebosim.org/tutorials?cat=install&tut=install_ubuntu&ver=9.0) to install Gazebo 9.
 
 **Note**, if you see a crash complaining about missing a symbol in an ignition library, run this to fix it
 

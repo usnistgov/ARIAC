@@ -263,6 +263,13 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
       "robot_namespace")->Get<std::string>() + "/";
   }
 
+  // Avoid the slowdown that is present with contact manager filter in gazebo 9.12 by subscribing to gazebo's main contact topic
+  // Note: Moved this out of the order parsing loop as it didn't need to be in there
+  //auto contact_manager = this->dataPtr->world->Physics()->GetContactManager();
+  //std::string contactTopic = contact_manager->CreateFilter("AriacTaskManagerFilter", this->dataPtr->collisionFilter);
+  //this->dataPtr->contactSub = this->dataPtr->node->Subscribe(contactTopic, &ROSAriacTaskManagerPlugin::OnContactsReceived, this);
+  this->dataPtr->contactSub = this->dataPtr->node->Subscribe("~/physics/contacts", &ROSAriacTaskManagerPlugin::OnContactsReceived, this);
+
   // Initialize ROS
   this->dataPtr->rosnode.reset(new ros::NodeHandle(robotNamespace));
 
@@ -468,10 +475,6 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
 
       shipmentElem = shipmentElem->GetNextElement("shipment");
     }
-
-    auto contact_manager = this->dataPtr->world->Physics()->GetContactManager();
-    std::string contactTopic = contact_manager->CreateFilter("AriacTaskManagerFilter", this->dataPtr->collisionFilter);
-    this->dataPtr->contactSub = this->dataPtr->node->Subscribe(contactTopic, &ROSAriacTaskManagerPlugin::OnContactsReceived, this);
 
     // Add a new order.
     ariac::Order order = {orderID, startTime, interruptOnUnwantedProducts, interruptOnWantedProducts, allowedTime, shipments, 0.0};

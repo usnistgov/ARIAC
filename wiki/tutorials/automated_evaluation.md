@@ -49,9 +49,9 @@ $ ls team_config/example_team/
 build_team_system.bash  run_team_system.bash    team_config.yaml
 ```
 
-Together these files constitute a submission.
-The files are explained at https://bitbucket.org/osrf/ariac/wiki/2019/automated_evaluation
-We will work with the files of the `example_team` submission for this tutorial; you can use them as a template for your own team's submission.
+* Together these files constitute a submission.
+* The files are explained here [Wiki|Documentation|Automated Evaluation](../automated_evaluation.md) 
+* We will work with the files of the `example_team` submission for this tutorial; you can use them as a template for your own team's submission.
 
 ## Preparing a team's system
 

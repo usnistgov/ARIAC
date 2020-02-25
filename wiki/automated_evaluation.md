@@ -1,7 +1,7 @@
 -------------------------------------------------
 - Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
 -------------------------------------------------
-# Wiki | ARIAC Automated Evaluation
+# Wiki | Documentation | ARIAC Automated Evaluation
 
 During ARIAC Qualifiers/Finals, each team will submit their system so that it can be run in the automated evaluation setup. This is to ensure that teams are not using prohibited interfaces to interact with the simulation.
 

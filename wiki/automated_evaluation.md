@@ -18,7 +18,7 @@ The `build_team_system.bash` script will be run only once to setup the team's sy
 
 ## Developing/testing your submission
 
-Teams should develop/test their submission using the instructions provided in the [automated evaluation tutorial](https://github.com/osrf/ariac-docker/blob/master/README.md): it details how to create the required bash scripts and test them in the mock competition setup.
+Teams should develop/test their submission using the instructions provided in the [automated evaluation tutorial](tutorials/automated_evaluation.md): it details how to create the required bash scripts and test them in the mock competition setup.
 
 It is imperative that teams use the outlined process for testing their system, as it exactly replicates the process that will be used during automated evaluation.
 If you system does not score correctly in the mock competition setup, it will not score correctly when run by competition controllers.

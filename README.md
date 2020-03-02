@@ -9,6 +9,10 @@
 
 <!---<img src="wiki/figures/ariac2020_3.jpg" alt="alt text" width="600" class="center">-->
 
+## Dates
+* Registration Open : Now Through April 2020
+* Competition Qualifier: April 6-10, 2020
+* Competition Finals: May 11-15, 2020
 ## [Documentation](wiki/documentation.md)
 Specifications of the NIST Agile Robotics for Industrial Automation Competition (ARIAC) and the GEAR software.
 ## [Tutorials](wiki/tutorials.md) 

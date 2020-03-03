@@ -80,7 +80,7 @@ rostopic echo /ariac/orders
 * Call this service to submit a tray for evaluation:
 
 ```bash
-rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
+rosservice call /ariac/agv1 "kit_type: order_0_shipment_0"
 ```
 
 * If multiple trays need to be submitted, the AGV will return an empty tray after the submitted tray has been evaluated. 
@@ -143,33 +143,34 @@ pose:
 
 # 4. Controlling the Robot #
 
-There are two UR10 arms in the simulation. The UR10 simulation and control code is provided by [ROS Industrial's universal_robot ROS packages](https://github.com/ros-industrial/universal_robot).
-The control parameters have been modified for use in the ARIAC simulation.
+* This year the robot consists of two UR10 arms mounted on a torso, which is itself mounted on a linear rail. This linear rail moves along two other rails. 
+* The torso + small rail + long rails constitute the gantry part of the robot.
+* The UR10 simulation and control code is provided by [ROS Industrial's universal_robot ROS packages](https://github.com/ros-industrial/universal_robot). The control parameters have been modified for use in the ARIAC simulation.
 
 ## 4.1 Controlling a Vacuum Gripper ##
 
-Each arm has a simulated pneumatic gripper attached to the arm's end effector.
-Teams can enable or disable the suction of the gripper.
-When the suction is enabled and the gripper is making contact with a product, the contacting product will be attached to the gripper.
-At any point, teams will also be able to disable the suction, causing the detachment of the object if it was previously attached.
-To enable `arm1`'s gripper suction from the command line, run: 
+* Each arm has a simulated pneumatic gripper attached to the arm's end effector.
+* Teams can enable or disable the suction of the gripper.
+* When the suction is enabled and the gripper is making contact with a product, the contacting product will be attached to the gripper.
+* At any point, teams will also be able to disable the suction, causing the detachment of the object if it was previously attached.
+* To enable `left_arm`'s gripper suction from the command line, run: 
 
 ```bash
-rosservice call /ariac/arm1/gripper/control "enable: true"
+rosservice call /ariac/gantry/left_arm/gripper/control "enable: true"
 ```
 
-The gripper periodically publishes its internal state on topic `/ariac/armN/gripper/state`.
-Subscribe to this topic to introspect the gripper's status.
-You can check whether the suction is enabled/disabled or whether there is an object attached to the gripper. Execute the following command to display `arm1`'s gripper state:
+* The gripper periodically publishes its internal state on topic `/ariac/gantry/{left_arm|right_arm}/gripper/state`
+* Subscribe to this topic to introspect the gripper's status.
+* You can check whether the suction is enabled/disabled or whether there is an object attached to the gripper. Execute the following command to display `arm1`'s gripper state:
 
 ```bash
-rostopic echo /ariac/arm1/gripper/state -n 1
+rostopic echo /ariac/gantry/left_arm/gripper/state -n 1
 ```
 
 Disable the suction again for now with
 
 ```bash
-rosservice call /ariac/arm1/gripper/control "enable: false"
+rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
 ```
 
 ## 4.2 Controlling Arm Joints ##

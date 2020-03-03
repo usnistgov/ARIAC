@@ -17,7 +17,7 @@ See the [configuration tutorial](configuration_spec.md) for how to use these tri
     * [`qual1_testing2.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual1/qual1_testing2.yaml)
     * [`qual2_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual2/qual2_testing1.yaml)
     * [`qual3_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual3/qual3_testing1.yaml)
-  * See [this page](http://wiki.ros.org/ariac/2019/Tutorials/GEARInterface#Faulty_products) for details on working with faulty products.
+  * See [Wiki|Tutorials|Interacting with GEAR](./tutorials/gear_interface.md#Faulty-Products) for details on working with faulty products.
 
 ## Insufficiently many products
 

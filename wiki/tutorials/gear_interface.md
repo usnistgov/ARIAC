@@ -159,15 +159,16 @@ pose:
 rosservice call /ariac/gantry/left_arm/gripper/control "enable: true"
 ```
 
-* The gripper periodically publishes its internal state on topic `/ariac/gantry/{left_arm|right_arm}/gripper/state`
+* The gripper periodically publishes its internal state on topic `/ariac/gantry/N/gripper/state` where `N` is `left_arm_controller` or `right_arm_controller`.
 * Subscribe to this topic to introspect the gripper's status.
-* You can check whether the suction is enabled/disabled or whether there is an object attached to the gripper. Execute the following command to display `arm1`'s gripper state:
+* You can check whether the suction is enabled/disabled or whether there is an object attached to the gripper. 
+  * Execute the following command to display `left_arm`'s gripper state:
 
 ```bash
 rostopic echo /ariac/gantry/left_arm/gripper/state -n 1
 ```
 
-Disable the suction again for now with
+  * Disable the suction again for now with
 
 ```bash
 rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
@@ -175,7 +176,8 @@ rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
 
 ## 4.2 Controlling Arm Joints ##
 
-Each arm has its own command topic for controlling the joints of the arm on `/ariac/armN/arm/command` where `N` is `1` or `2`.
+* Each arm has its own command topic for controlling the joints of the arm on `/ariac/gantry/N/command
+` where `N` is `left_arm_controller` or `right_arm_controller`
 The topic uses [trajectory_msgs/JointTrajectory](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
 The arm's controller will try to match the commanded states.
 The arm is controlled by an instance of [ros_controllers/joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller).

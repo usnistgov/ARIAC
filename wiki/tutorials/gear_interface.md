@@ -56,7 +56,7 @@ rosservice call /ariac/end_competition
 * An order is composed of products to place onto a tray.
 * Teams earn points by completing orders quickly.
 
-## 4. Receiving Orders ##
+## 3.1 Receiving Orders ##
 
 * Teams must subscribe to this topic to receive the initial order, as well as any future order updates.
 * To see the last order that was published, run:
@@ -69,7 +69,7 @@ rostopic echo /ariac/orders
 * You must add your sensors to detect and classify products in the storage bins or conveyor belt.
 * The most recently received order is the highest priority.
 
-## 5. Delivering Orders ##
+## 3.2 Delivering Orders ##
 
 * There are two AGVs carrying trays that kits can be assembled on.
 * When a kit has been completed, the AGV must be commanded to deliver the kit so it can be scored.
@@ -89,7 +89,7 @@ rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 * Orders delivered on the wrong AGV will be counted as a zero score.
 
 
-## 6. Faulty Products ##
+## 3.3 Faulty Products ##
 * There are quality control sensors above each AGV that publish the pose of faulty parts that they see on the tray. The quality control sensors:
   * have an equivalent interface to logical camera sensors
   * publish tf frames of faulty parts
@@ -141,12 +141,12 @@ pose:
 
 ```
 
-# 7. Controlling the Robot #
+# 4. Controlling the Robot #
 
 There are two UR10 arms in the simulation. The UR10 simulation and control code is provided by [ROS Industrial's universal_robot ROS packages](https://github.com/ros-industrial/universal_robot).
 The control parameters have been modified for use in the ARIAC simulation.
 
-## 7.1 Controlling a Vacuum Gripper ##
+## 4.1 Controlling a Vacuum Gripper ##
 
 Each arm has a simulated pneumatic gripper attached to the arm's end effector.
 Teams can enable or disable the suction of the gripper.
@@ -172,14 +172,14 @@ Disable the suction again for now with
 rosservice call /ariac/arm1/gripper/control "enable: false"
 ```
 
-## 7.2 Controlling Arm Joints ##
+## 4.2 Controlling Arm Joints ##
 
 Each arm has its own command topic for controlling the joints of the arm on `/ariac/armN/arm/command` where `N` is `1` or `2`.
 The topic uses [trajectory_msgs/JointTrajectory](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
 The arm's controller will try to match the commanded states.
 The arm is controlled by an instance of [ros_controllers/joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller).
 
-### 7.2.1 Command Line ###
+### 4.2.1 Command Line ###
 
 Run this command to move `arm1` over a gasket part in the sample environment.
 
@@ -260,7 +260,7 @@ rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_
 ```
 
 
-### 7.2.2 rqt GUI ###
+### 4.2.2 rqt GUI ###
 
 To control an arm from a GUI, run:
 
@@ -279,13 +279,13 @@ Disable the controller in rqt if you wish to send trajectories from the command-
 
 Repeat the procedure replacing `arm1` with `arm2` to control the second arm.
 
-### 7.2.3 MoveIt ###
+### 4.2.3 MoveIt ###
 
 See the [ARIAC 2019 MoveIt tutorial](moveit_interface.md).
 
-# 8. Visualization in RViz #
+# 5. Visualization in RViz #
 
-## 8.1 TF frames ##
+## 5.1 TF frames ##
 
 GEAR publishes various TF frames of various poses in the world.
 These frames may be useful when developing the robot control algorithm.
@@ -297,7 +297,7 @@ rosrun rviz rviz -d `catkin_find osrf_gear --share --first-only`/rviz/ariac.rviz
 
 **Note that GEAR uses tf2_msgs and not the deprecated tf_msgs. Accordingly, you should use the tf2 package instead of tf.**
 
-## 8.2 Robot Model ##
+## 5.2 Robot Model ##
 
 Using the RobotModel display, one arm at a time can be visualized in rviz.
 It requires remapping the `tf` topics and `robot_description` parameter.
@@ -313,12 +313,12 @@ rosrun rviz rviz /tf:=/ariac/arm2/tf /tf_static:=/ariac/arm2/tf_static robot_des
 ```
 
 
-# 9. Troubleshooting Interfaces #
+# 6. Troubleshooting Interfaces #
 
 There are a few interfaces that will not be available during the competition but can be useful during development.
 **These interfaces will not be available during the competition.**
 
-## 9.1 Controlling the Conveyor belt ##
+## 6.1 Controlling the Conveyor belt ##
 
 The service `/ariac/conveyor/control` can be used to modify the power of the conveyor belt or stop it.
 The power can be 0 or a value in the range of 50 to 100, with 100 representing full speed.
@@ -329,7 +329,7 @@ You can start the conveyor belt with
 rosservice call /ariac/conveyor/control "power: 100"
 ```
 
-## 9.2 Viewing Tray Contents ##
+## 6.2 Viewing Tray Contents ##
 
 The `/ariac/trays` topic can be used during development for seeing the pose of products in the shipping boxes in the same frame as that which will be used for shipment evaluation. 
 
@@ -343,7 +343,7 @@ objects: []
 ---
 ```
 
-## 9.3 Submitting Trays without delivery ##
+## 6.3 Submitting Trays without delivery ##
 
 The `/ariac/submit_tray` service can be used during development for submitting kits for evaluation without them being ready for delivery. 
 
@@ -354,7 +354,7 @@ success: True
 inspection_result: 0.0
 ```
 
-## 9.4 Querying Locations of Products ##
+## 6.4 Querying Locations of Products ##
 To determine where in the workcell products may be found, you can use the [osrf_gear/GetMaterialLocations](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/srv/GetMaterialLocations.srv) service.
 The bins where products are found will change between trials.
 

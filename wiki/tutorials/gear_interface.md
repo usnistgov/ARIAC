@@ -104,12 +104,12 @@ rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/piston_rod_part_red_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model piston_rod_part_red_5
 ```
 
-![ariac_faulty_part_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4190081571-ariac_faulty_part_labeled.png)
+<img src="wiki/figures/faulty_part" alt="alt text" width="900" class="center">
 
 * Then run this command to see the quality control sensor's output.
 
 ```bash
-rostopic echo /ariac/quality_control_sensor_1
+rostopic echo /ariac/quality_control_sensor_2
 ```
 
 * You should see that the part spawned has been detected as faulty.
@@ -130,14 +130,15 @@ models:
         w: -0.502527936164
 pose: 
   position: 
-    x: 0.3
-    y: 3.5
+    x: 0.0
+    y: 7.464603
     z: 1.5
   orientation: 
-    x: 0.501601833862
-    y: 0.499997434122
-    z: -0.499997434122
-    w: 0.498398166138
+    x: -0.501534709481
+    y: 0.500065091546
+    z: 0.499929765446
+    w: 0.498465714993
+
 ```
 
 # Controlling the Arms #

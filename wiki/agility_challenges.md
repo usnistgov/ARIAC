@@ -11,11 +11,14 @@ The sample trial config files explain the expected behavior at the top of the fi
 See the [configuration tutorial](configuration_spec.md) for how to use these trial config files.
 
 ## Faulty products
+  * Faulty products should not be used to fulfill the orders.
+  * Config files that contain faulty products:
+    * [`qual1_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual1/qual1_testing1.yaml)
+    * 
 
-This is being tested...will be updated when ready.
-<!---Sample trial: `sample_not_enough_products.yaml`
-Faulty products should not be used to fulfill the orders.
-See [this page](http://wiki.ros.org/ariac/2019/Tutorials/GEARInterface#Faulty_products) for details on working with faulty products.-->
+Sample trial: `sample_not_enough_products.yaml`
+
+See [this page](http://wiki.ros.org/ariac/2019/Tutorials/GEARInterface#Faulty_products) for details on working with faulty products.
 
 ## Insufficiently many products
 

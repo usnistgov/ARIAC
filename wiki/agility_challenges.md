@@ -14,7 +14,9 @@ See the [configuration tutorial](configuration_spec.md) for how to use these tri
   * Faulty products should not be used to fulfill the orders.
   * Config files that contain faulty products:
     * [`qual1_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual1/qual1_testing1.yaml)
-    * 
+    * [`qual1_testing2.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual1/qual1_testing2.yaml)
+    * [`qual2_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual2/qual2_testing1.yaml)
+    * [`qual3_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual3/qual3_testing1.yaml)
 
 Sample trial: `sample_not_enough_products.yaml`
 

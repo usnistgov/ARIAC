@@ -104,7 +104,7 @@ rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/piston_rod_part_red_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model piston_rod_part_red_5
 ```
 
-<img src="wiki/figures/faulty_part" alt="alt text" width="900" class="center">
+<img src="wiki/figures/faulty_part.png" alt="alt text" width="900" class="center">
 
 * Then run this command to see the quality control sensor's output.
 

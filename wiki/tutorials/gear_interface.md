@@ -162,13 +162,13 @@ rosservice call /ariac/gantry/left_arm/gripper/control "enable: true"
 * The gripper periodically publishes its internal state on topic `/ariac/gantry/N/gripper/state` where `N` is `left_arm_controller` or `right_arm_controller`.
 * Subscribe to this topic to introspect the gripper's status.
 * You can check whether the suction is enabled/disabled or whether there is an object attached to the gripper. 
-  * Execute the following command to display `left_arm`'s gripper state:
+* Execute the following command to display `left_arm`'s gripper state:
 
 ```bash
 rostopic echo /ariac/gantry/left_arm/gripper/state -n 1
 ```
 
-   * Disable the suction again for now with
+* Disable the suction again for now with
 
 ```bash
 rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
@@ -178,13 +178,13 @@ rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
 
 * Each arm has its own command topic for controlling the joints of the arm on `/ariac/gantry/N/command
 ` where `N` is `left_arm_controller` or `right_arm_controller`
-The topic uses [trajectory_msgs/JointTrajectory](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
-The arm's controller will try to match the commanded states.
-The arm is controlled by an instance of [ros_controllers/joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller).
+* The topic uses [trajectory_msgs/JointTrajectory](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
+* The arm's controller will try to match the commanded states.
+* The arm is controlled by an instance of [ros_controllers/joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller).
 
 ### 4.2.1 Command Line ###
 
-Run this command to move `arm1` over a gasket part in the sample environment.
+* Run this command to move `left_arm` over a part in the sample environment (the following command needs to be updated for the new robot).
 
 ```bash
 rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
@@ -199,36 +199,43 @@ rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_
 ]}" -1
 ```
 
-You should see the arm move to the specified joint positions.
-To get the current joint positions of the arm, run:
+* You should see the arm move to the specified joint positions.
+* To get the current joint positions of the arm, run:
 
 ```bash
-rostopic echo /ariac/arm1/joint_states -n 1
+rostopic info /ariac/gantry/joint_states -n 1
 ```
 
-The `/ariac/armN/joint_states` topic uses the [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html) message which contains joint positions, velocities, efforts, and the name of the joints.
+* The previous command will report the joint states of the whole robot in this order
+```
+name: [left_elbow_joint, left_shoulder_lift_joint, left_shoulder_pan_joint, left_vacuum_gripper_joint,
+  left_wrist_1_joint, left_wrist_2_joint, left_wrist_3_joint, right_elbow_joint, right_shoulder_lift_joint,
+  right_shoulder_pan_joint, right_vacuum_gripper_joint, right_wrist_1_joint, right_wrist_2_joint,
+  right_wrist_3_joint, small_long_joint, torso_base_main_joint, torso_rail_joint]
+```
+
+* The `/ariac/gantry/joint_states` topic uses the [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html) message which contains joint positions, velocities, efforts, and the name of the joints.
 
 
-Now, enable the gripper on arm1.
+* Now, enable the gripper on arm1.
 
 ```bash
-rosservice call /ariac/arm1/gripper/control "enable: true"
+rosservice call /ariac/gantry/left_arm/gripper/control "enable: true"
 ```
 
-The gripper state should now show it has attached to an object.
+* The gripper state should now show it has attached to an object.
 
 ```
-$ rostopic echo -n 1 /ariac/arm1/gripper/state 
+$ rostopic echo -n 1 /ariac/gantry/left_arm/gripper/state 
 enabled: True
 attached: True
 ---
 ```
 
-Note, you could have enabled the gripper at the beginning.
-It will attach to the first product it contacts.
+*Note, you could have enabled the gripper at the beginning.It will attach to the first product it contacts.
 
 
-Move the part over `AGV1`'s tray
+* Move the part over `AGV1`'s tray (The following command needs to be updated for the new robot).
 ```
 rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
         ['linear_arm_actuator_joint',  'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'], \
@@ -244,13 +251,13 @@ rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_
 ]}" -1
 ```
 
-Disable the gripper to drop the object
+* Disable the gripper to drop the object
 
 ```bash
-rosservice call /ariac/arm1/gripper/control "enable: false"
+rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
 ```
 
-Return the arm to the starting position.
+* Return the arm to the starting position (the following command needs to be updated for the new robot).
 
 ```
 rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
@@ -284,7 +291,7 @@ Repeat the procedure replacing `arm1` with `arm2` to control the second arm.
 
 ### 4.2.3 MoveIt ###
 
-See the [ARIAC 2019 MoveIt tutorial](moveit_interface.md).
+See the [ARIAC 2020 MoveIt tutorial](moveit_interface.md).
 
 # 5. Visualization in RViz #
 

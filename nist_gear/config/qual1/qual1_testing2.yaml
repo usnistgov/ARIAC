@@ -1,0 +1,142 @@
+# HPO3
+#drop parts: no
+#High priority orders: yes
+#Part flipping: yes
+#Faulty parts: yes
+#Dynamic obstacles: no
+#Sensor blackout: no
+#2 arms advantageous: yes
+#parts on conveyor: required
+options:
+  insert_models_over_bins: true
+  insert_models_over_shelves: true
+  belt_population_cycles: 3
+  model_type_aliases:
+    order_part1: pulley_part_red
+    order_part2: gear_part_blue
+    order_part3: gasket_part_red
+
+shelf_layout:
+  row_1: ['base','collar',0,'base'] #shelves: 3, 4, 5
+  row_2: ['pipe', 0,'base','base']   #shelves: 6, 7, 8
+  row_3: ['base','pipe',0,'collar'] #shelves: 9, 10, 11
+
+orders:
+  order_0:
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    shipment_count: 1
+    destinations: [any]
+    products:
+      product_0:
+        type: order_part2
+        pose:
+          xyz: [0.1, -0.2, 0]
+          rpy: [0, 0, 0]
+      product_1:
+        type: order_part3
+        pose:
+          xyz: [-0.1, -0.2, 0]
+          rpy: [0, 0, 0]
+      product_2:
+        type: order_part2
+        pose:
+          xyz: [0.15, 0.15, 0]
+          rpy: [0, 0, 0]
+      product_3:
+        type: order_part3
+        pose:
+          xyz: [-0.15, 0.15, 0]
+          rpy: ['pi', 0, 0]
+      product_4:
+        type: order_part2
+        pose:
+          xyz: [0.0, 0.15, 0]
+          rpy: [0, 0, 0]
+  order_0_update_0:
+    announcement_condition: wanted_products
+    announcement_condition_value: 4
+    shipment_count: 1
+    destinations: [any]
+    products:
+      product_0:
+        type: order_part1
+        pose:
+          xyz: [0.1, -0.2, 0]
+          rpy: [0, 0, 0]
+      product_1:
+        type: order_part3
+        pose:
+          xyz: [0.0, 0.15, 0]
+          rpy: [0, 0, 0]
+
+models_over_bins:
+   bin5:
+     models:
+       gear_part_blue:
+         xyz_start: [0.1, 0.1, 0.0]
+         xyz_end: [0.5, 0.5, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 3
+         num_models_y: 3
+models_over_shelves:
+  shelf8:
+    models:
+      gear_part_blue:
+        xyz_start: [0.7, -0.5, 0.0]
+        xyz_end: [0., -0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 5
+        num_models_y: 2
+  shelf11:
+    models:
+      gasket_part_red:
+        xyz_start: [0.7, 0.5, 0.0]
+        xyz_end: [0., 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 4
+        num_models_y: 1
+
+belt_models:
+  pulley_part_red:
+    1.0:
+      pose:
+        xyz: [0.0, 4.3, 0.92]
+        rpy: [0, 0, 'pi/2']
+  gasket_part_red:
+    2.0:
+      pose:
+        xyz: [0.0, 4.3, 0.92]
+        rpy: [0, 0, 'pi/2']
+  pulley_part_red:
+    5.0:
+      pose:
+        xyz: [0.0, 4.3, 0.92]
+        rpy: [0, 0, 'pi/2']
+
+faulty_products:
+  - gasket_part_red_5
+# drops:
+#   drop_regions:
+#     shipping_box_0_impeding:
+#       frame: agv1::kit_tray_1
+#       min:
+#         xyz: [-0.3, -0.3, 0.0]
+#       max:
+#         xyz: [0.3, 0.3, 0.5]
+#       destination:
+#         xyz: [0.3, 0.3, 0.05]
+#         rpy: [0, 0, 0.2]
+#       product_type_to_drop: gear_part_red
+#     shipping_box_1_impeding:
+#       frame: agv2::kit_tray_2
+#       min:
+#         xyz: [-0.3, -0.3, 0.0]
+#       max:
+#         xyz: [0.3, 0.3, 0.5]
+#       destination:
+#         xyz: [0.15, 0.15, 0.05]
+#         rpy: [0, 0, 0.2]
+#       product_type_to_drop: gear_part_red
+
+#time_limit: -1

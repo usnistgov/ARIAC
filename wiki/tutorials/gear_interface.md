@@ -168,7 +168,7 @@ rosservice call /ariac/gantry/left_arm/gripper/control "enable: true"
 rostopic echo /ariac/gantry/left_arm/gripper/state -n 1
 ```
 
-  * Disable the suction again for now with
+   * Disable the suction again for now with
 
 ```bash
 rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"

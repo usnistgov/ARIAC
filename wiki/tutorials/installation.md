@@ -89,6 +89,12 @@ cd ~/ariac_ws
 rosdep install --from-paths ./src --ignore-packages-from-source -y
 ```
 
+If not installed, make sure you install ros_control:
+
+```bash
+sudo apt-get install ros-melodic-ros-control ros-melodic-ros-controllers
+```
+
 ## Building GEAR
 
 The command `catkin` from the Catkin Command Line Tools is used to build the software.
@@ -176,4 +182,5 @@ Note the very first launch may take a while because Gazebo downloads models from
 
 -------------------------------------------------
 - Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+
 -------------------------------------------------

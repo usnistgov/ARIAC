@@ -19,7 +19,7 @@ source ~/ariac_ws/devel/setup.bash
 
 * To launch GEAR with a sample work cell that has some sensors and parts in various locations, run:
 
-```bash
+```bash 
 roslaunch nist_gear sample_environment.launch
 ```
 
@@ -36,7 +36,7 @@ rosservice call /ariac/start_competition
 ```
 
 ## Trial End ##
-* When all orders have been filled, or the time limit for the trial has been exhausted, the competition state published on `/ariac/competition_state` will change to `done`.
+* When all orders have been filled, or the time limit for the trial has been exhausted, the competition state published on `/ariac/competition_state` will change to `done`. 
 
 * To check the competition state, run:
 
@@ -83,7 +83,7 @@ rostopic echo /ariac/orders
 rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 ```
 
-* If multiple trays need to be submitted, the AGV will return an empty tray after the submitted tray has been evaluated.
+* If multiple trays need to be submitted, the AGV will return an empty tray after the submitted tray has been evaluated. 
 
 * During the final competition the order may indicate that it must be delivered to a particular AGV.
 * Orders delivered on the wrong AGV will be counted as a zero score.
@@ -115,25 +115,25 @@ rostopic echo /ariac/quality_control_sensor_1
 * You should see that the part spawned has been detected as faulty.
 
 ```
-models:
-  -
+models: 
+  - 
     type: "model"
-    pose:
-      position:
+    pose: 
+      position: 
         x: 0.743197471473
         y: -0.100148694292
         z: 0.453218022501
-      orientation:
+      orientation: 
         x: -0.496443448488
         y: 0.50485071322
         z: 0.496120280969
         w: -0.502527936164
-pose:
-  position:
+pose: 
+  position: 
     x: 0.3
     y: 3.5
     z: 1.5
-  orientation:
+  orientation: 
     x: 0.501601833862
     y: 0.499997434122
     z: -0.499997434122
@@ -151,7 +151,7 @@ Each arm has a simulated pneumatic gripper attached to the arm's end effector.
 Teams can enable or disable the suction of the gripper.
 When the suction is enabled and the gripper is making contact with a product, the contacting product will be attached to the gripper.
 At any point, teams will also be able to disable the suction, causing the detachment of the object if it was previously attached.
-To enable `arm1`'s gripper suction from the command line, run:
+To enable `arm1`'s gripper suction from the command line, run: 
 
 ```bash
 rosservice call /ariac/arm1/gripper/control "enable: true"
@@ -214,7 +214,7 @@ rosservice call /ariac/arm1/gripper/control "enable: true"
 The gripper state should now show it has attached to an object.
 
 ```
-$ rostopic echo -n 1 /ariac/arm1/gripper/state
+$ rostopic echo -n 1 /ariac/arm1/gripper/state 
 enabled: True
 attached: True
 ---
@@ -330,10 +330,10 @@ rosservice call /ariac/conveyor/control "power: 100"
 
 ## Viewing Tray Contents ##
 
-The `/ariac/trays` topic can be used during development for seeing the pose of products in the shipping boxes in the same frame as that which will be used for shipment evaluation.
+The `/ariac/trays` topic can be used during development for seeing the pose of products in the shipping boxes in the same frame as that which will be used for shipment evaluation. 
 
 ```
-$ rostopic echo /ariac/trays
+$ rostopic echo /ariac/trays 
 tray: "agv1::kit_tray_1::kit_tray_1::tray"
 objects: []
 ---
@@ -344,7 +344,7 @@ objects: []
 
 ## Submitting Trays without delivery ##
 
-The `/ariac/submit_tray` service can be used during development for submitting kits for evaluation without them being ready for delivery.
+The `/ariac/submit_tray` service can be used during development for submitting kits for evaluation without them being ready for delivery. 
 
 ```
 $ rosservice call /ariac/submit_tray "tray_id: 'agv1::kit_tray_1::kit_tray_1::tray'
@@ -361,10 +361,10 @@ An example service call and response is:
 
 ```
 $ rosservice call /ariac/material_locations "material_type: piston_rod_part"
-storage_units:
-  -
+storage_units: 
+  - 
     unit_id: "bin2"
-  -
+  - 
     unit_id: "belt"
 ```
 

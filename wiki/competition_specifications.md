@@ -126,7 +126,7 @@ shelf_layout:
 
 - The config file `sample_obstacles.yaml` contains examples of moving obstacles.
 
-<img src="/home/zeid/ariac2020/usnistgov/src/wiki/figures/moving-obstacles.jpeg" style="zoom:100%;" />
+<img src="figures/moving-obstacles.jpeg" style="zoom:100%;" />
 
 
 # 3. Robot #

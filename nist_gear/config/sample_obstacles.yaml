@@ -9,6 +9,18 @@ shelf_layout:
   row_2: [0, 'pipe','base','base']   #shelves: 6, 7, 8
   row_3: ['base','pipe',0,'collar'] #shelves: 9, 10, 11
 
+aisle_layout:
+  person_1:
+    location: -1.57
+    start_time: 0.
+    move_time: 9.
+    wait_time: 7.
+  person_2:
+    location: 4.57
+    start_time: 16.
+    move_time: 9.
+    wait_time: 7.
+
 orders:
   order_0:
     announcement_condition: time
@@ -58,6 +70,36 @@ models_over_shelves:
         xyz_end: [-1.0, -0.5, 0.0]
         rpy: [0, 0, 0]
         num_models_x: 5
+        num_models_y: 1
+  shelf5:
+    models:
+      gear_part_red:
+        xyz_start: [-1.5, 0.5, 0.0]
+        xyz_end: [-1.0, 0.5, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 5
+        num_models_y: 1
+  shelf8:
+    models:
+      gear_part_green:
+        xyz_start: [0.7, -0.5, 0.0]
+        xyz_end: [0., -0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 5
+        num_models_y: 2
+  shelf11:
+    models:
+      piston_rod_part_blue:
+        xyz_start: [1.5, 0.4, 0.0]
+        xyz_end: [1.0, 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 3
+        num_models_y: 1
+      piston_rod_part_green:
+        xyz_start: [1.5, -0.5, 0.0]
+        xyz_end: [1.0, -0.5, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 3
         num_models_y: 1
 
 belt_models:

@@ -7,7 +7,7 @@ The purpose of this tutorial is to introduce you to the [competition interface](
 
 <!--![ariac_overview_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4277201198-ariac_overview_labeled.png)-->
 
-# 1. Running GEAR #
+# Running GEAR #
 
 * After building GEAR from SOURCE, you will have to source the setup file from your catkin workspace.
 
@@ -19,13 +19,13 @@ source ~/ariac_ws/devel/setup.bash
 
 * To launch GEAR with a sample work cell that has some sensors and parts in various locations, run:
 
-```bash 
+```bash
 roslaunch nist_gear sample_environment.launch
 ```
 
-# 2. Starting and Stopping the Competition #
+# Starting and Stopping the Competition #
 
-## 2.1 Starting ##
+## Starting ##
 
 * When gear is started, various competition elements will be in an inactive state.
 * A service must be called to activate these components.
@@ -35,8 +35,8 @@ roslaunch nist_gear sample_environment.launch
 rosservice call /ariac/start_competition
 ```
 
-## 2.2 Trial End ##
-* When all orders have been filled, or the time limit for the trial has been exhausted, the competition state published on `/ariac/competition_state` will change to `done`. 
+## Trial End ##
+* When all orders have been filled, or the time limit for the trial has been exhausted, the competition state published on `/ariac/competition_state` will change to `done`.
 
 * To check the competition state, run:
 
@@ -50,13 +50,13 @@ rostopic echo /ariac/competition_state -n 1
 rosservice call /ariac/end_competition
 ```
 
-# 3. Fulfilling Orders #
+# Fulfilling Orders #
 
 * Orders for kits will be published during the competitions.
 * An order is composed of products to place onto a tray.
 * Teams earn points by completing orders quickly.
 
-## 3.1 Receiving Orders ##
+## Receiving Orders ##
 
 * Teams must subscribe to this topic to receive the initial order, as well as any future order updates.
 * To see the last order that was published, run:
@@ -69,7 +69,7 @@ rostopic echo /ariac/orders
 * You must add your sensors to detect and classify products in the storage bins or conveyor belt.
 * The most recently received order is the highest priority.
 
-## 3.2 Delivering Orders ##
+## Delivering Orders ##
 
 * There are two AGVs carrying trays that kits can be assembled on.
 * When a kit has been completed, the AGV must be commanded to deliver the kit so it can be scored.
@@ -80,16 +80,16 @@ rostopic echo /ariac/orders
 * Call this service to submit a tray for evaluation:
 
 ```bash
-rosservice call /ariac/agv1 "kit_type: order_0_shipment_0"
+rosservice call /ariac/agv1 "kit_type: order_0_kit_0"
 ```
 
-* If multiple trays need to be submitted, the AGV will return an empty tray after the submitted tray has been evaluated. 
+* If multiple trays need to be submitted, the AGV will return an empty tray after the submitted tray has been evaluated.
 
 * During the final competition the order may indicate that it must be delivered to a particular AGV.
 * Orders delivered on the wrong AGV will be counted as a zero score.
 
 
-## 3.3 Faulty Products ##
+## Faulty Products ##
 * There are quality control sensors above each AGV that publish the pose of faulty parts that they see on the tray. The quality control sensors:
   * have an equivalent interface to logical camera sensors
   * publish tf frames of faulty parts
@@ -104,87 +104,83 @@ rosservice call /ariac/agv1 "kit_type: order_0_shipment_0"
 rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/piston_rod_part_red_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model piston_rod_part_red_5
 ```
 
-<img src="../figures/faulty_part.png" alt="alt text" width="400" class="center">
+![ariac_faulty_part_labeled.png](https://bitbucket.org/repo/pB4bBb/images/4190081571-ariac_faulty_part_labeled.png)
 
 * Then run this command to see the quality control sensor's output.
 
 ```bash
-rostopic echo /ariac/quality_control_sensor_2
+rostopic echo /ariac/quality_control_sensor_1
 ```
 
 * You should see that the part spawned has been detected as faulty.
 
 ```
-models: 
-  - 
+models:
+  -
     type: "model"
-    pose: 
-      position: 
+    pose:
+      position:
         x: 0.743197471473
         y: -0.100148694292
         z: 0.453218022501
-      orientation: 
+      orientation:
         x: -0.496443448488
         y: 0.50485071322
         z: 0.496120280969
         w: -0.502527936164
-pose: 
-  position: 
-    x: 0.0
-    y: 7.464603
+pose:
+  position:
+    x: 0.3
+    y: 3.5
     z: 1.5
-  orientation: 
-    x: -0.501534709481
-    y: 0.500065091546
-    z: 0.499929765446
-    w: 0.498465714993
-
+  orientation:
+    x: 0.501601833862
+    y: 0.499997434122
+    z: -0.499997434122
+    w: 0.498398166138
 ```
 
-# 4. Controlling the Robot #
+# Controlling the Arms #
 
-* This year the robot consists of two UR10 arms mounted on a torso, which is itself mounted on a linear rail. This linear rail moves along two other rails. 
-* The torso + small rail + long rails constitute the gantry part of the robot.
-* The UR10 simulation and control code is provided by [ROS Industrial's universal_robot ROS packages](https://github.com/ros-industrial/universal_robot). The control parameters have been modified for use in the ARIAC simulation.
+There are two UR10 arms in the simulation. The UR10 simulation and control code is provided by [ROS Industrial's universal_robot ROS packages](https://github.com/ros-industrial/universal_robot).
+The control parameters have been modified for use in the ARIAC simulation.
 
-## 4.1 Controlling a Vacuum Gripper ##
+## Controlling a Vacuum Gripper ##
 
-* Each arm has a simulated pneumatic gripper attached to the arm's end effector.
-* Teams can enable or disable the suction of the gripper.
-* When the suction is enabled and the gripper is making contact with a product, the contacting product will be attached to the gripper.
-* At any point, teams will also be able to disable the suction, causing the detachment of the object if it was previously attached.
-* To enable `left_arm`'s gripper suction from the command line, run: 
+Each arm has a simulated pneumatic gripper attached to the arm's end effector.
+Teams can enable or disable the suction of the gripper.
+When the suction is enabled and the gripper is making contact with a product, the contacting product will be attached to the gripper.
+At any point, teams will also be able to disable the suction, causing the detachment of the object if it was previously attached.
+To enable `arm1`'s gripper suction from the command line, run:
 
 ```bash
-rosservice call /ariac/gantry/left_arm/gripper/control "enable: true"
+rosservice call /ariac/arm1/gripper/control "enable: true"
 ```
 
-* The gripper periodically publishes its internal state on topic `/ariac/gantry/N/gripper/state` where `N` is `left_arm_controller` or `right_arm_controller`.
-* Subscribe to this topic to introspect the gripper's status.
-* You can check whether the suction is enabled/disabled or whether there is an object attached to the gripper. 
-* Execute the following command to display `left_arm`'s gripper state:
+The gripper periodically publishes its internal state on topic `/ariac/armN/gripper/state`.
+Subscribe to this topic to introspect the gripper's status.
+You can check whether the suction is enabled/disabled or whether there is an object attached to the gripper. Execute the following command to display `arm1`'s gripper state:
 
 ```bash
-rostopic echo /ariac/gantry/left_arm/gripper/state -n 1
+rostopic echo /ariac/arm1/gripper/state -n 1
 ```
 
-* Disable the suction again for now with
+Disable the suction again for now with
 
 ```bash
-rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
+rosservice call /ariac/arm1/gripper/control "enable: false"
 ```
 
-## 4.2 Controlling Arm Joints ##
+## Controlling Arm Joints ##
 
-* Each arm has its own command topic for controlling the joints of the arm on `/ariac/gantry/N/command
-` where `N` is `left_arm_controller` or `right_arm_controller`
-* The topic uses [trajectory_msgs/JointTrajectory](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
-* The arm's controller will try to match the commanded states.
-* The arm is controlled by an instance of [ros_controllers/joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller).
+Each arm has its own command topic for controlling the joints of the arm on `/ariac/armN/arm/command` where `N` is `1` or `2`.
+The topic uses [trajectory_msgs/JointTrajectory](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html) messages.
+The arm's controller will try to match the commanded states.
+The arm is controlled by an instance of [ros_controllers/joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller).
 
-### 4.2.1 Command Line ###
+### Command Line ###
 
-* Run this command to move `left_arm` over a part in the sample environment (the following command needs to be updated for the new robot).
+Run this command to move `arm1` over a gasket part in the sample environment.
 
 ```bash
 rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
@@ -199,43 +195,36 @@ rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_
 ]}" -1
 ```
 
-* You should see the arm move to the specified joint positions.
-* To get the current joint positions of the arm, run:
+You should see the arm move to the specified joint positions.
+To get the current joint positions of the arm, run:
 
 ```bash
-rostopic info /ariac/gantry/joint_states -n 1
+rostopic echo /ariac/arm1/joint_states -n 1
 ```
 
-* The previous command will report the joint states of the whole robot in this order
-```
-name: [left_elbow_joint, left_shoulder_lift_joint, left_shoulder_pan_joint, left_vacuum_gripper_joint,
-  left_wrist_1_joint, left_wrist_2_joint, left_wrist_3_joint, right_elbow_joint, right_shoulder_lift_joint,
-  right_shoulder_pan_joint, right_vacuum_gripper_joint, right_wrist_1_joint, right_wrist_2_joint,
-  right_wrist_3_joint, small_long_joint, torso_base_main_joint, torso_rail_joint]
-```
-
-* The `/ariac/gantry/joint_states` topic uses the [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html) message which contains joint positions, velocities, efforts, and the name of the joints.
+The `/ariac/armN/joint_states` topic uses the [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html) message which contains joint positions, velocities, efforts, and the name of the joints.
 
 
-* Now, enable the gripper on arm1.
+Now, enable the gripper on arm1.
 
 ```bash
-rosservice call /ariac/gantry/left_arm/gripper/control "enable: true"
+rosservice call /ariac/arm1/gripper/control "enable: true"
 ```
 
-* The gripper state should now show it has attached to an object.
+The gripper state should now show it has attached to an object.
 
 ```
-$ rostopic echo -n 1 /ariac/gantry/left_arm/gripper/state 
+$ rostopic echo -n 1 /ariac/arm1/gripper/state
 enabled: True
 attached: True
 ---
 ```
 
-*Note, you could have enabled the gripper at the beginning.It will attach to the first product it contacts.
+Note, you could have enabled the gripper at the beginning.
+It will attach to the first product it contacts.
 
 
-* Move the part over `AGV1`'s tray (The following command needs to be updated for the new robot).
+Move the part over `AGV1`'s tray
 ```
 rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
         ['linear_arm_actuator_joint',  'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'], \
@@ -251,13 +240,13 @@ rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_
 ]}" -1
 ```
 
-* Disable the gripper to drop the object
+Disable the gripper to drop the object
 
 ```bash
-rosservice call /ariac/gantry/left_arm/gripper/control "enable: false"
+rosservice call /ariac/arm1/gripper/control "enable: false"
 ```
 
-* Return the arm to the starting position (the following command needs to be updated for the new robot).
+Return the arm to the starting position.
 
 ```
 rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
@@ -270,7 +259,7 @@ rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_
 ```
 
 
-### 4.2.2 rqt GUI ###
+### rqt GUI ###
 
 To control an arm from a GUI, run:
 
@@ -289,13 +278,13 @@ Disable the controller in rqt if you wish to send trajectories from the command-
 
 Repeat the procedure replacing `arm1` with `arm2` to control the second arm.
 
-### 4.2.3 MoveIt ###
+### MoveIt ###
 
-See the [ARIAC 2020 MoveIt tutorial](moveit_interface.md).
+See the [ARIAC 2019 MoveIt tutorial](moveit_interface.md).
 
-# 5. Visualization in RViz #
+# Visualization in RViz #
 
-## 5.1 TF frames ##
+## TF frames ##
 
 GEAR publishes various TF frames of various poses in the world.
 These frames may be useful when developing the robot control algorithm.
@@ -307,7 +296,7 @@ rosrun rviz rviz -d `catkin_find osrf_gear --share --first-only`/rviz/ariac.rviz
 
 **Note that GEAR uses tf2_msgs and not the deprecated tf_msgs. Accordingly, you should use the tf2 package instead of tf.**
 
-## 5.2 Robot Model ##
+## Robot Model ##
 
 Using the RobotModel display, one arm at a time can be visualized in rviz.
 It requires remapping the `tf` topics and `robot_description` parameter.
@@ -323,12 +312,12 @@ rosrun rviz rviz /tf:=/ariac/arm2/tf /tf_static:=/ariac/arm2/tf_static robot_des
 ```
 
 
-# 6. Troubleshooting Interfaces #
+# Troubleshooting Interfaces #
 
 There are a few interfaces that will not be available during the competition but can be useful during development.
 **These interfaces will not be available during the competition.**
 
-## 6.1 Controlling the Conveyor belt ##
+## Controlling the Conveyor belt ##
 
 The service `/ariac/conveyor/control` can be used to modify the power of the conveyor belt or stop it.
 The power can be 0 or a value in the range of 50 to 100, with 100 representing full speed.
@@ -339,12 +328,12 @@ You can start the conveyor belt with
 rosservice call /ariac/conveyor/control "power: 100"
 ```
 
-## 6.2 Viewing Tray Contents ##
+## Viewing Tray Contents ##
 
-The `/ariac/trays` topic can be used during development for seeing the pose of products in the shipping boxes in the same frame as that which will be used for shipment evaluation. 
+The `/ariac/trays` topic can be used during development for seeing the pose of products in the shipping boxes in the same frame as that which will be used for shipment evaluation.
 
 ```
-$ rostopic echo /ariac/trays 
+$ rostopic echo /ariac/trays
 tray: "agv1::kit_tray_1::kit_tray_1::tray"
 objects: []
 ---
@@ -353,9 +342,9 @@ objects: []
 ---
 ```
 
-## 6.3 Submitting Trays without delivery ##
+## Submitting Trays without delivery ##
 
-The `/ariac/submit_tray` service can be used during development for submitting kits for evaluation without them being ready for delivery. 
+The `/ariac/submit_tray` service can be used during development for submitting kits for evaluation without them being ready for delivery.
 
 ```
 $ rosservice call /ariac/submit_tray "tray_id: 'agv1::kit_tray_1::kit_tray_1::tray'
@@ -364,7 +353,7 @@ success: True
 inspection_result: 0.0
 ```
 
-## 6.4 Querying Locations of Products ##
+## Querying Locations of Products ##
 To determine where in the workcell products may be found, you can use the [osrf_gear/GetMaterialLocations](https://bitbucket.org/osrf/ariac/raw/master/osrf_gear/srv/GetMaterialLocations.srv) service.
 The bins where products are found will change between trials.
 
@@ -372,10 +361,10 @@ An example service call and response is:
 
 ```
 $ rosservice call /ariac/material_locations "material_type: piston_rod_part"
-storage_units: 
-  - 
+storage_units:
+  -
     unit_id: "bin2"
-  - 
+  -
     unit_id: "belt"
 ```
 

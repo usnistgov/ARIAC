@@ -1,4 +1,12 @@
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+-------------------------------------------------
+
 # Wiki | Tutorials | ARIAC Automated Evaluation
+
+```diff
+- This page is being updated with information on the last docker image
+```
 
 This OSRF [repository](https://github.com/osrf/ariac-docker) contains the setup that will be used to automatically evaluate teams' submission for the Agile Robotics for Industrial Automation Competition (ARIAC) hosted by the National Institute of Standards and Technology (NIST).
 

@@ -13,17 +13,18 @@ See the [configuration tutorial](configuration_spec.md) for how to use these tri
 ## Faulty products
   * Faulty products should not be used to fulfill the orders.
   * Config files that contain faulty products:
-    * [`qual1_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual1/qual1_testing1.yaml)
-    * [`qual1_testing2.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual1/qual1_testing2.yaml)
-    * [`qual2_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual2/qual2_testing1.yaml)
-    * [`qual3_testing1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/qual3/qual3_testing1.yaml)
+    * [`sample1.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample1.yaml)
+    * [`sample2.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample2.yaml)
+    * [`sample3.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample3.yaml)
+    * [`sample4.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample4.yaml)
   * See [Wiki|Tutorials|Interacting with GEAR](./tutorials/gear_interface.md#Faulty-Products) for details on working with faulty products.
 
 ## Insufficiently many products
 
-This is being tested...will be updated when ready.
-<!---Sample trial: `sample_not_enough_products.yaml`
-Not enough non-faulty products are in the environment to fulfill all requested orders.-->
+ * Not enough non-faulty products are in the environment to fulfill all requested orders.
+ * Config files for this challenge can be found in:
+   * [`sample_not_enough_products.yaml`](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample_not_enough_products.yaml)
+
 
 ## Flipped products
 

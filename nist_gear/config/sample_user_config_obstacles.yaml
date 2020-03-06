@@ -1,6 +1,6 @@
 sensors:
   depth_camera_0:
-    type: depth_camera
+    type: depth_camera 
     pose:
       xyz: [3.082385, 1.750927, 1.82]
       rpy: [0, 'pi', 0]
@@ -40,3 +40,39 @@ sensors:
     pose:
       xyz: [-0.26, 3.36, 0.94]
       rpy: [0, 0, 0]
+
+  logical_camera_2:
+    type: logical_camera
+    pose:
+      xyz: [-15.35, 0., 2.49]
+      rpy: [0, 'pi/2', 'pi/2']
+
+  logical_camera_3:
+    type: logical_camera
+    pose:
+      xyz: [-13.52, 0., 2.49]
+      rpy: [0, 'pi/2', 'pi/2']
+
+  logical_camera_4:
+    type: logical_camera
+    pose:
+      xyz: [-15.35, 3., 2.49]
+      rpy: [0, 'pi/2', 'pi/2']
+
+  logical_camera_5:
+    type: logical_camera
+    pose:
+      xyz: [-13.52, 3., 2.49]
+      rpy: [0, 'pi/2', 'pi/2']
+
+  depth_camera_2:
+    type: depth_camera
+    pose:
+      xyz: [-15.35, -3., 2.49]
+      rpy: [0, 'pi', 0]
+
+  depth_camera_3:
+    type: depth_camera
+    pose:
+      xyz: [-13.52, -3., 2.49]
+      rpy: [0, 'pi', 0]

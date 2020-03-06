@@ -3,7 +3,7 @@
       <static>true</static>
       <link name="link">
         <visual name="visual">
-          <pose>0.007 0 -0.033 0 0 0</pose>
+          <pose>0.007 0 -0.033 1.5708 1.5708 0</pose>
             <geometry>
             <mesh>
                 <uri>model://swissranger_camera_ariac/meshes/SR4000.stl</uri>
@@ -23,40 +23,31 @@
             </box>
           </geometry>
         </collision-->
-        <sensor name="laser_profiler" type="ray">
+        <sensor name="depth_camera" type="depth">
           <update_rate>5</update_rate>
-          <pose>0 0 0.0 0 0 0</pose>
+          <pose>0 0 0 1.5708 -1.5708 0</pose>
           <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
             <activation_topic>/ariac/sensor_enable</activation_topic>
           </plugin>
-          <plugin name="proximity_ray_plugin" filename="libgazebo_ros_block_laser.so" >
-            <!-- If the namespace is set to ariac, the frame will also be namespaced -->
-            <!-- So, we manually namespace the topic only -->
-            <robotNamespace>/</robotNamespace>
+          <plugin name="depth_camera_plugin" filename="libgazebo_ros_depth_camera.so">
+            <imageTopicName>ariac/@(name)/ir/image_raw</imageTopicName>
+            <cameraInfoTopicName>ariac/@(name)/ir/camera_info</cameraInfoTopicName>
+            <pointCloudTopicName>ariac/@(name)/points</pointCloudTopicName>
+            <depthImageTopicName>ariac/@(name)/depth/image_raw</depthImageTopicName>
+            <depthImageCameraInfoTopicName>ariac/@(name)/depth/camera_info</depthImageCameraInfoTopicName>
+            <pointCloudCutoff>0.5</pointCloudCutoff>
             <frameName>@(name)_frame</frameName>
-            <topicName>ariac/@(name)</topicName>
-            <alwaysOn>true</alwaysOn>
           </plugin>
-          <ray>
-            <range>
-              <min>0.4</min>
-              <max>1.0</max>
-              <resolution>0.001</resolution>
-            </range>
-            <scan>
-              <horizontal>
-                <samples>50</samples>
-                <resolution>1</resolution>
-                <min_angle>-0.3</min_angle>
-                <max_angle>0.3</max_angle>
-              </horizontal>
-              <vertical>
-                <samples>50</samples>
-                <resolution>1</resolution>
-                <min_angle>-0.4</min_angle>
-                <max_angle>0.4</max_angle>
-              </vertical>
-            </scan>
+          <camera>
+            <clip>
+              <near>0.2</near>
+              <far>1.1</far>
+            </clip>
+            <horizontal_fov>1.5</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+            </image>
 
             <!-- nothing below this line really needs to be modified upon change of sensor model -->
 
@@ -65,7 +56,7 @@
               <mean>0.0</mean>
               <stddev>0.001</stddev>
             </noise>
-          </ray>
+          </camera>
 
           <always_on>1</always_on>
           <visualize>@(options['visualize_sensor_views'])</visualize>

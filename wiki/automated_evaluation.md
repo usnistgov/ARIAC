@@ -3,6 +3,10 @@
 -------------------------------------------------
 # Wiki | Documentation | ARIAC Automated Evaluation
 
+```diff
+- This page is being updated with information on the last docker image
+```
+
 During ARIAC Qualifiers/Finals, each team will submit their system so that it can be run in the automated evaluation setup. This is to ensure that teams are not using prohibited interfaces to interact with the simulation.
 
 ## Overview of submission requirements

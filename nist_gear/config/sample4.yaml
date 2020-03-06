@@ -1,0 +1,123 @@
+# DO4
+#drop parts: yes
+#High priority orders: no
+#Part flipping: yes
+#Faulty parts: yes
+#Dynamic obstacles: yes (version C)
+#Sensor blackout: no
+#2 arms advantageous
+options:
+  insert_models_over_bins: true
+  insert_models_over_shelves: true
+  model_type_aliases:
+    order_part1: pulley_part_red
+    order_part2: disk_part_red
+    order_part3: disk_part_blue
+    order_part4: piston_rod_part_red
+
+shelf_layout:
+  row_1: ['base','collar',0,'base'] #shelves: 3, 4, 5
+  row_2: ['pipe','base',0,'base']   #shelves: 6, 7, 8
+  row_3: ['base','pipe',0,'collar'] #shelves: 9, 10, 11
+
+aisle_layout:
+  person_1:
+    location: -1.57
+    start_time: 0.
+    move_time: 9.
+    wait_time: 7.
+  person_2:
+    location: 4.57
+    start_time: 16.
+    move_time: 9.
+    wait_time: 7.
+
+orders:
+  order_0:
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    shipment_count: 1
+    destinations: [any]
+    products:
+      product_0:
+        type: order_part2
+        pose:
+          xyz: [0.1, -0.2, 0]
+          rpy: [0, 0, 0]
+      product_1:
+        type: order_part3
+        pose:
+          xyz: [-0.1, -0.2, 0]
+          rpy: [0, 0, 0]
+      product_2:
+        type: order_part1
+        pose:
+          xyz: [0.15, 0.15, 0]
+          rpy: ['pi', 0, 0]
+      product_3:
+        type: order_part4
+        pose:
+          xyz: [-0.15, 0.15, 0]
+          rpy: [0, 0, 0]
+
+
+models_over_bins:
+   bin2:
+     models:
+       pulley_part_red:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 2
+   bin5:
+     models:
+       piston_rod_part_red:
+         xyz_start: [0.1, 0.15, 0.0]
+         xyz_end: [0.35, 0.45, 0.0]
+         rpy: [0, 0, 'pi/4']
+         num_models_x: 3
+         num_models_y: 3
+
+models_over_shelves:
+  shelf8:
+    models:
+      disk_part_blue:
+        xyz_start: [0.7, -0.5, 0.0]
+        xyz_end: [0., -0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 5
+        num_models_y: 2
+      disk_part_red:
+        xyz_start: [0.7, 0.5, 0.0]
+        xyz_end: [0., 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 5
+        num_models_y: 2
+
+drops:
+  drop_regions:
+    shipping_box_0_impeding:
+      frame: agv1::kit_tray_1
+      min:
+        xyz: [-0.3, -0.3, 0.0]
+      max:
+        xyz: [0.3, 0.3, 0.5]
+      destination:
+        xyz: [0.3, 0.3, 0.05]
+        rpy: [0, 0, 0.2]
+      product_type_to_drop: disk_part_red
+    shipping_box_1_impeding:
+      frame: agv2::kit_tray_2
+      min:
+        xyz: [-0.3, -0.3, 0.0]
+      max:
+        xyz: [0.3, 0.3, 0.5]
+      destination:
+        xyz: [0.15, 0.15, 0.05]
+        rpy: [0, 0, 0.2]
+      product_type_to_drop: disk_part_red
+
+faulty_products:
+  - disk_part_blue_2
+#time_limit: -1

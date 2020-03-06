@@ -6,9 +6,20 @@
 
 GEAR is the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC) hosted by the National Institute of Standards and Technology (NIST).
 
-1. [Competition Specifications](competition_specifications.md): The specifications of the ARIAC competition.
-    * [Agility Challenges](agility_challenges.md)
-    * [Product and Coordinate Frame Specifications](frame_specifications.md)
+1. [Competition Specifications](competition_specifications.md)
+    * This page describes the specifications of the ARIAC competition. You will find more information on:
+      * Competition scenarios
+      * Environment
+      * Robot
+      * Sensors
+      * Order
+      * Faulty Products
+      * Scoring
+      * Competition Process
+1. [Agility Challenges](agility_challenges.md)
+    * Here you will find a description of each agility challenge you may encounter during the qualifiers and the final round.
+1. [Product and Coordinate Frame Specifications](frame_specifications.md)
+    * This page outlines the specifications of the pose requirements specified in each Order.
 1. [System Requirements](system_requirements.md)
     * The system requirements for GEAR.
 1. [Competition Interface](competition_interface_documentation.md)

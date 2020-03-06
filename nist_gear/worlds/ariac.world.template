@@ -108,6 +108,26 @@ def expand_snippet(filename, data=locals()):
       </spot>
     </light>
 
+
+    <!-- A directed light source -->
+    <light name="camera_spot_light_1" type='point'>
+      <pose>-7 0 3.0 0 0.0 0</pose>
+      <diffuse>127 127 127 255</diffuse>
+      <specular>25 25 25 255</specular>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+
     <model name="Surroundings_2020">
          <include>
            <static>true</static>
@@ -291,6 +311,25 @@ expand_snippet('laser_profiler.sdf.template')
     </plugin>
 @[end if]@
 
+
+<!-- Dynamic obstacles -->
+@[for name, config in aisle_layout.items()]@
+    <model name="@(name)_ariac">
+      <pose>-1.608863 @(config['location']) -0.02 0 0 -1.572981</pose>
+      <include>
+        <name>@(name)</name>
+        <uri>model://person_ariac</uri>
+      </include>
+      <plugin name="person_plugin" filename="libROSPersonPlugin.so">
+        <start_time>@(config['start_time'])</start_time>
+        <move_time>@(config['move_time'])</move_time>
+        <wait_time>@(config['wait_time'])</wait_time>
+        <robotNamespace>/ariac</robotNamespace>
+      </plugin>
+    </model>
+@[end for]@
+
+
 @[if options['insert_agvs']]@
 @[for agv_id in [1,2]]@
     <!-- AGV@(str(agv_id)) -->
@@ -348,6 +387,7 @@ expand_snippet('laser_profiler.sdf.template')
       <competition_time_limit>@(time_limit)</competition_time_limit>
       <start_competition_service_name>/ariac/start_competition</start_competition_service_name>
       <end_competition_service_name>/ariac/end_competition</end_competition_service_name>
+      <person_control_service_name>/ariac/person/animate</person_control_service_name>
       <population_activate_topic>/ariac/populate_belt</population_activate_topic>
       <conveyor_control_service>/ariac/conveyor/control</conveyor_control_service>
       <submit_tray_service_name>/ariac/submit_shipment</submit_tray_service_name>

@@ -16,9 +16,9 @@ The following terminology is frequently used in this document:
 
 # 1. Competition Scenarios
 
-ARIAC requires participants to complete a series of tests centered in an industrial scenario that are based around order fulfillment. The robot system will work within the environment specified in the Work Environment section.
+* ARIAC requires participants to complete a series of tests centered in an industrial scenario that are based around order fulfillment. The robot system will work within the environment specified in the Work Environment section.
 
-There are three different test scenarios that all involve moving products from a supply location to a shipping box. The possible supply locations are a set of stationary bins. Challenges will be introduced in each scenario. Details about the scenarios follow.
+* There are three different test scenarios that all involve moving products from a supply location to a shipping box. The possible supply locations are a set of stationary bins. Challenges will be introduced in each scenario. Details about the scenarios follow.
 
 1. **Scenario 1: Baseline Kit Building**
 
@@ -38,9 +38,9 @@ Details of the agility challenges used in these scenarios can be found on the [A
 
 # 2. Environment
 
-The simulation environment is a representation of an order fulfillment workcell with a gantry robot, a conveyor belt, product bins, product shelves, AGVs, and trays.
+* The simulation environment is a representation of an order fulfillment workcell with a gantry robot, a conveyor belt, product bins, product shelves, AGVs, and trays.
 
-  <img src="figures/2020_environment.png" alt="alt text" width="1100" class="center">
+<img align="center"  src="figures/Environment_2020_2.png">
 
 
 ## 2.1. Conveyor Belt
@@ -51,41 +51,49 @@ The simulation environment is a representation of an order fulfillment workcell 
  1. There is a limited supply of products on the belt, and any products placed on the belt are automatically removed if they reach the end of the belt. Products will not be replaced once removed.
 
 ## 2.2. Product Bins
-* There are 16 product bins that may be used for building kits. 
-* Products in these bins will not be replaced once used. 
+* There are 16 product bins that may be used for building kits.
+* Products in these bins will not be replaced once used.
 * All products in a particular storage bin are of the same type and have the same orientation.
-* The product bins are shallow boxes measuring **0.6 x 0.6 m**. 
+* The product bins are shallow boxes measuring **0.6 x 0.6 m**.
 
 ## 2.3. Product Shelves
-Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
+* Besides bins and the conveyor belt, we now have the possibility to spawn parts on shelves.
 
-* Each shelf has two levels:
-   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic, meaning **they are not graspable**. 
-   * Product shelves come in 3 different flavors (`base`, `collar`, and `pipe`). They all have the same dimensions. Only the type of ghost parts for those shelves are different. 
-   * When parts are spawn on a shelf, they will always be spawn on the bottom shelf, never on the top shelf.
+* Each shelf has two levels (top and bottom shelves):
+   * Top and bottom shelves contain ghost parts. Those parts are only there for aesthetic, meaning **they are not graspable**.
+   * Product shelves come in 3 different flavors (`base`, `collar`, and `pipe`). They all have the same dimensions. Only the type of ghost parts for those shelves are different. The three types of shelves used in ARIAC 2020 are displayed below.
    <img src="figures/product_shelves.png" alt="alt text" width="900" class="center">
-   
-   <img src="figures/new_shelf_config.png" alt="alt text" width="900" class="center">
-   
+
+   * When parts are spawn on a shelf, they will always be spawn on the bottom shelf, never on the top shelf.
+   <img src="figures/bottom_shelves_config.jpg" alt="alt text" width="900" class="center">
+
+
+   <img src="figures/shelves_stationary_dynamic.png" alt="alt text" width="900" class="center">
+
    * There are exactly 11 shelves in the environment.
-      * 2 shelves will always be at the exact same locations (1 and 2 in the figure)
-      * The locations of the 9 remaining shelves (3 - 11 in the figure) can be customized to a certain extent. 
-         * The configuration for each row of shelves can be specified in `osrf_gear/config/sample.yaml`. Participants are allowed to change the configuration of each row during testing but not during qualifiers and finals.
-         * The figure below combines two screenshots of the environment (top view) where 2 configurations are presented (3 rows per configuration). 
-         * **Configuration 1** and **Configuration 2** show 3 rows of shelves where each row has 3 shelves and 1 gap. It is mandatory that each row has **exactly** 3 shelves and 1 gap. 
-            * In **Configuration 1**, the gap is located after the first shelf (row_1), at the end of the row of shelves (row_2), and after the first two shelves (row_3).
-            * In **Configuration 2**, the gap is located after all the shelves (row_1), after the first shelf (row_2), and before all the shelves (row_3). The 3 rows of shelves for **Configuration 2** is represented in the Yaml code below and can be found in `config.yaml`.
-            
+      * The figure above shows only two examples of what the environment may look like (there are many more combinations). Shelves 1, 2, 5, 8, and 11 **will never move** between runs (stationary shelves) while shelves 3, 4, 6, 7, 9, 10 can move between runs (moving shelves).
+      * **Very Important**: Parts will never be placed on shelves 3, 4, 6, 7, 9, 10. These shelves are used to only change the configuration of the floor, thus allowing participants to do path planning.
+      * Moving shelves will only be displaced in their own row (Row 1, 2, and 3).
+         * Shelves 3 and 4 will only move in Row 1.
+         * Shelves 6 and 7 will only move in Row 2.
+         * Shelves 9 and 10 will only move in Row 3.
+      * To access parts on bottom shelves, the robot needs to navigate between the shelves as it cannot go over them.
+         * **Each row has exactly one gap**, generated by moving shelves. For instance, in the figure on the left, Row 1 has a gap between shelf 4 and shelf 5. In the figure on the right, Row 1 has a gap between shelf 3 and shelf 4.
+         * Also note that gaps are not necessarily between shelves. The figure on the right shows a gap before shelf 9.
+         * During testing, you can specify where to put this gap for each row. For instance, you can edit `sample.yaml` as shown below. To create a gap in a row you only need to use 0 instead of a shelf name. In the code below there will be a gap between the shelf `base` and `collar` in Row 1.
 ```yaml
 shelf_layout:
-   row_1: ['base','collar','collar',0] #shelves: 3, 4, 5
+   row_1: ['base',0,'collar','collar'] #shelves: 3, 4, 5
    row_2: ['pipe',0,'base','collar']   #shelves: 6, 7, 8
    row_3: [0,'pipe','base','collar'] #shelves: 9, 10, 11
-   ``` 
-   
+   ```
+
+
+
 ## 2.4. Parts
-* ARIAC 2020 is using the same part types found in ARIAC 2019. 
-* In ARIAC 2020, each part type comes in 3 colors (see figure below).
+* ARIAC 2020 has 4 part types (gasket, piston rod, gear, and pulley).
+* Each part type comes in 3 colors (see figure below).
+* **Instead of the usual 4 parts** we had in the previous competitions, this year we have **12 parts**, e.g., red gasket, green gasket, and blue gasket.
 
 
   <img src="figures/parts.png" alt="alt text" width="600" class="center">
@@ -105,7 +113,7 @@ shelf_layout:
     * 1 linear actuator which allows the small rail to move along the long rails.
       * The small rail moves at a velocity of **4m/s** and is within the range **x=[-14.5, 5.25]**
     * 1 rotatory torso which rotates around the base z-axis.
-    * Two 6 DoF UR10 arms attached to the torso. 
+    * Two 6 DoF UR10 arms attached to the torso.
       * Each arm's base has a fixed joint to the torso.
     * A tray is attached at one of the extremities of the torso. Participants may put parts in this tray while fetching other parts in the environment.
     * The end of each arm is equipped with a vacuum gripper. The vacuum gripper is controlled in a binary manner (on/off) and reports whether or not it is successfully gripping an object.
@@ -121,21 +129,20 @@ shelf_layout:
 # 4. Sensors #
 
 
-Teams can place sensors around the environment in static locations. Each sensor has a cost that factors into the final score.
+* Teams can place sensors around the environment in static locations. Each sensor has a cost that factors into the final score.
+* Available sensors are:
 
-Available sensors are:
-
-1. **Break beam**: reports when a beam is broken by an object. It does not provide distance information.
-1. **Laser scanner**: provides an array of distances to a sensed object.
-1. **Depth camera**: provides a point cloud of sensed distances.
-1. **Cognex logical camera**: provides information about the pose and type of all models within its field of 
-view.
-  * **Note**: The range of the logical camera has been increased to cover 4 bins at a time (instead of 1 bin previously). With this new range, 2 logical cameras should be sufficient to cover the surface of a shelf.
-1. Proximity: detects the range to an object.
+   1. **Break beam**: reports when a beam is broken by an object. It does not provide distance information.
+   1. **Laser scanner**: provides an array of distances to a sensed object.
+   1. **Depth camera**: provides a point cloud of sensed distances and rgb-d images.
+   1. **Cognex logical camera**: provides information about the pose and type of all models within its field of
+view. **Note**: The range of the logical camera has been increased to cover 4 bins at a time (instead of 1 bin previously). With this new range, 2 logical cameras should be sufficient to cover the surface of a shelf.
+   1. **Proximity sensor** outputs how far an object is from the sensor.
 
 * Sensors can be placed in any free space in the workcell, they do not need to be mounted so that they are touching the conveyor belt/support frame of the storage bin.
 * Sensors must be used in a realistic manner and must not exploit any simulation technicalities such as the logical camera seeing through obstructions.
 * For the details about how to configure the sensor locations, see the [Configuration Specifications](configuration_spec.md).
+* More details on each sensor can be found on the [Sensor Interface](tutorials/sensor_interface.md) page.
 
 # 5. Order #
 

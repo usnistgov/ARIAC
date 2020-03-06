@@ -184,8 +184,6 @@ default_shelf_origins = {
     'shelf11': [-12.517082, -2.393708, 0],
 '''
 
-
-
 configurable_options = {
     'insert_models_over_bins': False,
     'insert_models_over_shelves': False,
@@ -804,6 +802,7 @@ def prepare_template_data(config_dict, args):
         'world_dir': world_dir,
         'joint_limited_ur10': config_dict.pop('joint_limited_ur10', False),
         'sensor_blackout': {},
+        'aisle_layout': {},
     }
     # Process the options first as they may affect the processing of the rest
     options_dict = get_field_with_default(config_dict, 'options', {})
@@ -853,6 +852,8 @@ def prepare_template_data(config_dict, args):
                 create_models_to_spawn_infos(value))
         elif key == 'time_limit':
             template_data['time_limit'] = value
+        elif key == 'aisle_layout':
+            template_data['aisle_layout'].update(value)
         else:
             print("Error: unknown top level entry '{0}'".format(key), file=sys.stderr)
             sys.exit(1)

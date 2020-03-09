@@ -263,8 +263,7 @@ expand_snippet('laser_profiler.sdf.template')
     <pose>1.067526 -0.714548 0.0 0 0 0</pose>
   </include>
 
-  @[if options['insert_models_over_shelves']]@
-      <!-- Populate the shelves -->
+    <!-- Populate the shelves and bins -->
   @[for model_name, model in models_to_insert.items()]@
       <include>
         <name>@(model_name)</name>
@@ -272,18 +271,7 @@ expand_snippet('laser_profiler.sdf.template')
         <pose>@(' '.join(model.pose.xyz)) @(' '.join(model.pose.rpy))</pose>
       </include>
   @[end for]@
-  @[end if]@
 
-@[if options['insert_models_over_bins']]@
-    <!-- Populate the bins -->
-@[for model_name, model in models_to_insert.items()]@
-    <include>
-      <name>@(model_name)</name>
-      <uri>model://@(model.type)_ariac</uri>
-      <pose>@(' '.join(model.pose.xyz)) @(' '.join(model.pose.rpy))</pose>
-    </include>
-@[end for]@
-@[end if]@
 @[if belt_models]@
 
     <!-- Populate the conveyor belt -->

@@ -364,7 +364,7 @@ bool ROSAGVPlugin::OnCommand(
     _resp.success = false;
     return true;
   }
-  ROS_ERROR_STREAM("[INFO] AGV '" << this->dataPtr->agvName << "' delivery triggered");
+  ROS_INFO_STREAM("[INFO] AGV '" << this->dataPtr->agvName << "' delivery triggered");
   this->dataPtr->deliveryTriggered = true;
   _resp.success = true;
   return true;

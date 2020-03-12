@@ -337,7 +337,7 @@ bool KitTrayPlugin::HandleGetContentService(
 {
   const std::string& callerName = event.getCallerName();
   gzdbg << this->trayID << ": Handle get content service called by: " << callerName << std::endl;
-  ROS_ERROR_STREAM(this->trayID << ": Handle get content service called by: " << callerName);
+  // ROS_ERROR_STREAM(this->trayID << ": Handle get content service called by: " << callerName);
 
   auto & response = event.getResponse();
 

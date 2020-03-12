@@ -64,6 +64,7 @@ sensor_configs = {
     'logical_camera': None,
     'laser_profiler': None,
     'depth_camera': None,
+    'rgbd_camera': None,
     'quality_control': None,
 }
 

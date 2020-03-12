@@ -230,6 +230,12 @@ expand_snippet('depth_camera.sdf.template')
 expand_snippet('laser_profiler.sdf.template')
 }@
 @[end if]@
+@[if sensor.type == "rgbd_camera"]@
+    <!-- a RGBD camera called @(name) -->
+@{
+expand_snippet('rgbd_camera.sdf.template')
+}@
+@[end if]@
 @[end for]@
 
     <!-- a wall to delete objects at the end of the belt-->

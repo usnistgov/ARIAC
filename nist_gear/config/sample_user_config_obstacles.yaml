@@ -1,6 +1,6 @@
 sensors:
-  depth_camera_0:
-    type: depth_camera 
+  rgbd_camera_0:
+    type: rgbd_camera
     pose:
       xyz: [3.082385, 1.750927, 1.82]
       rpy: [0, 'pi', 0]
@@ -17,8 +17,8 @@ sensors:
       xyz: [3.082385, 3.641234, 2.49]
       rpy: [0, 'pi/2', 'pi/2']
 
-  depth_camera_1:
-    type: depth_camera
+  rgbd_camera_1:
+    type: rgbd_camera
     pose:
       xyz: [5, 3.641234, 2.49]
       rpy: [0, 'pi', 0]
@@ -65,14 +65,14 @@ sensors:
       xyz: [-13.52, 3., 2.49]
       rpy: [0, 'pi/2', 'pi/2']
 
-  depth_camera_2:
-    type: depth_camera
+  rgbd_camera_2:
+    type: rgbd_camera
     pose:
       xyz: [-15.35, -3., 2.49]
       rpy: [0, 'pi', 0]
 
-  depth_camera_3:
-    type: depth_camera
+  rgbd_camera_3:
+    type: rgbd_camera
     pose:
       xyz: [-13.52, -3., 2.49]
       rpy: [0, 'pi', 0]

@@ -1,12 +1,12 @@
 #Number of orders: 1
-#Number of shipments: 2
-#Insufficiently many products: Yes
-#Flipped products: No
+#Number of shipments: 1
+#Insufficiently many products: No
+#Flipped products: Yes
 #In-process order update: No
 #Dropped products: No
 #In-process order interruption: No
 #Part flipping: No
-#Faulty products: Yes
+#Faulty products: No
 #Moving obstacles: No
 #Sensor blackout: No
 #2 arms advantageous: No
@@ -15,7 +15,7 @@
 options:
   insert_models_over_bins: true
   insert_models_over_shelves: true
-  belt_population_cycles: 0
+  belt_population_cycles: 5
 
 shelf_layout:
   row_1: ['base',0,'collar','base'] #shelves: 3, 4, 5
@@ -26,16 +26,16 @@ orders:
   order_0:
     announcement_condition: time
     announcement_condition_value: 0.0
-    shipment_count: 2
-    destinations: [agv1,agv2]
+    shipment_count: 1
+    destinations: [any]
     products:
       part_0:
-        type: piston_rod_part_blue
+        type: pulley_part_blue #This part needs to be flipped
         pose:
           xyz: [0.1, -0.1, 0]
-          rpy: [0, 0, 0]
+          rpy: ['pi', 0, 0]
       part_1:
-        type: piston_rod_part_blue
+        type: pulley_part_blue
         pose:
           xyz: [-0.1, 0, 0]
           rpy: [0, 0, 'pi']
@@ -48,11 +48,11 @@ orders:
 models_over_bins:
    bin4:
      models:
-       piston_rod_part_blue:
+       pulley_part_blue:
          xyz_start: [0.1, 0.2, 0.0]
          xyz_end: [0.4, 0.5, 0.0]
          rpy: [0, 0, 'pi/4']
-         num_models_x: 3
+         num_models_x: 2
          num_models_y: 1
 
 models_over_shelves:
@@ -66,7 +66,7 @@ models_over_shelves:
         num_models_y: 1
 
 belt_models:
-  piston_rod_part_blue:
+  pulley_part_blue:
     1.0:
       pose:
         xyz: [0.0, 4.3, 0.92]
@@ -76,9 +76,5 @@ belt_models:
       pose:
         xyz: [0.0, 4.3, 0.92]
         rpy: [0, 0, 'pi/2']
-
-faulty_products:
-  - piston_rod_part_blue_44
-  - piston_rod_part_blue_2
 
 time_limit: -1

@@ -1,17 +1,16 @@
 #Number of orders: 1
-#Number of shipments: 2
-#Insufficiently many products: Yes
+#Number of shipments: 1
+#Insufficiently many products: No
 #Flipped products: No
 #In-process order update: No
-#Dropped products: No
+#Dropped products: Yes
 #In-process order interruption: No
 #Part flipping: No
-#Faulty products: Yes
+#Faulty products: No
 #Moving obstacles: No
 #Sensor blackout: No
 #2 arms advantageous: No
 #Time limit: No
-
 options:
   insert_models_over_bins: true
   insert_models_over_shelves: true
@@ -26,8 +25,8 @@ orders:
   order_0:
     announcement_condition: time
     announcement_condition_value: 0.0
-    shipment_count: 2
-    destinations: [agv1,agv2]
+    shipment_count: 1
+    destinations: [agv1]
     products:
       part_0:
         type: piston_rod_part_blue
@@ -35,7 +34,7 @@ orders:
           xyz: [0.1, -0.1, 0]
           rpy: [0, 0, 0]
       part_1:
-        type: piston_rod_part_blue
+        type: gear_part_green
         pose:
           xyz: [-0.1, 0, 0]
           rpy: [0, 0, 'pi']
@@ -46,14 +45,22 @@ orders:
           rpy: [0, 0, 0]
 
 models_over_bins:
+   bin3:
+     models:
+       gear_part_green:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 2
    bin4:
      models:
        piston_rod_part_blue:
          xyz_start: [0.1, 0.2, 0.0]
          xyz_end: [0.4, 0.5, 0.0]
          rpy: [0, 0, 'pi/4']
-         num_models_x: 3
-         num_models_y: 1
+         num_models_x: 2
+         num_models_y: 3
 
 models_over_shelves:
   shelf1:
@@ -65,20 +72,27 @@ models_over_shelves:
         num_models_x: 5
         num_models_y: 1
 
-belt_models:
-  piston_rod_part_blue:
-    1.0:
-      pose:
-        xyz: [0.0, 4.3, 0.92]
-        rpy: [0, 0, 'pi/2']
-  gear_part_red:
-    2.0:
-      pose:
-        xyz: [0.0, 4.3, 0.92]
-        rpy: [0, 0, 'pi/2']
-
-faulty_products:
-  - piston_rod_part_blue_44
-  - piston_rod_part_blue_2
+drops:
+  drop_regions:
+    shipping_box_0_impeding:
+      frame: agv1::kit_tray_1
+      min:
+        xyz: [-0.3, -0.3, 0.0]
+      max:
+        xyz: [0.3, 0.3, 0.5]
+      destination:
+        xyz: [0.3, 0.3, 0.05]
+        rpy: [0, 0, 0.2]
+      product_type_to_drop: gear_part_green
+    shipping_box_1_impeding:
+      frame: agv1::kit_tray_1
+      min:
+        xyz: [-0.3, -0.3, 0.0]
+      max:
+        xyz: [0.3, 0.3, 0.5]
+      destination:
+        xyz: [0.3, 0.3, 0.05]
+        rpy: [0, 0, 0.2]
+      product_type_to_drop: gear_part_red
 
 time_limit: -1

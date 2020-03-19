@@ -1,6 +1,6 @@
 #Number of orders: 1
 #Number of shipments: 2
-#Insufficiently many products: Yes
+#Insufficiently many products: No
 #Flipped products: No
 #In-process order update: No
 #Dropped products: No
@@ -27,7 +27,7 @@ orders:
     announcement_condition: time
     announcement_condition_value: 0.0
     shipment_count: 2
-    destinations: [agv1,agv2]
+    destinations: [agv1, agv2]
     products:
       part_0:
         type: piston_rod_part_blue
@@ -35,7 +35,7 @@ orders:
           xyz: [0.1, -0.1, 0]
           rpy: [0, 0, 0]
       part_1:
-        type: piston_rod_part_blue
+        type: gear_part_green
         pose:
           xyz: [-0.1, 0, 0]
           rpy: [0, 0, 'pi']
@@ -46,14 +46,22 @@ orders:
           rpy: [0, 0, 0]
 
 models_over_bins:
+   bin3:
+     models:
+       gear_part_green:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 2
    bin4:
      models:
        piston_rod_part_blue:
          xyz_start: [0.1, 0.2, 0.0]
          xyz_end: [0.4, 0.5, 0.0]
          rpy: [0, 0, 'pi/4']
-         num_models_x: 3
-         num_models_y: 1
+         num_models_x: 2
+         num_models_y: 3
 
 models_over_shelves:
   shelf1:
@@ -78,7 +86,7 @@ belt_models:
         rpy: [0, 0, 'pi/2']
 
 faulty_products:
-  - piston_rod_part_blue_44
+  - gear_part_red_1
   - piston_rod_part_blue_2
 
 time_limit: -1

@@ -4,7 +4,7 @@
 
 # Wiki | Qualifiers
 - There is a single qualification round for ARIAC 2020, with top teams being chosen to participate in the Finals.
-- Qualifier submissions will be evaluated following the [automated evaluation procedure](automated_evaluation.md).
+- Qualifier submissions will be evaluated following the [automated evaluation procedure](../documentation/automated_evaluation.md).
 
 # Overview
 
@@ -12,7 +12,7 @@
 * Up to **10** teams will qualify for the Finals based on their performance.
 
 * The first qualification task is composed of two parts.
-[Details of how to run Part A and what can be expected in Part B are available here](qualifer_scenarios.md).
+[Details of how to run Part A and what can be expected in Part B are available here](qualifier_scenarios.md).
 In short:
 
 * Part A: three trial config files released to participants:

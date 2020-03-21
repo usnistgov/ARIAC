@@ -1,22 +1,21 @@
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 -------------------------------------------------
 
 
 # Wiki | Tutorials | Hello World #
 
-This tutorial covers creating a [ROS Package](http://wiki.ros.org/Packages) and [Node](http://wiki.ros.org/ROS/Tutorials/UnderstandingNodes) to interface with the competition.
-
-If you're new to ROS then follow the [ROS Tutorials](http://wiki.ros.org/ROS/Tutorials) first.
-The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/CreatingPackage) will be especially helpful. Afterwards, it is recommended to complete the [GEAR Interface Tutorial](gear_interface.md) before trying this one.
+- This tutorial covers creating a [ROS Package](http://wiki.ros.org/Packages) and [Node](http://wiki.ros.org/ROS/Tutorials/UnderstandingNodes) to interface with the competition.
+- If you're new to ROS then follow the [ROS Tutorials](http://wiki.ros.org/ROS/Tutorials) first.
+- The ROS tutorial on [Creating a Package](http://wiki.ros.org/ROS/Tutorials/CreatingPackage) will be especially helpful. 
+- Afterwards, it is recommended to complete the [GEAR Interface Tutorial](gear_interface.md) before trying this one.
 
 ## 1. Creating a Competition Package ##
 
-Teams will need at least a ROS package and Node to compete.
-This is where you will put code to start the competition, receive orders, receive sensor data, and control the arms.
-
-See [this ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) for example of a package and node that interacts with ARIAC.
-This tutorial will use it as an example.
+- Teams will need at least a ROS package and Node to compete.
+- This is where you will put code to start the competition, receive orders, receive sensor data, and control the arms.
+- See [this ROS package template](https://github.com/usnistgov/ARIAC/tree/master/ariac_example) for example of a package and node that interacts with ARIAC.
+- This tutorial will use it as an example.
 
 ### 1.1. Setting up a Catkin Workspace ###
 
@@ -300,7 +299,7 @@ source ~/helloworld_ws/devel/setup.bash
 Now we can launch the competition with our configuration.
 
 ```bash
-rosrun nist_gear gear.py -f `catkin_find --first-only --share nist_gear`/config/sample.yaml ~/helloworld_ws/src/ariac_example/config/sample_gear_conf.yaml
+rosrun nist_gear gear.py <your_path_to_package>/config/sample.yaml ~/helloworld_ws/src/ariac_example/config/sample_gear_conf.yaml
 ```
 
 The first config file `sample.yaml` specifies what trial will be run.
@@ -314,9 +313,10 @@ rosrun ariac_example ariac_example_node
 ```
 
 The example prints information about the competition to the console, like sensor data being received.
-It also commands the arms to move to the zero position.
+It also commands the robot to move to the zero position.
 Be sure to read through all the example code to make sure you understand it.
 
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------

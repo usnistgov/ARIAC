@@ -1,12 +1,8 @@
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 -------------------------------------------------
 
-# Wiki | Tutorials | ARIAC Automated Evaluation
-
-```diff
-- This page is being updated with information on the last docker image
-```
+# Wiki | Tutorials | Automated Evaluation
 
 This OSRF [repository](https://github.com/osrf/ariac-docker) contains the setup that will be used to automatically evaluate teams' submission for the Agile Robotics for Industrial Automation Competition (ARIAC) hosted by the National Institute of Standards and Technology (NIST).
 
@@ -23,15 +19,17 @@ Clone this code repository locally:
 
 ```
 mkdir -p ~/ariac_ws && cd ~/ariac_ws
-git clone https://github.com/osrf/ariac-docker
+git clone https://github.com/usnistgov/ariac-docker.git
 cd ~/ariac_ws/ariac-docker
 ```
 
 ## Installing Docker
 
-Please, follow [these instructions](https://docs.docker.com/engine/installation/linux/ubuntu/) and install `Docker CE`.
+- Please, follow [these instructions](https://docs.docker.com/engine/installation/linux/ubuntu/) and install `Docker CE`.
 
-Continue to the [post-install instructions](https://docs.docker.com/engine/installation/linux/linux-postinstall/) and complete the "Manage Docker as a non-root user" section to avoid having to run the commands on this page using `sudo`.
+
+- Continue to the [post-install instructions](https://docs.docker.com/engine/installation/linux/linux-postinstall/) and complete the "Manage Docker as a non-root user" section to avoid having to run the commands on this page using `sudo`.
+
 
 ## Fetch the ARIAC system
 
@@ -58,7 +56,7 @@ build_team_system.bash  run_team_system.bash    team_config.yaml
 ```
 
 * Together these files constitute a submission.
-* The files are explained here [Wiki|Documentation|Automated Evaluation](../automated_evaluation.md) 
+* The files are explained here [automated evaluation](../documentation/automated_evaluation.md)
 * We will work with the files of the `example_team` submission for this tutorial; you can use them as a template for your own team's submission.
 
 ## Preparing a team's system
@@ -166,7 +164,7 @@ The following properties are relevant:
 To play-back a specific trial's log file, you must have ARIAC installed on your machine, and then you can call:
 
 ```
-roslaunch osrf_gear gear_playback.launch state_log_path:=`pwd`/logs/example_team/sample/gazebo/state.log
+roslaunch nist_gear gear_playback.launch state_log_path:=`pwd`/logs/example_team/sample/gazebo/state.log
 ```
 
 You should see the ARIAC environment start up with parts in the bins, and the robot be controlled briefly by the example code.
@@ -230,7 +228,7 @@ If you are having difficulties installing your team's system with the `prepare_t
 First, run:
 
 ```
-docker run -it --rm --name ariac-competitor-clean-system ariac/ariac3-competitor-base-melodic:latest
+docker run -it --rm --name ariac-competitor-clean-system ariac/ariac4-competitor-base-melodic:latest
 ```
 
 This will start a container with the state immediately before trying to run your `build_team_system` script.
@@ -256,3 +254,8 @@ ls ~/my_team_ws
 ```
 
 Type `exit` to stop the container.
+
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
+-------------------------------------------------

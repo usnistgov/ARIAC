@@ -1,17 +1,18 @@
-- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 -------------------------------------------------
 
-# Wiki | Scoring
+# Wiki | Documentation | Scoring
 
-Scores will be made up of an automatically calculated component and a score based on judges.
-The automatically calculated component for each Trial is a combination of cost and performance metrics.
-A team's final score will be calculated as the sum of scores for each of the competition Trials.
-See [challenge.gov](https://challenge.gov/a/buzz/challenge/999/ideas/top) for details on the judges' scoring.
-Note that only automated metrics will be used during the qualification rounds of the competition.
+- Scores will be made up of 1) an automatically calculated component and 2) a score based on judges.
+- The automatically calculated component for each Trial is a combination of cost and performance metrics.
+- A team's final score will be calculated as the sum of scores for each of the competition Trials.
+- See [challenge.gov](https://www.challenge.gov/challenge/ariac/) for details on the judges' scoring (scroll to Judging Criteria).
+- **Note** that only automated metrics will be used during the qualification rounds of the competition.
 
 ## Stability
 
-As outlined in the [update policy](https://bitbucket.org/osrf/ariac/wiki/2019/update_policy), changes to the scoring metrics may be made between rounds of the competition at the discretion of the competition controllers.
+As outlined in the [update policy](update_policy.md), changes to the scoring metrics may be made between rounds of the competition at the discretion of the competition controllers.
 Qualifying teams will be made aware of the final scoring parameters in advance of the Finals of the competition.
 
 ## Cost metrics
@@ -20,11 +21,12 @@ The cost metrics are calculated from a team's system setup.
 Since the same system setup is used for all trials, this value is constant for a team for all trials.
 The value in **bold** is used in the final score calculation.
 
-1. Team System Cost (TC): Cost of a team's system. Sum of:
-    * $500 for each logical camera used
-    * $200 for each depth camera used
-    * $100 for each other sensor used
-2. Baseline System Cost (BC): a constant cost amount
+1. **Team System Cost (TC)**: Cost of a team's system. Sum of:
+    * $500 for each logical camera used.
+    * $500 for each RGBD camera used.
+    * $200 for each depth camera used.
+    * $100 for each other sensor used.
+2. **Baseline System Cost (BC)**: a constant cost amount
 3. **Cost Factor (CF)**: A comparison of a team's system cost to the baseline
     * Teams that have the same system cost will have a Cost Factor of 1.
     * Teams with a higher System Cost are penalized by having a Cost Factor < 1
@@ -76,5 +78,8 @@ Trial Score = AAC * (
                     + EF2 * CS2 * h
               )
 ```
-- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
+
+-------------------------------------------------
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------

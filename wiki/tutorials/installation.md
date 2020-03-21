@@ -1,8 +1,8 @@
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 -------------------------------------------------
 
-# Building GEAR from source
+# Wiki | Tutorials | Installation
 
 Currently, GEAR can only be built from source. We are working on a debian package for GEAR.
 
@@ -21,16 +21,15 @@ You should see 18.04 Bionic Beaver in that file.
 
 ### Install ROS and Gazebo
 
-
-GEAR uses [ROS Melodic](http://www.ros.org/) and [Gazebo 9](http://gazebosim.org/blog/gazebo9) to simulate the environment
-[Follow these instructions to install ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu).
-Follow [these instructions](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install) to install Gazebo 9.
+- GEAR uses [ROS Melodic](http://www.ros.org/) and [Gazebo 9](http://gazebosim.org/blog/gazebo9) to simulate the environment
+  - Follow these instructions to install [ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu).
+  - Follow these instructions to install [Gazebo 9](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install).
 
 **Note**, if you see a crash complaining about missing a symbol in an ignition library, run this to fix it
 
-```
-sudo apt update
-sudo apt upgrade libignition-math4
+```bash
+sudo apt-get update
+sudo apt-get upgrade libignition-math4
 ```
 
 ### Install Catkin Command Line Tools and Create a Catkin Workspace
@@ -40,7 +39,7 @@ The [Catkin Command Line Tools (catkin_tools)](https://catkin-tools.readthedocs.
 Follow [these instructions to install catkin_tools](https://catkin-tools.readthedocs.io/en/latest/installing.html).
 If you followed the instructions to install ROS above, it should be as simple as
 
-```
+```bash
 sudo apt-get update
 sudo apt-get install python-catkin-tools
 ```
@@ -51,7 +50,7 @@ A [catkin workspace](https://catkin-tools.readthedocs.io/en/latest/quick_start.h
 You will need to create one to have a place to build the GEAR packages.
 Run these commands to create a workspace `ariac_ws` in your home folder.
 
-```
+```bash
 source /opt/ros/melodic/setup.bash
 mkdir -p ~/ariac_ws/src
 cd ~/ariac_ws
@@ -64,9 +63,9 @@ The source code for `GEAR` is located in the [osrf/gear repository on bitbucket]
 GEAR also uses a custom version of [gazebo_ros_pkgs](https://github.com/ros-simulation/gazebo_ros_pkgs/).
 Follow these instructions to put the for both of these into the catkin workspace.
 
-```
+```bash
 cd ~/ariac_ws/src
-git clone https://bitbucket.org/osrf/ariac.git
+git clone https://github.com/usnistgov/ARIAC.git
 git clone https://github.com/osrf/ariac-gazebo_ros_pkgs -b ariac-network-melodic
 ```
 
@@ -77,14 +76,14 @@ The tool rosdep can do this automatically.
 If you have not used rosdep before, then it must be initialized before running the command above.
 Run this if you have not used rosdep before:
 
-```
+```bash
 sudo rosdep init
 rosdep update
 ```
 
 Once rosdep has been initialized, use it to install dependencies:
 
-```
+```bash
 cd ~/ariac_ws
 rosdep install --from-paths ./src --ignore-packages-from-source -y
 ```
@@ -101,7 +100,7 @@ The command `catkin` from the Catkin Command Line Tools is used to build the sof
 All of these commands must be run from the root of the workspace.
 Use `cd` to get there in a terminal.
 
-```
+```bash
 cd ~/ariac_ws
 ```
 
@@ -111,7 +110,7 @@ For more information see the [documentation for `catkin build`](https://catkin-t
 ### Building all packages in the workspace
 Run this to build all of the packages in the workspace.
 
-```
+```bash
 catkin build
 ```
 
@@ -126,8 +125,8 @@ catkin build --no-deps PACKAGE_NAME
 
 For example, run this to build just the main GEAR package:
 
-```
-catkin build --no-deps osrf_gear
+```bash
+catkin build --no-deps nist_gear
 ```
 
 ### Building Release versus Debug builds
@@ -181,6 +180,6 @@ roslaunch osrf_gear sample_environment.launch
 Note the very first launch may take a while because Gazebo downloads models from the model database the first time it runs.
 
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation.md) | [Tutorials](../tutorials.md) | [Qualifiers](../qualifier.md) | [Finals](../finals.md) | [News](../updates.md)
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 -------------------------------------------------

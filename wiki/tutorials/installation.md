@@ -151,11 +151,11 @@ For more info see the [documentation on CMAKE_BUILD_TYPE](https://cmake.org/cmak
 Run this command to run both unit and integration tests to make sure GEAR is working correctly.
 
 ```
-catkin test --no-deps osrf_gear test_ariac
+catkin test --no-deps nist_gear test_ariac
 ```
 
-The above command says to run tests for the `osrf_gear` and `test_ariac` package.
-Unit tests (shorter, but less coverage) are in `osrf_gear`.
+The above command says to run tests for the `nist_gear` and `test_ariac` package.
+Unit tests (shorter, but less coverage) are in `nist_gear`.
 Long running integration tests are in `test_ariac`.
 
 ## Running gear
@@ -174,7 +174,7 @@ source ~/ariac_ws/devel/setup.bash
 Make sure it works by running the ARIAC sample environment.
 
 ```
-roslaunch osrf_gear sample_environment.launch
+roslaunch nist_gear sample_environment.launch
 ```
 
 Note the very first launch may take a while because Gazebo downloads models from the model database the first time it runs.

@@ -37,6 +37,7 @@
 #include "nist_gear/LogicalCameraImage.h"
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
+#include <geometry_msgs/TransformStamped.h>
 
 namespace gazebo
 {
@@ -87,8 +88,8 @@ namespace gazebo
       const std::string & modelType, const ignition::math::Pose3d & modelPose,
       nist_gear::LogicalCameraImage & imageMsg);
 
-    /// \brief Publish the TF frame of a model
-    protected: void PublishTF(
+    /// \brief Ready model transform for TF broadcast
+    protected: geometry_msgs::TransformStamped ToTransformStamped(
       const ignition::math::Pose3d & pose, const std::string & parentFrame, const std::string & frame);
 
     /// \brief Called when an activation/deactivation message received

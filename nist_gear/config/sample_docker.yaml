@@ -1,0 +1,50 @@
+# Competition configuration options
+
+time_limit: 500
+
+options:
+  insert_models_over_bins: true
+  insert_models_over_shelves: false
+  gazebo_state_logging: true
+
+shelf_layout:
+  row_1: ['base',0,'collar','base'] #shelves: 3, 4, 5
+  row_2: [0, 'pipe','base','base']   #shelves: 6, 7, 8
+  row_3: ['base','pipe',0,'collar'] #shelves: 9, 10, 11
+
+orders:
+  order_0:
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    shipment_count: 1
+    destinations: [agv1]
+    products:
+      part_0:
+        type: piston_rod_part_blue
+        pose:
+          xyz: [0.1, -0.1, 0]
+          rpy: [0, 0, 0]
+      part_1:
+        type: gear_part_green
+        pose:
+          xyz: [-0.1, 0, 0]
+          rpy: [0, 0, 'pi']
+
+
+models_over_bins:
+   bin3:
+     models:
+       gear_part_green:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 2
+   bin4:
+     models:
+       piston_rod_part_blue:
+         xyz_start: [0.1, 0.2, 0.0]
+         xyz_end: [0.4, 0.5, 0.0]
+         rpy: [0, 0, 'pi/4']
+         num_models_x: 2
+         num_models_y: 3

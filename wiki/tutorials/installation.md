@@ -77,6 +77,7 @@ If you have not used rosdep before, then it must be initialized before running t
 Run this if you have not used rosdep before:
 
 ```bash
+sudo apt-get install python-rosdep
 sudo rosdep init
 rosdep update
 ```

@@ -45,39 +45,54 @@ These will take a while to download.
 
 ## Preparing the workspace
 
-Team configuration files must be put into the `team_config` directory in a folder with the name of the team.
+- Team configuration files must be put into the `team_config` directory in a folder with the name of the team.
 
-We have provided an example submission in the `team_config` directory of this repository.
-You should see that there is a directory called `example_team` that has the following configuration files in it:
+
+- We have provided **two**  examples of submission in the `team_config` directory of this repository.
+  - Both `ariac_example_team` and `moveit_example_team` consist of two bash scripts and one sensor configuration file:
 
 ```
-$ ls team_config/example_team/
+$ ls team_config/ariac_example_team/
+build_team_system.bash  run_team_system.bash    team_config.yaml
+$ ls team_config/moveit_example_team/
 build_team_system.bash  run_team_system.bash    team_config.yaml
 ```
 
 * Together these files constitute a submission.
-* The files are explained here [automated evaluation](../documentation/automated_evaluation.md)
-* We will work with the files of the `example_team` submission for this tutorial; you can use them as a template for your own team's submission.
+* The files are explained here [automated evaluation](../documentation/automated_evaluation.md).
+* We will work with the files of the `ariac_example_team` submission for this tutorial; you can use them as a template for your own team's submission.
+* **Note**: Working with `ariac_example_team` will run the command `rosrun ariac_example ariac_example_node` (C++ code).
+  * This code does not rely on MoveIt!  and uses simple joint positions.
+* **Note**: Working with `moveit_example_team` will run the command `rosrun ariac_example moveit_example_docker.py` (Python code). 
+  * The `moveit_example_docker.py` script uses MoveIt! to control the robot.
 
 ## Preparing a team's system
 
-To prepare the example team's system (but not run it), call:
+- To prepare your team's system (but not run it), call:
+
 
 ```
-./prepare_team_system.bash example_team
-
-# For your team you will run:
 # ./prepare_team_system.bash <your_team_name>
 ```
 
-This will build a Docker "image" of the example team's system built on top of the base competitor image, ready to be launched with the ARIAC competition server.
+- This will build a Docker "image" of the example team's system built on top of the base competitor image, ready to be launched with the ARIAC competition server.
+
+- The following command will prepare the team `ariac_example_team`:
+
+  `./prepare_team_system.bash ariac_example_team`
+
+  - This command will do multiple things including running the script `build_team_system.bash` which install dependencies, downloading your competitor package, and compiling it.
+
+    
+
+
 
 ## Running a single trial
 
 To run an example trial (in this case the trial associated with `trial_config/sample.yaml`), call:
 
 ```
-./run_trial.bash example_team sample
+./run_trial.bash ariac_example_team sample
 
 # For your team you will run:
 # ./run_trial.bash <your_team_name> <trial_name>
@@ -102,10 +117,10 @@ In the above invocation, the example code will end the competition after ~20 sec
 ### Reviewing the trial performance
 
 Once the behavior observed when playing back the trial's log file looks correct, you should then check the completion score.
-To do so, open the relevant `performance.log` file (e.g. `logs/example_team/sample/performance.log`) and check the score output at the end of the file: it lists the scores for each order.
+To do so, open the relevant `performance.log` file (e.g. `logs/ariac_example_team/sample/performance.log`) and check the score output at the end of the file: it lists the scores for each order.
 
 ```
-$ tail logs/example_team/sample/performance.log -n 25
+$ tail logs/ariac_example_team/sample/performance.log -n 25
 (1518553810 6169392) [Dbg] [ROSAriacTaskManagerPlugin.cc:492] Sim time: 22
 (1518553810 675725351) [Dbg] [ROSAriacTaskManagerPlugin.cc:717] Handle end service called
 (1518553810 676916277) [Dbg] [ROSAriacTaskManagerPlugin.cc:579] End of trial. Final score: 0
@@ -132,13 +147,15 @@ Product pose score: [0]
 </game_score>
 ```
 
-In this example the score is 0 because the example team system does not actually complete any orders.
+- In this example the score is 0 because the example team system does not actually complete any orders.
 
-The general output structure of the `logs` directory is:
+
+- The general output structure of the `logs` directory is:
+
 
 ```
 logs
-└── example_team  # team name
+└── ariac_example_team  # team name
     └── sample  # trial name
         ├── gazebo
         │   └── state.log  # gazebo state log file
@@ -153,23 +170,24 @@ logs
             └── example_node-1-stdout.log
 ```
 
-Additionally, there may be a `video` directory containing a video produced from playback of the simulation state log file recorded during the trial(s).
-The following properties are relevant:
-- Logs playback at a slower speed and therefore a 5 minute simulation may result in a 10-15 minute video. The simulation time is displayed in the bottom right.
-- Simulation time may jump forward a number of seconds if there is a length of time where no movement is detected in the simulation.
-- The log stops at the last time motion occurred, so log files may be shorter than expected if there is no motion.
+- Additionally, there may be a `video` directory containing a video produced from playback of the simulation state log file recorded during the trial(s).
+- The following properties are relevant:
+  - Logs playback at a slower speed and therefore a 5 minute simulation may result in a 10-15 minute video. 
+  - The simulation time is displayed in the bottom right.
+  - Simulation time may jump forward a number of seconds if there is a length of time where no movement is detected in the simulation.
+  - The log stops at the last time motion occurred, so log files may be shorter than expected if there is no motion.
 
 ### Playing back the simulation
 
-To play-back a specific trial's log file, you must have ARIAC installed on your machine, and then you can call:
+- To play-back a specific trial's log file, you must have ARIAC installed on your machine, and then you can call:
+
 
 ```
 roslaunch nist_gear gear_playback.launch state_log_path:=`pwd`/logs/example_team/sample/gazebo/state.log
 ```
 
-You should see the ARIAC environment start up with parts in the bins, and the robot be controlled briefly by the example code.
-
-*Note: this is currently only possible for user accounts with user ID of 1000.*
+- You should see the ARIAC environment start up with parts in the bins, and the robot be controlled briefly by the example code.
+- **Note**: this is currently only possible for user accounts with user ID of 1000.
 
 ## Running all trials
 
@@ -184,16 +202,16 @@ To run all trials listed in the `trial_config` directory, call:
 # ./run_all_trials.bash <your_team_name>
 ```
 
-This will run each of the trials sequentially in an automated fashion.
-This is the invocation that will be used to test submissions for the Finals: your system will not be provided with any information about the trial number or the conditions of the trial.
-If your system performs correctly with this invocation, regardless of the set of configuration files in the `trial_config` directory, you're ready for the competition.
+- This will run each of the trials sequentially in an automated fashion.
+- This is the invocation that will be used to test submissions for the Finals: your system will not be provided with any information about the trial number or the conditions of the trial.
+- If your system performs correctly with this invocation, regardless of the set of configuration files in the `trial_config` directory, you're ready for the competition.
 
 ## Development tips
 
 ### Keeping the competition setup software up to date
 
-New releases of the ARIAC software will be accompanied by new releases of the Docker images, so that the latest ARIAC version is installed in both the ARIAC competition server image and the base competitor image.
-Whenever there is a new release of the ARIAC software, or whenever you are informed of any other changes to the competition system setup, you will have to run `git pull` to get any recent modifications to the competition system setup, and re-run all scripts in order for the changes to take effect:
+- New releases of the ARIAC software will be accompanied by new releases of the Docker images, so that the latest ARIAC version is installed in both the ARIAC competition server image and the base competitor image.
+- Whenever there is a new release of the ARIAC software, or whenever you are informed of any other changes to the competition system setup, you will have to run `git pull` to get any recent modifications to the competition system setup, and re-run all scripts in order for the changes to take effect:
 
 ```
 cd ~/ariac_ws/ariac-docker
@@ -207,55 +225,62 @@ git pull
 
 ### Stopping the competition/containers
 
-If during your development you need to kill the ARIAC server/competitor containers, you can do so with:
+- If during your development you need to kill the ARIAC server/competitor containers, you can do so with:
+
 
 ```
 ./kill_ariac_containers.bash
 ```
 
-This will kill and remove all ARIAC containers.
+- This will kill and remove all ARIAC containers.
+
 
 ### Utilizing the Docker cache to when re-building the competitor system
 
-By default, runnng `./build_team_system.bash <your_team_name>` will re-build the image from scratch.
-During development you may find it useful to call `./prepare_team_system.bash <your_team_name> --use-cache` to re-use already-built image in the Docker cache if appropriate.
-However, new versions of packages may have been released since the images in the cache were built, and this will not trigger images to be re-built. Therefore you must not use this option when testing your finalized system for submission.
+- By default, runnng `./build_team_system.bash <your_team_name>` will re-build the image from scratch.
+- During development you may find it useful to call `./prepare_team_system.bash <your_team_name> --use-cache` to re-use already-built image in the Docker cache if appropriate.
+- However, new versions of packages may have been released since the images in the cache were built, and this will not trigger images to be re-built. Therefore you must not use this option when testing your finalized system for submission.
 
 ### Investigating build issues
 
-If you are having difficulties installing your team's system with the `prepare_team_system` script, you can open a terminal in a clean competitor container (before the script has been run) and see which commands you need to type manually to get your system installed.
+- If you are having difficulties installing your team's system with the `prepare_team_system` script, you can open a terminal in a clean competitor container (before the script has been run) and see which commands you need to type manually to get your system installed.
+
 
 First, run:
 
 ```
-docker run -it --rm --name ariac-competitor-clean-system ariac/ariac4-competitor-base-melodic:latest
+docker run -it --rm --name ariac-competitor-clean-system zeidk/ariac4-competitor-base-melodic:latest
 ```
 
-This will start a container with the state immediately before trying to run your `build_team_system` script.
-From inside this container, you can type all of the commands you need to install your code (you do not need to use `sudo`), then run `history` to get a list of the commands that you typed: that will be a good starting point for your `build_team_system` script.
-You may need to modify it slightly e.g. by adding `-y` to commands that otherwise prompt for user input, such as `apt-get install -y ros-melodic-moveit-core`.
+- This will start a container with the state immediately before trying to run your `build_team_system` script.
+- From inside this container, you can type all of the commands you need to install your code (you do not need to use `sudo`), then run `history` to get a list of the commands that you typed: that will be a good starting point for your `build_team_system` script.
+- You may need to modify it slightly e.g. by adding `-y` to commands that otherwise prompt for user input, such as `apt-get install -y ros-melodic-moveit-core`.
 
 Type `exit` to stop the container.
 
 ### Investigating the contents of a running competitor container
 
-Once your team's system has been successfully installed in the competitor container, if you are having difficulties *running* your team's system, you can open a terminal in the container that has your system installed with:
+- Once your team's system has been successfully installed in the competitor container, if you are having difficulties *running* your team's system, you can open a terminal in the container that has your system installed with:
+
 
 ```
 docker run -it --rm --name ariac-competitor-system ariac-competitor-<your_team_name>
-# e.g. for example_team:
-# docker run -it --rm --name ariac-competitor-system ariac-competitor-example_team
+# e.g. for ariac_example_team:
+# docker run -it --rm --name ariac-competitor-system ariac-competitor-ariac_example_team
 ```
 
-Inside the container you can look around with, for example:
+- Inside the container you can look around with, for example:
+
 
 ```
 ls ~/my_team_ws
 ```
 
-Type `exit` to stop the container.
+- Type `exit` to stop the container.
+
 
 -------------------------------------------------
+
 - Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 -------------------------------------------------

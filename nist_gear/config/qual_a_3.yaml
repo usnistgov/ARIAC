@@ -81,12 +81,12 @@ orders:
 models_over_bins:
   bin3:
     models:
-      gear_part_blue:
-        xyz_start: [0.1, 0.1, 0.0]
-        xyz_end: [0.5, 0.5, 0.0]
+      pulley_part_red:
+        xyz_start: [0.2, 0.2, 0.0]
+        xyz_end: [0.4, 0.4, 0.0]
         rpy: [0, 0, 0]
-        num_models_x: 3
-        num_models_y: 3
+        num_models_x: 2
+        num_models_y: 2
   bin5:
     models:
       gear_part_red:

@@ -25,6 +25,8 @@ The **build_team_system.bash** script will be run only once to setup the team's 
 - It is imperative that teams use the outlined process for testing their system, as it exactly replicates the process that will be used during automated evaluation.
 - If your system does not score correctly in the mock competition setup, it will not score correctly when run by competition controllers.
 
+* **IMPORTANT**: During the qualifiers and finals teams must test their systems in *Competition Mode*. That is, the option  `development-mode` should not be used.
+
 ## Uploading your submission
 - Submissions will be made through secure workspaces directly with competition controllers.
 

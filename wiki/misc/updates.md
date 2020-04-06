@@ -2,6 +2,14 @@
 - Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 -------------------------------------------------
 
+## Released 2020, April 4
+
+- Changed the wiki documentation on scoring (see [here](../documentation/scoring.md)).
+  - Baseline cost (**BC**) increased from 1700 to 10000.
+  - Collision (**COL**) is 0 if arms collide with each other, with the torso, or if the robot collides with a moving obstacle.
+  - New condition for scoring added for using the correct part color.
+- We have extended the deadline of the qualifiers round (from Apr 10th to Apr 24th).
+- We added a [note](../documentation/automated_evaluation.md) specifying that the option `development-mode` should not be used during the qualifiers and finals, i.e., this [option](https://github.com/usnistgov/ARIAC/blob/bf77a0c61520f5d3a80e004c825a5045c4eeaca6/nist_gear/launch/sample_environment.launch#L23) should be removed).
 
 
 ## Released 2020, March 21

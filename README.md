@@ -10,7 +10,7 @@
 
 ## Important Dates
 * Registration Open : Now Through April 2020
-* Competition Qualifier: April 6-10, 2020
+* Competition Qualifier: April 6-24, 2020
 * Competition Finals: May 11-15, 2020
 
 ## [Updates](wiki/misc/updates.md)

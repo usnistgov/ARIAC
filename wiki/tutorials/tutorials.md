@@ -27,6 +27,6 @@ This tutorial shows how to use MoveIt to control the two arms in ARIAC 2020.
 ## [Automated Evaluation](automated_evaluation.md)
 
 -------------------------------------------------
-- Wiki | [Home](../README.md) | [Documentation](documentation.md) | [Tutorials](tutorials.md) | [Qualifiers](qualifier.md) | [Finals](finals.md) | [News](updates.md)
+- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md) | [News TBA](updates.md)
 
 -------------------------------------------------

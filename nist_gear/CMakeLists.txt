@@ -427,12 +427,12 @@ install(DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
 
 # Install all the rviz files
-install(DIRECTORY rviz/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rviz)
+#install(DIRECTORY rviz/
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rviz)
 
 # Install all the vendor files from outside packages
-install(DIRECTORY vendor/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/vendor)
+#install(DIRECTORY vendor/
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/vendor)
 
 # Configure the setup script
 catkin_add_env_hooks(99_nist_gear_setup
@@ -442,9 +442,9 @@ catkin_add_env_hooks(99_nist_gear_setup
 ################
 ## Unit tests ##
 ################
-
-if (CATKIN_ENABLE_TESTING)
-  catkin_add_gtest(test_ariac_scorer test/test_ariac_scorer.cpp)
-  target_link_libraries(test_ariac_scorer
-    AriacScorer ignition-math4::ignition-math4)
-endif()
+#temporarily disabled
+#if (CATKIN_ENABLE_TESTING)
+#  catkin_add_gtest(test_ariac_scorer test/test_ariac_scorer.cpp)
+#  target_link_libraries(test_ariac_scorer
+#    AriacScorer ignition-math4::ignition-math4)
+#endif()

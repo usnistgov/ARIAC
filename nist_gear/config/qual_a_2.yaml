@@ -114,13 +114,13 @@ faulty_products:
 drops:
   drop_regions:
     shipping_box_0_impeding:
-      frame: agv1::kit_tray_1
+      frame: agv2::kit_tray_2
       min:
         xyz: [-0.3, -0.3, 0.0]
       max:
         xyz: [0.3, 0.3, 0.5]
       destination:
-        xyz: [0.3, 0.3, 0.05]
+        xyz: [0.2, 0.3, 0.05]
         rpy: [0, 0, 0.2]
       product_type_to_drop: gasket_part_red
     shipping_box_1_impeding:
@@ -130,7 +130,7 @@ drops:
       max:
         xyz: [0.3, 0.3, 0.5]
       destination:
-        xyz: [0.3, 0.3, 0.05]
+        xyz: [0.2, 0.3, 0.05]
         rpy: [0, 0, 0.2]
       product_type_to_drop: gear_part_blue
 

@@ -59,7 +59,7 @@ Only automated evaluation metrics will be used for the qualifier.
       * updates to previously requested orders
       * transferring products between arms
 
-[Details of how to run Part A and what can be expected in Part B are available here.](qualifer_scenarios.md)
+[Details of how to run Part A and what can be expected in Part B are available here.](qualifier_scenarios.md)
 
 To ensure that your system can adapt to previously-unseen scenarios, we recommend that you test your system against all released sample trials, in addition to a variety of custom trials that you create following [this tutorial](../documentation/configuration_spec.md).
 

@@ -59,7 +59,7 @@ orders:
         type: order_part3
         pose:
           xyz: [-0.15, 0.15, 0]
-          rpy: ['pi', 0, 0]
+          rpy: [0, 0, 0]
       part_4:
         type: order_part2
         pose:

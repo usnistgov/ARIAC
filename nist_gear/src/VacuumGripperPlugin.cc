@@ -466,6 +466,16 @@ void VacuumGripperPlugin::OnUpdate()
         continue;
       }
 
+      // Check that dropAttachedModel is of attachedObjType
+      auto name = this->dataPtr->dropAttachedModel->GetName();
+      std::string objectType = ariac::DetermineModelType(name);
+      if (objectType != this->dataPtr->attachedObjType)
+      {
+        gzdbg << "dropAttachedModel and attachedObjType are different: " << objectType << " and "
+              << this->dataPtr->attachedObjType << std::endl;
+        continue;
+      }
+
       auto objPose = this->dataPtr->dropAttachedModel->WorldPose();
       ignition::math::Pose3d dropFramePose;
       ignition::math::Matrix4d dropFrameTransMat;
@@ -596,10 +606,14 @@ void VacuumGripperPlugin::HandleAttach()
 
   auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
   auto name = modelPtr->GetName();
-  gzdbg << "Product attached to gripper: " << name << std::endl;
+  std::string objectType = ariac::DetermineModelType(name);
+  gzdbg << "Product attached to gripper: " << objectType << " named " << name << std::endl;
+
+  // Clear these by default, they'll get set if needed later this function
+  this->dataPtr->dropPending = false;
+  this->dataPtr->dropAttachedModel.reset();
 
   // Check if the object should drop.
-  std::string objectType = ariac::DetermineModelType(name);
   auto it = find_if(this->dataPtr->objectsToDrop.begin(), this->dataPtr->objectsToDrop.end(),
     [&objectType](const VacuumGripperPluginPrivate::DropObject& obj) {
       return obj.getType() == objectType;

@@ -268,23 +268,52 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
   //--Check product type is correct even if color is wrong
   for (size_t d = 0; d < desired_shipment.products.size(); ++d)
   {
+    bool found_exact_product = false;
+
     auto desired_product = desired_shipment.products[d].type;
-    //static_cast<std::string>(desired_product);
-    desired_product.erase(desired_product.rfind('_'));
-    //std::cout << "---desired product type: " << desired_product << std::endl;
-    for (size_t a = 0; a < tmp_non_faulty_products.size(); ++a)
-    {
-      auto actual_product = tmp_non_faulty_products[a].type;
-      actual_product.erase(actual_product.rfind('_'));
+    auto desired_product_name = desired_product;
+    auto desired_product_type = desired_product.erase(desired_product.rfind('_'));
 
-      if (desired_product.compare(actual_product) == 0){
-        //std::cout << "actual product type: " << actual_product << std::endl;
+    //desired_product.erase(desired_product.rfind('_'));
+  //  if (!found_exact_product){
+    //std::cout << "---Desired product: " << desired_product_name << std::endl;
+    for (size_t a = 0; a < tmp_non_faulty_products.size(); ++a){
+      auto actual_product_name = tmp_non_faulty_products[a].type;
+      //std::cout << "Checking for exact part with " << actual_product_name << std::endl;
+      //ex: desired=blue gear, actual=blue gear
+      if (desired_product_name.compare(actual_product_name) == 0){
+        //std::cout << "Found exact part for desired part: " << desired_product_name << std::endl;
+        found_exact_product = true;
+        //--give 1pt for correct type
         scorer.productOnlyTypePresence ++;
+        //--we are done with this part
         tmp_non_faulty_products.erase(tmp_non_faulty_products.begin()+a);
-        continue;
+        break;
       }
+    }
+  //}
 
+    if (!found_exact_product){
+      //std::cout << "Did not find exact part for desired part: " << desired_product << std::endl;
+      for (size_t a = 0; a < tmp_non_faulty_products.size(); ++a){
+        auto actual_product = tmp_non_faulty_products[a].type;
+        //std::cout << "Checking with actual part: " << actual_product << std::endl;
+        //--get only part type ex: gear_part from gear_part_blue
+        auto actual_product_type = actual_product.erase(actual_product.rfind('_'));
+        //std::cout << "Actual type: " << actual_product_type << std::endl;
 
+        //std::cout << "Desired type: " << desired_product_type << std::endl;
+
+        if (desired_product_type.compare(actual_product_type) == 0){
+          //--give 1pt for correct type
+          scorer.productOnlyTypePresence ++;
+          //std::cout << "+1 pt for matching type" << std::endl;
+          //--we are done with this part
+          tmp_non_faulty_products.erase(tmp_non_faulty_products.begin()+a);
+          // found_exact_product=true;
+          break;
+        }
+      }
     }
   }
 
@@ -317,24 +346,6 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
     const std::vector<size_t> & desired_indexes = type_pair.second.first;
     const std::vector<size_t> & actual_indexes = type_pair.second.second;
     auto product_name = type_pair.first;
-    //std::cout << "Product name: " << product_name << std::endl;
-
-    //std::cout <<"Desired Products: " << std::endl;
-    // for (auto di: desired_indexes){
-    //   std::cout << "Index: " << di << std::endl;
-    // }
-    // for (auto di: desired_product_names){
-    //   std::cout << "Type: " << di << std::endl;
-    // }
-
-    // std::cout <<"Actual Products: " << std::endl;
-    // for (auto ai: actual_indexes){
-    //   std::cout << "Index: " << ai << std::endl;
-    // }
-    // for (auto ai: actual_product_names){
-    //   std::cout << "Type: " << ai << std::endl;
-    // }
-
 
     if (desired_indexes.size() > actual_indexes.size())
     {

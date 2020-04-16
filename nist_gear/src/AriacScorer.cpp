@@ -65,7 +65,7 @@ void AriacScorer::NotifyOrderUpdated(gazebo::common::Time time, ariac::OrderID_t
 {
   AriacScorer::OrderUpdateInfo updateInfo;
   updateInfo.update_time = time;
-  updateInfo.original_order_id = old_order; 
+  updateInfo.original_order_id = old_order;
   updateInfo.order = nist_gear::Order::ConstPtr(new nist_gear::Order(order));
 
   boost::mutex::scoped_lock mutexLock(this->mutex);
@@ -221,7 +221,8 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
   bool has_faulty_product = false;
   bool is_missing_products = false;
   bool has_unwanted_product = false;
-  scorer.productPresence = 0;
+  scorer.productOnlyTypePresence = 0;
+  scorer.productTypeAndColorPresence = 0;
   scorer.allProductsBonus = 0;
   scorer.productPose = 0;
   scorer.correctAGV = false;
@@ -256,17 +257,51 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
       non_faulty_products.push_back(actual_product);
     }
   }
+
+
+  //--award 1 point if type is correct and color is incorrect
+
+  //make a copy of non faulty products
+  //we will work with this vector for actual products in the trays
+  std::vector<nist_gear::DetectedProduct> tmp_non_faulty_products;
+  tmp_non_faulty_products = non_faulty_products;
+  //--Check product type is correct even if color is wrong
+  for (size_t d = 0; d < desired_shipment.products.size(); ++d)
+  {
+    auto desired_product = desired_shipment.products[d].type;
+    //static_cast<std::string>(desired_product);
+    desired_product.erase(desired_product.rfind('_'));
+    //std::cout << "---desired product type: " << desired_product << std::endl;
+    for (size_t a = 0; a < tmp_non_faulty_products.size(); ++a)
+    {
+      auto actual_product = tmp_non_faulty_products[a].type;
+      actual_product.erase(actual_product.rfind('_'));
+
+      if (desired_product.compare(actual_product) == 0){
+        //std::cout << "actual product type: " << actual_product << std::endl;
+        scorer.productOnlyTypePresence ++;
+        tmp_non_faulty_products.erase(tmp_non_faulty_products.begin()+a);
+        continue;
+      }
+
+
+    }
+  }
+
+  //--Award 1 pt if color is correct for correct part types
   // Map of product type to indexes in desired products (first) and indexes in non faulty actual products (second)
   std::map<std::string, std::pair<std::vector<size_t>, std::vector<size_t>>> product_type_map;
   for (size_t d = 0; d < desired_shipment.products.size(); ++d)
   {
     const auto & desired_product = desired_shipment.products[d];
     auto & mapping = product_type_map[desired_product.type];
+    //std::cout << "desired product type: " << desired_product.type << std::endl;
     mapping.first.push_back(d);
   }
   for (size_t a = 0; a < non_faulty_products.size(); ++a)
   {
     const auto & actual_product = non_faulty_products[a];
+    //std::cout << "actual product type: " << actual_product.type << std::endl;
     if (0u == product_type_map.count(actual_product.type))
     {
       // since desired products were put into the type map first, this product must be unwanted
@@ -281,6 +316,26 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
   {
     const std::vector<size_t> & desired_indexes = type_pair.second.first;
     const std::vector<size_t> & actual_indexes = type_pair.second.second;
+    auto product_name = type_pair.first;
+    //std::cout << "Product name: " << product_name << std::endl;
+
+    //std::cout <<"Desired Products: " << std::endl;
+    // for (auto di: desired_indexes){
+    //   std::cout << "Index: " << di << std::endl;
+    // }
+    // for (auto di: desired_product_names){
+    //   std::cout << "Type: " << di << std::endl;
+    // }
+
+    // std::cout <<"Actual Products: " << std::endl;
+    // for (auto ai: actual_indexes){
+    //   std::cout << "Index: " << ai << std::endl;
+    // }
+    // for (auto ai: actual_product_names){
+    //   std::cout << "Type: " << ai << std::endl;
+    // }
+
+
     if (desired_indexes.size() > actual_indexes.size())
     {
       is_missing_products = true;
@@ -296,7 +351,7 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
       continue;
     }
 
-    scorer.productPresence += std::min(desired_indexes.size(), actual_indexes.size());
+    scorer.productTypeAndColorPresence += std::min(desired_indexes.size(), actual_indexes.size());
 
     double contributing_pose_score = 0;
     size_t num_indices = std::max(desired_indexes.size(), actual_indexes.size());
@@ -375,13 +430,14 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
     // Add the pose score contributed by the highest scoring permutation
     scorer.productPose += contributing_pose_score;
   }
+
   if (!is_missing_products)
   {
     scorer.isComplete = true;
   }
   if (!has_faulty_product && !has_unwanted_product && !is_missing_products)
   {
-    scorer.allProductsBonus = scorer.productPresence;
+    scorer.allProductsBonus = scorer.productTypeAndColorPresence;
   }
 
   return scorer;

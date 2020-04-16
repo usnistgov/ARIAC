@@ -47,7 +47,8 @@ namespace ariac
       _out << "\tCompletion score: [" << _obj.total() << "]" << std::endl;
       _out << "\tComplete: [" << (_obj.isComplete ? "true" : "false") << "]" << std::endl;
       _out << "\tSubmitted: [" << (_obj.isSubmitted ? "true" : "false") << "]" << std::endl;
-      _out << "\tProduct presence score: [" << _obj.productPresence << "]" << std::endl;
+      _out << "\tProduct type presence score: [" << _obj.productOnlyTypePresence << "]" << std::endl;
+      _out << "\tProduct color presence score: [" << _obj.productTypeAndColorPresence << "]" << std::endl;
       _out << "\tAll products bonus: [" << _obj.allProductsBonus << "]" << std::endl;
       _out << "\tProduct pose score: [" << _obj.productPose << "]" << std::endl;
       _out << "\tDelivered to correct agv: [" << (_obj.correctAGV ? "true" : "false") << "]" << std::endl;
@@ -55,7 +56,8 @@ namespace ariac
       return _out;
     }
     public: ShipmentType_t shipmentType;
-            double productPresence = 0.0;
+            double productOnlyTypePresence = 0.0;
+            double productTypeAndColorPresence = 0.0;
             double allProductsBonus = 0.0;
             double productPose = 0.0;
             bool isComplete = false;  // All products present
@@ -70,7 +72,7 @@ namespace ariac
               {
                 return 0.0;
               }
-              return productPresence + allProductsBonus + productPose;
+              return productOnlyTypePresence + productTypeAndColorPresence + allProductsBonus + productPose;
             }
   };
 
@@ -202,7 +204,7 @@ namespace ariac
       _out << "<game_score>" << std::endl;
       _out << "\tTotal game score: [" << _obj.total() << "]" << std::endl;
       _out << "\tTotal process time: [" << _obj.totalProcessTime << "]" << std::endl;
-      _out << "\tWas arm/arm collision?: [" << _obj.was_arm_arm_collision << "]" << std::endl;
+      _out << "\tArms collision?: [" << _obj.was_arm_arm_collision << "]" << std::endl;
       for (const auto & item : _obj.orderScores)
       {
         _out << item.second << std::endl;

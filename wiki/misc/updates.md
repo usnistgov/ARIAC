@@ -2,6 +2,13 @@
 - Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 -------------------------------------------------
 
+## Released 2020, April 21
+
+- Updated scoring plugin to take into account the score for part color.
+- Updated docker script files https://github.com/usnistgov/ariac-docker
+- Updated docker images which now take into account part color. Get the new docker images with pull_dockerhub_images.bash
+
+
 ## Released 2020, April 4
 
 - Changed the wiki documentation on scoring (see [here](../documentation/scoring.md)).

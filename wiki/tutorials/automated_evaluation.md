@@ -179,15 +179,29 @@ logs
 
 ### Playing back the simulation
 
-- To play-back a specific trial's log file, you must have ARIAC installed on your machine, and then you can call:
-
+- To play back a specific trial's log file, you must have ARIAC installed on your machine.
+- Next, you need to either create symlinks or add a directory which contains the robot meshes and textures. If you do not perform either one of these two actions, you will get the error messages shown in the figure below. The playback launch file will try to look for robot meshes and textures on the host machine the same way the robot model was fetched in the docker container, that is, in `/home/ariac/ariac_ws/src/robots`. Since this path does not exist on the host, Gazebo will crash when you click the play button.
+  - The easiest way to not get these errors is to create the following directory structure on the host `/home/ariac/ariac_ws/src`, then copy the whole `robots` directory from ARIAC into `/home/ariac/ariac_ws/src`.
+  - If you do not want to create a new directory just for the robot meshes/textures, you can create symbolic links that point to an existing robot model files on your machine. For instance, below is an example of a symbolic link that points to the file `torso_base.dae`
 
 ```
-roslaunch nist_gear gear_playback.launch state_log_path:=`pwd`/logs/example_team/sample/gazebo/state.log
+  sudo ln -s  /home/zeid/ariac_ws/src/ARIAC/nist_gear/robots/torso/meshes/torso_base.dae /home/ariac/ariac_ws/src/nist_gear/robots/torso/meshes/torso_base.dae
+```
+- Start the launch file for playback:
+
+```
+roslaunch nist_gear gear_playback.launch state_log_path:=<absolute_path_to_state.log>
 ```
 
-- You should see the ARIAC environment start up with parts in the bins, and the robot be controlled briefly by the example code.
-- **Note**: this is currently only possible for user accounts with user ID of 1000.
+    - A concrete example is:
+    
+  ```
+  roslaunch nist_gear gear_playback.launch state_log_path:=/home/zeid/github/ariac-docker/logs/sirius_team/qual_a_1/gazebo/state.log
+  ```
+<img src="../figures/playback-issue.png" width="900" class="center">
+
+  - You should see the ARIAC environment start up with parts in the bins and, sometimes, on shelves. The robot is invisible until you press the play button in the Gazebo window.
+  - **Note**: this is currently only possible for user accounts with user ID of 1000.
 
 ## Running all trials
 

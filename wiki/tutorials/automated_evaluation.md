@@ -196,7 +196,7 @@ roslaunch nist_gear gear_playback.launch state_log_path:=<absolute_path_to_state
     - A concrete example is:
     
   ```
-  roslaunch nist_gear gear_playback.launch state_log_path:=/home/zeid/github/ariac-docker/logs/sirius_team/qual_a_1/gazebo/state.log
+  roslaunch nist_gear gear_playback.launch state_log_path:=/home/zeid/github/ariac-docker/logs/moveit_example_team/qual_a_1/gazebo/state.log
   ```
 <img src="../figures/playback-issue.png" width="900" class="center">
 

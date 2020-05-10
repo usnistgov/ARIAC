@@ -179,9 +179,15 @@ logs
 
 ### Playing back the simulation
 
-- To play back a specific trial's log file, you must have ARIAC installed on your machine.
-- Next, you need to either create symlinks or add a directory which contains the robot meshes and textures. If you do not perform either one of these two actions, you will get the error messages shown in the figure below. The playback launch file will try to look for robot meshes and textures on the host machine the same way the robot model was fetched in the docker container, that is, in `/home/ariac/ariac_ws/src/robots`. Since this path does not exist on the host, Gazebo will crash when you click the play button.
-  - The easiest way to not get these errors is to create the following directory structure on the host `/home/ariac/ariac_ws/src`, then copy the whole `robots` directory from ARIAC into `/home/ariac/ariac_ws/src`.
+- To play back a specific trial's log file, you will need to start the `gear_playback.launch` which is located in `nist_gear/launch`, so make sure you have ARIAC installed and sourced.
+- `gear_playback.launch` works with `state.log`, which will be created in the `ariac-docker/logs/<team_name>/<trial_file_name>/gazebo` directory. `gazebo/state.log` will only be generated if you have the following in your trial file:
+```
+options:
+   gazebo_state_logging: true
+```
+- Next, you need to either create symlinks or add a directory which contains the robot meshes and textures. If you do not perform either one of these two actions, you will get the error messages shown in the figure below. `gear_playback.launch` will try to look for robot meshes and textures on the host machine the same way the robot model is fetched in the docker container, that is, in `/home/ariac/ariac_ws/src/nist_gear/robots`. Since this path does not exist on the host, Gazebo will crash when you click the play button.
+  
+  - The easiest way to not get these errors is to create the following directory structure on the host `/home/ariac/ariac_ws/src/nist_gear`, then copy the whole `robots` directory from ARIAC into it. The path will finally be `/home/ariac/ariac_ws/src/nist_gear/robots`. **Note**: Make sure you are working in the `/home` directory and not in the Home directory `~`.
   - If you do not want to create a new directory just for the robot meshes/textures, you can create symbolic links that point to an existing robot model files on your machine. For instance, below is an example of a symbolic link that points to the file `torso_base.dae`
 
 ```

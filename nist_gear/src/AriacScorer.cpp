@@ -41,6 +41,10 @@ void AriacScorer::NotifyOrderStarted(gazebo::common::Time time, const nist_gear:
   AriacScorer::OrderInfo orderInfo;
   orderInfo.start_time = time;
   orderInfo.order = nist_gear::Order::ConstPtr(new nist_gear::Order(order));
+  // ROS_WARN_STREAM("------- " << order.kitting_shipments.front()) ;
+
+  
+  
 
   boost::mutex::scoped_lock mutexLock(this->mutex);
 
@@ -80,11 +84,13 @@ void AriacScorer::NotifyOrderUpdated(gazebo::common::Time time, ariac::OrderID_t
 }
 
 /////////////////////////////////////////////////
-void AriacScorer::NotifyShipmentReceived(gazebo::common::Time time, ariac::ShipmentType_t type, const nist_gear::DetectedShipment & shipment)
+//@todo
+void AriacScorer::NotifyShipmentReceived(gazebo::common::Time time, ariac::KittingShipmentType_t type, const nist_gear::DetectedShipment & shipment, std::string actual_station)
 {
   AriacScorer::ShipmentInfo shipmentInfo;
   shipmentInfo.submit_time = time;
   shipmentInfo.type = type;
+  shipmentInfo.station = actual_station;
   shipmentInfo.shipment = nist_gear::DetectedShipment::ConstPtr(new nist_gear::DetectedShipment(shipment));
 
   boost::mutex::scoped_lock mutexLock(this->mutex);
@@ -101,6 +107,7 @@ void AriacScorer::NotifyArmArmCollision(gazebo::common::Time /*time*/)
 /////////////////////////////////////////////////
 ariac::GameScore AriacScorer::GetGameScore()
 {
+  // ROS_WARN_STREAM("GetGameScore");
   boost::mutex::scoped_lock mutexLock(this->mutex);
 
   ariac::GameScore game_score;
@@ -130,38 +137,39 @@ ariac::GameScore AriacScorer::GetGameScore()
       }
     }
 
-    // Create score class for order
+    // Create score class for orderGetShipmentScore
     ariac::OrderScore order_score;
-    order_score.orderID = order_id;
+    order_score.order_id = order_id;
     order_score.priority = priority;
-    auto oit = game_score.orderScores.find(order_id);
-    if (oit != game_score.orderScores.end())
+    auto oit = game_score.order_scores_map.find(order_id);
+    if (oit != game_score.order_scores_map.end())
     {
-      gzerr << "[ARIAC ERROR] Multiple orders of duplicate ids:" << order_score.orderID << "\n";
+      gzerr << "[ARIAC ERROR] Multiple orders of duplicate ids:" << order_score.order_id << "\n";
     }
 
     // Create score classes for shipments
-    for (const auto & expected_shipment : order->shipments)
+    for (const auto & expected_shipment : order->kitting_shipments)
     {
       ariac::ShipmentScore shipment_score;
-      shipment_score.shipmentType = expected_shipment.shipment_type;
-      auto it = order_score.shipmentScores.find(expected_shipment.shipment_type);
-      if (it != order_score.shipmentScores.end())
+      shipment_score.kittingShipmentType = expected_shipment.shipment_type;
+      auto it = order_score.kitting_shipment_scores.find(expected_shipment.shipment_type);
+      if (it != order_score.kitting_shipment_scores.end())
       {
         gzerr << "[ARIAC ERROR] Order contained duplicate shipment types:" << expected_shipment.shipment_type << "\n";
       }
-      order_score.shipmentScores[expected_shipment.shipment_type] = shipment_score;
+      order_score.kitting_shipment_scores[expected_shipment.shipment_type] = shipment_score;
     }
 
     std::vector<std::string> claimed_shipments;
 
     // Find actual shipments that belong to this order
-    for (const auto & desired_shipment : order->shipments)
+    for (const auto & desired_shipment : order->kitting_shipments)
     {
       for (const auto & shipment_info : this->shipments)
       {
         if (desired_shipment.shipment_type == shipment_info.type)
         {
+          // ROS_WARN_STREAM("OK");
           if (shipment_info.submit_time < start_time)
           {
             // Maybe order was updated, this shipment was submitted too early
@@ -173,6 +181,7 @@ ariac::GameScore AriacScorer::GetGameScore()
           {
             if (type == desired_shipment.shipment_type)
             {
+              
               is_claimed = true;
               break;
             }
@@ -181,29 +190,31 @@ ariac::GameScore AriacScorer::GetGameScore()
           {
             continue;
           }
+
+
           claimed_shipments.push_back(desired_shipment.shipment_type);
-          order_score.shipmentScores[desired_shipment.shipment_type] =
-            this->GetShipmentScore(shipment_info.submit_time, desired_shipment, *(shipment_info.shipment));
+          order_score.kitting_shipment_scores[desired_shipment.shipment_type] =
+            this->GetShipmentScore(shipment_info.submit_time, desired_shipment, *(shipment_info.shipment), shipment_info.station);
         }
       }
     }
 
     // Figure out the time taken to complete an order
-    if (order_score.isComplete())
+    if (order_score.isKittingComplete())
     {
       // The latest submitted shipment time is the order completion time
       gazebo::common::Time end = start_time;
-      for (auto & sspair : order_score.shipmentScores)
+      for (auto & sspair : order_score.kitting_shipment_scores)
       {
         if (sspair.second.submit_time > end)
         {
           end = sspair.second.submit_time;
         }
       }
-      order_score.timeTaken = (end - start_time).Double();
+      order_score.time_taken = (end - start_time).Double();
     }
 
-    game_score.orderScores[order_id] = order_score;
+    game_score.order_scores_map[order_id] = order_score;
   }
 
   return game_score;
@@ -211,8 +222,8 @@ ariac::GameScore AriacScorer::GetGameScore()
 
 ariac::ShipmentScore AriacScorer::GetShipmentScore(
   gazebo::common::Time submit_time,
-  const nist_gear::Shipment & desired_shipment,
-  const nist_gear::DetectedShipment & actual_shipment)
+  const nist_gear::KittingShipment & desired_shipment,
+  const nist_gear::DetectedShipment & actual_shipment, std::string station)
 {
   ariac::ShipmentScore scorer;
   scorer.isSubmitted = true;
@@ -226,7 +237,11 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
   scorer.allProductsBonus = 0;
   scorer.productPose = 0;
   scorer.correctAGV = false;
+  scorer.correctDestination = false;
 
+
+
+//--make sure the kit was built on the correct agv
   if ("any" == desired_shipment.agv_id)
   {
     scorer.correctAGV = true;
@@ -239,11 +254,55 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
   {
     scorer.correctAGV = "agv2::kit_tray_2::kit_tray_2::tray" == actual_shipment.destination_id;
   }
+    else if ("agv3" == desired_shipment.agv_id)
+  {
+    scorer.correctAGV = "agv3::kit_tray_3::kit_tray_3::tray" == actual_shipment.destination_id;
+  }
+    else if ("agv4" == desired_shipment.agv_id)
+  {
+    scorer.correctAGV = "agv4::kit_tray_4::kit_tray_4::tray" == actual_shipment.destination_id;
+  }
   else
   {
     gzerr << "[ARIAC ERROR] desired shipment destination invalid:" << desired_shipment.agv_id << "\n";
   }
 
+// ROS_WARN_STREAM("desired station: " << desired_shipment.station_id);
+// ROS_WARN_STREAM("actual station: " << station);
+
+//--make sure the AGV was sent to the correct station
+  if ("any" == desired_shipment.station_id)
+  {
+    scorer.correctDestination = true;
+  }
+  else if ("AS1" == desired_shipment.station_id)
+  {
+    scorer.correctDestination = "AS1" == station;
+  }
+  else if ("AS2" == desired_shipment.station_id)
+  {
+    scorer.correctDestination = "AS2" == station;
+  }
+    else if ("AS3" == desired_shipment.station_id)
+  {
+    scorer.correctDestination = "AS3" == station;
+  }
+    else if ("AS4" == desired_shipment.station_id)
+  {
+    scorer.correctDestination = "AS4" == station;
+  }
+  else if ("AS5" == desired_shipment.station_id)
+  {
+    scorer.correctDestination = "AS5" == station;
+  }
+  else if ("AS6" == desired_shipment.station_id)
+  {
+    scorer.correctDestination = "AS6" == station;
+  }
+  else
+  {
+    gzerr << "[ARIAC ERROR] desired shipment station invalid:" << desired_shipment.station_id << "\n";
+  }
   // Separate faulty and non-faulty products
   std::vector<nist_gear::DetectedProduct> non_faulty_products;
   for (const auto & actual_product : actual_shipment.products)
@@ -272,6 +331,7 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
 
     auto desired_product = desired_shipment.products[d].type;
     auto desired_product_name = desired_product;
+    
     auto desired_product_type = desired_product.erase(desired_product.rfind('_'));
 
     //desired_product.erase(desired_product.rfind('_'));
@@ -281,9 +341,21 @@ ariac::ShipmentScore AriacScorer::GetShipmentScore(
       auto actual_product_name = tmp_non_faulty_products[a].type;
       //std::cout << "Checking for exact part with " << actual_product_name << std::endl;
       //ex: desired=blue gear, actual=blue gear
+      // ROS_WARN_STREAM("desired_product_name: " << desired_product_name);
+      // ROS_WARN_STREAM("actual_product_name: " << actual_product_name);
+
+      //--In the case the actual_product_name has the following format: agv2::tray_2::assembly_battery_blue
+      auto pos = actual_product_name.rfind(':');
+      if (pos != std::string::npos)
+      {
+        actual_product_name.erase(0,pos+1);
+      }
+      // ROS_WARN_STREAM("actual_product_name: " << actual_product_name);
+
       if (desired_product_name.compare(actual_product_name) == 0){
         //std::cout << "Found exact part for desired part: " << desired_product_name << std::endl;
         found_exact_product = true;
+        
         //--give 1pt for correct type
         scorer.productOnlyTypePresence ++;
         //--we are done with this part

@@ -10,6 +10,7 @@
   <arg name="world_path" />
   <arg name="gear_urdf_xacro" />
   <arg name="gantry_urdf_xacro"/>
+  <arg name="kitting_urdf_xacro"/>
   <arg name="state_log_dir" value="$(env HOME)/.ariac/log/gazebo" />
   <arg name="load_moveit" default="false"/>
   <!-- run startup script -->
@@ -55,11 +56,24 @@
   </node>
 
   <group ns="ariac/gantry">
+  <!-- <param name="tf_prefix" value="gantry_tf" /> -->
     <include file="$(find nist_gear)/launch/gantry.launch">
         <arg name="gantry_urdf_xacro" value="$(arg gantry_urdf_xacro)"/>
         <arg name="limited" value="$(arg limited)"/>
     </include>
-    <include file="$(find gantry_moveit_config)/launch/move_group.launch" if="$(arg load_moveit)">
+    <include file="$(find gantry2021_moveit_config)/launch/move_group.launch" if="$(arg load_moveit)">
+        <arg name="load_robot_description" value="False"/>
+    </include>
+  </group>
+
+
+    <group ns="ariac/kitting">
+    <!-- <param name="tf_prefix" value="kitting_tf" /> -->
+    <include file="$(find nist_gear)/launch/kitting.launch">
+    <arg name="kitting_urdf_xacro" value="$(arg kitting_urdf_xacro)"/>
+     <arg name="limited" value="$(arg limited)" />
+    </include>
+    <include file="$(find kitting2021_moveit_config)/launch/move_group.launch" if="$(arg load_moveit)">
         <arg name="load_robot_description" value="False"/>
     </include>
   </group>

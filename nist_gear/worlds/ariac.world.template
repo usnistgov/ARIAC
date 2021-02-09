@@ -25,8 +25,9 @@ def expand_snippet(filename, data=locals()):
 
 
       <camera name='user_camera'>
-        <<!-- pretty overview shot-->
-        <pose frame=''>-7.56272 4.06148 6.60308 0 0.636 -0.467992</pose>
+        <!-- pretty overview shot-->
+        <!-- <pose frame=''>-3.56272 4.06148 6.60308 0 0.636 -0.467992</pose> -->
+        <pose frame=''>-1.493955 14.521118 8.713463 0.0 0.236 -1.70</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -128,21 +129,180 @@ def expand_snippet(filename, data=locals()):
       </spot>
     </light>
 
-    <model name="Surroundings_2020">
+    <!-- <model name="Surroundings_2020">
          <include>
            <static>true</static>
            <uri>model://surroundings_2020</uri>
          </include>
         <pose frame=''>-1.448245 -5.064641 0 0 0 0</pose>
-    </model>
+    </model> -->
 
-    <model name="Workcell_Floor">
-         <include>
-           <static>true</static>
-           <uri>model://workcell_floor</uri>
-         </include>
-        <pose frame=''>0 0 0 0 0 0</pose>
-    </model>
+          <model name="CageFactory1">
+          <include>
+            <static>true</static>
+            <uri>model://cage_factory</uri>
+          </include>
+          <pose frame=''>5.869260 -0.054317 0.100000 0 0 0</pose>
+      </model>
+
+              <model name="CageFactory2">
+          <include>
+            <static>true</static>
+            <uri>model://cage_factory</uri>
+          </include>
+          <pose frame=''>5.869260 -5.351250 0.100000 0 0 0</pose>
+      </model>
+
+      <model name="CageFactory3">
+          <include>
+            <static>true</static>
+            <uri>model://cage_factory</uri>
+          </include>
+          <pose frame=''>6.214485 -6.335498 2.701586 0 0 3.1415</pose>
+      </model>
+
+      <model name="FactoryShelf1">
+          <include>
+            <static>true</static>
+            <uri>model://factory_shelf</uri>
+          </include>
+          <pose frame=''>-5.276381 -12.776616 0.015890 0 0 1.570048</pose>
+      </model>
+
+      <model name="FactoryShelf2">
+          <include>
+            <static>true</static>
+            <uri>model://factory_shelf</uri>
+          </include>
+          <pose frame=''>-7.622565 -12.776616 0.015890 0 0 1.570048</pose>
+      </model>
+  
+      <model name="FactoryShelf3">
+          <include>
+            <static>true</static>
+            <uri>model://factory_shelf</uri>
+          </include>
+          <pose frame=''>-9.915383 -12.776616 0.015890 0 0 1.570048</pose>
+      </model>
+
+      <model name="FactoryShelf4">
+          <include>
+            <static>true</static>
+            <uri>model://factory_shelf</uri>
+          </include>
+          <pose frame=''>-12.122958 -12.776616 0.015890 0 0 1.570048</pose>
+      </model>
+
+      <model name="FactoryShelf5">
+          <include>
+            <static>true</static>
+            <uri>model://factory_shelf</uri>
+          </include>
+          <pose frame=''>-14.605447 -13.428950 0.015890 0 0 -1.570048</pose>
+      </model>
+  
+      <model name="FactoryShelf6">
+          <include>
+            <static>true</static>
+            <uri>model://factory_shelf</uri>
+          </include>
+          <pose frame=''>-16.657080 -12.776616 0.015890 0 0 1.570048</pose>
+      </model>
+
+      <model name="Forklift1">
+          <include>
+            <static>true</static>
+            <uri>model://factory_forklift_1</uri>
+          </include>
+          <pose frame=''>6.980642 11.822382 0.01589 0 0 1.570048</pose>
+      </model>   
+
+      <model name="Forklift2">
+          <include>
+            <static>true</static>
+            <uri>model://factory_forklift_1</uri>
+          </include>
+          <pose frame=''>6.980642 10.213296 0.01589 0 0 1.570048</pose>
+      </model> 
+
+      
+
+
+  
+        <model name="Computer1">
+          <include>
+            <static>true</static>
+            <uri>model://computer_2</uri>
+          </include>
+          <pose frame=''>-2.054716 -13.157621 0.01589 0 0 0</pose>
+      </model>  
+
+              <model name="Computer2">
+          <include>
+            <static>true</static>
+            <uri>model://computer</uri>
+          </include>
+          <pose frame=''>-3.038095 -13.157621 0.01589 0 0 0</pose>
+      </model>  
+
+          <!-- <model name="BoxPallet1">
+          <include>
+            <static>true</static>
+            <uri>model://box_pallets_2</uri>
+          </include>
+          <pose frame=''>5.018821 10.611216 0.01589 0 0 -0.094651</pose>
+      </model>   -->
+
+
+
+
+      <model name="BoxPallet2">
+        <include>
+          <static>true</static>
+          <uri>model://box_pallets_2</uri>
+        </include>
+          <pose frame=''>0.365253 -13.690895 0.01589 0 0 -0.094651</pose>
+      </model>  
+
+      <model name="BoxPallet3">
+        <include>
+          <static>true</static>
+          <uri>model://box_pallets_2</uri>
+        </include>
+          <pose frame=''>3.708591 -13.427740 0.01589 0 0 -0.094651</pose>
+      </model>  
+
+      <model name="BoxPallet4">
+        <include>
+          <static>true</static>
+          <uri>model://box_pallets</uri>
+        </include>
+          <pose frame=''>1.699341 -9.962893 0.01589 0 0 -0.084781</pose>
+      </model>               
+
+      <model name="BoxPallet5">
+        <include>
+          <static>true</static>
+          <uri>model://box_pallets_3</uri>
+        </include>
+          <pose frame=''>2.228640 -11.637700 0.01589 0 0 -0.065512</pose>
+      </model>   
+
+      <model name="BoxPallet6">
+        <include>
+          <static>true</static>
+          <uri>model://box_pallets_3</uri>
+        </include>
+          <pose frame=''>3.734498 -11.813121 0.01589 0 0 -0.065512</pose>
+      </model>   
+
+      <model name="workcell_floor_2021">
+          <include>
+            <static>true</static>
+            <uri>model://workcell_floor_2021</uri>
+          </include>
+          <pose frame=''>0 0 0 0 0 0</pose>
+      </model>
 
 @[for bin_name, bin_pose in bins.items()]@
     <include>
@@ -152,41 +312,19 @@ def expand_snippet(filename, data=locals()):
     </include>
 @[end for]@
 
-@[for shelf_name, shelf_pose in shelves.items()]@
-@[if shelf_name == "shelf1" or shelf_name == "shelf2"]@
+@[for station_name, station_pose in stations.items()]@
     <include>
-      <name>@(shelf_name)</name>
-      <uri>model://workcell_shelf_ghost_base</uri>
-      <pose>@(' '.join(shelf_pose.xyz)) @(' '.join(shelf_pose.rpy))</pose>
+      <name>@(station_name)</name>
+      <uri>model://assembly_station</uri>
+      <pose>@(' '.join(station_pose.xyz)) @(' '.join(station_pose.rpy))</pose>
     </include>
-@[end if]@
 @[end for]@
 
-
-@[for name, row_shelf in row_shelves.items()]@
-@[if row_shelf.type == "base"]@
-  <include>
-    <name>@(name)</name>
-    <uri>model://workcell_shelf_ghost_base</uri>
-    <pose>@(' '.join(row_shelf.pose.xyz)) @(' '.join(row_shelf.pose.rpy))</pose>
-  </include>
-@[end if]@
-@[if row_shelf.type == "pipe"]@
-  <include>
-    <name>@(name)</name>
-    <uri>model://workcell_shelf_ghost_pipe</uri>
-    <pose>@(' '.join(row_shelf.pose.xyz)) @(' '.join(row_shelf.pose.rpy))</pose>
-  </include>
-@[end if]@
-@[if row_shelf.type == "collar"]@
-  <include>
-    <name>@(name)</name>
-    <uri>model://workcell_shelf_ghost_collar</uri>
-    <pose>@(' '.join(row_shelf.pose.xyz)) @(' '.join(row_shelf.pose.rpy))</pose>
-  </include>
-@[end if]@
-@[end for]@
-
+<!-- <include>
+      <name>assembly_briefcase_ariac</name>
+      <uri>model://assembly_briefcase_ariac</uri>
+      <pose>10 10 1 0 0 0</pose>
+    </include> -->
 
 
 @[for name, sensor in sensors.items()]@
@@ -262,12 +400,47 @@ expand_snippet('rgbd_camera.sdf.template')
 
 
 <!-- a conveyor belt-->
-  <include>
-    <name>conveyor_belt</name>
-    <pose>0 0 0 0 0 0</pose>
-    <uri>model://conveyor_belt</uri>
-    <pose>1.067526 -0.714548 0.0 0 0 0</pose>
-  </include>
+    <include>
+      <name>conveyor_belt</name>
+      <pose>0 0 0 0 0 3.14159</pose>
+      <uri>model://conveyor_belt</uri>
+      <pose>1.067526 -0.714548 3.14159 0 0 0</pose>
+    </include>
+
+      <include>
+      <name>agv_path_1</name>
+      <uri>model://agv_path</uri>
+      <pose>-10.182174 4.707484 0 0 0 0</pose>
+    </include>
+
+
+
+
+      <include>
+      <name>agv_path_2</name>
+      <uri>model://agv_path</uri>
+      <pose>-10.182174 1.302086 0 0 0 0</pose>
+    </include>
+
+
+
+
+
+
+        <include>
+      <name>agv_path_3</name>
+      <uri>model://agv_path</uri>
+      <pose>-10.182174 -1.295472 0 0 0 0</pose>
+    </include>
+
+
+      <include>
+      <name>agv_path_4</name>
+      <uri>model://agv_path</uri>
+      <pose>-10.182174 -4.696062 0 0 0 0</pose>
+    </include>
+
+
 
     <!-- Populate the shelves and bins -->
   @[for model_name, model in models_to_insert.items()]@
@@ -306,38 +479,39 @@ expand_snippet('rgbd_camera.sdf.template')
 @[end if]@
 
 
-<!-- Dynamic obstacles -->
-@[for name, config in aisle_layout.items()]@
-    <model name="@(name)_ariac">
-      <pose>-1.608863 @(config['location']) -0.02 0 0 -1.572981</pose>
-      <include>
-        <name>@(name)</name>
-        <uri>model://person_ariac</uri>
-      </include>
-      <plugin name="person_plugin" filename="libROSPersonPlugin.so">
-        <start_time>@(config['start_time'])</start_time>
-        <move_time>@(config['move_time'])</move_time>
-        <wait_time>@(config['wait_time'])</wait_time>
-        <robotNamespace>/ariac</robotNamespace>
-      </plugin>
-    </model>
-@[end for]@
 
 
-@[if options['insert_agvs']]@
-@[for agv_id in [1,2]]@
+
+
+
+
+
+@[for agv_id, agv_pose in agv_infos.items()]@
     <!-- AGV@(str(agv_id)) -->
     <model name="agv@(str(agv_id))">
-      <pose>0 @(7.264603 if agv_id == 1 else -7.264603) -0.02 0 0 @(-3.141509 if agv_id == 1 else 0)</pose>
+    <pose>@(' '.join(agv_pose.xyz)) @(' '.join(agv_pose.rpy))</pose>
+      
 
       <include>
         <name>agv@(str(agv_id))</name>
         <uri>model://warehouse_robot_ariac</uri>
       </include>
       <plugin name="agv_plugin" filename="libROSAGVPlugin.so">
+@[if agv_id == str(1) or agv_id == str(2)]@
+        <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
+        <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>
+        <to_as3_name>/ariac/agv@(agv_id)/to_as3</to_as3_name>
+@[end if]@
+@[if agv_id == str(3) or agv_id == str(4)]@
+
+        <to_as4_name>/ariac/agv@(agv_id)/to_as4</to_as4_name>
+        <to_as5_name>/ariac/agv@(agv_id)/to_as5</to_as5_name>
+        <to_as6_name>/ariac/agv@(agv_id)/to_as6</to_as6_name>
+@[end if]@
         <agv_control_service_name>/ariac/agv@(str(agv_id))/animate</agv_control_service_name>
         <clear_tray_service_name>/ariac/kit_tray_@(str(agv_id))/clear_tray</clear_tray_service_name>
         <lock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/lock_models</lock_tray_service_name>
+        
         <index>@(str(agv_id))</index>
       </plugin>
 
@@ -372,7 +546,7 @@ expand_snippet('rgbd_camera.sdf.template')
     </model>
 
 @[end for]@
-@[end if]@
+
 
 
     <!-- The NIST-ARIAC task manager -->
@@ -388,13 +562,25 @@ expand_snippet('rgbd_camera.sdf.template')
       <material_locations_service_name>/ariac/material_locations</material_locations_service_name>
       <shipment_content_topic_name>/ariac/trays</shipment_content_topic_name>
       <orders_topic>/ariac/orders</orders_topic>
-@[for agv_id in [1,2]]@
+@[for agv_id in [1,2,3,4]]@
       <agv index="@(agv_id)">
         <agv_control_service_name>/ariac/agv@(agv_id)</agv_control_service_name>
         <agv_animate_service_name>/ariac/agv@(agv_id)/animate</agv_animate_service_name>
+        <agv_to_as_service_name>/ariac/agv@(agv_id)/to_assembly_station</agv_to_as_service_name>
+@[if agv_id == 1 or agv_id == 2]@
+        <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
+        <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>
+        <to_as3_name>/ariac/agv@(agv_id)/to_as3</to_as3_name>
+@[end if]@
+@[if agv_id == 3 or agv_id == 4]@
+        <to_as4_name>/ariac/agv@(agv_id)/to_as4</to_as4_name>
+        <to_as5_name>/ariac/agv@(agv_id)/to_as5</to_as5_name>
+        <to_as6_name>/ariac/agv@(agv_id)/to_as6</to_as6_name>
+@[end if]@
         <get_content_service_name>/ariac/kit_tray_@(agv_id)/get_content</get_content_service_name>
       </agv>
 @[end for]@
+
 @[for order_name, order in orders.items()]@
       <order>
         <name>@(order_name)</name>
@@ -407,23 +593,53 @@ expand_snippet('rgbd_camera.sdf.template')
 @[if order['announcement_condition'] == 'unwanted_products']@
         <interrupt_on_unwanted_products>@(order['announcement_condition_value'])</interrupt_on_unwanted_products>
 @[end if]@
-@[for shipment_index in range(order['shipment_count'])]
+        
+@[if order['kitting_shipment_count'] > 0]@            
+@[for shipment_index in range(order['kitting_shipment_count'])]
 @{
 if '_update' in order_name:
     order_name = order_name.split('_update')[0]
-destination = order['destinations'][shipment_index]
+agv = order['kitting_agvs'][shipment_index]
+destination = order['kitting_agv_stations'][shipment_index]
 }@
-        <shipment>
-          <shipment_type>@(order_name)_shipment_@(shipment_index)</shipment_type>
+        <!--If kitting task is present in yaml file-->
+        <kitting_shipment>
+          <shipment_type>@(order_name)_kitting_shipment_@(shipment_index)</shipment_type>
+          <agv>@(agv)</agv>
           <destination>@(destination)</destination>
-@[for product in order['products']]@
+@[for product in order['kitting_products']]@
           <product>
             <type>@(product.type)</type>
             <pose>@(' '.join(product.pose.xyz)) @(' '.join(product.pose.rpy))</pose>
           </product>
 @[end for]@
-        </shipment>
+        </kitting_shipment>
 @[end for]@
+@[end if]@
+
+@[if order['assembly_shipment_count'] > 0]@
+@[for task_index in range(order['assembly_shipment_count'])]
+@{
+if '_update' in order_name:
+    order_name = order_name.split('_update')[0]
+station = order['assembly_stations'][task_index]
+}@
+        <!--If assembly task is present in yaml file-->
+        <assembly_shipment>
+          <shipment_type>@(order_name)_assembly_shipment_@(task_index)</shipment_type>
+          <station>@(station)</station>
+@[for product in order['assembly_products']]@
+          <product>
+            <type>@(product.type)</type>
+            <pose>@(' '.join(product.pose.xyz)) @(' '.join(product.pose.rpy))</pose>
+          </product>
+@[end for]@
+        </assembly_shipment>
+@[end for]@
+@[end if]@
+
+
+
       </order>
 @[end for]@
       <material_locations>
@@ -496,15 +712,15 @@ destination = order['destinations'][shipment_index]
       </link>
     </model>
 
-    <!-- A visual and collision of the linear rail the robots ride on
+    <!-- A visual and collision of the linear rail the robots ride on-->
     <model name="linear_rail">
-      <pose>0.3 0 0.9 0 0 0</pose>
+      <pose>-1.3 0 0.9 0 0 0</pose>
       <static>true</static>
       <link name="rail_link">
         <visual name="rail_link_visual">
           <geometry>
             <box>
-              <size>0.2 4.6 0.1</size>
+              <size>0.2 14 0.1</size>
             </box>
           </geometry>
           <material>
@@ -515,12 +731,84 @@ destination = order['destinations'][shipment_index]
         <collision name="rail_link_collision">
           <geometry>
             <box>
-              <size>0.2 4.6 0.1</size>
+              <size>0.2 14 0.1</size>
             </box>
           </geometry>
         </collision>
       </link>
-    </model>-->
+    </model>
+
+    <!-- AGV path stop marks -->
+    <include>
+      <name>agv_path_stop_1</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-6.239474 4.701303 0.011193 0 0 -1.570796</pose>
+    </include>
+    
+    <include>
+      <name>agv_path_stop_2</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-11.245408 4.701303 0.011193 0 0 -1.570796</pose>
+    </include>
+    <include>
+      <name>agv_path_stop_3</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-16.251342 4.701303 0.011193 0 0 -1.570796</pose>
+    </include>
+
+    <include>
+      <name>agv_path_stop_4</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-6.239474 1.308740 0.011193 0 0 -1.570796</pose>
+    </include>
+
+        <include>
+      <name>agv_path_stop_5</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-11.245408 1.308740 0.011193 0 0 -1.570796</pose>
+    </include>
+
+        <include>
+      <name>agv_path_stop_6</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-16.251342 1.308740 0.011193 0 0 -1.570796</pose>
+    </include>
+
+    <include>
+      <name>agv_path_stop_7</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-6.239473 -1.308740 0.011193 0 0 -1.570796</pose>
+    </include>
+
+        <include>
+      <name>agv_path_stop_8</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-11.245408 -1.308740 0.011193 0 0 -1.570796</pose>
+    </include>
+
+            <include>
+      <name>agv_path_stop_9</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-16.251342 -1.308740 0.011193 0 0 -1.570796</pose>
+    </include>
+
+        <include>
+      <name>agv_path_stop_10</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-6.239473 -4.701303 0.011193 0 0 -1.570796</pose>
+    </include>
+
+            <include>
+      <name>agv_path_stop_11</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-11.245408 -4.701303 0.011193 0 0 -1.570796</pose>
+    </include>
+
+    <include>
+      <name>agv_path_stop_12</name>
+      <uri>model://agv_path_stop</uri>
+      <pose>-16.251342 -4.701303 0.011193 0 0 -1.570796</pose>
+    </include>
 
   </world>
 </sdf>

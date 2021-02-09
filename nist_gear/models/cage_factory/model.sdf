@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='Cage Factory'>
+    <static>true</static>
+    <link name="link">
+      <pose>0 1.9 0 0 0 0</pose>
+      <visual name="visual">
+            <geometry>
+                <mesh>
+                  <scale>0.016 0.016 0.016</scale>
+                  <uri>model://cage_factory/meshes/cage.dae</uri>
+                </mesh>
+            </geometry>
+        </visual>
+
+    </link>
+  </model>
+</sdf>

@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='Stack Lights'>
+    <static>true</static>
+    <link name="link">
+      <pose>0 1.9 0 0 0 0</pose>
+      <visual name="visual">
+            <geometry>
+                <mesh>
+                  <scale>1 1 1</scale>
+                  <uri>model://stacklight_factory/meshes/stacklights.dae</uri>
+                </mesh>
+            </geometry>
+        </visual>
+
+    </link>
+  </model>
+</sdf>

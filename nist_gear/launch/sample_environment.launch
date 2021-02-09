@@ -19,7 +19,7 @@
   <arg unless="$(arg load_moveit)" name="load_moveit_args" value="" />
   <arg     if="$(arg load_moveit)" name="load_moveit_args" value="--load-moveit" />
 
-  <node name="ariac_sim" pkg="nist_gear" type="gear.py"
+  <node name="ariac_sim" pkg="nist_gear" type="gear2021.py"
         args="--development-mode
           $(arg verbose_args)
           $(arg state_logging_args)
@@ -27,7 +27,7 @@
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
           --visualize-sensor-views
-          -f $(find nist_gear)/config/sample.yaml
+          -f $(find nist_gear)/config/sample-test.yaml
           $(find nist_gear)/config/sample_user_config.yaml
           " required="true" output="screen" />
 </launch>

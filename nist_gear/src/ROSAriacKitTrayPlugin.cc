@@ -222,10 +222,12 @@ void KitTrayPlugin::PublishKitMsg()
   // Publish current kit
   nist_gear::DetectedShipment kitTrayMsg;
   kitTrayMsg.destination_id = this->trayID;
+  // ROS_INFO_STREAM(kitTrayMsg.destination_id);
   for (const auto &obj : this->currentKit.objects)
   {
     nist_gear::DetectedProduct msgObj;
     msgObj.type = obj.type;
+    // ROS_INFO_STREAM(obj.type);
     msgObj.is_faulty = obj.isFaulty;
     msgObj.pose.position.x = obj.pose.Pos().X();
     msgObj.pose.position.y = obj.pose.Pos().Y();

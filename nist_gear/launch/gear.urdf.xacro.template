@@ -38,15 +38,7 @@
     <origin xyz="@(' '.join([pose.xyz[0], pose.xyz[1], str(bin_height)]))" rpy="@(' '.join(pose.rpy))" />
   </joint>
   @[end for]@
-@[for name, pose in shelves.items()]@
-  <!-- a bin in the frame @(name)_frame -->
-  <link name="@(name)_frame" />
-  <joint name="@(name)_joint" type="fixed">
-    <parent link="world" />
-    <child link="@(name)_frame" />
-    <origin xyz="@(' '.join([pose.xyz[0], pose.xyz[1], str(shelf_height)]))" rpy="@(' '.join(pose.rpy))" />
-  </joint>
-@[end for]@
+
   <link name="belt_frame" />
   <joint name="belt_joint" type="fixed">
     <parent link="world" />

@@ -1,0 +1,12 @@
+# Send an AGV to an assembly station
+
+# agv_name: The AGV to send, e.g., agv1 or agv2
+# station_name: Assembly station to where to send the AGV: as1, as2, or as3
+
+string assembly_station_name
+#shipment type (e.g., 'order_0_kitting_shipment_0')
+string shipment_type
+
+---
+bool success
+string message

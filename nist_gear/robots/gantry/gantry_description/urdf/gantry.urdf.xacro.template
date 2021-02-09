@@ -30,53 +30,45 @@
   <!-- Rail Properties -->
   <xacro:property name="long_rail_length" value="24.0" />
   <xacro:property name="long_rail_width" value="0.2" />
-  <xacro:property name="long_rail_offset" value="-5" />
+  <xacro:property name="long_rail_offset" value="-8" />
   <xacro:property name="small_rail_length" value="16.0" />
   <xacro:property name="small_rail_width" value="1.5" />
-  <xacro:property name="rail_height" value="3.3" />
+  <xacro:property name="rail_height" value="3.0" />
   <xacro:property name="rail_thickness" value="0.1" />
-  <xacro:property name="torso_height" value="-1.8" />
+  <xacro:property name="torso_height" value="-2.4" />
 
-  <xacro:property name="prefix_right" value="right_" />
-  <xacro:property name="prefix_left" value="left_" />
+  <xacro:property name="gantry_arm" value="gantry_arm_" />
 
-  <link name="world" />
 
-  <!--Information on the rails-->
-    <link name='long_rail_1'>
-      <collision>
-        <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
-        <geometry>
-          <box size="${long_rail_width} ${long_rail_length} ${rail_thickness}"/>
-        </geometry>
-      </collision>
-      <visual>
-        <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 ${pi/2}"/>
-        <geometry>
-	  <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/long_rail.dae" scale="${12./11.} 1 1"/>
-        </geometry>
-      </visual>
-      <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="1.0"/>
-        <inertia
-          ixx="1" ixy="0.0" ixz="0.0"
-          iyy="1" iyz="0.0"
-          izz="1"/>
-        </inertial>
-    </link>
-
-    <gazebo reference="long_rail_1">
-      <material>Gazebo/RustySteel</material>
-      <turnGravityOff>true</turnGravityOff>
-    </gazebo>
-
-    <joint name="rail_1_world" type="fixed">
-      <parent link="world"/>
-      <child link="long_rail_1"/>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 ${-pi/2}"/>
-    </joint>
-
+<!-- ============= -->
+<!--     Links     -->
+<!-- ============= -->
+<!-- Link: world -->
+<link name="world" />
+<!-- Link: long_rail_1 -->
+<link name='long_rail_1'>
+  <collision>
+    <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
+    <geometry>
+      <box size="${long_rail_width} ${long_rail_length} ${rail_thickness}"/>
+    </geometry>
+  </collision>
+  <visual>
+    <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 ${pi/2}"/>
+    <geometry>
+      <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/long_rail.dae" scale="${12./11.} 1 1"/>
+    </geometry>
+  </visual>
+  <inertial>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <mass value="1.0"/>
+    <inertia
+      ixx="1" ixy="0.0" ixz="0.0"
+      iyy="1" iyz="0.0"
+      izz="1"/>
+  </inertial>
+</link>
+<!-- Link: long_rail_2 -->
     <link name='long_rail_2'>
       <collision>
         <origin xyz="${small_rail_length / 2 - long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
@@ -99,19 +91,7 @@
           izz="1"/>
         </inertial>
     </link>
-
-    <gazebo reference="long_rail_2">
-      <material>Gazebo/RustySteel</material>
-      <turnGravityOff>true</turnGravityOff>
-    </gazebo>
-
-    <joint name="rail_2_rail_1" type="fixed">
-      <parent link="long_rail_1"/>
-      <child link="long_rail_2"/>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-    </joint>
-
-
+<!-- Link: small_rail -->
     <link name='small_rail'>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -124,7 +104,6 @@
         <geometry>
 		<mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/short_rail.dae" scale="${16./15.} 1 1"/>
         </geometry>
-        <material name="black"/>
       </visual>
       <inertial>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -135,14 +114,105 @@
           izz=".1"/>
       </inertial>
     </link>
+<!-- Link: torso_base -->
+    <link name="torso_base">
+      <visual>
+        <geometry>
+          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_base.dae" scale="2 2 2"/>
+        </geometry>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <!--<material name="NIST220/Silver"/>-->
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_base.dae" scale="2 2 2"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.0"/>
+        <inertia
+          ixx=".1" ixy="0.0" ixz="0.0"
+          iyy="1" iyz="0.0"
+          izz=".1"/>
+      </inertial>
+    </link>
+<!-- Link: torso_main -->
+    <link name="torso_main">
+      <visual>
+        <geometry>
+          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_no_base.dae" scale="2 2 2"/>
+        </geometry>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_no_base.dae" scale="2 2 2"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.0"/>
+        <inertia
+          ixx=".1" ixy="0.0" ixz="0.0"
+          iyy="1" iyz="0.0"
+          izz=".1"/>
+        </inertial>
+    </link>
 
-    <gazebo reference="small_rail">
-      <material>Gazebo/RustySteel</material>
-      <turnGravityOff>true</turnGravityOff>
-    </gazebo>
 
-<!-- y+ moves the rail left-->
-    <joint name="small_long_joint" type="prismatic">
+      <!-- Attach arm to torso -->
+      <xacro:ur10_robot parent="torso_main" prefix="${gantry_arm}">
+        <origin xyz="0.51 0.0 1.3" rpy="0 1.57 0" />
+      </xacro:ur10_robot>
+      <!-- Load UR10 transmission -->
+      <xacro:ur_arm_transmission prefix="${gantry_arm}" />
+      <!-- Add vacuum gripper to the arm -->
+      <xacro:property name="gantry_wrist_link" value="${gantry_arm}wrist_3_link" />
+      <xacro:create_vacuum_gripper prefix="${gantry_arm}" wrist_link="${gantry_wrist_link}" arm_namespace="/ariac/gantry/arm">
+        <origin xyz="0 0.1 0" rpy="${90 * 0.0174533} 0 0" />
+
+        <grippable_model_types>
+    @[for model_name in possible_products]@
+            <type>@(model_name)</type>
+    @[end for]@
+        </grippable_model_types>
+        <drops_info>
+    @[if drops]@
+          <drops>
+            <drop_regions>
+    @[for drop_region in drops['drop_regions']]@
+              <drop_region>
+                <min>@(' '.join(drop_region.min))</min>
+                <max>@(' '.join(drop_region.max))</max>
+                <destination>@(' '.join(drop_region.destination.xyz)) @(' '.join(drop_region.destination.rpy))</destination>
+                <type>@(drop_region.type)</type>
+    @[if drop_region.frame != "world"]@
+                <frame>@(drop_region.frame)</frame>
+    @[end if]@
+              </drop_region>
+    @[end for]@
+            </drop_regions>
+          </drops>
+    @[end if]@
+        </drops_info>
+      </xacro:create_vacuum_gripper>
+
+<!-- ============== -->
+<!--     Joints     -->
+<!-- ============== -->
+    <joint name="world_long_rail_1_joint" type="fixed">
+      <parent link="world"/>
+      <child link="long_rail_1"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 ${-pi/2}"/>
+    </joint>
+
+    <joint name="long_rail_1_long_rail_2_joint" type="fixed">
+      <parent link="long_rail_1"/>
+      <child link="long_rail_2"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </joint>
+
+    <joint name="long_rail_2_small_rail_joint" type="prismatic">
       <parent link="long_rail_2"/>
       <child link="small_rail"/>
       <origin xyz="0.0 0.0 ${rail_height + rail_thickness}" rpy="0.0 0.0 ${pi/2}"/>
@@ -154,198 +224,94 @@
       <dynamics damping="1.0" friction="2.0"/>
     </joint>
 
+    <joint name="small_rail_torso_base_joint" type="prismatic">
+      <parent link="small_rail"/>
+      <child link="torso_base"/>
+	    <origin xyz="0 0 -2.4" rpy="${pi} ${pi} ${pi/2}"/>
+	    <axis xyz="1 0 0"/>
+	    <!--Add a 1m buffer for joint limits to avoid self-collisions-->
+	    <limit lower="${-small_rail_length / 2 + 1.0}" 
+      upper="${small_rail_length / 2 - 1.0}"
+      velocity="4"
+      effort="10000"/>
+      <dynamics damping="1.0" friction="1.0"/>
+    </joint>
+
+    <joint name="torso_base_torso_main_joint" type="revolute">
+      <parent link="torso_base"/>
+      <child link="torso_main"/>
+      <origin xyz="0 0 0" rpy="${pi} ${pi} 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="${-2 * pi}" 
+      upper="${2 * pi}" 
+      velocity="${pi}" 
+      effort="1000"/>
+      <dynamics damping="1.0" friction="1"/>
+    </joint>
+
+<!-- ============== -->
+<!--     Gazebo     -->
+<!-- ============== -->
+    <gazebo reference="long_rail_1">
+      <material>Gazebo/RustySteel</material>
+      <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+
+    <gazebo reference="long_rail_2">
+      <material>Gazebo/RustySteel</material>
+      <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+
+    <gazebo reference="small_rail">
+      <material>Gazebo/RustySteel</material>
+      <turnGravityOff>true</turnGravityOff>
+    </gazebo>
+
+    <gazebo reference="torso_base">
+      <material>Gazebo/RustySteel</material>
+      <turnGravityOff>true</turnGravityOff>
+      <selfCollide>1</selfCollide>
+    </gazebo>
+
+    <gazebo reference="torso_main">
+      <!--<material>Gazebo/Black</material>-->
+      <turnGravityOff>true</turnGravityOff>
+      <selfCollide>1</selfCollide>
+    </gazebo>
 
 
-    <link name="torso_base">
-      <visual>
-        <geometry>
-          <mesh filename="package://nist_gear/robots/torso/meshes/torso_base.dae"/>
-        </geometry>
-        <!--<material name="NIST220/Silver"/>-->
-      </visual>
-      <collision>
-        <geometry>
-          <mesh filename="package://nist_gear/robots/torso/meshes/torso_base.dae"/>
-        </geometry>
-      </collision>
-      <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="1.0"/>
-        <inertia
-          ixx=".1" ixy="0.0" ixz="0.0"
-          iyy="1" iyz="0.0"
-          izz=".1"/>
-        </inertial>
-      </link>
-
-      <gazebo reference="torso_base">
-        <!--<material>Gazebo/RustySteel</material>-->
-        <turnGravityOff>true</turnGravityOff>
-        <selfCollide>1</selfCollide>
-      </gazebo>
-
-      <joint name="torso_rail_joint" type="prismatic">
-        <parent link="small_rail"/>
-        <child link="torso_base"/>
-	<origin xyz="0 0 ${torso_height}" rpy="${pi} ${pi} 0"/>
-	<axis xyz="0 1 0"/>
-	<!--Add a 1m buffer for joint limits to avoid self-collisions-->
-	<limit lower="${-small_rail_length / 2 + 1.0}"
-	  upper="${small_rail_length / 2 - 1.0}"
-          velocity="4"
-          effort="10000"/>
-        <dynamics damping="1.0" friction="1.0"/>
-      </joint>
-
-      <link name="torso_main">
-        <visual>
-          <geometry>
-            <mesh filename="package://nist_gear/robots/torso/meshes/torso_main.dae"/>
-          </geometry>
-        </visual>
-        <collision>
-          <geometry>
-            <mesh filename="package://nist_gear/robots/torso/meshes/torso_main.dae"/>
-          </geometry>
-        </collision>
-        <inertial>
-          <origin xyz="0 0 0" rpy="0 0 0"/>
-          <mass value="1.0"/>
-          <inertia
-            ixx=".1" ixy="0.0" ixz="0.0"
-            iyy="1" iyz="0.0"
-            izz=".1"/>
-        </inertial>
-      </link>
-
-      <gazebo reference="torso_main">
-        <!--<material>Gazebo/Black</material>-->
-        <turnGravityOff>true</turnGravityOff>
-        <selfCollide>1</selfCollide>
-      </gazebo>
-
-
-      <joint name="torso_base_main_joint" type="revolute">
-        <parent link="torso_base"/>
-        <child link="torso_main"/>
-	<origin xyz="0 0 0" rpy="${pi} ${pi} 0"/>
-        <axis xyz="0 0 1"/>
-	<limit lower="${-2 * pi}"
-	  upper="${2 * pi}"
-	  velocity="${pi}"
-          effort="1000"/>
-        <dynamics damping="1.0" friction="1"/>
-      </joint>
-
-
-
-      <!-- Attach left arm to torso -->
-      <xacro:ur10_robot parent="torso_main" prefix="${prefix_left}">
-        <origin xyz="0.51 0.0 0.38" rpy="0 1.57 0" />
-      </xacro:ur10_robot>
-      <!-- Load UR10 transmission -->
-      <xacro:ur_arm_transmission prefix="${prefix_left}" />
-      <!-- Add vacuum gripper to the left arm -->
-      <xacro:property name="l_wrist_link" value="${prefix_left}wrist_3_link" />
-
-      <xacro:create_vacuum_gripper prefix="${prefix_left}" wrist_link="${l_wrist_link}" arm_namespace="/ariac/gantry/left_arm">
-        <origin xyz="0 0.1 0" rpy="${90 * 0.0174533} 0 0" />
-
-        <grippable_model_types>
-    @[for model_name in possible_products]@
-            <type>@(model_name)</type>
-    @[end for]@
-        </grippable_model_types>
-        <drops_info>
-    @[if drops]@
-          <drops>
-            <drop_regions>
-    @[for drop_region in drops['drop_regions']]@
-              <drop_region>
-                <min>@(' '.join(drop_region.min))</min>
-                <max>@(' '.join(drop_region.max))</max>
-                <destination>@(' '.join(drop_region.destination.xyz)) @(' '.join(drop_region.destination.rpy))</destination>
-                <type>@(drop_region.type)</type>
-    @[if drop_region.frame != "world"]@
-                <frame>@(drop_region.frame)</frame>
-    @[end if]@
-              </drop_region>
-    @[end for]@
-            </drop_regions>
-          </drops>
-    @[end if]@
-        </drops_info>
-      </xacro:create_vacuum_gripper>
-
-
-      <!-- Attach right arm to torso -->
-      <xacro:ur10_robot parent="torso_main" prefix="${prefix_right}">
-         <origin xyz="-0.51 0.0 0.38" rpy="0 -1.57 0" />
-      </xacro:ur10_robot>
-      <!-- Load UR10 transmission -->
-      <xacro:ur_arm_transmission prefix="${prefix_right}" />
-      <!-- Add vacuum gripper to the left arm -->
-      <xacro:property name="r_wrist_link" value="${prefix_right}wrist_3_link" />
-
-      <xacro:create_vacuum_gripper prefix="${prefix_right}" wrist_link="${r_wrist_link}" arm_namespace="/ariac/gantry/right_arm">
-        <origin xyz="0 0.1 0" rpy="${90 * 0.0174533} 0 0" />
-
-        <grippable_model_types>
-    @[for model_name in possible_products]@
-            <type>@(model_name)</type>
-    @[end for]@
-        </grippable_model_types>
-        <drops_info>
-    @[if drops]@
-          <drops>
-            <drop_regions>
-    @[for drop_region in drops['drop_regions']]@
-              <drop_region>
-                <min>@(' '.join(drop_region.min))</min>
-                <max>@(' '.join(drop_region.max))</max>
-                <destination>@(' '.join(drop_region.destination.xyz)) @(' '.join(drop_region.destination.rpy))</destination>
-                <type>@(drop_region.type)</type>
-    @[if drop_region.frame != "world"]@
-                <frame>@(drop_region.frame)</frame>
-    @[end if]@
-              </drop_region>
-    @[end for]@
-            </drop_regions>
-          </drops>
-    @[end if]@
-        </drops_info>
-      </xacro:create_vacuum_gripper>
-
-
+<!-- ==================== -->
+<!--     Transmission     -->
+<!-- ==================== -->
       <!--Transmissions for the rails and the torso-->
-      <transmission name="small_rail_trans">
+      <transmission name="small_rail_long_rail_2_transmission">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="small_long_joint">
+        <joint name="long_rail_2_small_rail_joint">
           <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="small_long_motor">
+        <actuator name="small_rail_long_rail_2_motor">
           <mechanicalReduction>1</mechanicalReduction>
         </actuator>
       </transmission>
 
 
-      <transmission name="torso_rail_trans">
+      <transmission name="small_rail_torso_base_transmission">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="torso_rail_joint">
+        <joint name="small_rail_torso_base_joint">
           <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="torso_rail_motor">
+        <actuator name="small_rail_torso_base_motor">
           <mechanicalReduction>10</mechanicalReduction>
         </actuator>
       </transmission>
 
 
-      <transmission name="torso_base_main_trans">
+      <transmission name="torso_base_torso_main_transmission">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="torso_base_main_joint">
+        <joint name="torso_base_torso_main_joint">
           <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="torso_base_main_motor">
+        <actuator name="torso_base_torso_main_motor">
           <mechanicalReduction>10</mechanicalReduction>
         </actuator>
       </transmission>

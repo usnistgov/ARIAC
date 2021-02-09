@@ -20,32 +20,24 @@
     <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot-->
     <node name="gantry_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
           args="-urdf -model gantry -param robot_description
-	  -J small_long_joint 0
-	  -J torso_rail_joint 0
-	  -J torso_base_main_joint 0
-	  -J left_shoulder_pan_joint 0.0
-	  -J left_shoulder_lift_joint -.7854
-	  -J left_elbow_joint 1.5708
-	  -J left_wrist_1_joint -.7854
-	  -J left_wrist_2_joint 1.5708
-	  -J left_wrist_3_joint 0
-	  -J right_shoulder_pan_joint 3.1416
-	  -J right_shoulder_lift_joint -.7854
-	  -J right_elbow_joint 1.5708
-	  -J right_wrist_1_joint -.7854
-	  -J right_wrist_2_joint 1.5708
-	  -J right_wrist_3_joint 0"/>
+	  -J long_rail_2_small_rail_joint -6
+    -J small_rail_torso_base_joint 0
+	  -J torso_base_torso_main_joint 4.65
+    -J gantry_arm_shoulder_pan_joint -0.09
+    -J gantry_arm_shoulder_lift_joint -0.53
+    -J gantry_arm_elbow_joint 1.36
+    -J gantry_arm_wrist_1_joint -0.63
+    -J gantry_arm_wrist_2_joint -4.72
+    -J gantry_arm_wrist_3_joint 0.83"/>
 
     <!-- Load joint controller configurations from YAML file to parameter server-->
     <rosparam file="$(find nist_gear)/robots/gantry/gantry_description/controller/gantry_control.yaml" command="load"/>
-    <rosparam file="$(find nist_gear)/robots/ur10/ur_description/controller/left_arm_controller_ur10_custom.yaml" command="load"/>
-    <rosparam file="$(find nist_gear)/robots/ur10/ur_description/controller/right_arm_controller_ur10_custom.yaml" command="load"/>
+    <rosparam file="$(find nist_gear)/robots/ur10/ur_description/controller/gantry_arm_controller_ur10_custom.yaml" command="load"/>
 
     <!-- load controllers-->
     <node name="gantry_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
       output="screen" ns="/ariac/gantry" args="--namespace=/ariac/gantry
       gantry_controller
-      left_arm_controller
-      right_arm_controller
+      gantry_arm_controller
     "/>
 </launch>

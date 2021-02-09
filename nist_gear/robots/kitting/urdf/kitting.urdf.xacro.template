@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="kitting">
+
+
+
+ <xacro:include filename="$(find nist_gear)/robots/ur10/ur_description/urdf/common.gazebo.xacro" />
+
+  <xacro:include filename="$(find nist_gear)/robots/ur10/ur_description/urdf/kitting.ur10.urdf.macro.xacro" />
+
+  <!-- arm -->
+  <xacro:kitting_ur10_robot prefix="" />
+
+  
+  <xacro:property name="wrist_link" value="wrist_3_link" />
+  <xacro:property name="base_link" value="base_link" />
+  
+  <xacro:include filename="$(find nist_gear)/robots/vacuum_gripper/vacuum_gripper.urdf.xacro" />
+  <xacro:include filename="$(find nist_gear)/robots/kitting/urdf/linear_arm_actuator.urdf.xacro" />
+  
+  <!-- <gazebo>
+    <static>false</static>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/ariac/kitting</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>true</legacyModeNS>
+    </plugin>
+  </gazebo> -->
+
+      <xacro:create_vacuum_gripper prefix="" wrist_link="${wrist_link}" arm_namespace="/ariac/kitting/arm">
+        <origin xyz="0 0.1 0" rpy="${90 * 0.0174533} 0 0" />
+
+        <grippable_model_types>
+    @[for model_name in possible_products]@
+            <type>@(model_name)</type>
+    @[end for]@
+        </grippable_model_types>
+        <drops_info>
+    @[if drops]@
+          <drops>
+            <drop_regions>
+    @[for drop_region in drops['drop_regions']]@
+              <drop_region>
+                <min>@(' '.join(drop_region.min))</min>
+                <max>@(' '.join(drop_region.max))</max>
+                <destination>@(' '.join(drop_region.destination.xyz)) @(' '.join(drop_region.destination.rpy))</destination>
+                <type>@(drop_region.type)</type>
+    @[if drop_region.frame != "world"]@
+                <frame>@(drop_region.frame)</frame>
+    @[end if]@
+              </drop_region>
+    @[end for]@
+            </drop_regions>
+          </drops>
+    @[end if]@
+        </drops_info>
+      </xacro:create_vacuum_gripper>
+
+<xacro:create_linear_arm_actuator base_link="${base_link}" />
+
+  <link name="world" />
+
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link="linear_arm_actuator" />
+    <origin xyz="-1.3 0 0.9" rpy="0 0 0" />
+  </joint>
+
+
+  
+</robot>

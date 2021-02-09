@@ -22,6 +22,7 @@
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/physics/PhysicsTypes.hh>
 #include <nist_gear/AGVControl.h>
+#include <nist_gear/AGVToAssemblyStation.h>
 #include <nist_gear/DetectedShipment.h>
 #include <nist_gear/GetMaterialLocations.h>
 #include <nist_gear/SubmitShipment.h>
@@ -40,35 +41,31 @@ namespace gazebo
   ///  <order>
   ///    <time>5.0</time>
   ///    <!-- 1st shipment -->
-  ///    <shipment>
-  ///      <product>
-  ///        <type>coke_can</type>
-  ///        <pose>-1 2.5 0.2 0 0 0</pose>
-  ///      </product>
-  ///      <product>
-  ///        <type>cordless_drill/</type>
-  ///        <pose>-1 2.5 0.2 0 0 0</pose>
-  ///      </product>
-  ///      <product>
-  ///        <type>beer</type>
-  ///        <pose>-1 2.5 0.2 0 0 0</pose>
-  ///      </product>
-  ///    </shipment>
-  ///    <!-- 2nd shipment -->
-  ///    <shipment>
-  ///      <product>
-  ///        <type>coke_can</type>
-  ///        <pose>-1 2.5 0.2 0 0 0</pose>
-  ///      </product>
-  ///      <product>
-  ///        <type>cordless_drill/</type>
-  ///        <pose>-1 2.5 0.2 0 0 0</pose>
-  ///      </product>
-  ///      <product>
-  ///        <type>beer</type>
-  ///        <pose>-1 2.5 0.2 0 0 0</pose>
-  ///      </product>
-  ///    </shipment>
+  ///    <kitting>
+  ///      <!-- 1st shipment -->
+  ///      <shipment>
+  ///        <product>
+  ///          <type>coke_can</type>
+  ///          <pose>-1 2.5 0.2 0 0 0</pose>
+  ///        </product>
+  ///        <product>
+  ///          <type>cordless_drill/</type>
+  ///          <pose>-1 2.5 0.2 0 0 0</pose>
+  ///        </product>
+  ///      </shipment>
+  ///      <!-- 2nd shipment -->
+  ///      <shipment>
+  ///        <product>
+  ///          <type>coke_can</type>
+  ///          <pose>-1 2.5 0.2 0 0 0</pose>
+  ///        </product>
+  ///        <product>
+  ///          <type>beer</type>
+  ///          <pose>-1 2.5 0.2 0 0 0</pose>
+  ///        </product>
+  ///      </shipment>
+  ///   </kitting>
+  ///
   ///  </order>
   ///
   /// A task can have multiple orders. Each order has a time element. At that
@@ -110,66 +107,93 @@ namespace gazebo
   class GAZEBO_VISIBLE ROSAriacTaskManagerPlugin : public WorldPlugin
   {
     /// \brief Constructor.
-    public: ROSAriacTaskManagerPlugin();
+  public:
+    ROSAriacTaskManagerPlugin();
 
     /// \brief Destructor.
-    public: virtual ~ROSAriacTaskManagerPlugin();
+  public:
+    virtual ~ROSAriacTaskManagerPlugin();
 
     // Documentation inherited.
-    public: virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
+  public:
+    virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
 
     /// \brief Update the plugin.
-    protected: void OnUpdate();
+  protected:
+    void OnUpdate();
 
     /// \brief Decide whether to announce a new order.
-    protected: void ProcessOrdersToAnnounce(gazebo::common::Time simTime);
+  protected:
+    void ProcessOrdersToAnnounce(gazebo::common::Time simTime);
 
     /// \brief Enable control of the conveyor belt.
-    protected: void EnableConveyorBeltControl();
+  protected:
+    void EnableConveyorBeltControl();
 
     /// \brief Trigger/end the sensor blackout if appropriate.
-    protected: void ProcessSensorBlackout();
+  protected:
+    void ProcessSensorBlackout();
 
     /// \brief Publish competition status.
-    protected: void PublishStatus(const ros::TimerEvent&);
+  protected:
+    void PublishStatus(const ros::TimerEvent &);
 
     /// \brief Start populating the conveyor belt.
-    protected: void PopulateConveyorBelt();
+  protected:
+    void PopulateConveyorBelt();
 
     /// \brief Callback received when the team requests the competition start.
-    public: bool HandleStartService(
-      std_srvs::Trigger::Request & req, std_srvs::Trigger::Response & res);
+  public:
+    bool HandleStartService(
+        std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 
     /// \brief Callback received when the team requests the competition end.
-    public: bool HandleEndService(
-      std_srvs::Trigger::Request & req, std_srvs::Trigger::Response & res);
+  public:
+    bool HandleEndService(
+        std_srvs::Trigger::Request &req, std_srvs::Trigger::Response &res);
 
-    /// \brief Callback for when a shipment is submitted for inspection.
-    public: bool HandleSubmitShipmentService(
-      ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> & event);
+    /// \brief Callback for when a kitting shipment is submitted for inspection.
+  public:
+    bool HandleSubmitKittingShipmentService(
+        ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> &event);
+
+
 
     /// \brief Callback for when a query is made for material locations.
-    public: bool HandleGetMaterialLocationsService(
-      nist_gear::GetMaterialLocations::Request & req, nist_gear::GetMaterialLocations::Response & res);
+  public:
+    bool HandleGetMaterialLocationsService(
+        nist_gear::GetMaterialLocations::Request &req, nist_gear::GetMaterialLocations::Response &res);
 
     /// \brief Callback for when a query is made for material locations.
-    public: bool HandleAGVDeliverService(
-      nist_gear::AGVControl::Request & req, nist_gear::AGVControl::Response & res, int agv_id);
+  public:
+    bool HandleAGVDeliverService(
+        nist_gear::AGVControl::Request &req, nist_gear::AGVControl::Response &res, int agv_id);
+
+    
+    /// \brief Callback for when a kitting shipment is sent to assembly station.
+  public:
+    bool HandleAGVToAssemblyService(
+        nist_gear::AGVToAssemblyStation::Request &req, nist_gear::AGVToAssemblyStation::Response &res, int agv_id);
 
     /// \brief Callback when a tray publishes it's content
-    public: void OnShipmentContent(nist_gear::DetectedShipment::ConstPtr shipment);
+  public:
+    void OnShipmentContent(nist_gear::DetectedShipment::ConstPtr shipment);
 
     /// \brief Callback that recieves the contact sensor's messages.
-    protected: void OnContactsReceived(ConstContactsPtr& _msg);
+  protected:
+    void OnContactsReceived(ConstContactsPtr &_msg);
 
     /// \brief Announce an order to participants.
-    protected: void AnnounceOrder(const ariac::Order & order);
+  protected:
+    void AnnounceOrder(const ariac::Order &order);
 
     /// \brief Stop scoring the current order and assign the next order on stack.
-    protected: void StopCurrentOrder();
+  protected:
+    void StopCurrentOrder();
 
     /// \brief Private data pointer.
-    private: std::unique_ptr<ROSAriacTaskManagerPluginPrivate> dataPtr;
+  private:
+    std::unique_ptr<ROSAriacTaskManagerPluginPrivate> dataPtr;
   };
-}
+} // namespace gazebo
 #endif

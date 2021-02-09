@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='box_pallets_3'>
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <visual name="visual">
+            <geometry>
+                <mesh>
+                  <scale>0.01 0.01 0.01</scale>
+                  <uri>model://box_pallets_3/meshes/box_pallet.dae</uri>
+                </mesh>
+            </geometry>
+        </visual>
+
+    </link>
+  </model>
+</sdf>

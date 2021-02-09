@@ -1,0 +1,7 @@
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+  extra_joints:
+    - name: 'vacuum_gripper_joint'
+      position: 0.0

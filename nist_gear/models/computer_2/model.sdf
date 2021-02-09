@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='computer_2'>
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <visual name="visual">
+            <geometry>
+                <mesh>
+                  <scale>0.01 0.01 0.01</scale>
+                  <uri>model://computer_2/meshes/computer.dae</uri>
+                </mesh>
+            </geometry>
+        </visual>
+
+    </link>
+  </model>
+</sdf>

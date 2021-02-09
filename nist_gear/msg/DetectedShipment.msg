@@ -4,5 +4,7 @@
 # The ID of the shipping_box or tray the shipment was detected in
 string destination_id
 
+string station_id
+
 # Collection of products
 DetectedProduct[] products

@@ -17,6 +17,7 @@
 /*
  * Desc: ARIAC scorer.
  * Author: Deanna Hood
+ * Author: Zeid Kootbally
  */
 #ifndef _ROS_ARIAC_SCORER_HH_
 #define _ROS_ARIAC_SCORER_HH_
@@ -33,14 +34,32 @@
 #include "nist_gear/VacuumGripperState.h"
 
 // Ariac scorer needs to know when an order starts
-// Order
-//    shipments in that order
-//    start time of the order
-//    end time of the order
+// -Order
+//   -kitting  
+//      shipments for kitting
+//   -assembly
+//     shipments for assembly
+//   -start time of the order
+//   -end time of the order
 // Tell scorer when an order starts
 // tell scorer when a shipment is submitted
 
 /// \brief A scorer for the ARIAC game.
+/**
+ * A scorer for the ARIAC game.
+ *
+ * The scorer needs to know when an order starts. The following information is retrieved from the class @ref Order:
+ * 
+ * <ul>
+ *  <li>Order</li>
+ *   <ul>
+ *    <li>kitting</li>
+ *    <li>assembly</li>
+ *   </ul>
+ *  <li>start time of the order</li>
+ *  <li>end time of the order</li>
+ * </ul> 
+ */
 class AriacScorer
 {
   protected:
@@ -61,8 +80,9 @@ class AriacScorer
     struct ShipmentInfo
     {
       gazebo::common::Time submit_time;
-      ariac::ShipmentType_t type;
+      ariac::KittingShipmentType_t type;
       nist_gear::DetectedShipment::ConstPtr shipment;
+      std::string station;
     };
 
   /// \brief Constructor.
@@ -82,7 +102,10 @@ class AriacScorer
   public: void NotifyOrderUpdated(gazebo::common::Time time, ariac::OrderID_t old_order, const nist_gear::Order & order);
 
   /// \brief Tell scorer a shipment was recieved
-  public: void NotifyShipmentReceived(gazebo::common::Time time, ariac::ShipmentType_t type, const nist_gear::DetectedShipment & actualShipment);
+  public: void NotifyShipmentReceived(gazebo::common::Time time, 
+  ariac::KittingShipmentType_t type, 
+  const nist_gear::DetectedShipment & actualShipment,
+  std::string actual_station);
 
   /// \brief Tell scorer that the two arms collided with each other
   /// \param[in] time when the collision occurred
@@ -96,8 +119,10 @@ class AriacScorer
   /// \return The score for the game.
   public: ariac::ShipmentScore GetShipmentScore(
     gazebo::common::Time submit_time,
-    const nist_gear::Shipment & desired,
-    const nist_gear::DetectedShipment & actual);
+    const nist_gear::KittingShipment & desired,
+    const nist_gear::DetectedShipment & actual, std::string station);
+
+    
 
   /// \brief Mutex for protecting this class
   protected: mutable boost::mutex mutex;

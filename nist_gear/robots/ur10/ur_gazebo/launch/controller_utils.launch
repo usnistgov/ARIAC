@@ -15,8 +15,8 @@
   <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
         args="pub /calibrated std_msgs/Bool true" />
 
-  <rosparam file="$(find nist_gear)/robots/ur10/ur_gazebo/controller/left_joint_state_controller.yaml" command="load" />
-  <rosparam file="$(find nist_gear)/robots/ur10/ur_gazebo/controller/right_joint_state_controller.yaml" command="load" />
+  <rosparam file="$(find nist_gear)/robots/ur10/ur_gazebo/controller/gantry_arm_joint_state_controller.yaml" command="load" />
+  <rosparam file="$(find nist_gear)/robots/ur10/ur_gazebo/controller/kitting_arm_joint_state_controller.yaml" command="load" />
 
 <!--
   <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager"

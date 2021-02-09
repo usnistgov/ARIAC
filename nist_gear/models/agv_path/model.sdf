@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='agv_path_2021'>
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>17.738600 1.145870 0.009</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://agv_path/materials/scripts</uri>
+            <uri>model://agv_path/materials/textures</uri>
+            <name>AGVPathTexture</name>
+          </script>
+        </material>
+      </visual>
+
+    </link>
+  </model>
+</sdf>

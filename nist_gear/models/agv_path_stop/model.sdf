@@ -1,0 +1,24 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='agv_path_stop_2021'>
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>1.105450 0.081839 0.009</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://agv_path_stop/materials/scripts</uri>
+            <uri>model://agv_path_stop/materials/textures</uri>
+            <name>AGVPathStopTexture</name>
+          </script>
+        </material>
+      </visual>
+
+    </link>
+  </model>
+</sdf>

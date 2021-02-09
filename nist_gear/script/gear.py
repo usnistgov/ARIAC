@@ -33,6 +33,7 @@ rospack = rospkg.RosPack()
 world_dir = os.path.join(rospack.get_path('nist_gear'), 'worlds')
 launch_dir = os.path.join(rospack.get_path('nist_gear'), 'launch')
 gantry_dir = os.path.join(rospack.get_path('nist_gear'), 'robots/gantry/gantry_description/urdf')
+kitting_dir = os.path.join(rospack.get_path('nist_gear'), 'robots/kitting/urdf/')
 template_files = [
     os.path.join(world_dir, 'ariac.world.template'),
     os.path.join(launch_dir, 'gear.launch.template'),
@@ -40,22 +41,42 @@ template_files = [
     os.path.join(gantry_dir, 'gantry.urdf.xacro.template'),
 ]
 
+arm_template_file = os.path.join(kitting_dir, 'kitting.urdf.xacro.template')
+
+arm_configs = {
+    'kitting': {
+        'arm_type': 'ur10',
+        'pose': {
+            'xyz': [0.3, 0.92, 0.9],
+            'rpy': [0.0, 0.0, 0.0]
+        },
+        'default_initial_joint_states': {
+            'elbow_joint': 2.14,
+            'linear_arm_actuator_joint': 0,
+            'shoulder_lift_joint': -2.0,
+            'shoulder_pan_joint': 3.14,
+            'wrist_1_joint': 3.27,
+            'wrist_2_joint': -1.51,
+            'wrist_3_joint': 0,
+        }
+    },
+}
+
+
+
 possible_products = [
-    'disk_part_red',
-    'gasket_part_red',
-    'gear_part_red',
-    'piston_rod_part_red',
-    'pulley_part_red',
-    'disk_part_green',
-    'gasket_part_green',
-    'gear_part_green',
-    'piston_rod_part_green',
-    'pulley_part_green',
-    'disk_part_blue',
-    'gasket_part_blue',
-    'gear_part_blue',
-    'piston_rod_part_blue',
-    'pulley_part_blue',
+    'assembly_battery_red',
+    'assembly_battery_green',
+    'assembly_battery_blue',
+    'assembly_pump_red',
+    'assembly_pump_green',
+    'assembly_pump_blue',
+    'assembly_regulator_red',
+    'assembly_regulator_green',
+    'assembly_regulator_blue',
+    'assembly_sensor_red',
+    'assembly_sensor_green',
+    'assembly_sensor_blue',
 ]
 sensor_configs = {
     'break_beam': None,
@@ -68,25 +89,149 @@ sensor_configs = {
     'quality_control': None,
 }
 
-shelf_configs = {
-    'base': None,
-    'pipe': None,
-    'collar': None,
+default_agv_origins = {
+    'agv1': [-2.265685,4.675404,0],
+    'agv2': [-2.265685,1.367643, 0],
+    'agv3': [-2.265685,-1.333917, 0],
+    'agv4': [-2.265685, -4.696062, 0],
 }
+
+
+agv1_y=4.675404
+agv2_y=1.367643
+agv3_y=-1.333917
+agv4_y=-4.696062
+
+agv1_agv2_AS1_x=-5.60
+agv1_agv2_AS2_x=-10.590274
+agv1_agv2_AS3_x=-15.580548
+
+agv3_agv4_AS4_x=-5.60
+agv3_agv4_AS5_x=-10.590274
+agv3_agv4_AS6_x=-15.580548
+
+# Pose of all the different stations for each agv
+# KS is the kitting station
+stations = {
+    'agv1':{
+        'KS1': {
+            'pose':{
+                'xyz': [-2.265685, agv1_y, 0] 
+            }
+        },
+        'AS1': {
+            'pose':{
+                'xyz': [agv1_agv2_AS1_x, agv1_y, 0]       
+            }
+        },
+        'AS2': {
+            'pose':{
+                'xyz': [agv1_agv2_AS2_x, agv1_y, 0]   
+            }
+        },
+        'AS3': {
+            'pose':{
+                'xyz': [agv1_agv2_AS3_x, agv1_y, 0]   
+            }
+        },
+    },
+    'agv2':{
+        'KS2': {
+            'pose':{
+                'xyz': [-2.265685, agv2_y, 0]   
+            }
+        },
+        'AS1': {
+            'pose':{
+                'xyz': [agv1_agv2_AS1_x, agv2_y, 0] 
+            }
+        },
+        'AS2': {
+            'pose':{
+                'xyz': [agv1_agv2_AS2_x, agv2_y, 0]    
+            }
+        },
+        'AS3': {
+            'pose':{
+                'xyz': [agv1_agv2_AS3_x, agv2_y, 0]   
+            }
+        },
+    },
+    'agv3':{
+        'KS3': {
+            'pose':{
+                'xyz': [-2.265685, agv3_y, 0] 
+            }
+        },
+        'AS4': {
+            'pose':{
+                'xyz': [agv3_agv4_AS4_x, agv3_y, 0]
+            }
+        },
+        'AS5': {
+            'pose':{
+                'xyz': [agv3_agv4_AS5_x, agv3_y, 0]   
+            }
+        },
+        'AS6': {
+            'pose':{
+                'xyz': [agv3_agv4_AS6_x, agv3_y, 0]
+            }
+        }
+    },
+    'agv4':{
+        'KS4': {
+            'pose':{
+                'xyz': [-2.265685,agv4_y, 0]    
+            }
+        },
+        'AS4': {
+            'pose':{
+                'xyz': [agv3_agv4_AS4_x, agv4_y, 0]  
+            }
+        },
+        'AS5': {
+            'pose':{
+                'xyz': [agv3_agv4_AS5_x, agv4_y, 0]   
+            }
+        },
+        'AS6': {
+            'pose':{
+                'xyz': [agv3_agv4_AS6_x, agv4_y, 0]   
+            }
+        }
+    }
+
+}
+
 # The pose should be changed based on the new environment configuration
 default_sensors = {
     'quality_control_sensor_1': {
         'type': 'quality_control',
         'pose': {
-            'xyz': [0.0, -7.464603, 1.5],
-            'rpy': [3.141322, 1.567592, 1.567592]
+            'xyz': [-2.393395, 4.702724, 1.506952],
+            'rpy': [-3.141593, 1.570796, 0]
         }
     },
     'quality_control_sensor_2': {
         'type': 'quality_control',
         'pose': {
-            'xyz': [0.0, 7.464603, 1.5],
-            'rpy': [-3.141322, 1.567592, -1.567592]
+            'xyz': [-2.393394, 1.361367, 1.506952],
+            'rpy': [-3.141593, 1.570796, 0]
+        }
+    },
+    'quality_control_sensor_3': {
+        'type': 'quality_control',
+        'pose': {
+            'xyz': [-2.393393, -1.325227, 1.506952],
+            'rpy': [-3.141593, 1.570796, 0]
+        }
+    },
+    'quality_control_sensor_4': {
+        'type': 'quality_control',
+        'pose': {
+            'xyz': [-2.393395, -4.698129, 1.506952],
+            'rpy': [-3.141593, 1.570796, 0]
         }
     },
 }
@@ -95,99 +240,67 @@ default_belt_models = {
 }
 
 
-#shelves_to_spawn = {
-#}
-
-default_shelf_layout = {
-    'row_1': {
-        'pose': {
-            'y': 3.676406,
-            }
-        },
-    'row_2': {
-        'pose': {
-            'y': 0.578742,
-            }
-        },
-    'row_3': {
-        'pose': {
-            'y': -2.393708,
-            }
-        }
-}
-
-shelf_x_0 = -2.093984
-shelf_x_1 = -6.217916
-shelf_x_2 = -8.393152
-shelf_x_3 = -12.517084
-
-row_1_list = []
-row_2_list = []
-row_3_list = []
 
 bin_width = 0.6
 bin_depth = 0.6
 bin_height = 0.72
 bin_angle = 0.0
 
-shelf_width = 1.26
-shelf_depth = 4.01
-shelf_height = 1.44
-shelf_angle = 0.0
+station_width = 0.6
+station_depth = 0.6
+station_height = 1.20
+station_angle = 0.0
 
-# When there is no intentional gap between 2 consecutive shelves
-next_shelf_gap = 4.12393
-# When there is an intentional gap between 2 consecutive shelves
-empty_shelf_gap = 6.299168
 
 # 0.842058 + 2.378535
 default_bin_origins = {
-    'bin1': [2.634189, 1.323536, 0],
-    'bin2': [3.574991, 1.323536, 0],
-    'bin3': [4.515793, 1.323536, 0],
-    'bin4': [5.456594, 1.323536, 0],
-    'bin5': [2.634189, 2.165594, 0],
-    'bin6': [3.574991, 2.165594, 0],
-    'bin7': [4.515793, 2.165594, 0],
-    'bin8': [5.456594, 2.165594, 0],
-    'bin9': [2.634189, -1.323536, 0],
-    'bin10': [3.574991, -1.323536, 0],
-    'bin11': [4.515793, -1.323536, 0],
-    'bin12': [5.456594, -1.323536, 0],
-    'bin13': [2.634189, -2.165594, 0],
-    'bin14': [3.574991, -2.165594, 0],
-    'bin15': [4.515793, -2.165594, 0],
-    'bin16': [5.456594, -2.165594, 0],
+    'bin1': [-1.898993, 3.379920, 0],
+    'bin2': [-1.898993, 2.565006, 0],
+    'bin3': [-2.651690, 2.565006, 0],
+    'bin4': [-2.651690, 3.379920, 0],
+    'bin5': [-1.898993, -3.379920, 0],
+    'bin6': [-1.898993, -2.565006, 0],
+    'bin7': [-2.651690, -2.565006, 0],
+    'bin8': [-2.651690, -3.379920, 0],
+    
 }
+
+
 # Dictionary
-default_shelf_origins = {
-    'shelf1': [6.044626, 4.255148, 0],
-    'shelf2': [6.044626, -3.012048, 0],
-    'shelf3': [0, 0, 0],
-    'shelf4': [0, 0, 0],
-    'shelf5': [0, 0, 0],
-    'shelf6': [0, 0, 0],
-    'shelf7': [0, 0, 0],
-    'shelf8': [0, 0, 0],
-    'shelf9': [0, 0, 0],
-    'shelf10': [0, 0, 0],
-    'shelf11': [0, 0, 0],
+default_station_origins = {
+    'station1': [-7.3, 3, 0],
+    'station2': [-12.3, 3, 0],
+    'station3': [-17.3, 3, 0],
+    'station4': [-7.3, -3, 0],
+    'station5': [-12.3, -3, 0],
+    'station6': [-17.3, -3, 0],
 }
-'''
-    'shelf3': [-2.093984, 3.676406, 0],
-    'shelf4': [-8.393152, 3.676406, 0],
-    'shelf5': [-12.517082, 3.676406, 0],
-    'shelf6': [-2.093986, 0.578742, 0],
-    'shelf7': [-6.217916, 0.578742, 0],
-    'shelf8': [-12.517084,0.578742, 0],
-    'shelf9': [-2.093986, -2.393708, 0],
-    'shelf10': [-8.393152, -2.393708, 0],
-    'shelf11': [-12.517082, -2.393708, 0],
-'''
+
+# brief_case_offset_x = 0.555643
+brief_case_offset_x = 0.08
+brief_case_offset_y = 0.095839
+brief_case_offset_z = station_height
+
+default_briefcase_origins = {
+    'briefcase1': [default_station_origins['station1'][0] + brief_case_offset_x, default_station_origins['station1'][1] + brief_case_offset_y, brief_case_offset_z],
+    'briefcase2': [default_station_origins['station2'][0] + brief_case_offset_x, default_station_origins['station2'][1] + brief_case_offset_y, brief_case_offset_z],
+    'briefcase3': [default_station_origins['station3'][0] + brief_case_offset_x, default_station_origins['station3'][1] + brief_case_offset_y, brief_case_offset_z],
+    'briefcase4': [default_station_origins['station4'][0] + brief_case_offset_x, default_station_origins['station4'][1] + brief_case_offset_y, brief_case_offset_z],
+    'briefcase5': [default_station_origins['station5'][0] + brief_case_offset_x, default_station_origins['station5'][1] + brief_case_offset_y, brief_case_offset_z],
+    'briefcase6': [default_station_origins['station6'][0] + brief_case_offset_x, default_station_origins['station6'][1] + brief_case_offset_y, brief_case_offset_z],
+}
+
+
+
+
+
+#-6.915360
+#2.938048
+#1.163764
 
 configurable_options = {
     'insert_models_over_bins': False,
-    'insert_models_over_shelves': False,
+    'insert_models_over_stations': False,
     'disable_shadows': False,
     'belt_population_cycles': 5,
     'gazebo_state_logging': False,
@@ -213,29 +326,7 @@ def update_dict(tree,key,value):
             return True
     return False
 
-def get_default_shelf_y(row):
-    y = default_shelf_layout.get(row).get("pose").get("y")
-    return y
 
-def build_row_dict(tree,row_list, row):
-    shelf = ""
-    for idx, i in enumerate(row_list):
-        type = row_list[idx][0]
-        pose_x = row_list[idx][1]
-        pose_y = row_list[idx][2]
-        pose_z = row_list[idx][3]
-
-        if row == "row_1":
-            shelf = "shelf" + str(idx + 3)
-        elif row == "row_2":
-            shelf = "shelf" + str(idx + 6)
-        elif row == "row_3":
-            shelf = "shelf" + str(idx + 9)
-
-        update_dict(tree, shelf, {"type": type, "pose": {"xyz": [pose_x, pose_y, pose_z], "rpy": [0, 0, 3.141591]}})
-        shelf_update = {shelf: [pose_x, pose_y, pose_z]}
-        default_shelf_origins.update(shelf_update)
-        #update_dict(default_shelf_origins, shelf, [pose_x, pose_y, pose_z])
 
 def initialize_model_id_mappings(random_seed=None):
     global global_model_count, model_id_mappings
@@ -343,19 +434,16 @@ class SensorInfo:
         self.type = sensor_type
         self.pose = pose
 
+class AGVInfo:
+    def __init__(self, id, pose):
+        self.id = id
+        self.pose = pose
 
 class PoseInfo:
     def __init__(self, xyz, rpy):
         self.xyz = [str(f) for f in xyz]
         self.rpy = [str(f) for f in rpy]
 
-class RowShelfInfo:
-    def __init__(self, name, shelf_type, pose):
-        self.name = name
-        self.type = shelf_type
-        self.pose = pose
-        #self.xyz = xyz
-        #self.rpy = rpy
 
 class DropRegionInfo:
     def __init__(self, name, drop_region_min, drop_region_max, destination, frame, model_type):
@@ -413,6 +501,11 @@ def create_pose_info(pose_dict, offset=None):
         xyz = [sum(i) for i in zip(xyz, offset)]
     return PoseInfo(xyz, rpy)
 
+def create_arm_info(name, arm_dict):
+    arm_type = arm_dict['arm_type']
+    initial_joint_states = arm_dict['default_initial_joint_states']
+    pose = create_pose_info(arm_dict['pose'])
+    return ArmInfo(name, arm_type, initial_joint_states, pose)
 
 def create_sensor_info(name, sensor_data, allow_protected_sensors=False, offset=None):
     sensor_type = get_required_field(name, sensor_data, 'type')
@@ -438,33 +531,8 @@ def create_sensor_infos(sensors_dict, allow_protected_sensors=False, offset=None
             allow_protected_sensors=allow_protected_sensors, offset=offset)
     return sensor_infos
 
-def create_row_shelf_info(name, shelf_data):
-    shelf_type = get_required_field(name, shelf_data, 'type')
-    pose_dict = get_required_field(name, shelf_data, 'pose')
-    #print(name)
-    #print(shelf_type)
-    #print(pose_dict.get('xyz'))
-    for key in shelf_data:
-        if key not in ['type', 'pose']:
-            print("Warning: ignoring unknown entry in '{0}': {1}"
-                  .format(name, key), file=sys.stderr)
-    pose_info = create_pose_info(pose_dict)
-    return RowShelfInfo(name, shelf_type, pose_info)
 
 
-def create_row_shelf_infos(row_shelf_dict):
-    row_shelf_infos = {}
-
-    for name, shelf_data in row_shelf_dict.items():
-        #pprint.pprint(shelf_data)
-        row_shelf_infos[name] = create_row_shelf_info(name, shelf_data)
-    return row_shelf_infos
-
-#def create_shelf_infos():
-#    shelf_infos = {}
-#    for shelf_name, xyz in default_shelf_origins.items():
-#        shelf_infos[shelf_name] = PoseInfo(xyz, [0, shelf_angle, 3.14159])
-#    return shelf_infos
 
 def create_model_info(model_name, model_data):
     model_type = get_required_field(model_name, model_data, 'type')
@@ -494,76 +562,29 @@ def create_models_to_spawn_infos(models_to_spawn_dict):
     return models_to_spawn_infos
 
 
-
-def create_shelves_to_spawn_infos(shelves_to_spawn_dict):
-    shelves_to_spawn_info = {
-        'shelf3': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf4': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf5': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf6': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf7': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf8': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf9': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf10': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-        'shelf11': {'type': '', 'pose': {'xyz': [], 'rpy': []}},
-    }
-    for row_name, layout in shelves_to_spawn_dict.items():
-        # For each row in yaml file, find its default y in default_shelf_layout
-        start_y = get_default_shelf_y(row_name)
-        start_x = 0
-        #print(row_name)
-        #shelf_x_0 = -2.093984
-        #shelf_x_1 = -6.217916
-        #shelf_x_2 = -8.393152
-        #shelf_x_3 = -12.517084
-        #next_shelf_gap = 4.12393
-        #empty_shelf_gap = 6.299168
-
-        #row_3: ['base', 0, 'pipe', 'collar']
-        shelf_position = [0, 0, 0]
-        prev_coord = 0
-        for idx, item in enumerate(layout):
-            if item != 0:
-                if idx == 0:
-                    start_x = shelf_x_0
-                    #shelf_position.insert(0, start_x)
-                    prev_coord = start_x
-                if idx == 1:
-                    if layout[0] == 0:
-                        start_x = -4.205184
-                        prev_coord = start_x
-                    else:
-                        start_x = prev_coord - next_shelf_gap
-                        prev_coord = start_x
-                if idx == 2:
-                    if layout[1] == 0:
-                        start_x = prev_coord - empty_shelf_gap
-                        prev_coord = start_x
-                    else:
-                        start_x = prev_coord - next_shelf_gap
-                        prev_coord = start_x
-                if idx == 3:
-                    if layout[2] == 0:
-                        start_x = prev_coord - empty_shelf_gap
-                    else:
-                        start_x = prev_coord - next_shelf_gap
+def create_agv_info(agv_yaml_dict):
+    agv_info = {}
+    for agv_name_yaml, agv_info_dict_yaml in agv_yaml_dict.items():
+        if agv_name_yaml in default_agv_origins:
+            agv_id = agv_name_yaml[3:]
+            agv_info[agv_id] = {}
+            location = agv_info_dict_yaml['location']
+            all_stations = stations[agv_name_yaml]
+            if all_stations.has_key(location):
+                station = all_stations[location]
+                station_xyz = station['pose']['xyz']
+                station_rpy = [0,0,-1.570796]
+                agv_info[agv_id] = PoseInfo(station_xyz, station_rpy)
+            else:
+                print('=' * 80)
+                print("Error: "+ agv_name_yaml +" can not be assigned the station: " + location, file=sys.stderr)
+                print('=' * 80)
+    return agv_info
 
 
-                tmp_list = [item, start_x, start_y, 0]
-                #print(tmp_list)
-                # check if dictionary already has a key = item
-                if row_name == "row_1":
-                    row_1_list.append(tmp_list)
-                elif row_name == "row_2":
-                    row_2_list.append(tmp_list)
-                elif row_name == "row_3":
-                    row_3_list.append(tmp_list)
+       
+        
 
-            build_row_dict(shelves_to_spawn_info, row_1_list, "row_1")
-            build_row_dict(shelves_to_spawn_info, row_2_list, "row_2")
-            build_row_dict(shelves_to_spawn_info, row_3_list, "row_3")
-    #pprint.pprint(shelves_to_spawn_info)
-    return shelves_to_spawn_info
 
 def create_models_over_bins_infos(models_over_bins_dict):
     models_to_spawn_infos = {}
@@ -616,57 +637,142 @@ def create_models_over_bins_infos(models_over_bins_dict):
                     models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
 
-def create_models_over_shelves_infos(models_over_shelves_dict):
-    models_to_spawn_infos = {}
-    for shelf_name, shelf_dict in models_over_shelves_dict.items():
-        if shelf_name in default_shelf_origins:
-            offset_xyz = [
-                default_shelf_origins[shelf_name][0] - shelf_depth / 2,
-                default_shelf_origins[shelf_name][1] - shelf_width / 2,
-                shelf_height + 0.08]
-            #shelf_ghost_type = default_shelf_origins[shelf_name][3]
-            # Allow the origin of the bin to be over-written
-            if 'xyz' in shelf_dict:
-                offset_xyz = shelf_dict['xyz']
-        else:
-            offset_xyz = get_required_field(shelf_name, shelf_dict, 'xyz')
+# def spawn_briefcase_over_stations_infos(station_name, station_xyz):
+#     models_to_spawn_infos = {}
+#     model_to_spawn_data = {}
+#     model_to_spawn_data['type'] = 'assembly_briefcase'
+#     model_to_spawn_data['reference_frame'] = 'world'
+#     xyz = [brief_case_offset_x, brief_case_offset_y, brief_case_offset_z]
+#     rpy = [0, 0, 0]
+#     offset_xyz = [
+#         station_xyz[0] + xyz[0],
+#         station_xyz[1] + xyz[1],
+#         xyz[2]]
+                 
+#     model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
+#     model_info = create_model_info('assembly_briefcase', model_to_spawn_data)
+#     # assign each model a unique name because gazebo can't do this
+#     # if the models all spawn at the same time
+#     scoped_model_name = station_name + '|assembly_briefcase'
+#     model_info.briefcase = station_name
+#     models_to_spawn_infos[scoped_model_name] = model_info
+#     return models_to_spawn_infos
 
-        models = get_required_field(shelf_name, shelf_dict, 'models') or {}
+
+
+
+def create_briefcase_over_stations_infos(models_over_stations_dict):
+    models_to_spawn_infos = {}
+    for station_name in default_station_origins:
+         model_to_spawn_data = {}
+         model_to_spawn_data['type'] = 'assembly_briefcase'
+         model_to_spawn_data['reference_frame'] = 'world'
+         xyz = [brief_case_offset_x, brief_case_offset_y, brief_case_offset_z]
+         rpy = [0, 0, 0]
+         
+         if station_name in default_station_origins:
+            offset_xyz = [
+                 default_station_origins[station_name][0] + xyz[0],
+                 default_station_origins[station_name][1] + xyz[1],
+                 xyz[2]]
+                 
+            model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
+            model_info = create_model_info('assembly_briefcase', model_to_spawn_data)
+            # assign each model a unique name because gazebo can't do this
+            # if the models all spawn at the same time
+            scoped_model_name = station_name + '|assembly_briefcase' + station_name.replace('station','')
+            model_info.briefcase = station_name
+            models_to_spawn_infos[scoped_model_name] = model_info
+    return models_to_spawn_infos
+
+
+
+def create_models_over_stations_infos(models_over_stations_dict):
+    models_to_spawn_infos = {}
+    for station_name, station_dict in models_over_stations_dict.items():
+        models = get_required_field(station_name, station_dict, 'models') or {}
+        station_id = station_name.replace('station','')
         for model_type, model_to_spawn_dict in models.items():
             model_to_spawn_data = {}
             model_to_spawn_data['type'] = model_type
             model_to_spawn_data['reference_frame'] = 'world'
-            xyz_start = get_required_field(
-                model_type, model_to_spawn_dict, 'xyz_start')
-            xyz_end = get_required_field(
-                model_type, model_to_spawn_dict, 'xyz_end')
+            xyz = get_required_field(
+                model_type, model_to_spawn_dict, 'xyz')
             rpy = get_required_field(model_type, model_to_spawn_dict, 'rpy')
-            rpy[1] = -shelf_angle
-            num_models_x = get_required_field(
-                model_type, model_to_spawn_dict, 'num_models_x')
-            num_models_y = get_required_field(
-                model_type, model_to_spawn_dict, 'num_models_y')
-            step_size = [
-                (xyz_end[0] - xyz_start[0]) / max(1, num_models_x - 1),
-                (xyz_end[1] - xyz_start[1]) / max(1, num_models_y - 1)]
 
-            # Create a grid of models
-            for idx_x in range(num_models_x):
-                for idx_y in range(num_models_y):
-                    model_x_offset = xyz_start[0] + idx_x * step_size[0]
-                    xyz = [
-                        offset_xyz[0] + model_x_offset,
-                        offset_xyz[1] + xyz_start[1] + idx_y * step_size[1],
-                        offset_xyz[2] + xyz_start[2] + model_x_offset * math.tan(shelf_angle)]
+            if station_name in default_station_origins:
+                
+                offset_xyz = [
+                    default_briefcase_origins['briefcase'+station_id][0] + xyz[0],
+                    default_briefcase_origins['briefcase'+station_id][1] + xyz[1],
+                    default_briefcase_origins['briefcase'+station_id][1] + xyz[2]]
+                # spawn_briefcase_over_stations_infos(station_name, default_station_origins[station_name])
+            
+            model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
+            model_info = create_model_info(model_type, model_to_spawn_data)
+            # assign each model a unique name because gazebo can't do this
+            # if the models all spawn at the same time
+            scoped_model_name = station_name + '|assembly_briefcase' + str(station_id) +'|'+ \
+                    model_info.type + '_' + str(get_next_model_id(model_type))
+            model_info.station = station_name
+            models_to_spawn_infos[scoped_model_name] = model_info
+    return models_to_spawn_infos
+
+
+def create_models_over_agvs_infos(agv_yaml_dict):
+    models_to_spawn_infos = {}
+    agv_info = {}
+    for agv_name_yaml, agv_info_dict_yaml in agv_yaml_dict.items():
+        if agv_name_yaml in default_agv_origins:
+            agv_id = agv_name_yaml[3:]
+            agv_info[agv_id] = {}
+            location = agv_info_dict_yaml['location']
+            all_stations = stations[agv_name_yaml]
+            if all_stations.has_key(location):
+                station = all_stations[location]
+                station_xyz = station['pose']['xyz']
+                station_rpy = [0,0,-1.570796]
+                agv_info[agv_id] = PoseInfo(station_xyz, station_rpy)
+            else:
+                print('=' * 80)
+                print("Error: "+ agv_name_yaml +" can not be assigned the station: " + location, file=sys.stderr)
+                print('=' * 80)
+            # spawn parts on the agv
+            if agv_info_dict_yaml.has_key('products'):
+                product_dict = agv_info_dict_yaml['products']
+                # create_models_over_agvs_infos(agv_name_yaml,station_xyz,station_rpy, product_dict)
+                for part_info in product_dict.items():
+                    model_to_spawn_data = {}
+                    # part_name = part_info[0]
+                    part_pose_type = part_info[1]
+                    # for p_pose in part_pose_type.items():
+                    print(part_pose_type['pose']['xyz'])
+                    print(part_pose_type['type'])
+                    model_type = part_pose_type['type']
+                    tray_x = 0.0
+                    tray_y = 0.15
+                    tray_z = 0.75
+                    xyz = [station_xyz[0] + tray_x + part_pose_type['pose']['xyz'][0],
+                    station_xyz[1] + tray_y + part_pose_type['pose']['xyz'][1],
+                    station_xyz[2] + tray_z + 0.3]
+        
+                    rpy = [part_pose_type['pose']['rpy'][0],
+                    part_pose_type['pose']['rpy'][1],
+                    part_pose_type['pose']['rpy'][2]]
+
+                    model_to_spawn_data['type'] = model_type
+                    model_to_spawn_data['reference_frame'] = 'world'
                     model_to_spawn_data['pose'] = {'xyz': xyz, 'rpy': rpy}
                     model_info = create_model_info(model_type, model_to_spawn_data)
                     # assign each model a unique name because gazebo can't do this
-                    # if the models all spawn at the same time
-                    scoped_model_name = shelf_name + '|' + \
-                        model_info.type + '_' + str(get_next_model_id(model_type))
-                    model_info.shelf = shelf_name
+                    # # if the models all spawn at the same time
+                    
+                    scoped_model_name = agv_name_yaml + '::tray_' + agv_id + "::" + \
+                    model_info.type + '_' + str(get_next_model_id(model_type))
+                    model_info.agv = agv_name_yaml
                     models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
+
 
 
 def create_belt_model_infos(belt_models_dict):
@@ -740,17 +846,19 @@ def create_bin_infos():
     bin_infos = {}
     for bin_name, xyz in default_bin_origins.items():
         bin_infos[bin_name] = PoseInfo(xyz, [0, bin_angle, 3.14159])
+        # print(bin_infos[bin_name])
     return bin_infos
 
-def create_shelf_infos():
-    shelf_infos = {}
-    for shelf_name, xyz in default_shelf_origins.items():
-        #print(xyz)
-        shelf_infos[shelf_name] = PoseInfo(xyz, [0, shelf_angle, 3.14159])
-    return shelf_infos
+def create_station_infos():
+    station_infos = {}
+    for station_name, xyz in default_station_origins.items():
+        station_infos[station_name] = PoseInfo(xyz, [0, 0, 0])
+    return station_infos
 
 
-def create_material_location_info(belt_models, models_over_bins, models_over_shelves):
+
+
+def create_material_location_info(belt_models, models_over_bins):
     material_locations = {}
 
     # Specify that belt products can be found on the conveyor belt
@@ -768,12 +876,6 @@ def create_material_location_info(belt_models, models_over_bins, models_over_she
         else:
             material_locations[product.type] = {product.bin}
 
-    for product_name, product in models_over_shelves.items():
-        if product.type in material_locations:
-            material_locations[product.type].update([product.shelf])
-        else:
-            material_locations[product.type] = {product.shelf}
-
     return material_locations
 
 
@@ -786,24 +888,23 @@ def create_options_info(options_dict):
 
 def prepare_template_data(config_dict, args):
     template_data = {
+        'arms': [create_arm_info(name, conf) for name, conf in arm_configs.items()],
+
         'sensors': create_sensor_infos(default_sensors, allow_protected_sensors=True),
-        'row_shelves': {},
+        'agv_infos': {},
         'models_to_insert': {},
         'models_to_spawn': {},
-        'shelves_to_spawn': {},
         'belt_models': create_belt_model_infos(default_belt_models),
         'faulty_products': {},
         'drops': {},
         'orders': {},
-        'shelf_layout': {},
         'options': {'insert_agvs': True},
         'time_limit': default_time_limit,
         'bin_height': bin_height,
-        'shelf_height': shelf_height,
+        'station_height': station_height,
         'world_dir': world_dir,
         'joint_limited_ur10': config_dict.pop('joint_limited_ur10', False),
         'sensor_blackout': {},
-        'aisle_layout': {},
     }
     # Process the options first as they may affect the processing of the rest
     options_dict = get_field_with_default(config_dict, 'options', {})
@@ -814,12 +915,8 @@ def prepare_template_data(config_dict, args):
         template_data['options']['visualize_sensor_views'] = True
 
     models_over_bins = {}
-    models_over_shelves = {}
 
-    for key, value in config_dict.items():
-        if key == 'shelf_layout':
-            template_data['shelves_to_spawn'].update(create_shelves_to_spawn_infos(value))
-            template_data['row_shelves'].update(create_row_shelf_infos(template_data['shelves_to_spawn']))
+
 
     for key, value in config_dict.items():
         if key == 'sensors':
@@ -828,9 +925,17 @@ def prepare_template_data(config_dict, args):
         elif key == 'models_over_bins':
             models_over_bins = create_models_over_bins_infos(value)
             template_data['models_to_insert'].update(models_over_bins)
-        elif key == 'models_over_shelves':
-            models_over_shelves = create_models_over_shelves_infos(value)
-            template_data['models_to_insert'].update(models_over_shelves)
+        elif key == 'agv_infos':
+            template_data['agv_infos'].update(create_agv_info(value))
+            models_over_agvs = create_models_over_agvs_infos(value)
+            template_data['models_to_insert'].update(models_over_agvs)
+        elif key == 'models_over_stations':
+            models_over_stations = create_models_over_stations_infos(value)
+            template_data['models_to_insert'].update(models_over_stations)
+            briefcase_over_stations = create_briefcase_over_stations_infos(value)
+            template_data['models_to_insert'].update(briefcase_over_stations)
+        elif key == 'briefcase_over_stations':
+            pass
         elif key == 'belt_models':
             template_data['belt_models'].update(create_belt_model_infos(value))
         elif key == 'drops':
@@ -843,27 +948,19 @@ def prepare_template_data(config_dict, args):
             template_data['sensor_blackout'].update(value)
         elif key == 'options':
             pass
-        elif key == 'shelf_layout':
-            pass
-        #    template_data['shelves_to_spawn'].update(
-        #        create_shelves_to_spawn_infos(value))
-        #    template_data['row_shelves'].update(create_row_shelf_infos(template_data['shelves_to_spawn']))
         elif key == 'models_to_spawn':
             template_data['models_to_spawn'].update(
                 create_models_to_spawn_infos(value))
         elif key == 'time_limit':
             template_data['time_limit'] = value
-        elif key == 'aisle_layout':
-            template_data['aisle_layout'].update(value)
         else:
             print("Error: unknown top level entry '{0}'".format(key), file=sys.stderr)
             sys.exit(1)
     template_data['bins'] = create_bin_infos()
-    template_data['shelves'] = create_shelf_infos()
+    template_data['stations'] = create_station_infos()
     template_data['material_locations'] = create_material_location_info(
         template_data['belt_models'] or {},
         models_over_bins,
-        models_over_shelves,
     )
     template_data['possible_products'] = possible_products
     return template_data
@@ -875,6 +972,13 @@ def generate_files(template_data):
         with open(template_file, 'r') as f:
             data = f.read()
         files[template_file] = em.expand(data, template_data)
+    # Generate files for each arm
+    for arm_info in template_data['arms']:
+        template_data['arm'] = arm_info
+        with open(arm_template_file, 'r') as f:
+            data = f.read()
+        files[arm_info.name + '.urdf.xacro'] = em.expand(data, template_data)
+    return files
     return files
 
 
@@ -923,6 +1027,7 @@ def main(sysargv=None):
         'world_path:=' + os.path.join(args.output, 'ariac.world'),
         'gear_urdf_xacro:=' + os.path.join(args.output, 'gear.urdf.xacro'),
         'gantry_urdf_xacro:=' + os.path.join(args.output, 'gantry.urdf.xacro'),
+        'kitting_urdf_xacro:=' + os.path.join(args.output, 'kitting.urdf.xacro'),
     ]
     if args.log_to_file:
         cmd.append('gazebo_ros_output:=log')

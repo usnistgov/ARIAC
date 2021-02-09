@@ -95,6 +95,9 @@ namespace gazebo
     /// \brief ID of tray
     protected: std::string trayID;
 
+       /// \brief ID of the station
+    protected: std::string stationID;
+
     /// \brief Fixed joints to lock contacting models
     protected: std::vector<physics::JointPtr> fixedJoints;
 

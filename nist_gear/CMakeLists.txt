@@ -29,9 +29,9 @@ add_message_files(DIRECTORY msg
   FILES
   ConveyorBeltState.msg
   DetectedProduct.msg
-  Shipment.msg
+  KittingShipment.msg
+  AssemblyShipment.msg
   Product.msg
-  Shipment.msg
   DetectedShipment.msg
   LogicalCameraImage.msg
   Model.msg
@@ -45,6 +45,8 @@ add_message_files(DIRECTORY msg
 add_service_files(DIRECTORY srv
   FILES
   AGVControl.srv
+  AGVToAssemblyStation.srv
+  AGVToKittingStation.srv
   DroneControl.srv
   DetectShipment.srv
   ConveyorBeltControl.srv
@@ -175,6 +177,19 @@ install(TARGETS ${ros_agv_plugin_name}
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+
+# # Create the libROSAGVStationPlugin.so library.
+# set(ros_agv_station_plugin_name ROSAGVStationPlugin)
+# add_library(${ros_agv_station_plugin_name} src/ROSAGVStationPlugin.cc)
+# target_link_libraries(${ros_agv_station_plugin_name} ${GAZEBO_LIBRARIES})
+# add_dependencies(${ros_agv_station_plugin_name}
+#   ${${PROJECT_NAME}_EXPORTED_TARGETS}
+# )
+# install(TARGETS ${ros_agv_station_plugin_name}
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION bin
+# )
 
 # Create the libROSPersonPlugin.so library.
 set(ros_person_plugin_name ROSPersonPlugin)

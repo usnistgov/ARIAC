@@ -1,0 +1,8 @@
+# Send an AGV to a kitting station
+
+# agv_id: The AGV to send
+# station_id: Kitting station to where to send the AGV
+
+---
+bool success
+string message

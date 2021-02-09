@@ -41,13 +41,13 @@
 #include <std_msgs/String.h>
 #include <std_srvs/Trigger.h>
 
-
 #include "nist_gear/ARIAC.hh"
 #include "nist_gear/ROSAriacTaskManagerPlugin.hh"
 #include "nist_gear/AriacScorer.h"
 #include "nist_gear/ConveyorBeltControl.h"
 #include "nist_gear/DetectShipment.h"
-#include "nist_gear/Shipment.h"
+#include "nist_gear/KittingShipment.h"
+#include "nist_gear/AssemblyShipment.h"
 #include "nist_gear/Product.h"
 #include "nist_gear/Order.h"
 #include "nist_gear/VacuumGripperState.h"
@@ -59,139 +59,209 @@ namespace gazebo
   struct ROSAriacTaskManagerPluginPrivate
   {
     /// \brief World pointer.
-    public: physics::WorldPtr world;
+  public:
+    physics::WorldPtr world;
 
     /// \brief SDF pointer.
-    public: sdf::ElementPtr sdf;
+  public:
+    sdf::ElementPtr sdf;
 
     /// \brief Collection of orders to announce.
-    public: std::vector<ariac::Order> ordersToAnnounce;
+  public:
+    std::vector<ariac::Order> ordersToAnnounce;
 
     /// \brief Collection of orders which have been announced but are not yet complete.
     /// The order at the top of the stack is the active order.
-    public: std::stack<ariac::Order> ordersInProgress;
+  public:
+    std::stack<ariac::Order> ordersInProgress;
 
     /// \brief Mapping between material types and their locations.
-    public: std::map<std::string, std::vector<std::string> > materialLocations;
+  public:
+    std::map<std::string, std::vector<std::string>> materialLocations;
 
     /// \brief Stored tray contents
-    public: std::map<std::string, nist_gear::DetectedShipment::ConstPtr> shipmentContents;
+  public:
+    std::map<std::string, nist_gear::DetectedShipment::ConstPtr> kittingShipmentContents;
 
     /// \brief A scorer to mange the game score.
-    public: AriacScorer ariacScorer;
+  public:
+    AriacScorer ariacScorer;
 
     /// \brief The current game score.
-    public: ariac::GameScore currentGameScore;
+  public:
+    ariac::GameScore currentGameScore;
 
     /// \brief ROS node handle.
-    public: std::unique_ptr<ros::NodeHandle> rosnode;
+  public:
+    std::unique_ptr<ros::NodeHandle> rosnode;
 
     /// \brief Publishes an order.
-    public: ros::Publisher orderPub;
+  public:
+    ros::Publisher orderPub;
 
     /// \brief Subscription for tray content
-    public: ros::Subscriber shipmentContentSubscriber;
+  public:
+    ros::Subscriber shipmentContentSubscriber;
 
     /// \brief ROS subscribers for the gripper state.
-    public: ros::Subscriber gripper1StateSub;
-    public: ros::Subscriber gripper2StateSub;
+  public:
+    ros::Subscriber gripper1StateSub;
+
+  public:
+    ros::Subscriber gripper2StateSub;
 
     /// \brief Publishes the Gazebo task state.
-    public: ros::Publisher taskStatePub;
+  public:
+    ros::Publisher taskStatePub;
 
     /// \brief Publishes the game score total.
-    public: ros::Publisher taskScorePub;
+  public:
+    ros::Publisher taskScorePub;
 
     /// \brief Name of service that allows the user to start the competition.
-    public: std::string compStartServiceName;
+  public:
+    std::string compStartServiceName;
 
     /// \brief Service that allows the user to start the competition.
-    public: ros::ServiceServer compStartServiceServer;
+  public:
+    ros::ServiceServer compStartServiceServer;
 
     /// \brief Service that allows the user to end the competition.
-    public: ros::ServiceServer compEndServiceServer;
+  public:
+    ros::ServiceServer compEndServiceServer;
 
     /// \brief Service that allows users to query the location of materials.
-    public: ros::ServiceServer getMaterialLocationsServiceServer;
+  public:
+    ros::ServiceServer getMaterialLocationsServiceServer;
 
     /// \brief Service that allows a tray to be submitted for inspection.
-    public: ros::ServiceServer submitTrayServiceServer;
+  public:
+    ros::ServiceServer submitTrayServiceServer;
 
     /// \brief Map of agv id to server that handles requests to deliver shipment
-    public: std::map<int, ros::ServiceServer> agvDeliverService;
+  public:
+    std::map<int, ros::ServiceServer> agvDeliverService;
+
+    /// \brief Map of agv id to server that handles requests to go to assembly stations
+  public:
+    std::map<int, ros::ServiceServer> agvToAssemblyStationService;
 
     /// \brief Map of agv id to client that can get its content
-    public: std::map<int, ros::ServiceClient> agvGetContentClient;
+  public:
+    std::map<int, ros::ServiceClient> agvGetContentClient;
 
     /// \brief Map of agv id to client that can ask AGV to animate
-    public: std::map<int, ros::ServiceClient> agvAnimateClient;
+  public:
+    std::map<int, ros::ServiceClient> agvAnimateClient;
+
+  public:
+    std::map<int, ros::ServiceClient> agvToAS1AnimateClient;
+
+  public:
+    std::map<int, ros::ServiceClient> agvToAS2AnimateClient;
+
+  public:
+    std::map<int, ros::ServiceClient> agvToAS3AnimateClient;
+
+  public:
+    std::map<int, ros::ServiceClient> agvToAS4AnimateClient;
+
+  public:
+    std::map<int, ros::ServiceClient> agvToAS5AnimateClient;
+
+  public:
+    std::map<int, ros::ServiceClient> agvToAS6AnimateClient;
+
+    /// \brief Map of agv id to client that can ask AGV to go to assembly station1
+  public:
+    std::map<int, ros::ServiceClient> agvToAssemblyStationClient;
 
     /// \brief Client that turns on conveyor belt
-    public: ros::ServiceClient conveyorControlClient;
+  public:
+    ros::ServiceClient conveyorControlClient;
 
     /// \brief Transportation node.
-    public: transport::NodePtr node;
+  public:
+    transport::NodePtr node;
 
     /// \brief Publisher for enabling the product population on the conveyor.
-    public: transport::PublisherPtr populatePub;
+  public:
+    transport::PublisherPtr populatePub;
 
     /// \brief Publisher for controlling the blackout of sensors.
-    public: transport::PublisherPtr sensorBlackoutControlPub;
+  public:
+    transport::PublisherPtr sensorBlackoutControlPub;
 
     /// \brief Duration at which to blackout sensors.
-    public: double sensorBlackoutDuration;
+  public:
+    double sensorBlackoutDuration;
 
     /// \brief Product count at which to blackout sensors.
-    public: int sensorBlackoutProductCount = 0;
+  public:
+    int sensorBlackoutProductCount = 0;
 
     /// \brief If sensor blackout is currently in progress.
-    public: bool sensorBlackoutInProgress = false;
+  public:
+    bool sensorBlackoutInProgress = false;
 
     /// \brief The start time of the sensor blackout.
-    public: common::Time sensorBlackoutStartTime;
+  public:
+    common::Time sensorBlackoutStartTime;
 
     /// \brief Timer for regularly publishing state/score.
-    public: ros::Timer statusPubTimer;
+  public:
+    ros::Timer statusPubTimer;
 
     /// \brief Connection event.
-    public: event::ConnectionPtr connection;
+  public:
+    event::ConnectionPtr connection;
 
     /// \brief Publish Gazebo server control messages.
-    public: transport::PublisherPtr serverControlPub;
+  public:
+    transport::PublisherPtr serverControlPub;
 
     /// \brief The time the last update was called.
-    public: common::Time lastUpdateTime;
+  public:
+    common::Time lastUpdateTime;
 
     /// \brief The time the sim time was last published.
-    public: common::Time lastSimTimePublish;
+  public:
+    common::Time lastSimTimePublish;
 
     /// \brief The time specified in the product is relative to this time.
-    public: common::Time gameStartTime;
+  public:
+    common::Time gameStartTime;
 
     /// \brief The time in seconds permitted to complete the trial.
-    public: double timeLimit;
+  public:
+    double timeLimit;
 
     /// \brief The time in seconds that has been spent on the current order.
-    public: double timeSpentOnCurrentOrder;
+  public:
+    double timeSpentOnCurrentOrder;
 
     /// \brief Pointer to the current state.
-    public: std::string currentState = "init";
+  public:
+    std::string currentState = "init";
 
     /// \brief A mutex to protect currentState.
-    public: std::mutex mutex;
+  public:
+    std::mutex mutex;
 
     // During the competition, this environment variable will be set.
     bool competitionMode = false;
 
     /// \brief Subscriber for the contact topic
-    public: transport::SubscriberPtr contactSub;
+  public:
+    transport::SubscriberPtr contactSub;
 
-    public: const std::vector<std::string> collisionFilter{
-      "base_link_collision", "shoulder_link_collision", "upper_arm_link_collision",
-      "forearm_link_collision", "wrist_1_link_collision", "wrist_2_link_collision",
-      "wrist_3_link_collision", "vacuum_gripper_link_collision"};
+  public:
+    const std::vector<std::string> gantry_collision_filter_vec{
+        "base_link_collision", "shoulder_link_collision", "upper_arm_link_collision",
+        "forearm_link_collision", "wrist_1_link_collision", "wrist_2_link_collision",
+        "wrist_3_link_collision", "vacuum_gripper_link_collision"};
   };
-}
+} // namespace gazebo
 
 using namespace gazebo;
 
@@ -199,36 +269,69 @@ GZ_REGISTER_WORLD_PLUGIN(ROSAriacTaskManagerPlugin)
 
 /////////////////////////////////////////////////
 static void fillOrderMsg(const ariac::Order &_order,
-                        nist_gear::Order &_msgOrder)
+                         nist_gear::Order &_msgOrder)
 {
-  _msgOrder.order_id = _order.orderID;
-  for (const auto &shipment : _order.shipments)
+  _msgOrder.order_id = _order.order_id;
+  //--if the order consists of kitting tasks
+  if (_order.has_kitting_task)
   {
-    nist_gear::Shipment msgShipment;
-    msgShipment.shipment_type = shipment.shipmentType;
-    msgShipment.agv_id = shipment.agv_id;
-    for (const auto &obj : shipment.products)
+    for (const auto &shipment : _order.kitting_shipments)
     {
-      nist_gear::Product msgObj;
-      msgObj.type = obj.type;
-      msgObj.pose.position.x = obj.pose.Pos().X();
-      msgObj.pose.position.y = obj.pose.Pos().Y();
-      msgObj.pose.position.z = obj.pose.Pos().Z();
-      msgObj.pose.orientation.x = obj.pose.Rot().X();
-      msgObj.pose.orientation.y = obj.pose.Rot().Y();
-      msgObj.pose.orientation.z = obj.pose.Rot().Z();
-      msgObj.pose.orientation.w = obj.pose.Rot().W();
+      nist_gear::KittingShipment msgShipment;
+      msgShipment.station_id = shipment.assembly_station;
+      msgShipment.shipment_type = shipment.shipment_type;
+      // ROS_WARN_STREAM("msgShipment.shipment_type: "<<msgShipment.shipment_type);
+      // ROS_WARN_STREAM("shipment.shipment_type: "<<shipment.shipment_type);
+      msgShipment.agv_id = shipment.agv_id;
+      for (const auto &obj : shipment.products)
+      {
+        nist_gear::Product msgObj;
+        msgObj.type = obj.type;
+        msgObj.pose.position.x = obj.pose.Pos().X();
+        msgObj.pose.position.y = obj.pose.Pos().Y();
+        msgObj.pose.position.z = obj.pose.Pos().Z();
+        msgObj.pose.orientation.x = obj.pose.Rot().X();
+        msgObj.pose.orientation.y = obj.pose.Rot().Y();
+        msgObj.pose.orientation.z = obj.pose.Rot().Z();
+        msgObj.pose.orientation.w = obj.pose.Rot().W();
 
-      // Add the product to the shipment.
-      msgShipment.products.push_back(msgObj);
+        // Add the product to the shipment.
+        msgShipment.products.push_back(msgObj);
+      }
+      _msgOrder.kitting_shipments.push_back(msgShipment);
     }
-    _msgOrder.shipments.push_back(msgShipment);
+  }
+
+  if (_order.has_assembly_task)
+  {
+    for (const auto &shipment : _order.assembly_shipments)
+    {
+      nist_gear::AssemblyShipment msgShipment;
+      msgShipment.shipment_type = shipment.shipmentType;
+      msgShipment.station = shipment.assembly_station;
+      for (const auto &obj : shipment.products)
+      {
+        nist_gear::Product msgObj;
+        msgObj.type = obj.type;
+        msgObj.pose.position.x = obj.pose.Pos().X();
+        msgObj.pose.position.y = obj.pose.Pos().Y();
+        msgObj.pose.position.z = obj.pose.Pos().Z();
+        msgObj.pose.orientation.x = obj.pose.Rot().X();
+        msgObj.pose.orientation.y = obj.pose.Rot().Y();
+        msgObj.pose.orientation.z = obj.pose.Rot().Z();
+        msgObj.pose.orientation.w = obj.pose.Rot().W();
+
+        // Add the product to the shipment.
+        msgShipment.products.push_back(msgObj);
+      }
+      _msgOrder.assembly_shipments.push_back(msgShipment);
+    }
   }
 }
 
 /////////////////////////////////////////////////
 ROSAriacTaskManagerPlugin::ROSAriacTaskManagerPlugin()
-  : dataPtr(new ROSAriacTaskManagerPluginPrivate)
+    : dataPtr(new ROSAriacTaskManagerPluginPrivate)
 {
 }
 
@@ -239,10 +342,11 @@ ROSAriacTaskManagerPlugin::~ROSAriacTaskManagerPlugin()
 }
 
 /////////////////////////////////////////////////
+///@brief The @param _sdf element is used to retrieve elements from ariac.world
 void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
-  sdf::ElementPtr _sdf)
+                                     sdf::ElementPtr _sdf)
 {
-  gzdbg << "ARIAC VERSION: 3.0.6\n";
+  gzdbg << "ARIAC VERSION: 2021 v. 1.0\n";
   auto competitionEnv = std::getenv("ARIAC_COMPETITION");
   this->dataPtr->competitionMode = competitionEnv != NULL;
   gzdbg << "ARIAC COMPETITION MODE: " << (this->dataPtr->competitionMode ? competitionEnv : "false") << std::endl;
@@ -260,7 +364,9 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   if (_sdf->HasElement("robot_namespace"))
   {
     robotNamespace = _sdf->GetElement(
-      "robot_namespace")->Get<std::string>() + "/";
+                             "robot_namespace")
+                         ->Get<std::string>() +
+                     "/";
   }
 
   // Avoid the slowdown that is present with contact manager filter in gazebo 9.12 by subscribing to gazebo's main contact topic
@@ -273,7 +379,7 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   // Initialize ROS
   this->dataPtr->rosnode.reset(new ros::NodeHandle(robotNamespace));
 
-  if(ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
+  if (ros::console::set_logger_level(ROSCONSOLE_DEFAULT_NAME, ros::console::levels::Info))
   {
     ros::console::notifyLoggerLevelsChanged();
   }
@@ -328,7 +434,16 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
 
   std::map<int, std::string> agvDeliverServiceName;
   std::map<int, std::string> agvAnimateServiceName;
+  std::map<int, std::string> agvToAS1AnimateServiceName;
+  std::map<int, std::string> agvToAS2AnimateServiceName;
+  std::map<int, std::string> agvToAS3AnimateServiceName;
+
+  std::map<int, std::string> agvToAS4AnimateServiceName;
+  std::map<int, std::string> agvToAS5AnimateServiceName;
+  std::map<int, std::string> agvToAS6AnimateServiceName;
+
   std::map<int, std::string> agvGetContentServiceName;
+  std::map<int, std::string> agvToAssemblyStationServiceName;
   if (_sdf->HasElement("agv"))
   {
     sdf::ElementPtr agvElem = _sdf->GetElement("agv");
@@ -337,7 +452,18 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
       int index = agvElem->Get<int>("index");
       agvDeliverServiceName[index] = "deliver";
       agvAnimateServiceName[index] = "animate";
+
+      agvToAS1AnimateServiceName[index] = "";
+      agvToAS2AnimateServiceName[index] = "";
+      agvToAS3AnimateServiceName[index] = "";
+
+      agvToAS4AnimateServiceName[index] = "";
+      agvToAS5AnimateServiceName[index] = "";
+      agvToAS6AnimateServiceName[index] = "";
+
       agvGetContentServiceName[index] = "get_content";
+      agvToAssemblyStationServiceName[index] = "to_assembly_station";
+
       if (agvElem->HasElement("agv_control_service_name"))
       {
         agvDeliverServiceName[index] = agvElem->Get<std::string>("agv_control_service_name");
@@ -350,11 +476,34 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
       {
         agvGetContentServiceName[index] = agvElem->Get<std::string>("get_content_service_name");
       }
+      if (agvElem->HasElement("agv_to_as_service_name"))
+      {
+        agvToAssemblyStationServiceName[index] = agvElem->Get<std::string>("agv_to_as_service_name");
+      }
+
+      if (agvElem->HasElement("to_as1_name")){
+        agvToAS1AnimateServiceName[index] = agvElem->Get<std::string>("to_as1_name");
+      }
+      if (agvElem->HasElement("to_as2_name")){
+        agvToAS2AnimateServiceName[index] = agvElem->Get<std::string>("to_as2_name");
+      }
+      if (agvElem->HasElement("to_as3_name")){
+        agvToAS3AnimateServiceName[index] = agvElem->Get<std::string>("to_as3_name");
+      }
+
+      if (agvElem->HasElement("to_as4_name")){
+        agvToAS4AnimateServiceName[index] = agvElem->Get<std::string>("to_as4_name");
+      }
+      if (agvElem->HasElement("to_as5_name")){
+        agvToAS5AnimateServiceName[index] = agvElem->Get<std::string>("to_as5_name");
+      }
+      if (agvElem->HasElement("to_as6_name")){
+        agvToAS6AnimateServiceName[index] = agvElem->Get<std::string>("to_as6_name");
+      }
 
       agvElem = agvElem->GetNextElement("agv");
     }
   }
-
 
   // Parse the orders.
   sdf::ElementPtr orderElem = NULL;
@@ -367,6 +516,21 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   {
     // Parse the order name.
     ariac::OrderID_t orderID = orderElem->Get<std::string>("name");
+    // ROS_WARN_STREAM("Order ID: "<< orderID);
+
+    // Check if the order has a kitting field
+    bool has_kitting_task = false;
+    if (orderElem->HasElement("kitting_shipment"))
+    {
+      has_kitting_task = true;
+    }
+
+    // Check if the order has a kitting field
+    bool has_assembly_task = false;
+    if (orderElem->HasElement("assembly_shipment"))
+    {
+      has_assembly_task = true;
+    }
 
     // Parse the start time.
     double startTime = std::numeric_limits<double>::infinity();
@@ -399,85 +563,180 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
     }
 
     // Parse the shipments.
-    if (!orderElem->HasElement("shipment"))
+    //@todo: this needs to be split whether it is for kitting or assembly
+    // if (!orderElem->HasElement("shipment"))
+    // {
+    //   gzerr << "Unable to find <shipment> element in <order>. Ignoring" << std::endl;
+    //   orderElem = orderElem->GetNextElement("order");
+    //   continue;
+    // }
+
+    // Store all kitting shipments for an order.
+    std::vector<ariac::KittingShipment> kitting_shipments;
+
+    ////////////////////////////////////////////
+    //-- check if kitting is part of the order
+    ////////////////////////////////////////////
+    if (orderElem->HasElement("kitting_shipment"))
     {
-      gzerr << "Unable to find <shipment> element in <order>. Ignoring" << std::endl;
-      orderElem = orderElem->GetNextElement("order");
-      continue;
+      sdf::ElementPtr shipmentElem = orderElem->GetElement("kitting_shipment");
+      while (shipmentElem)
+      {
+        // Check the validity of the shipment.
+        if (!shipmentElem->HasElement("product"))
+        {
+          gzerr << "Unable to find <product> element in <kitting_shipment>. Ignoring"
+                << std::endl;
+          shipmentElem = shipmentElem->GetNextElement("kitting_shipment");
+          continue;
+        }
+
+        ariac::KittingShipment kitting_shipment;
+
+        // TODO(sloretz) destination AGV
+        kitting_shipment.agv_id = "any";
+        if (shipmentElem->HasElement("agv"))
+        {
+          kitting_shipment.agv_id = shipmentElem->Get<std::string>("agv");
+        }
+
+        // TODO(zeidk) where to send the AGV once the kit is built
+        kitting_shipment.assembly_station = "any";
+        if (shipmentElem->HasElement("destination"))
+        {
+          kitting_shipment.assembly_station = shipmentElem->Get<std::string>("destination");
+          
+        }
+        // ROS_WARN_STREAM("destination: "<< kitting_shipment.assembly_station);
+
+        // Parse the shipment type.
+        ariac::KittingShipmentType_t kittingShipmentType;
+        if (shipmentElem->HasElement("shipment_type"))
+        {
+          kittingShipmentType = shipmentElem->Get<std::string>("shipment_type");
+          
+        }
+        kitting_shipment.shipment_type = kittingShipmentType;
+        ROS_WARN_STREAM("shipment_type: "<< kitting_shipment.shipment_type);
+
+        // Parse the products inside the shipment.
+        sdf::ElementPtr productElem = shipmentElem->GetElement("product");
+        while (productElem)
+        {
+          // Parse the product type.
+          if (!productElem->HasElement("type"))
+          {
+            gzerr << "Unable to find <type> in product.\n";
+            productElem = productElem->GetNextElement("product");
+            continue;
+          }
+          sdf::ElementPtr typeElement = productElem->GetElement("type");
+          std::string type = typeElement->Get<std::string>();
+
+          // Parse the product pose (optional).
+          if (!productElem->HasElement("pose"))
+          {
+            gzerr << "Unable to find <pose> in product.\n";
+            productElem = productElem->GetNextElement("product");
+            continue;
+          }
+          sdf::ElementPtr poseElement = productElem->GetElement("pose");
+          ignition::math::Pose3d pose = poseElement->Get<ignition::math::Pose3d>();
+
+          // Add the product to the shipment.
+          bool isFaulty = false; // We never want to request faulty products.
+          ariac::Product obj = {type, isFaulty, pose};
+          kitting_shipment.products.push_back(obj);
+
+          productElem = productElem->GetNextElement("product");
+        }
+
+        // Add a new shipment to the collection of shipments.
+        kitting_shipments.push_back(kitting_shipment);
+
+        shipmentElem = shipmentElem->GetNextElement("kitting_shipment");
+      }
     }
 
-    // Store all shipments for an order.
-    std::vector<ariac::Shipment> shipments;
-
-    sdf::ElementPtr shipmentElem = orderElem->GetElement("shipment");
-    while (shipmentElem)
+    ////////////////////////////////////////////
+    //-- check if assembly is part of the order
+    ////////////////////////////////////////////
+    // Store all assembly shipments for an order.
+    std::vector<ariac::AssemblyShipment> assembly_shipments;
+    if (orderElem->HasElement("assembly_shipment"))
     {
-      // Check the validity of the shipment.
-      if (!shipmentElem->HasElement("product"))
+      sdf::ElementPtr shipmentElem = orderElem->GetElement("assembly_shipment");
+      while (shipmentElem)
       {
-        gzerr << "Unable to find <product> element in <shipment>. Ignoring"
-              << std::endl;
-        shipmentElem = shipmentElem->GetNextElement("shipment");
-        continue;
-      }
-
-      ariac::Shipment shipment;
-
-      // TODO(sloretz) destination AGV
-      shipment.agv_id = "any";
-      if (shipmentElem->HasElement("destination"))
-      {
-        shipment.agv_id = shipmentElem->Get<std::string>("destination");
-      }
-
-      // Parse the shipment type.
-      ariac::ShipmentType_t shipmentType;
-      if (shipmentElem->HasElement("shipment_type"))
-      {
-        shipmentType = shipmentElem->Get<std::string>("shipment_type");
-      }
-      shipment.shipmentType = shipmentType;
-
-      // Parse the products inside the shipment.
-      sdf::ElementPtr productElem = shipmentElem->GetElement("product");
-      while (productElem)
-      {
-        // Parse the product type.
-        if (!productElem->HasElement("type"))
+        // Check the validity of the shipment.
+        if (!shipmentElem->HasElement("product"))
         {
-          gzerr << "Unable to find <type> in product.\n";
-          productElem = productElem->GetNextElement("product");
+          gzerr << "Unable to find <product> element in <assembly_shipment>. Ignoring"
+                << std::endl;
+          shipmentElem = shipmentElem->GetNextElement("assembly_shipment");
           continue;
         }
-        sdf::ElementPtr typeElement = productElem->GetElement("type");
-        std::string type = typeElement->Get<std::string>();
 
-        // Parse the product pose (optional).
-        if (!productElem->HasElement("pose"))
+        ariac::AssemblyShipment assembly_shipment;
+
+        // TODO(zeidk) At shich station to do assembly?
+        assembly_shipment.assembly_station = "any";
+        if (shipmentElem->HasElement("station"))
         {
-          gzerr << "Unable to find <pose> in product.\n";
-          productElem = productElem->GetNextElement("product");
-          continue;
+          assembly_shipment.assembly_station = shipmentElem->Get<std::string>("station");
         }
-        sdf::ElementPtr poseElement = productElem->GetElement("pose");
-        ignition::math::Pose3d pose = poseElement->Get<ignition::math::Pose3d>();
 
-        // Add the product to the shipment.
-        bool isFaulty = false;  // We never want to request faulty products.
-        ariac::Product obj = {type, isFaulty, pose};
-        shipment.products.push_back(obj);
+        // Parse the shipment type.
+        ariac::AssemblyShipmentType_t assemblyShipmentType;
+        if (shipmentElem->HasElement("shipment_type"))
+        {
+          assemblyShipmentType = shipmentElem->Get<std::string>("shipment_type");
+        }
+        assembly_shipment.shipmentType = assemblyShipmentType;
 
-        productElem = productElem->GetNextElement("product");
+        // Parse the products inside the shipment.
+        sdf::ElementPtr productElem = shipmentElem->GetElement("product");
+        while (productElem)
+        {
+          // Parse the product type.
+          if (!productElem->HasElement("type"))
+          {
+            gzerr << "Unable to find <type> in product.\n";
+            productElem = productElem->GetNextElement("product");
+            continue;
+          }
+          sdf::ElementPtr typeElement = productElem->GetElement("type");
+          std::string type = typeElement->Get<std::string>();
+
+          // Parse the product pose (optional).
+          if (!productElem->HasElement("pose"))
+          {
+            gzerr << "Unable to find <pose> in product.\n";
+            productElem = productElem->GetNextElement("product");
+            continue;
+          }
+          sdf::ElementPtr poseElement = productElem->GetElement("pose");
+          ignition::math::Pose3d pose = poseElement->Get<ignition::math::Pose3d>();
+
+          // Add the product to the shipment.
+          bool isFaulty = false; // We never want to request faulty products.
+          ariac::Product obj = {type, isFaulty, pose};
+          assembly_shipment.products.push_back(obj);
+
+          productElem = productElem->GetNextElement("product");
+        }
+
+        // Add a new shipment to the collection of shipments.
+        assembly_shipments.push_back(assembly_shipment);
+
+        shipmentElem = shipmentElem->GetNextElement("assembly_shipment");
       }
-
-      // Add a new shipment to the collection of shipments.
-      shipments.push_back(shipment);
-
-      shipmentElem = shipmentElem->GetNextElement("shipment");
     }
 
     // Add a new order.
-    ariac::Order order = {orderID, startTime, interruptOnUnwantedProducts, interruptOnWantedProducts, allowedTime, shipments, 0.0};
+    //-- Has to follow the same order the attributes are listed in ariac::Order
+    ariac::Order order = {orderID, startTime, interruptOnUnwantedProducts, interruptOnWantedProducts,
+                          allowedTime, kitting_shipments, assembly_shipments, 0.0, has_kitting_task, has_assembly_task};
     this->dataPtr->ordersToAnnounce.push_back(order);
 
     orderElem = orderElem->GetNextElement("order");
@@ -492,6 +751,10 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   //   gzdbg << order << std::endl;
 
   // Parse the material storage locations.
+
+  ////////////////////////////////
+  /// Material storage locations
+  ////////////////////////////////
   if (_sdf->HasElement("material_locations"))
   {
     sdf::ElementPtr materialLocationsElem = _sdf->GetElement("material_locations");
@@ -522,6 +785,9 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
     }
   }
 
+  /////////////////////
+  /// Sensor Blackout
+  /////////////////////
   if (_sdf->HasElement("sensor_blackout"))
   {
     auto sensorBlackoutElem = _sdf->GetElement("sensor_blackout");
@@ -529,90 +795,164 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
     this->dataPtr->sensorBlackoutProductCount = sensorBlackoutElem->Get<int>("product_count");
     this->dataPtr->sensorBlackoutDuration = sensorBlackoutElem->Get<double>("duration");
     this->dataPtr->sensorBlackoutControlPub =
-      this->dataPtr->node->Advertise<msgs::GzString>(sensorEnableTopic);
+        this->dataPtr->node->Advertise<msgs::GzString>(sensorEnableTopic);
   }
 
   // Publisher for announcing new orders.
   this->dataPtr->orderPub = this->dataPtr->rosnode->advertise<
-    nist_gear::Order>(ordersTopic, 1000, true);  // latched=true
+      nist_gear::Order>(ordersTopic, 1000, true); // latched=true
 
   // Publisher for announcing new state of the competition.
   this->dataPtr->taskStatePub = this->dataPtr->rosnode->advertise<
-    std_msgs::String>(taskStateTopic, 1000);
+      std_msgs::String>(taskStateTopic, 1000);
 
   // Publisher for announcing the score of the game.
   if (!this->dataPtr->competitionMode)
   {
     this->dataPtr->taskScorePub = this->dataPtr->rosnode->advertise<
-      std_msgs::Float32>(taskScoreTopic, 1000);
+        std_msgs::Float32>(taskScoreTopic, 1000);
   }
 
   // Service for ending the competition.
   this->dataPtr->compEndServiceServer =
-    this->dataPtr->rosnode->advertiseService(compEndServiceName,
-      &ROSAriacTaskManagerPlugin::HandleEndService, this);
+      this->dataPtr->rosnode->advertiseService(compEndServiceName,
+                                               &ROSAriacTaskManagerPlugin::HandleEndService, this);
 
   // Service for submitting AGV trays for inspection.
   this->dataPtr->submitTrayServiceServer =
-    this->dataPtr->rosnode->advertiseService(submitTrayServiceName,
-      &ROSAriacTaskManagerPlugin::HandleSubmitShipmentService, this);
+      this->dataPtr->rosnode->advertiseService(submitTrayServiceName,
+                                               &ROSAriacTaskManagerPlugin::HandleSubmitKittingShipmentService, this);
 
   // Service for querying material storage locations.
   if (!this->dataPtr->competitionMode)
   {
     this->dataPtr->getMaterialLocationsServiceServer =
-      this->dataPtr->rosnode->advertiseService(getMaterialLocationsServiceName,
-        &ROSAriacTaskManagerPlugin::HandleGetMaterialLocationsService, this);
+        this->dataPtr->rosnode->advertiseService(getMaterialLocationsServiceName,
+                                                 &ROSAriacTaskManagerPlugin::HandleGetMaterialLocationsService, this);
   }
 
   // Subscriber for tray content
   this->dataPtr->shipmentContentSubscriber =
-    this->dataPtr->rosnode->subscribe(shipmentContentTopic, 1000,
-      &ROSAriacTaskManagerPlugin::OnShipmentContent, this);
+      this->dataPtr->rosnode->subscribe(shipmentContentTopic, 1000,
+                                        &ROSAriacTaskManagerPlugin::OnShipmentContent, this);
 
   // Timer for regularly publishing state/score.
   this->dataPtr->statusPubTimer =
-    this->dataPtr->rosnode->createTimer(ros::Duration(0.1),
-      &ROSAriacTaskManagerPlugin::PublishStatus, this);
+      this->dataPtr->rosnode->createTimer(ros::Duration(0.1),
+                                          &ROSAriacTaskManagerPlugin::PublishStatus, this);
 
   this->dataPtr->populatePub =
-    this->dataPtr->node->Advertise<msgs::GzString>(populationActivateTopic);
+      this->dataPtr->node->Advertise<msgs::GzString>(populationActivateTopic);
 
-  for (auto & pair : agvDeliverServiceName)
+  for (auto &pair : agvDeliverServiceName)
   {
     int index = pair.first;
     std::string serviceName = pair.second;
     this->dataPtr->agvDeliverService[index] =
-      this->dataPtr->rosnode->advertiseService<nist_gear::AGVControl::Request, nist_gear::AGVControl::Response>(
-        serviceName,
-        boost::bind(&ROSAriacTaskManagerPlugin::HandleAGVDeliverService, this,
-        _1, _2, index));
+        this->dataPtr->rosnode->advertiseService<nist_gear::AGVControl::Request, nist_gear::AGVControl::Response>(
+            serviceName,
+            boost::bind(&ROSAriacTaskManagerPlugin::HandleAGVDeliverService, this,
+                        _1, _2, index));
   }
 
-  for (auto & pair : agvGetContentServiceName)
+  for (auto &pair : agvToAssemblyStationServiceName)
+  {
+    int index = pair.first;
+    std::string serviceName = pair.second;
+    this->dataPtr->agvToAssemblyStationService[index] =
+        this->dataPtr->rosnode->advertiseService<nist_gear::AGVToAssemblyStation::Request, nist_gear::AGVToAssemblyStation::Response>(
+            serviceName,
+            boost::bind(&ROSAriacTaskManagerPlugin::HandleAGVToAssemblyService, this,
+                        _1, _2, index));
+  }
+
+  for (auto &pair : agvGetContentServiceName)
   {
     int index = pair.first;
     std::string serviceName = pair.second;
     this->dataPtr->agvGetContentClient[index] =
-      this->dataPtr->rosnode->serviceClient<nist_gear::DetectShipment>(serviceName);
+        this->dataPtr->rosnode->serviceClient<nist_gear::DetectShipment>(serviceName);
   }
 
-  for (auto & pair : agvAnimateServiceName)
+  for (auto &pair : agvAnimateServiceName)
   {
     int index = pair.first;
     std::string serviceName = pair.second;
     this->dataPtr->agvAnimateClient[index] =
-      this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+        this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+  }
+
+// ROS_WARN_STREAM("=======>");
+  for (auto &pair : agvToAS1AnimateServiceName)
+  {
+    int index = pair.first;
+    std::string serviceName = pair.second;
+    // ROS_WARN_STREAM("index: "<< index);
+    // ROS_WARN_STREAM("serviceName: "<< serviceName);
+    if (!serviceName.empty()){
+    this->dataPtr->agvToAS1AnimateClient[index] =
+        this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+    }
+  }
+
+  for (auto &pair : agvToAS2AnimateServiceName)
+  {
+    int index = pair.first;
+    std::string serviceName = pair.second;
+        if (!serviceName.empty()){
+    this->dataPtr->agvToAS2AnimateClient[index] =
+        this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+    }
+  }
+
+  for (auto &pair : agvToAS3AnimateServiceName)
+  {
+    int index = pair.first;
+    std::string serviceName = pair.second;
+        if (!serviceName.empty()){
+    this->dataPtr->agvToAS3AnimateClient[index] =
+        this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+    }
+  }
+
+  for (auto &pair : agvToAS4AnimateServiceName)
+  {
+    int index = pair.first;
+    std::string serviceName = pair.second;
+        if (!serviceName.empty()){
+    this->dataPtr->agvToAS4AnimateClient[index] =
+        this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+    }
+  }
+
+  for (auto &pair : agvToAS5AnimateServiceName)
+  {
+    int index = pair.first;
+    std::string serviceName = pair.second;
+        if (!serviceName.empty()){
+    this->dataPtr->agvToAS5AnimateClient[index] =
+        this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+    }
+  }
+
+  for (auto &pair : agvToAS6AnimateServiceName)
+  {
+    int index = pair.first;
+    std::string serviceName = pair.second;
+        if (!serviceName.empty()){
+    this->dataPtr->agvToAS6AnimateClient[index] =
+        this->dataPtr->rosnode->serviceClient<std_srvs::Trigger>(serviceName);
+    }
   }
 
   this->dataPtr->conveyorControlClient =
-    this->dataPtr->rosnode->serviceClient<nist_gear::ConveyorBeltControl>(conveyorControlService);
+      this->dataPtr->rosnode->serviceClient<nist_gear::ConveyorBeltControl>(conveyorControlService);
 
   this->dataPtr->serverControlPub =
-    this->dataPtr->node->Advertise<msgs::ServerControl>("/gazebo/server/control");
+      this->dataPtr->node->Advertise<msgs::ServerControl>("/gazebo/server/control");
 
   this->dataPtr->connection = event::Events::ConnectWorldUpdateEnd(
-    boost::bind(&ROSAriacTaskManagerPlugin::OnUpdate, this));
+      boost::bind(&ROSAriacTaskManagerPlugin::OnUpdate, this));
 }
 
 /////////////////////////////////////////////////
@@ -628,8 +968,8 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
   {
     // Service for starting the competition.
     this->dataPtr->compStartServiceServer =
-      this->dataPtr->rosnode->advertiseService(this->dataPtr->compStartServiceName,
-        &ROSAriacTaskManagerPlugin::HandleStartService, this);
+        this->dataPtr->rosnode->advertiseService(this->dataPtr->compStartServiceName,
+                                                 &ROSAriacTaskManagerPlugin::HandleStartService, this);
   }
 
   if ((currentSimTime - this->dataPtr->lastSimTimePublish).Double() >= 1.0)
@@ -640,7 +980,7 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
 
   double elapsedTime = (currentSimTime - this->dataPtr->lastUpdateTime).Double();
   if (this->dataPtr->timeLimit >= 0 && this->dataPtr->currentState == "go" &&
-    (currentSimTime - this->dataPtr->gameStartTime) > this->dataPtr->timeLimit)
+      (currentSimTime - this->dataPtr->gameStartTime) > this->dataPtr->timeLimit)
   {
     this->dataPtr->currentState = "end_game";
   }
@@ -664,6 +1004,7 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
 
     // Update the score.
     // TODO(sloretz) only publish this when an event that could change the score happens
+    // ROS_WARN_STREAM("=============>"); 
     auto gameScore = this->dataPtr->ariacScorer.GetGameScore();
     if (gameScore.total() != this->dataPtr->currentGameScore.total())
     {
@@ -676,13 +1017,13 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
 
     if (!this->dataPtr->ordersInProgress.empty())
     {
-      this->dataPtr->ordersInProgress.top().timeTaken += elapsedTime;
-      auto orderID = this->dataPtr->ordersInProgress.top().orderID;
+      this->dataPtr->ordersInProgress.top().time_taken += elapsedTime;
+      auto orderID = this->dataPtr->ordersInProgress.top().order_id;
       // TODO: timing should probably be managed by the scorer but we want to use sim time
-      this->dataPtr->timeSpentOnCurrentOrder = this->dataPtr->ordersInProgress.top().timeTaken;
+      this->dataPtr->timeSpentOnCurrentOrder = this->dataPtr->ordersInProgress.top().time_taken;
 
       // Check for completed orders.
-      bool orderCompleted = gameScore.orderScores.at(orderID).isComplete();
+      bool orderCompleted = gameScore.order_scores_map.at(orderID).isKittingComplete();
       if (orderCompleted)
       {
         std::ostringstream logMessage;
@@ -694,7 +1035,7 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
       else
       {
         // Check if the time limit for the current order has been exceeded.
-        if (this->dataPtr->timeSpentOnCurrentOrder > this->dataPtr->ordersInProgress.top().allowedTime)
+        if (this->dataPtr->timeSpentOnCurrentOrder > this->dataPtr->ordersInProgress.top().allowed_time)
         {
           std::ostringstream logMessage;
           logMessage << "Order timed out: " << orderID;
@@ -716,22 +1057,21 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
     this->dataPtr->currentGameScore = this->dataPtr->ariacScorer.GetGameScore();
     if (this->dataPtr->gameStartTime != common::Time())
     {
-      this->dataPtr->currentGameScore.totalProcessTime =
-        (currentSimTime - this->dataPtr->gameStartTime).Double();
+      this->dataPtr->currentGameScore.total_process_time =
+          (currentSimTime - this->dataPtr->gameStartTime).Double();
     }
     std::ostringstream logMessage;
-    logMessage << "End of trial. Final score: " << \
-      this->dataPtr->currentGameScore.total() << "\nScore breakdown:\n" << \
-      this->dataPtr->currentGameScore;
+    logMessage << "End of trial. Final score: " << this->dataPtr->currentGameScore.total() << "\nScore breakdown:\n"
+               << this->dataPtr->currentGameScore;
     ROS_INFO_STREAM(logMessage.str().c_str());
     gzdbg << logMessage.str() << std::endl;
     this->dataPtr->currentState = "done";
 
     bool is_first = true;
     std::stringstream sstr;
-    for (const auto order_tuple : this->dataPtr->currentGameScore.orderScores)
+    for (const auto order_tuple : this->dataPtr->currentGameScore.order_scores_map)
     {
-      sstr << order_tuple.second.csv(is_first).c_str();
+      sstr << order_tuple.second.csv_kitting(is_first).c_str();
       is_first = false;
     }
     ROS_INFO_STREAM(sstr.str().c_str());
@@ -758,7 +1098,7 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
 }
 
 /////////////////////////////////////////////////
-void ROSAriacTaskManagerPlugin::PublishStatus(const ros::TimerEvent&)
+void ROSAriacTaskManagerPlugin::PublishStatus(const ros::TimerEvent &)
 {
   std_msgs::Float32 scoreMsg;
   scoreMsg.data = this->dataPtr->currentGameScore.total();
@@ -779,15 +1119,15 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
     return;
 
   auto nextOrder = this->dataPtr->ordersToAnnounce.front();
-  bool interruptOnUnwantedProducts = nextOrder.interruptOnUnwantedProducts > 0;
-  bool interruptOnWantedProducts = nextOrder.interruptOnWantedProducts > 0;
+  bool interruptOnUnwantedProducts = nextOrder.interrupt_on_unwanted_products > 0;
+  bool interruptOnWantedProducts = nextOrder.interrupt_on_wanted_products > 0;
   bool noActiveOrder = this->dataPtr->ordersInProgress.empty();
   auto elapsed = this->dataPtr->world->SimTime() - this->dataPtr->gameStartTime;
   bool announceNextOrder = false;
 
   // Check whether announce a new order from the list.
   // Announce next order if the appropriate amount of time has elapsed
-  announceNextOrder |= elapsed.Double() >= nextOrder.startTime;
+  announceNextOrder |= elapsed.Double() >= nextOrder.start_time;
   // Announce next order if there is no active order and we are waiting to interrupt
   announceNextOrder |= noActiveOrder && (interruptOnWantedProducts || interruptOnUnwantedProducts);
 
@@ -798,9 +1138,9 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
 
     // Determine what products are in the next order
     std::vector<std::string> productsInNextOrder;
-    for (const auto & shipment : nextOrder.shipments)
+    for (const auto &shipment : nextOrder.kitting_shipments)
     {
-      for (const auto & product : shipment.products)
+      for (const auto &product : shipment.products)
       {
         productsInNextOrder.push_back(product.type);
       }
@@ -810,12 +1150,12 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
     // This is used to trigger the announcment of the next order at convenient or inconvenient times
     int max_num_wanted_products = 0;
     int max_num_unwanted_products = 0;
-    for (auto & cpair: this->dataPtr->shipmentContents)
+    for (auto &cpair : this->dataPtr->kittingShipmentContents)
     {
       std::vector<std::string> productsInNextOrder_copy(productsInNextOrder);
       int num_wanted_products = 0;
       int num_unwanted_products = 0;
-      for (const auto & product : cpair.second->products)
+      for (const auto &product : cpair.second->products)
       {
         // Don't count faulty products, because they have to be removed anyway.
         if (!product.is_faulty)
@@ -843,21 +1183,21 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
     }
 
     // Announce next order if a tray has more than enough wanted or unwanted products
-    announceNextOrder |= interruptOnWantedProducts && (max_num_wanted_products >= nextOrder.interruptOnWantedProducts);
-    announceNextOrder |= interruptOnUnwantedProducts && (max_num_unwanted_products >= nextOrder.interruptOnUnwantedProducts);
+    announceNextOrder |= interruptOnWantedProducts && (max_num_wanted_products >= nextOrder.interrupt_on_wanted_products);
+    announceNextOrder |= interruptOnUnwantedProducts && (max_num_unwanted_products >= nextOrder.interrupt_on_unwanted_products);
   }
 
   if (announceNextOrder)
   {
-    auto updateLocn = nextOrder.orderID.find("_update");
+    auto updateLocn = nextOrder.order_id.find("_update");
     if (updateLocn != std::string::npos)
     {
-      gzdbg << "Order to update: " << nextOrder.orderID << std::endl;
+      gzdbg << "Order to update: " << nextOrder.order_id << std::endl;
       this->AnnounceOrder(nextOrder);
 
       // Update the order the scorer's monitoring
       gzdbg << "Updating order: " << nextOrder << std::endl;
-      auto nextOrderID = nextOrder.orderID.substr(0, updateLocn);
+      auto nextOrderID = nextOrder.order_id.substr(0, updateLocn);
       nist_gear::Order orderMsg;
       fillOrderMsg(nextOrder, orderMsg);
       this->dataPtr->ariacScorer.NotifyOrderUpdated(simTime, nextOrderID, orderMsg);
@@ -865,7 +1205,7 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
       return;
     }
 
-    gzdbg << "New order to announce: " << nextOrder.orderID << std::endl;
+    gzdbg << "New order to announce: " << nextOrder.order_id << std::endl;
 
     // Move order to the 'in process' stack
     this->dataPtr->ordersInProgress.push(ariac::Order(nextOrder));
@@ -873,13 +1213,13 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
 
     this->AnnounceOrder(nextOrder);
     // Assign the scorer the order to monitor
-    gzdbg << "Assigning order: " << nextOrder << std::endl;
+    gzdbg << "Assigning order: \n"
+          << nextOrder << std::endl;
     nist_gear::Order orderMsg;
     fillOrderMsg(nextOrder, orderMsg);
     this->dataPtr->ariacScorer.NotifyOrderStarted(simTime, orderMsg);
   }
 }
-
 
 /////////////////////////////////////////////////
 void ROSAriacTaskManagerPlugin::ProcessSensorBlackout()
@@ -889,7 +1229,7 @@ void ROSAriacTaskManagerPlugin::ProcessSensorBlackout()
   {
     // Count total products in all boxes.
     int totalProducts = 0;
-    for (auto & cpair: this->dataPtr->shipmentContents)
+    for (auto &cpair : this->dataPtr->kittingShipmentContents)
     {
       totalProducts += cpair.second->products.size();
     }
@@ -920,17 +1260,18 @@ void ROSAriacTaskManagerPlugin::ProcessSensorBlackout()
 
 /////////////////////////////////////////////////
 bool ROSAriacTaskManagerPlugin::HandleStartService(
-  std_srvs::Trigger::Request & req,
-  std_srvs::Trigger::Response & res)
+    std_srvs::Trigger::Request &req,
+    std_srvs::Trigger::Response &res)
 {
   gzdbg << "Handle start service called\n";
   (void)req;
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
 
-  if (this->dataPtr->currentState == "init") {
+  if (this->dataPtr->currentState == "init")
+  {
     this->dataPtr->currentState = "ready";
     res.success = true;
-    res.message = "competition started successfully!";
+    res.message = "competition started successfully! GOOD LUCK!";
     return true;
   }
   res.success = false;
@@ -940,8 +1281,8 @@ bool ROSAriacTaskManagerPlugin::HandleStartService(
 
 /////////////////////////////////////////////////
 bool ROSAriacTaskManagerPlugin::HandleEndService(
-  std_srvs::Trigger::Request & req,
-  std_srvs::Trigger::Response & res)
+    std_srvs::Trigger::Request &req,
+    std_srvs::Trigger::Response &res)
 {
   gzdbg << "Handle end service called\n";
   (void)req;
@@ -954,14 +1295,15 @@ bool ROSAriacTaskManagerPlugin::HandleEndService(
 }
 
 /////////////////////////////////////////////////
-bool ROSAriacTaskManagerPlugin::HandleSubmitShipmentService(
-  ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> & event)
+bool ROSAriacTaskManagerPlugin::HandleSubmitKittingShipmentService(
+    ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> &event)
 {
+  ROS_WARN("HandleSubmitKittingShipmentService");
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
-  const nist_gear::SubmitShipment::Request& req = event.getRequest();
-  nist_gear::SubmitShipment::Response& res = event.getResponse();
+  const nist_gear::SubmitShipment::Request &req = event.getRequest();
+  nist_gear::SubmitShipment::Response &res = event.getResponse();
 
-  const std::string& callerName = event.getCallerName();
+  const std::string &callerName = event.getCallerName();
   gzdbg << "Submit shipment service called by: " << callerName << std::endl;
 
   if (this->dataPtr->competitionMode && callerName.compare("/gazebo") != 0)
@@ -973,7 +1315,8 @@ bool ROSAriacTaskManagerPlugin::HandleSubmitShipmentService(
     return true;
   }
 
-  if (this->dataPtr->currentState != "go") {
+  if (this->dataPtr->currentState != "go")
+  {
     std::string errStr = "Competition is not running so shipments cannot be submitted.";
     gzerr << errStr << std::endl;
     ROS_ERROR_STREAM(errStr);
@@ -1006,10 +1349,18 @@ bool ROSAriacTaskManagerPlugin::HandleSubmitShipmentService(
   {
     agv_id = 2;
   }
+  else if (1 == destination_id.size() && '3' == destination_id[0])
+  {
+    agv_id = 3;
+  }
+  else if (1 == destination_id.size() && '4' == destination_id[0])
+  {
+    agv_id = 4;
+  }
 
   if (0 == agv_id)
   {
-    ROS_ERROR_STREAM("[ARIAC TaskManager] Could not determing AGV from: " << req.destination_id);
+    ROS_ERROR_STREAM("[ARIAC TaskManager] no valid AGV: " << req.destination_id);
     res.success = false;
     res.inspection_result = 0;
     return true;
@@ -1017,11 +1368,11 @@ bool ROSAriacTaskManagerPlugin::HandleSubmitShipmentService(
 
   if (this->dataPtr->agvGetContentClient.end() == this->dataPtr->agvGetContentClient.find(agv_id))
   {
-    ROS_ERROR_STREAM("[ARIAC TaskManager] no content client for agv " << agv_id);
+    ROS_ERROR_STREAM("[ARIAC TaskManager] no content client for AGV " << agv_id);
     return false;
   }
 
-  auto & getContentClient = this->dataPtr->agvGetContentClient.at(agv_id);
+  auto &getContentClient = this->dataPtr->agvGetContentClient.at(agv_id);
 
   if (!getContentClient.exists())
   {
@@ -1038,14 +1389,15 @@ bool ROSAriacTaskManagerPlugin::HandleSubmitShipmentService(
 
   auto currentSimTime = this->dataPtr->world->SimTime();
   res.success = true;
-  this->dataPtr->ariacScorer.NotifyShipmentReceived(currentSimTime, req.shipment_type, shipment_content.response.shipment);
+  //@todo
+  this->dataPtr->ariacScorer.NotifyShipmentReceived(currentSimTime, req.shipment_type, shipment_content.response.shipment, "bogus");
 
   // Figure out what the score of that shipment was
   res.inspection_result = 0;
   this->dataPtr->currentGameScore = this->dataPtr->ariacScorer.GetGameScore();
-  for (auto & orderScorePair : this->dataPtr->currentGameScore.orderScores)
+  for (auto &orderScorePair : this->dataPtr->currentGameScore.order_scores_map)
   {
-    for (const auto & shipmentScorePair : orderScorePair.second.shipmentScores)
+    for (const auto &shipmentScorePair : orderScorePair.second.kitting_shipment_scores)
     {
       if (shipmentScorePair.first == req.shipment_type)
       {
@@ -1061,8 +1413,8 @@ bool ROSAriacTaskManagerPlugin::HandleSubmitShipmentService(
 
 /////////////////////////////////////////////////
 bool ROSAriacTaskManagerPlugin::HandleGetMaterialLocationsService(
-  nist_gear::GetMaterialLocations::Request & req,
-  nist_gear::GetMaterialLocations::Response & res)
+    nist_gear::GetMaterialLocations::Request &req,
+    nist_gear::GetMaterialLocations::Response &res)
 {
   gzdbg << "Get material locations service called\n";
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
@@ -1084,12 +1436,116 @@ bool ROSAriacTaskManagerPlugin::HandleGetMaterialLocationsService(
   return true;
 }
 
+bool ROSAriacTaskManagerPlugin::HandleAGVToAssemblyService(
+    nist_gear::AGVToAssemblyStation::Request &req, nist_gear::AGVToAssemblyStation::Response &res, int agv_id)
+{
+  std::string station_name = req.assembly_station_name;
+  std::string shipment_type = req.shipment_type;
+
+  gzdbg << "AGV go to station service called for agv" << agv_id << "\n";
+  if (agv_id == 1 || agv_id == 2) //--for AGV1 and AGV2
+  {
+    if (this->dataPtr->agvToAS1AnimateClient.end() == this->dataPtr->agvToAS1AnimateClient.find(agv_id))
+    {
+      ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as1\" animate client for agv " << agv_id);
+      return false;
+    }
+    if (this->dataPtr->agvToAS2AnimateClient.end() == this->dataPtr->agvToAS2AnimateClient.find(agv_id))
+    {
+      ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as2\" animate client for agv " << agv_id);
+      return false;
+    }
+    if (this->dataPtr->agvToAS3AnimateClient.end() == this->dataPtr->agvToAS3AnimateClient.find(agv_id))
+    {
+      ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as3\" animate client for agv " << agv_id);
+      return false;
+    }
+  }
+  else if (agv_id == 3 || agv_id == 4) //--for AGV3 and AGV4
+  {
+    if (this->dataPtr->agvToAS4AnimateClient.end() == this->dataPtr->agvToAS4AnimateClient.find(agv_id))
+    {
+      ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as4\" animate client for agv " << agv_id);
+      return false;
+    }
+    if (this->dataPtr->agvToAS5AnimateClient.end() == this->dataPtr->agvToAS5AnimateClient.find(agv_id))
+    {
+      ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as5\" animate client for agv " << agv_id);
+      return false;
+    }
+    if (this->dataPtr->agvToAS6AnimateClient.end() == this->dataPtr->agvToAS6AnimateClient.find(agv_id))
+    {
+      ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as6\" animate client for agv " << agv_id);
+      return false;
+    }
+  }
+
+  ros::ServiceClient agv_to_as_animate_client;
+  if (station_name == "AS1")
+    agv_to_as_animate_client = this->dataPtr->agvToAS1AnimateClient.at(agv_id);
+  else if (station_name == "AS1")
+    agv_to_as_animate_client = this->dataPtr->agvToAS2AnimateClient.at(agv_id);
+  else if (station_name == "AS3")
+    agv_to_as_animate_client = this->dataPtr->agvToAS3AnimateClient.at(agv_id);
+  else if (station_name == "AS4")
+    agv_to_as_animate_client = this->dataPtr->agvToAS4AnimateClient.at(agv_id);
+  else if (station_name == "AS5")
+    agv_to_as_animate_client = this->dataPtr->agvToAS5AnimateClient.at(agv_id);
+  else if (station_name == "AS6")
+    agv_to_as_animate_client = this->dataPtr->agvToAS6AnimateClient.at(agv_id);
+
+  if (!agv_to_as_animate_client.exists())
+  {
+    ROS_ERROR_STREAM("[ARIAC TaskManager] animate service does not exist for agv" << agv_id);
+    return false;
+  }
+  
+
+  //--get kit content
+  auto &getContentClient = this->dataPtr->agvGetContentClient.at(agv_id);
+  if (!getContentClient.exists())
+  {
+    ROS_ERROR_STREAM("[ARIAC TaskManager] content service does not exist for " << agv_id);
+    return false;
+  }
+
+  //--detect shipment
+  nist_gear::DetectShipment shipment_content;
+  if (!getContentClient.call(shipment_content))
+  {
+    ROS_ERROR_STREAM("[ARIAC TaskManager] failed to get content" << agv_id);
+    return false;
+  }
+
+  std_srvs::Trigger animate;
+  if (!agv_to_as_animate_client.call(animate))
+  {
+    ROS_ERROR_STREAM("[ARIAC TaskManager] failed to ask agv to animate" << agv_id);
+    return false;
+  }
+
+  // If AGV says it's moving, then notify scorer about shipment
+  if (animate.response.success)
+  {
+    auto currentSimTime = this->dataPtr->world->SimTime();
+    res.success = true;
+    std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+    this->dataPtr->ariacScorer.NotifyShipmentReceived(currentSimTime, req.shipment_type, shipment_content.response.shipment, station_name);
+  }
+  else
+  {
+    res.success = false;
+    res.message = animate.response.message;
+  }
+  return true;
+}
+
 /////////////////////////////////////////////////
 bool ROSAriacTaskManagerPlugin::HandleAGVDeliverService(
-  nist_gear::AGVControl::Request & req, nist_gear::AGVControl::Response & res, int agv_id)
+    nist_gear::AGVControl::Request &req, nist_gear::AGVControl::Response &res, int agv_id)
 {
-  gzdbg << "AGV control service called " << agv_id << "\n";
 
+  gzdbg << "AGV control service called " << agv_id << "\n";
 
   if (this->dataPtr->agvAnimateClient.end() == this->dataPtr->agvAnimateClient.find(agv_id))
   {
@@ -1101,9 +1557,15 @@ bool ROSAriacTaskManagerPlugin::HandleAGVDeliverService(
     ROS_ERROR_STREAM("[ARIAC TaskManager] no content client for agv " << agv_id);
     return false;
   }
+  // if (this->dataPtr->agvAssembly1Client.end() == this->dataPtr->agvAssembly1Client.find(agv_id))
+  // {
+  //   ROS_ERROR_STREAM("[ARIAC TaskManager] no station1 client for agv " << agv_id);
+  //   return false;
+  // }
 
-  auto & animateClient = this->dataPtr->agvAnimateClient.at(agv_id);
-  auto & getContentClient = this->dataPtr->agvGetContentClient.at(agv_id);
+  auto &animateClient = this->dataPtr->agvAnimateClient.at(agv_id);
+  auto &getContentClient = this->dataPtr->agvGetContentClient.at(agv_id);
+  // auto &  assembly1Client = this->dataPtr->agvAssembly1Client.at(agv_id);
 
   if (!animateClient.exists())
   {
@@ -1115,6 +1577,12 @@ bool ROSAriacTaskManagerPlugin::HandleAGVDeliverService(
     ROS_ERROR_STREAM("[ARIAC TaskManager] content service does not exist for " << agv_id);
     return false;
   }
+
+  // if (!assembly1Client.exists())
+  // {
+  //   ROS_ERROR_STREAM("[ARIAC TaskManager] go to assembly station 1 service does not exist for " << agv_id);
+  //   return false;
+  // }
 
   nist_gear::DetectShipment shipment_content;
   if (!getContentClient.call(shipment_content))
@@ -1136,7 +1604,7 @@ bool ROSAriacTaskManagerPlugin::HandleAGVDeliverService(
     auto currentSimTime = this->dataPtr->world->SimTime();
     res.success = true;
     std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
-    this->dataPtr->ariacScorer.NotifyShipmentReceived(currentSimTime, req.shipment_type, shipment_content.response.shipment);
+    this->dataPtr->ariacScorer.NotifyShipmentReceived(currentSimTime, req.shipment_type, shipment_content.response.shipment, "bogus");
   }
   else
   {
@@ -1174,16 +1642,16 @@ void ROSAriacTaskManagerPlugin::PopulateConveyorBelt()
 }
 
 /////////////////////////////////////////////////
-void ROSAriacTaskManagerPlugin::AnnounceOrder(const ariac::Order & order)
+void ROSAriacTaskManagerPlugin::AnnounceOrder(const ariac::Order &order)
 {
-    // Publish the order to ROS topic
-    std::ostringstream logMessage;
-    logMessage << "Announcing order: " << order.orderID << std::endl;
-    ROS_INFO_STREAM(logMessage.str().c_str());
-    gzdbg << logMessage.str() << std::endl;
-    nist_gear::Order orderMsg;
-    fillOrderMsg(order, orderMsg);
-    this->dataPtr->orderPub.publish(orderMsg);
+  // Publish the order to ROS topic
+  std::ostringstream logMessage;
+  logMessage << "Announcing order: " << order.order_id << std::endl;
+  ROS_INFO_STREAM(logMessage.str().c_str());
+  gzdbg << logMessage.str() << std::endl;
+  nist_gear::Order orderMsg;
+  fillOrderMsg(order, orderMsg);
+  this->dataPtr->orderPub.publish(orderMsg);
 }
 
 /////////////////////////////////////////////////
@@ -1192,7 +1660,7 @@ void ROSAriacTaskManagerPlugin::StopCurrentOrder()
   // Stop the current order; any previous orders that are incomplete will automatically be resumed
   if (this->dataPtr->ordersInProgress.size())
   {
-    auto orderID = this->dataPtr->ordersInProgress.top().orderID;
+    auto orderID = this->dataPtr->ordersInProgress.top().order_id;
     gzdbg << "Stopping order: " << orderID << std::endl;
     this->dataPtr->ordersInProgress.pop();
   }
@@ -1203,16 +1671,16 @@ void ROSAriacTaskManagerPlugin::OnShipmentContent(nist_gear::DetectedShipment::C
 {
   // store the shipment content to be used for deciding when to interrupt orders
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
-  this->dataPtr->shipmentContents[shipment->destination_id] = shipment;
+  this->dataPtr->kittingShipmentContents[shipment->destination_id] = shipment;
+  // this->dataPtr->kittingShipmentContents[shipment->station_id] = shipment;
 }
 
-
 //////////////////////////////////////////////////
-void ROSAriacTaskManagerPlugin::OnContactsReceived(ConstContactsPtr& _msg)
+void ROSAriacTaskManagerPlugin::OnContactsReceived(ConstContactsPtr &_msg)
 {
   for (int i = 0; i < _msg->contact_size(); ++i)
   {
-    const auto & contact = _msg->contact(i);
+    const auto &contact = _msg->contact(i);
     /*
     bool col_1_is_arm = false;
     bool col_2_is_arm = false;

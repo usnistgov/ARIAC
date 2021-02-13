@@ -1,0 +1,1 @@
+- git: {local-name: osrf/ariac-gazebo_ros_pkgs, uri: 'https://github.com/osrf/ariac-gazebo_ros_pkgs.git', version: ariac-network-melodic}

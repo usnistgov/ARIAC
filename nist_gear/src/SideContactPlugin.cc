@@ -59,6 +59,8 @@ void SideContactPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
 
   std::string parentLinkName = this->parentLink->GetScopedName();
+
+    // gzdbg << "---------parentLinkName: " << parentLinkName << "\n";
   std::string defaultCollisionName = parentLinkName + "::__default__";
   if (this->parentSensor->GetCollisionCount() != 1)
   {
@@ -131,8 +133,17 @@ bool SideContactPlugin::FindContactSensor()
   {
     std::string scopedContactSensorName =
       this->world->Name() + "::" + link->GetScopedName() + "::" + this->contactSensorName;
+      // gzwarn << "this->world->Name(): " << this->world->Name() << "\n";
+      // gzwarn << "link->GetScopedName(): " << link->GetScopedName() << "\n";
+      // gzwarn << "this->contactSensorName: " << this->contactSensorName << "\n";
+      // gzwarn << "scopedContactSensorName: " << scopedContactSensorName << "\n";
+      //  gzwarn << "link->GetName(): " << link->GetName() << "\n";
+      // gzwarn << "link->GetSensorCount(): " << link->GetSensorCount() << "\n";
+      
+      
     for (unsigned int i = 0; i < link->GetSensorCount(); ++i)
     {
+      // gzwarn << "link->GetSensorName(i): " << link->GetSensorName(i) << "\n";
       if (link->GetSensorName(i) == scopedContactSensorName)
       {
         this->parentLink = link;

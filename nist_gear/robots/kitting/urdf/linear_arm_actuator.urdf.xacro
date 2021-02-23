@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 <xacro:property name="base_len" value="0.2" />
-<xacro:property name="actuator_len" value="14" />
+<xacro:property name="actuator_len" value="10" />
 <xacro:property name="actuator_height" value="0.1" />
 
 <xacro:arg name="use_velocity_interface" default="false" />

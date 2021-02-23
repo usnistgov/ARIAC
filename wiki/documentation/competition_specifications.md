@@ -1,8 +1,9 @@
--------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------
 
-# Wiki | Documentation | Competition Specifications #
+Being updated...
+<!-- # Wiki | Documentation | Competition Specifications #
 This page outlines the specifications for [the Agile Robotics for Industrial Automation Competition](https://www.nist.gov/el/intelligent-systems-division-73500/agile-robotics-industrial-automation) (ARIAC) 2020.
 
 The following terminology is frequently used in this document:
@@ -217,4 +218,4 @@ For the Finals/Qualifiers, the time limit will be set as a fixed value for all t
 -------------------------------------------------
 - Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
--------------------------------------------------
+------------------------------------------------- -->

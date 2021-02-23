@@ -28,58 +28,31 @@
   <!-- End: Torso Properties -->
 
   <!-- Rail Properties -->
-  <xacro:property name="long_rail_length" value="24.0" />
+  <xacro:property name="long_rail_length" value="15.0" />
   <xacro:property name="long_rail_width" value="0.2" />
-  <xacro:property name="long_rail_offset" value="-8" />
-  <xacro:property name="small_rail_length" value="16.0" />
-  <xacro:property name="small_rail_width" value="1.5" />
-  <xacro:property name="rail_height" value="3.0" />
+  <xacro:property name="long_rail_offset" value="-5" />
+  <xacro:property name="small_rail_length" value="10.0" />
+  <xacro:property name="small_rail_width" value="0.2" />
+  <xacro:property name="rail_height" value="2.9" />
   <xacro:property name="rail_thickness" value="0.1" />
-  <xacro:property name="torso_height" value="-2.4" />
+  <xacro:property name="torso_height" value="-2.3" />
 
   <xacro:property name="gantry_arm" value="gantry_arm_" />
 
+  <link name="world" />
 
-<!-- ============= -->
-<!--     Links     -->
-<!-- ============= -->
-<!-- Link: world -->
-<link name="world" />
-<!-- Link: long_rail_1 -->
-<link name='long_rail_1'>
-  <collision>
-    <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
-    <geometry>
-      <box size="${long_rail_width} ${long_rail_length} ${rail_thickness}"/>
-    </geometry>
-  </collision>
-  <visual>
-    <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 ${pi/2}"/>
-    <geometry>
-      <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/long_rail.dae" scale="${12./11.} 1 1"/>
-    </geometry>
-  </visual>
-  <inertial>
-    <origin xyz="0 0 0" rpy="0 0 0"/>
-    <mass value="1.0"/>
-    <inertia
-      ixx="1" ixy="0.0" ixz="0.0"
-      iyy="1" iyz="0.0"
-      izz="1"/>
-  </inertial>
-</link>
-<!-- Link: long_rail_2 -->
-    <link name='long_rail_2'>
+  <!--Information on the rails-->
+    <link name='long_rail_1'>
       <collision>
-        <origin xyz="${small_rail_length / 2 - long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
+        <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
         <geometry>
           <box size="${long_rail_width} ${long_rail_length} ${rail_thickness}"/>
         </geometry>
       </collision>
       <visual>
-        <origin xyz="${small_rail_length / 2 - long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 ${pi/2}"/>
+        <origin xyz="${-small_rail_length / 2 + long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
         <geometry>
-	  <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/long_rail.dae" scale="${12./11.} 1 1"/>
+          <box size="${long_rail_width} ${long_rail_length} ${rail_thickness}"/>
         </geometry>
       </visual>
       <inertial>
@@ -89,9 +62,56 @@
           ixx="1" ixy="0.0" ixz="0.0"
           iyy="1" iyz="0.0"
           izz="1"/>
-        </inertial>
+      </inertial>
     </link>
-<!-- Link: small_rail -->
+
+    <gazebo reference="long_rail_1">
+      <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <joint name="rail_1_world" type="fixed">
+      <parent link="world"/>
+      <child link="long_rail_1"/>
+      <origin xyz="-2.0 0.0 0.0" rpy="0.0 0.0 ${-pi/2}"/>
+    </joint>
+
+<!-- ============= -->
+<!--     Links     -->
+<!-- ============= -->
+
+<!-- Link: long_rail_2 -->
+    <link name='long_rail_2'>
+      <collision>
+        <origin xyz="${small_rail_length / 2 - long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${long_rail_width} ${long_rail_length} ${rail_thickness}"/>
+        </geometry>
+      </collision>
+      <visual>
+        <origin xyz="${small_rail_length / 2 - long_rail_width / 2} ${long_rail_offset} ${rail_height}" rpy="0 0 0"/>
+        <geometry>
+          <box size="${long_rail_width} ${long_rail_length} ${rail_thickness}"/>
+        </geometry>
+      </visual>
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.0"/>
+        <inertia
+          ixx="1" ixy="0.0" ixz="0.0"
+          iyy="1" iyz="0.0"
+          izz="1"/>
+      </inertial>
+    </link>
+    <gazebo reference="long_rail_2">
+      <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <joint name="rail_2_rail_1" type="fixed">
+      <parent link="long_rail_1"/>
+      <child link="long_rail_2"/>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    </joint>
+
     <link name='small_rail'>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -100,9 +120,9 @@
         </geometry>
       </collision>
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-		<mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/short_rail.dae" scale="${16./15.} 1 1"/>
+          <box size="${small_rail_width} ${small_rail_length} ${rail_thickness}"/>
         </geometry>
       </visual>
       <inertial>
@@ -114,18 +134,33 @@
           izz=".1"/>
       </inertial>
     </link>
-<!-- Link: torso_base -->
+    <gazebo reference="small_rail">
+      <material>Gazebo/GreyTransparent</material>
+    </gazebo>
+
+<!-- y+ moves the rail left-->
+    <joint name="small_long_joint" type="prismatic">
+      <parent link="long_rail_2"/>
+      <child link="small_rail"/>
+      <origin xyz="0.0 0.0 ${rail_height + rail_thickness}" rpy="0.0 0.0 ${pi/2}"/>
+      <axis xyz="1 0 0"/>
+      <limit lower="${-long_rail_length / 2 + long_rail_offset + small_rail_width / 2}"
+	      upper="${long_rail_length / 2 + long_rail_offset - small_rail_width / 2}"
+        velocity="1"
+        effort="100000"/>
+    </joint>
+
+
+
     <link name="torso_base">
       <visual>
         <geometry>
-          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_base.dae" scale="2 2 2"/>
+          <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/torso_base.dae" scale="2 2 2"/>
         </geometry>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <!--<material name="NIST220/Silver"/>-->
       </visual>
       <collision>
         <geometry>
-          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_base.dae" scale="2 2 2"/>
+          <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/torso_base.dae" scale="2 2 2"/>
         </geometry>
       </collision>
       <inertial>
@@ -137,27 +172,68 @@
           izz=".1"/>
       </inertial>
     </link>
-<!-- Link: torso_main -->
-    <link name="torso_main">
-      <visual>
-        <geometry>
-          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_no_base.dae" scale="2 2 2"/>
-        </geometry>
-      </visual>
-      <collision>
-        <geometry>
-          <mesh filename="package://nist_gear/robots/torso2021/meshes/torso_no_base.dae" scale="2 2 2"/>
-        </geometry>
-      </collision>
-      <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="1.0"/>
-        <inertia
-          ixx=".1" ixy="0.0" ixz="0.0"
-          iyy="1" iyz="0.0"
-          izz=".1"/>
+
+      <gazebo reference="torso_base">
+        <material>Gazebo/FlatBlack</material>
+        <selfCollide>1</selfCollide>
+      </gazebo>
+
+      <joint name="torso_rail_joint" type="prismatic">
+        <parent link="small_rail"/>
+        <child link="torso_base"/>
+        <origin xyz="0 0 ${torso_height}" rpy="${pi} ${pi} ${pi/2}"/>
+	      <axis xyz="1 0 0"/>
+	        <!--Add a 0.5m buffer for joint limits to avoid self-collisions-->
+	        <limit lower="${-small_rail_length / 2 + .5}"
+	               upper="${small_rail_length / 2 - .5}"
+                 velocity="1"
+                 effort="100000"/>
+      </joint>
+
+      <link name="torso_main">
+        <visual>
+          <geometry>
+            <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/torso_fixed_normals.dae" scale="2 2 2"/>
+          </geometry>
+        </visual>
+        <collision>
+          <geometry>
+            <mesh filename="package://nist_gear/robots/gantry/gantry_description/meshes/torso_fixed_normals.dae" scale="2 2 2"/>
+          </geometry>
+        </collision>
+        <inertial>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <mass value="1.0"/>
+          <inertia
+            ixx=".1" ixy="0.0" ixz="0.0"
+            iyy="1" iyz="0.0"
+            izz=".1"/>
         </inertial>
-    </link>
+        <gazebo>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </gazebo>
+      </link>
+
+      <gazebo reference="torso_main">
+        <selfCollide>1</selfCollide>
+      </gazebo>
+
+
+      <joint name="torso_base_main_joint" type="revolute">
+        <parent link="torso_base"/>
+        <child link="torso_main"/>
+        <origin xyz="0 0 0" rpy="${pi} ${pi} 0"/>
+        <axis xyz="0 0 1"/>
+	      <limit lower="${-2 * pi}"
+	             upper="${2 * pi}"
+               velocity="${pi/4}"
+               effort="100000"/>
+      </joint>
 
 
       <!-- Attach arm to torso -->
@@ -197,121 +273,83 @@
         </drops_info>
       </xacro:create_vacuum_gripper>
 
-<!-- ============== -->
-<!--     Joints     -->
-<!-- ============== -->
-    <joint name="world_long_rail_1_joint" type="fixed">
-      <parent link="world"/>
-      <child link="long_rail_1"/>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 ${-pi/2}"/>
-    </joint>
-
-    <joint name="long_rail_1_long_rail_2_joint" type="fixed">
-      <parent link="long_rail_1"/>
-      <child link="long_rail_2"/>
-      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
-    </joint>
-
-    <joint name="long_rail_2_small_rail_joint" type="prismatic">
-      <parent link="long_rail_2"/>
-      <child link="small_rail"/>
-      <origin xyz="0.0 0.0 ${rail_height + rail_thickness}" rpy="0.0 0.0 ${pi/2}"/>
-      <axis xyz="1 0 0"/>
-      <limit lower="${-long_rail_length / 2 + long_rail_offset + small_rail_width / 2}"
-	      upper="${long_rail_length / 2 + long_rail_offset - small_rail_width / 2}"
-        velocity="4"
-        effort="10000"/>
-      <dynamics damping="1.0" friction="2.0"/>
-    </joint>
-
-    <joint name="small_rail_torso_base_joint" type="prismatic">
-      <parent link="small_rail"/>
-      <child link="torso_base"/>
-	    <origin xyz="0 0 -2.4" rpy="${pi} ${pi} ${pi/2}"/>
-	    <axis xyz="1 0 0"/>
-	    <!--Add a 1m buffer for joint limits to avoid self-collisions-->
-	    <limit lower="${-small_rail_length / 2 + 1.0}" 
-      upper="${small_rail_length / 2 - 1.0}"
-      velocity="4"
-      effort="10000"/>
-      <dynamics damping="1.0" friction="1.0"/>
-    </joint>
-
-    <joint name="torso_base_torso_main_joint" type="revolute">
-      <parent link="torso_base"/>
-      <child link="torso_main"/>
-      <origin xyz="0 0 0" rpy="${pi} ${pi} 0"/>
-      <axis xyz="0 0 1"/>
-      <limit lower="${-2 * pi}" 
-      upper="${2 * pi}" 
-      velocity="${pi}" 
-      effort="1000"/>
-      <dynamics damping="1.0" friction="1"/>
-    </joint>
-
-<!-- ============== -->
-<!--     Gazebo     -->
-<!-- ============== -->
-    <gazebo reference="long_rail_1">
-      <material>Gazebo/RustySteel</material>
-      <turnGravityOff>true</turnGravityOff>
-    </gazebo>
-
-    <gazebo reference="long_rail_2">
-      <material>Gazebo/RustySteel</material>
-      <turnGravityOff>true</turnGravityOff>
-    </gazebo>
-
-    <gazebo reference="small_rail">
-      <material>Gazebo/RustySteel</material>
-      <turnGravityOff>true</turnGravityOff>
-    </gazebo>
-
-    <gazebo reference="torso_base">
-      <material>Gazebo/RustySteel</material>
-      <turnGravityOff>true</turnGravityOff>
-      <selfCollide>1</selfCollide>
-    </gazebo>
-
-    <gazebo reference="torso_main">
-      <!--<material>Gazebo/Black</material>-->
-      <turnGravityOff>true</turnGravityOff>
-      <selfCollide>1</selfCollide>
-    </gazebo>
-
+    @[if options['enable_robot_camera']]@
+      <gazebo reference="torso_main">
+        <sensor name="robot_camera" type="depth">
+		<pose>0.42 0.42 1.1 0 ${pi/3} ${3*pi/2}</pose>
+          <update_rate>20</update_rate>
+          <camera>
+            <horizontal_fov>2</horizontal_fov>
+            <image>
+              <width>848</width>
+              <height>480</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip>
+              <near>0.05</near>
+              <far>5</far>
+            </clip>
+          </camera>
+          <plugin name="rgbd_camera" filename="libgazebo_ros_openni_kinect.so">
+            <baseline>0.2</baseline>
+            <alwaysOn>true</alwaysOn>
+            <updateRate>1.0</updateRate>
+            <cameraName>robot_camera</cameraName>
+            <imageTopicName>robot_camera/color/image_raw</imageTopicName>
+            <cameraInfoTopicName>robot_camera/color/camera_info</cameraInfoTopicName>
+            <depthImageTopicName>robot_camera/depth/image_raw</depthImageTopicName>
+            <depthImageInfoTopicName>robot_camera/depth/camera_info</depthImageInfoTopicName>
+            <pointCloudTopicName>robot_camera/depth/points</pointCloudTopicName>
+            <frameName>robot_camera_frame</frameName>
+            <pointCloudCutoff>0.5</pointCloudCutoff>
+            <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+            <distortionK1>0.00000001</distortionK1>
+            <distortionK2>0.00000001</distortionK2>
+            <distortionK3>0.00000001</distortionK3>
+            <distortionT1>0.00000001</distortionT1>
+            <distortionT2>0.00000001</distortionT2>
+            <CxPrime>0</CxPrime>
+            <Cx>0</Cx>
+            <Cy>0</Cy>
+            <focalLength>0</focalLength>
+            <hackBaseline>0</hackBaseline>
+          </plugin>
+        </sensor>
+      </gazebo>
+    @[end if]@
 
 <!-- ==================== -->
 <!--     Transmission     -->
 <!-- ==================== -->
       <!--Transmissions for the rails and the torso-->
-      <transmission name="small_rail_long_rail_2_transmission">
+      <transmission name="small_long_transmission">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="long_rail_2_small_rail_joint">
+        <joint name="small_long_joint">
           <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="small_rail_long_rail_2_motor">
+        <actuator name="small_long_motor">
           <mechanicalReduction>1</mechanicalReduction>
         </actuator>
       </transmission>
 
 
-      <transmission name="small_rail_torso_base_transmission">
+      <transmission name="torso_rail_transmission">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="small_rail_torso_base_joint">
+        <joint name="torso_rail_joint">
           <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="small_rail_torso_base_motor">
+        <actuator name="torso_rail_motor">
           <mechanicalReduction>10</mechanicalReduction>
         </actuator>
       </transmission>
 
 
-      <transmission name="torso_base_torso_main_transmission">
+      <transmission name="torso_base_main_transmission">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="torso_base_torso_main_joint">
+        <joint name="torso_base_main_joint">
           <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="torso_base_torso_main_motor">
+        <actuator name="torso_base_main_motor">
           <mechanicalReduction>10</mechanicalReduction>
         </actuator>
       </transmission>

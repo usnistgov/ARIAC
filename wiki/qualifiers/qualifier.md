@@ -1,14 +1,17 @@
--------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------
 
 # Wiki | Qualifiers
+
 - There is a single qualification round for ARIAC 2020, with top teams being chosen to participate in the Finals.
 - Qualifier submissions will be evaluated following the [automated evaluation procedure](../documentation/automated_evaluation.md).
 
 # Overview
 
-* The ARIAC qualification task has been designed to evaluate your performance in a subset of the challenges that will be present in the final competition.
+This page will be updated around the beginning of April.
+
+<!-- * The ARIAC qualification task has been designed to evaluate your performance in a subset of the challenges that will be present in the final competition.
 * Up to **10** teams will qualify for the Finals based on their performance.
 
 * The first qualification task is composed of two parts.
@@ -95,9 +98,6 @@ Please use the [Github Issues](https://github.com/usnistgov/ARIAC/issues) for su
 
 If you have any questions about competition specifics that you would like to ask in private, please contact **ariac@nist.gov**.
 
-<!---You can use the [GEAR/ARIAC support forum](https://discourse.ros.org/c/ariac-users) for public discussions about the competition in which other competition participants may participate.-->
-
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
-
--------------------------------------------------
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+ -->

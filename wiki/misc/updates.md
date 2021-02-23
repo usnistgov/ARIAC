@@ -1,8 +1,14 @@
--------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------
 
-## Released 2020, May 09
+## Released 2021, Feb 21
+
+- Updates including more examples of trial configuration files and complete documentation.
+- Some Github tickets (created for ARIAC 2020) will be cleared this week.
+- Some new found bugs with the assembly robot tray are also being fixed.
+  
+<!-- 
 - Solutions for fixing playback on host machines (issue [#28](https://github.com/usnistgov/ARIAC/issues/28)) are provided [here](https://github.com/usnistgov/ARIAC/blob/master/wiki/tutorials/automated_evaluation.md#playing-back-the-simulation) 
 
 ## Released 2020, April 21
@@ -22,9 +28,9 @@
 - We added a [note](../documentation/automated_evaluation.md) specifying that the option `development-mode` should not be used during the qualifiers and finals, i.e., this [option](https://github.com/usnistgov/ARIAC/blob/bf77a0c61520f5d3a80e004c825a5045c4eeaca6/nist_gear/launch/sample_environment.launch#L23) should be removed).
 
 
-## Released 2020, March 21
+## Released 2020, March 21 -->
 
-- Added qual A yaml files (see [here](../qualifiers/qualifier_scenarios.md)).
+<!-- - Added qual A yaml files (see [here](../qualifiers/qualifier_scenarios.md)).
 - Added challenge yaml files (see [here](../documentation/agility_challenges.md)).
   - Major changes to the wiki, which is now  up to date (except for [this page](../tutorials/gear_interface.md)) .
   - Please contact me (zeid.kootbally@nist.gov) if anything is out of place.
@@ -59,4 +65,4 @@ products:
 
 ## Released 2020, March 13
 
-- Cost of the RGBD camera is set to be the same as the Logical camera ($500).
+- Cost of the RGBD camera is set to be the same as the Logical camera ($500). -->

@@ -27,12 +27,14 @@ find_package(gazebo REQUIRED)
 
 add_message_files(DIRECTORY msg
   FILES
+  RobotHealth.msg
   ConveyorBeltState.msg
   DetectedProduct.msg
   KittingShipment.msg
   AssemblyShipment.msg
   Product.msg
-  DetectedShipment.msg
+  DetectedKittingShipment.msg
+  DetectedAssemblyShipment.msg
   LogicalCameraImage.msg
   Model.msg
   Order.msg
@@ -48,7 +50,9 @@ add_service_files(DIRECTORY srv
   AGVToAssemblyStation.srv
   AGVToKittingStation.srv
   DroneControl.srv
-  DetectShipment.srv
+  DetectKittingShipment.srv
+  DetectAssemblyShipment.srv
+  AssemblyStationSubmitShipment.srv
   ConveyorBeltControl.srv
   GetMaterialLocations.srv
   PopulationControl.srv
@@ -177,19 +181,6 @@ install(TARGETS ${ros_agv_plugin_name}
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
-
-# # Create the libROSAGVStationPlugin.so library.
-# set(ros_agv_station_plugin_name ROSAGVStationPlugin)
-# add_library(${ros_agv_station_plugin_name} src/ROSAGVStationPlugin.cc)
-# target_link_libraries(${ros_agv_station_plugin_name} ${GAZEBO_LIBRARIES})
-# add_dependencies(${ros_agv_station_plugin_name}
-#   ${${PROJECT_NAME}_EXPORTED_TARGETS}
-# )
-# install(TARGETS ${ros_agv_station_plugin_name}
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib
-#   RUNTIME DESTINATION bin
-# )
 
 # Create the libROSPersonPlugin.so library.
 set(ros_person_plugin_name ROSPersonPlugin)
@@ -388,6 +379,23 @@ install(TARGETS ${kit_tray_plugin_name}
   RUNTIME DESTINATION bin
 )
 
+# Create the libROSAriacBriefcasePlugin.so library.
+set(briefcase_plugin_name ROSAriacBriefcasePlugin)
+add_library(${briefcase_plugin_name} src/ROSAriacBriefcasePlugin.cc)
+target_link_libraries(${briefcase_plugin_name}
+  ${GAZEBO_LIBRARIES}
+  ${roscpp_LIBRARIES}
+  ${side_contact_plugin_name}
+)
+add_dependencies(${briefcase_plugin_name}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
+install(TARGETS ${briefcase_plugin_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
 # Create the libAriacScorer.so library.
 set(target_name AriacScorer)
 add_library(${target_name} src/AriacScorer.cpp)
@@ -421,6 +429,10 @@ install(TARGETS tf2_relay
 ## Install ##
 #############
 
+# message("CATKIN_PACKAGE_SHARE_DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}")
+# message("CATKIN_PACKAGE_BIN_DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}")
+# message("CATKIN_PACKAGE_SHARE_DESTINATION" ${CMAKE_CURRENT_SOURCE_DIR})
+
 install(PROGRAMS script/gear.py script/gazebo_unpauser.py script/startup.sh
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
@@ -442,12 +454,8 @@ install(DIRECTORY launch/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch)
 
 # Install all the rviz files
-#install(DIRECTORY rviz/
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rviz)
-
-# Install all the vendor files from outside packages
-#install(DIRECTORY vendor/
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/vendor)
+install(DIRECTORY rviz/
+ DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rviz)
 
 # Configure the setup script
 catkin_add_env_hooks(99_nist_gear_setup

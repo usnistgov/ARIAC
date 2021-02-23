@@ -1,0 +1,5 @@
+# Detect shipment
+# Called to ask a briefcase to report what products were placed in it
+---
+# What was detected in the briefcase
+DetectedAssemblyShipment shipment

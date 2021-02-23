@@ -1,7 +1,9 @@
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
--------------------------------------------------
-# Wiki | Documentation |Competition Interface
+
+Being updated...
+<!-- # Wiki | Documentation |Competition Interface
 
 GEAR provides a [ROS](http://www.ros.org/) interface to the teams participating in ARIAC.
 This interface can be used by teams to control all available actuators, read sensor information and send/receive notifications.
@@ -227,11 +229,8 @@ These are only provided for debugging/development purposes and their use is not 
      <td width="30%"><a href="http://docs.ros.org/api/std_srvs/html/srv/Trigger.html">std_srvs/Trigger.srv</a></td>
    </tr>
 </table>  
-<!---See [the developer tips page](https://bitbucket.org/osrf/ariac/wiki/2019/developer_tips#markdown-header-running-ariac-with-cheats-enabled) for how to enable cheats.-->
+ -->
 
-
-
--------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 -------------------------------------------------

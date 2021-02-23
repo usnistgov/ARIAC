@@ -1,0 +1,9 @@
+# Ship the content at an assembly station
+
+#shipment type (e.g., 'order_0_assembly_shipment_0')
+string shipment_type
+
+---
+bool success
+# The score added by the submitted shipment
+float32 inspection_result

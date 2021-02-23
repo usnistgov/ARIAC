@@ -17,10 +17,10 @@
         </inertia>
       </inertial>
       <collision name='collision'>
-        <pose frame=''>0 0 0 0 0 0</pose>
+        <!--pose frame=''>0 0 0 0 0 0</pose-->
         <geometry>
            <mesh>
-             <uri>model://assembly_station/meshes/assemblyStation.stl</uri>
+             <uri>model://assembly_station/meshes/assemblyStation.dae</uri>
              <scale>1.1 1.1 1.1 </scale>
            </mesh>
         </geometry>

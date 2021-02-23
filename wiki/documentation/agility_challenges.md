@@ -1,16 +1,22 @@
--------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------
 
+Being updated...
+<!-- 
 # Wiki | Documentation | Agility Challenges
 
-- This page explains the details of agility challenges that may be present in trials.
-- Each challenge has at least one accompanying sample trial config file provided in the `config` directory that can be used to practice.
-- The sample trial config files explain the expected behavior at the top of the file.
-- See the [configuration tutorial](configuration_spec.md) for how to use these trial config files.
-
+- [Wiki | Documentation | Agility Challenges](#wiki--documentation--agility-challenges)
+  - [Faulty products](#faulty-products)
+  - [Insufficiently many products](#insufficiently-many-products)
+  - [Flipped products](#flipped-products)
+  - [In-process order update](#in-process-order-update)
+  - [Sensor blackout](#sensor-blackout)
+  - [Dropped products](#dropped-products)
+  - [In-process order interruption](#in-process-order-interruption)
 
 ## Faulty products
+
   * Faulty products should not be used to fulfill the orders.
   * Sample trial:
     * [<b>sample_faulty_products.yaml</b>](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample_faulty_products.yaml)
@@ -67,4 +73,4 @@
 -------------------------------------------------
 - Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
--------------------------------------------------
+------------------------------------------------- -->

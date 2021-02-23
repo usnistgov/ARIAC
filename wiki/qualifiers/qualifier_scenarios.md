@@ -4,7 +4,8 @@
 
 # Wiki | Qualifiers | Scenarios
 
-This page describes the scenarios that are used in [ARIAC 2020 qualification](qualifier.md).
+This page will be updated around the beginning of April.
+<!-- This page describes the scenarios that are used in [ARIAC 2020 qualification](qualifier.md).
 
 The following applies to both scenarios:
 
@@ -374,4 +375,4 @@ rosrun nist_gear gear.py -f <path/to/config/folder>/qual_a_3.yaml \
 -------------------------------------------------
 - Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
--------------------------------------------------
+------------------------------------------------- -->

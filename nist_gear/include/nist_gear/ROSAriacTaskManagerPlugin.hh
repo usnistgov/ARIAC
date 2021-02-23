@@ -23,9 +23,11 @@
 #include <gazebo/physics/PhysicsTypes.hh>
 #include <nist_gear/AGVControl.h>
 #include <nist_gear/AGVToAssemblyStation.h>
-#include <nist_gear/DetectedShipment.h>
+#include <nist_gear/DetectedKittingShipment.h>
+#include <nist_gear/DetectedAssemblyShipment.h>
 #include <nist_gear/GetMaterialLocations.h>
 #include <nist_gear/SubmitShipment.h>
+#include <nist_gear/AssemblyStationSubmitShipment.h>
 #include <sdf/sdf.hh>
 #include <std_msgs/String.h>
 #include <std_srvs/Trigger.h>
@@ -156,6 +158,13 @@ namespace gazebo
   public:
     bool HandleSubmitKittingShipmentService(
         ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> &event);
+  
+  // HandleSubmitShipmentService(
+  // ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> & event)
+
+  public:
+  bool HandleSubmitAssemblyShipmentService(
+ nist_gear::AssemblyStationSubmitShipment::Request &req, nist_gear::AssemblyStationSubmitShipment::Response &res, int station_id);
 
 
 
@@ -172,12 +181,14 @@ namespace gazebo
     
     /// \brief Callback for when a kitting shipment is sent to assembly station.
   public:
-    bool HandleAGVToAssemblyService(
+    bool HandleSendAgvToASService(
         nist_gear::AGVToAssemblyStation::Request &req, nist_gear::AGVToAssemblyStation::Response &res, int agv_id);
 
     /// \brief Callback when a tray publishes it's content
   public:
-    void OnShipmentContent(nist_gear::DetectedShipment::ConstPtr shipment);
+    void OnKittingShipmentContent(nist_gear::DetectedKittingShipment::ConstPtr shipment);
+  public:
+    void OnAssemblyShipmentContent(nist_gear::DetectedAssemblyShipment::ConstPtr shipment);
 
     /// \brief Callback that recieves the contact sensor's messages.
   protected:

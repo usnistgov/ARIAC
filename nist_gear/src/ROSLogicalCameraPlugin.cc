@@ -219,7 +219,8 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
   ignition::math::Quaterniond cameraOrientation =
     msgs::ConvertIgn(_msg->pose().orientation());
   auto cameraPose = ignition::math::Pose3d(cameraPosition, cameraOrientation);
-  this->PublishTF(cameraPose, "world", this->name + "_frame");
+  // Camera pose already present in static TF publisher
+  // this->PublishTF(cameraPose, "world", this->name + "_frame");
 
   imageMsg.pose.position.x = cameraPosition.X();
   imageMsg.pose.position.y = cameraPosition.Y();
@@ -231,6 +232,7 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
 
   std::ostringstream logStream;
   ignition::math::Pose3d modelPose;
+  std::vector<geometry_msgs::TransformStamped> transforms;
   for (int i = 0; i < _msg->model_size(); ++i)
   {
     std::string modelName = _msg->model(i).name();
@@ -272,11 +274,11 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
         this->AddNoise(noisyKitTrayPose);
         if (modelType == "agv1")
         {
-          this->PublishTF(noisyKitTrayPose, modelFrameId, this->modelFramePrefix + "kit_tray_1_frame");
+          transforms.push_back(this->ToTransformStamped(noisyKitTrayPose, modelFrameId, this->modelFramePrefix + "kit_tray_1_frame"));
         }
         else if (modelType == "agv2")
         {
-          this->PublishTF(noisyKitTrayPose, modelFrameId, this->modelFramePrefix + "kit_tray_2_frame");
+          transforms.push_back(this->ToTransformStamped(noisyKitTrayPose, modelFrameId, this->modelFramePrefix + "kit_tray_2_frame"));
         }
       }
       else
@@ -284,8 +286,7 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
         this->AddNoise(modelPose);
       }
       this->AddModelToMsg(modelTypeToUse, modelPose, imageMsg);
-      this->PublishTF(modelPose, this->name + "_frame", modelFrameId);
-
+      transforms.push_back(this->ToTransformStamped(modelPose, this->name + "_frame", modelFrameId));
     }
 
     // Check any children models
@@ -316,6 +317,10 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
     ROS_DEBUG_THROTTLE(1, "%s", logStream.str().c_str());
   }
   this->imagePub.publish(imageMsg);
+
+  // Publish the aggregated transforms
+  if (!transforms.empty())
+    transformBroadcaster->sendTransform(transforms);
 }
 
 bool ROSLogicalCameraPlugin::ModelToPublish(
@@ -377,17 +382,23 @@ void ROSLogicalCameraPlugin::AddModelToMsg(
   imageMsg.models.push_back(modelMsg);
 }
 
-void ROSLogicalCameraPlugin::PublishTF(
+geometry_msgs::TransformStamped ROSLogicalCameraPlugin::ToTransformStamped(
   const ignition::math::Pose3d & pose, const std::string & parentFrame, const std::string & frame)
 {
   ros::Time currentTime = ros::Time::now();
 
-  tf::Quaternion qt(pose.Rot().X(), pose.Rot().Y(), pose.Rot().Z(), pose.Rot().W());
-  tf::Vector3 vt(pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
-
-  tf::Transform transform (qt, vt);
-  transformBroadcaster->sendTransform(tf::StampedTransform(transform, currentTime, parentFrame, frame));
-
+  geometry_msgs::TransformStamped ts;
+  ts.header.stamp = currentTime;
+  ts.header.frame_id = parentFrame;
+  ts.child_frame_id = frame;
+  ts.transform.translation.x = pose.Pos().X();
+  ts.transform.translation.y = pose.Pos().Y();
+  ts.transform.translation.z = pose.Pos().Z();
+  ts.transform.rotation.x = pose.Rot().X();
+  ts.transform.rotation.y = pose.Rot().Y();
+  ts.transform.rotation.z = pose.Rot().Z();
+  ts.transform.rotation.w = pose.Rot().W();
+  return ts;
 }
 
 /////////////////////////////////////////////////

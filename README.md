@@ -2,17 +2,20 @@
 
 ## Wiki for ARIAC 2021.
 
-**NOTE**: These pages are in the process of being updated. If you see something that looks like it got missed, please send us an email at ariac@nist.gov
+<!-- **NOTE**: These pages are in the process of being updated. If you see something that looks like it got missed, please send us an email at ariac@nist.gov -->
 
-![ariac-2021](wiki/figures/ariac2021.jpeg)
+![ariac-2021](wiki/figures/ariac2021_environment.jpeg)
+### Welcome to ARIAC 2021. This year, the theme revolves around the pandemic. Competitors will be tasked to manipulate products used in the assembly of ventilators. Kitting (or kit building) and assembly are the two tasks involved in ARIAC 2021.
 
+- Please read the [Updates](wiki/misc/updates.md) section first.
 <!---<img src="wiki/figures/ariac2020_3.jpg" alt="alt text" width="600" class="center">-->
 
 ## Important Dates
 
-- Registration Date: TBD
-- Competition Qualifiers Date: TBD
-- Competition Finals Date: TBD
+- 22-26 March 2021 - Smoke Test Week before Qualifier Round
+- 26-30 April 2021 - Qualifier Round
+- 17-21 May 2021 - Smoke Test before Final Round
+- 24-28 May 2021 - Final Round
 
 ## [Terminology](wiki/misc/terminology.md)
 

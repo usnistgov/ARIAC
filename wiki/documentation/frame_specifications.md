@@ -3,7 +3,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 -------------------------------------------------
 
 Being updated...
-<!-- 
+
 # Wiki | Documentation | Products
 - This page outlines the specifications of the pose requirements specified in each Order.
 - As outlined in the [competition specifications](competition_specifications.md#Order), an Order specifies a list of products to be put into each shipment. Each product has a specified type and required position and orientation in the shipping box.
@@ -65,4 +65,4 @@ Being updated...
 -------------------------------------------------
 - Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
-------------------------------------------------- -->
+-------------------------------------------------

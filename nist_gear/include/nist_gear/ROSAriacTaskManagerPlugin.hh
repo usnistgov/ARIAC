@@ -127,6 +127,12 @@ namespace gazebo
     /// \brief Decide whether to announce a new order.
   protected:
     void ProcessOrdersToAnnounce(gazebo::common::Time simTime);
+    /// \brief Checks if the conditions are met to disable a robot
+  protected:
+    void ProcessRobotStatus();
+    /// \brief Set the assembly station of an AGV on the parameter server
+  protected:
+    void SetAGVParameter(std::string agv_frame, std::string assembly_station);
 
     /// \brief Enable control of the conveyor belt.
   protected:
@@ -158,15 +164,13 @@ namespace gazebo
   public:
     bool HandleSubmitKittingShipmentService(
         ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> &event);
-  
-  // HandleSubmitShipmentService(
-  // ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> & event)
+
+    // HandleSubmitShipmentService(
+    // ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> & event)
 
   public:
-  bool HandleSubmitAssemblyShipmentService(
- nist_gear::AssemblyStationSubmitShipment::Request &req, nist_gear::AssemblyStationSubmitShipment::Response &res, int station_id);
-
-
+    bool HandleSubmitAssemblyShipmentService(
+        nist_gear::AssemblyStationSubmitShipment::Request &req, nist_gear::AssemblyStationSubmitShipment::Response &res, int station_id);
 
     /// \brief Callback for when a query is made for material locations.
   public:
@@ -178,7 +182,6 @@ namespace gazebo
     bool HandleAGVDeliverService(
         nist_gear::AGVControl::Request &req, nist_gear::AGVControl::Response &res, int agv_id);
 
-    
     /// \brief Callback for when a kitting shipment is sent to assembly station.
   public:
     bool HandleSendAgvToASService(
@@ -187,12 +190,17 @@ namespace gazebo
     /// \brief Callback when a tray publishes it's content
   public:
     void OnKittingShipmentContent(nist_gear::DetectedKittingShipment::ConstPtr shipment);
+
   public:
     void OnAssemblyShipmentContent(nist_gear::DetectedAssemblyShipment::ConstPtr shipment);
 
     /// \brief Callback that recieves the contact sensor's messages.
   protected:
     void OnContactsReceived(ConstContactsPtr &_msg);
+
+    /// \brief Callback that recieves the models from the floor deletion plugin
+  protected:
+    void OnPenaltyReceived(ConstModelPtr &_msg);
 
     /// \brief Announce an order to participants.
   protected:

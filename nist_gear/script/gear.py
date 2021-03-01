@@ -29,6 +29,7 @@ import em
 import rospkg
 import yaml
 
+
 rospack = rospkg.RosPack()
 world_dir = os.path.join(rospack.get_path('nist_gear'), 'worlds')
 launch_dir = os.path.join(rospack.get_path('nist_gear'), 'launch')
@@ -51,11 +52,11 @@ arm_configs = {
             'rpy': [0.0, 0.0, 0.0]
         },
         'default_initial_joint_states': {
-            'elbow_joint': 2.14,
+            'elbow_joint': 1.74,
             'linear_arm_actuator_joint': 0,
-            'shoulder_lift_joint': -2.0,
-            'shoulder_pan_joint': 3.14,
-            'wrist_1_joint': 3.27,
+            'shoulder_lift_joint': -1.25,
+            'shoulder_pan_joint': 0,
+            'wrist_1_joint': -2.66,
             'wrist_2_joint': -1.51,
             'wrist_3_joint': 0,
         }
@@ -104,11 +105,9 @@ agv4_y=-4.696062
 
 agv1_agv2_AS1_x=-5.60
 agv1_agv2_AS2_x=-10.590274
-agv1_agv2_AS3_x=-15.580548
 
-agv3_agv4_AS4_x=-5.60
-agv3_agv4_AS5_x=-10.590274
-agv3_agv4_AS6_x=-15.580548
+agv3_agv4_AS3_x=-5.60
+agv3_agv4_AS4_x=-10.590274
 
 # Pose of all the different stations for each agv
 # KS is the kitting station
@@ -155,12 +154,12 @@ stations = {
         },
         'as3': {
             'pose':{
-                'xyz': [agv3_agv4_AS4_x, agv3_y, 0]
+                'xyz': [agv3_agv4_AS3_x, agv3_y, 0]
             }
         },
         'as4': {
             'pose':{
-                'xyz': [agv3_agv4_AS5_x, agv3_y, 0]   
+                'xyz': [agv3_agv4_AS4_x, agv3_y, 0]   
             }
         },
     },
@@ -172,12 +171,12 @@ stations = {
         },
         'as3': {
             'pose':{
-                'xyz': [agv3_agv4_AS4_x, agv4_y, 0]  
+                'xyz': [agv3_agv4_AS3_x, agv4_y, 0]  
             }
         },
         'as4': {
             'pose':{
-                'xyz': [agv3_agv4_AS5_x, agv4_y, 0]   
+                'xyz': [agv3_agv4_AS4_x, agv4_y, 0]   
             }
         },
     }
@@ -213,14 +212,7 @@ default_sensors = {
             'xyz': [-2.393395, -4.698129, 1.506952],
             'rpy': [-3.141593, 1.570796, 0]
         }
-    },
-    # 'quality_control_sensor_AS1': {
-    #     'type': 'quality_control',
-    #     'pose': {
-    #         'xyz': [-7.151483, 3.081357, 2.015256],
-    #         'rpy': [-3.141593, 1.570796, 0]
-    #     }
-    # },    
+    },  
 }
 
 default_belt_models = {
@@ -257,10 +249,8 @@ default_bin_origins = {
 default_station_origins = {
     'as1': [-7.3, 3, 0],
     'as2': [-12.3, 3, 0],
-#    'station3': [-14, 3, 0],
     'as3': [-7.3, -3, 0],
     'as4': [-12.3, -3, 0],
-#    'station6': [-14, -3, 0],
 }
 
 # brief_case_offset_x = 0.555643
@@ -271,26 +261,16 @@ brief_case_offset_z = station_height
 default_briefcase_origins = {
     'briefcase1': [default_station_origins['as1'][0] + brief_case_offset_x, default_station_origins['as1'][1] + brief_case_offset_y, brief_case_offset_z],
     'briefcase2': [default_station_origins['as2'][0] + brief_case_offset_x, default_station_origins['as2'][1] + brief_case_offset_y, brief_case_offset_z],
-#    'briefcase3': [default_station_origins['station3'][0] + brief_case_offset_x, default_station_origins['station3'][1] + brief_case_offset_y, brief_case_offset_z],
     'briefcase3': [default_station_origins['as3'][0] + brief_case_offset_x, default_station_origins['as3'][1] + brief_case_offset_y, brief_case_offset_z],
     'briefcase4': [default_station_origins['as4'][0] + brief_case_offset_x, default_station_origins['as4'][1] + brief_case_offset_y, brief_case_offset_z],
-#    'briefcase6': [default_station_origins['station6'][0] + brief_case_offset_x, default_station_origins['station6'][1] + brief_case_offset_y, brief_case_offset_z],
 }
-
-
-
-
-
-#-6.915360
-#2.938048
-#1.163764
 
 configurable_options = {
     'insert_models_over_bins': False,
     'insert_models_over_stations': False,
     'enable_robot_camera': True,
     'disable_shadows': False,
-    'belt_population_cycles': 5,
+    'belt_population_cycles': 0,
     'gazebo_state_logging': False,
     'spawn_extra_models': False,
     'unthrottled_physics_update': False,
@@ -695,9 +675,11 @@ def create_briefcase_over_stations_infos(models_over_stations_dict):
 def create_models_over_stations_infos(models_over_stations_dict):
     models_to_spawn_infos = {}
     for station_name, station_dict in models_over_stations_dict.items():
+        # print("********", station_name)
         models = get_required_field(station_name, station_dict, 'models') or {}
         station_id = station_name.replace('as','')
         for model_type, model_to_spawn_dict in models.items():
+            # print("********", model_type)
             model_to_spawn_data = {}
             model_to_spawn_data['type'] = model_type
             model_to_spawn_data['reference_frame'] = 'world'
@@ -705,12 +687,17 @@ def create_models_over_stations_infos(models_over_stations_dict):
                 model_type, model_to_spawn_dict, 'xyz')
             rpy = get_required_field(model_type, model_to_spawn_dict, 'rpy')
 
+            # print("********", xyz)
+            # print("********", rpy)
+
             if station_name in default_station_origins:
                 
                 offset_xyz = [
                     default_briefcase_origins['briefcase'+station_id][0] + xyz[0],
                     default_briefcase_origins['briefcase'+station_id][1] + xyz[1],
-                    default_briefcase_origins['briefcase'+station_id][1] + xyz[2]]
+                    default_briefcase_origins['briefcase'+station_id][2] + xyz[2]]
+                
+                # print("********", offset_xyz)
                 # spawn_briefcase_over_stations_infos(station_name, default_station_origins[station_name])
             
             model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
@@ -864,8 +851,25 @@ orders:
             rpy: [0, 0, 0]
     '''
 
-    disable_kitting_robot = order_dict.get('disable_kitting_robot')
-    disable_assembly_robot = order_dict.get('disable_assembly_robot',[])
+    # get the list of robots to disable
+    disable_robot = order_dict.get('disable_robot',[])
+    disable_kitting_robot = []
+    disable_assembly_robot = []
+
+    # for item in disable_robot:
+    #     print(item)
+
+    if disable_robot:
+        # print(len(disable_robot), type(disable_robot))
+        robot_name, location, number_of_parts = disable_robot
+        if robot_name != "kitting_robot" and robot_name != "assembly_robot":
+            error_message = """[FATAL] In yaml file: the field disable_robot contains a wrong robot type.
+            Options are kitting_robot or assembly_robot 
+            Given robot name is: {}""".format(robot_name)
+            print(error_message, file=sys.stderr)
+
+
+    # disable_assembly_robot = order_dict.get('disable_assembly_robot',[])
     order_priority = order_dict.get('priority',1)
     kitting_robot_health = order_dict.get('kitting_robot_health',1)
     assembly_robot_health = order_dict.get('assembly_robot_health',1)
@@ -876,6 +880,11 @@ orders:
     returned_dict = {}
     kitting_flag = False
     assembly_flag = False
+
+    if (not 'kitting' in order_dict) and (not 'assembly' in order_dict):
+        error_message = """ [FATAL] In yaml file: There is no kitting or assembly shipment"""
+        print(error_message, file=sys.stderr)
+
 
     if 'kitting' in order_dict:
         kitting_dict = order_dict['kitting']
@@ -888,12 +897,6 @@ orders:
         for product_name, product_dict in products_dict.items():
             products.append(create_model_info(product_name, product_dict))
 
-        # print("*" * 80)
-        # print("kitting_shipment_count", shipment_count)
-        # print("kitting_agvs", agvs)
-        # print("kitting_agv_stations", stations)
-        # print("kitting_products", products)
-        # print("*" * 80)
         returned_dict['kitting_shipment_count'] = shipment_count
         returned_dict['kitting_agvs'] = agvs
         returned_dict['kitting_agv_stations'] = stations
@@ -910,21 +913,14 @@ orders:
         for product_name, product_dict in products_dict.items():
             products.append(create_model_info(product_name, product_dict))
 
-        # print("*" * 80)
-        # print("shipment_count", shipment_count)
-        # print("stations", stations)
-        # print("*" * 80)
         returned_dict['assembly_shipment_count'] = shipment_count
         returned_dict['assembly_stations'] = stations
         returned_dict['assembly_products'] = products
 
-
-    # if disable_kitting_robot:
-    #     print("disable_kitting_robot", disable_kitting_robot)
-    # if disable_assembly_robot:
-    #     print("disable_assembly_robot", disable_assembly_robot)
-    returned_dict['kitting_robot'] = disable_kitting_robot
-    returned_dict['assembly_robot'] = disable_assembly_robot
+    if disable_robot:
+        returned_dict['disable_robot'] = disable_robot
+    else:
+        returned_dict['disable_robot'] = []
     returned_dict['announcement_condition'] = announcement_condition
     returned_dict['announcement_condition_value'] = announcement_condition_value
     returned_dict['kitting_flag'] = kitting_flag
@@ -970,6 +966,13 @@ def create_station_infos():
 def create_material_location_info(belt_models, models_over_bins, models_over_agvs):
     material_locations = {}
 
+    # Specify in which agv the different products can be found
+    for agv_product_name, agv_product in models_over_agvs.items():
+        if agv_product.type in material_locations:
+            material_locations[agv_product.type].update([agv_product.agv])
+        else:
+            material_locations[agv_product.type] = {agv_product.agv}
+
     # Specify that belt products can be found on the conveyor belt
     for _, spawn_times in belt_models.items():
         for spawn_time, product in spawn_times.items():
@@ -986,13 +989,6 @@ def create_material_location_info(belt_models, models_over_bins, models_over_agv
             material_locations[product.type].update([product.bin])
         else:
             material_locations[product.type] = {product.bin}
-
-    # Specify in which agv the different products can be found
-    for agv_product_name, agv_product in models_over_agvs.items():
-        if product.type in material_locations:
-            material_locations[agv_product.type].update([agv_product.agv])
-        else:
-            material_locations[agv_product.type] = {agv_product.agv}
 
     return material_locations
 
@@ -1038,13 +1034,13 @@ def prepare_template_data(config_dict, args):
         if key == 'sensors':
             template_data['sensors'].update(
                 create_sensor_infos(value))
-        elif key == 'models_over_bins':
-            models_over_bins = create_models_over_bins_infos(value)
-            template_data['models_to_insert'].update(models_over_bins)
         elif key == 'agv_infos':
             template_data['agv_infos'].update(create_agv_info(value))
             models_over_agvs = create_models_over_agvs_infos(value)
             template_data['models_to_insert'].update(models_over_agvs)
+        elif key == 'models_over_bins':
+            models_over_bins = create_models_over_bins_infos(value)
+            template_data['models_to_insert'].update(models_over_bins)
         elif key == 'models_over_stations':
             models_over_stations = create_models_over_stations_infos(value)
             template_data['models_to_insert'].update(models_over_stations)

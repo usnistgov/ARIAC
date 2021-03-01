@@ -1,20 +1,40 @@
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
--------------------------------------------------
 
-# Wiki | Tutorials | Sensor Interface #
+- [Wiki | Tutorials | Sensor Interface](#wiki--tutorials--sensor-interface)
+- [Prerequisites](#prerequisites)
+- [Cameras and Sensors in ARIAC 2021](#cameras-and-sensors-in-ariac-2021)
+  - [Break Beam Sensor](#break-beam-sensor)
+    - [Reading Data](#reading-data)
+    - [Adding Sensor](#adding-sensor)
+  - [Proximity Sensor](#proximity-sensor)
+    - [Reading Data](#reading-data-1)
+    - [Adding Sensor](#adding-sensor-1)
+  - [Laser Profiler](#laser-profiler)
+    - [Reading Data](#reading-data-2)
+    - [Adding Sensor](#adding-sensor-2)
+  - [Depth Camera](#depth-camera)
+    - [Reading Data](#reading-data-3)
+    - [Adding Camera](#adding-camera)
+  - [RGBD Camera](#rgbd-camera)
+    - [Reading Data](#reading-data-4)
+    - [Adding Camera](#adding-camera-1)
+  - [Logical Camera](#logical-camera)
+    - [Reading Data](#reading-data-5)
+    - [Adding Camera](#adding-camera-2)
+  - [Quality Control Sensor](#quality-control-sensor)
+  - [Camera Mounted on the Robot](#camera-mounted-on-the-robot)
 
-The purpose of this tutorial is to introduce you to the sensors available to you in the Agile Robotics for Industrial Automation Competition (ARIAC) and how to interface with them from the command-line.
+# Wiki | Tutorials | Sensor Interface
 
-<figure>  
-	<img align="center"  src="../figures/sensors.jpeg" style="width:100%">
-</figure>  
+The purpose of this tutorial is to introduce you to the sensors available to you in the Agile Robotics for Industrial Automation Competition (ARIAC) and how to interface with them from the command-line. The discussion in this tutorial uses the sensors defined in [sample_user_config](../../nist_gear/config/user_config/sample_user_config.yaml)
 
-# Prerequisites #
+# Prerequisites
 
 You should have already completed the [GEAR interface tutorial](gear_interface.md).
 
-# Cameras and Sensors in ARIAC 2020 #
+# Cameras and Sensors in ARIAC 2021
 
 As described in the competition specifications, there are sensors available for you to place in the environment. How you can select which sensors to use is covered in the [competition configuration specifications](../documentation/competition_specifications.md).
 
@@ -24,9 +44,9 @@ To start with, launch ARIAC with a sample workcell environment configuration tha
 roslaunch nist_gear sample_environment.launch
 ```
 
-## Break Beam Sensor ##
+## Break Beam Sensor
 
-<img src="../figures/break_beam.png" alt="alt text" width="900" class="center">
+![breakbeam_2021.jpg](../figures/breakbeam_2021.jpg)
 
 - This is a simulated photoelectric sensor, such as the Sick W9L-3.
 - This sensor has a detection range of 1 meter and the binary output will tell you whether there is an object crossing the beam.
@@ -35,22 +55,21 @@ roslaunch nist_gear sample_environment.launch
 ### Reading Data
 
 - There are two ROS topics that show the output of the sensor:
-  - `/ariac/{sensor_name}``
-  - ``/ariac/{sensor_name}_change`
+  - `/ariac/{sensor_name}`
+  - `/ariac/{sensor_name}_change`
 
-
-* An [osrf_gear/Proximity](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/Proximity.msg) message is periodically published on topic `/ariac/{sensor_name}`.
-* Run this command to see the message on the command line:
+- An [osrf_gear/Proximity](../../nist_gear/msg/Proximity.msg) message is periodically published on topic `/ariac/{sensor_name}`.
+- Run this command to see the message on the command line:
 
 ```bash
-rostopic echo /ariac/break_beam_1
+rostopic echo /ariac/breakbeam_0
 ```
 
-* Alternatively, you could subscribe to the `/ariac/{sensor_name}_change` which will only show one message per transition from object not detected to object detected or vice verse.
-* Run this command to see the message on the command line:
+- Alternatively, you could subscribe to the `/ariac/{sensor_name}_change` which will only show one message per transition from object not detected to object detected or vice verse.
+- Run this command to see the messages on the command line:
 
 ```bash
-rostopic echo /ariac/break_beam_1_change
+rostopic echo /ariac/breakbeam_0_change
 ```
 
 ### Adding Sensor
@@ -61,15 +80,13 @@ rostopic echo /ariac/break_beam_1_change
   breakbeam_0:
     type: break_beam
     pose:
-      xyz: [-0.26, 3.36, 0.94]
-      rpy: [0, 0, 0]
+      xyz: [-0.004795, 4.492549, 0.879306]
+      rpy: [0, 0, -1.557900]
 ```
 
+## Proximity Sensor
 
-
-## Proximity Sensor ##
-
-<img src="../figures/proximity_sensor.png" alt="alt text" width="900" class="center">
+![proximity_2021.jpg](../figures/proximity_2021.jpg)
 
 - This is a simulated ultrasound proximity sensor such as the SU2-A0-0A.
 - This sensor has a detection range of ~0.15 meters and the output will tell you how far an object is from the sensor.
@@ -81,42 +98,41 @@ rostopic echo /ariac/break_beam_1_change
 - Run this command to see the proximity sensor from the example world on the command line:
 
 ```bash
-rostopic echo /ariac/proximity_sensor_1
+rostopic echo /ariac/proximity_sensor_0
 ```
 
-* The proximity sensor can be visualized in RViz using the **Range** display.
-* It helps to disable or decrease the marker scale on the **TF** display to see the cone of the range sensor in RViz.
+- The proximity sensor can be visualized in RViz using the **Range** display.
+- It helps to disable or decrease the marker scale on the **TF** display to see the cone of the range sensor in RViz.
 
 ### Adding Sensor
 
 - Here is an example of adding a proximity sensor to your configuration file:
 
 ```yaml
-  range_finder_0:
+  proximity_sensor_0:
     type: proximity_sensor
     pose:
-      xyz: [0, 2.84, 0.97]
-      rpy: ['pi/2', 0.6, 'pi/2']
+      xyz: [0, 2.840000, 0.970000]
+      rpy: [1.570796, 0.524365, 1.570796]
 ```
 
+## Laser Profiler
 
+![laserprofiler_2021.jpg](../figures/laserprofiler_2021.jpg)
 
-## Laser Profiler ##
-<img src="../figures/laser_profiler.png" alt="alt text" width="900" class="center">
-
-* This is a simulated 3D laser profiler such as the Cognex DS1300.
-* The output of the sensor is an array of ranges and intensities.
-* The size of the array is equal to the number of beams in the sensor.
-* The maximum range of each beam is ~0.725m.
-* **Cost**: $100
+- This is a simulated 3D laser profiler such as the Cognex DS1300.
+- The output of the sensor is an array of ranges and intensities.
+- The size of the array is equal to the number of beams in the sensor.
+- The maximum range of each beam is ~0.725m.
+- **Cost**: $100
 
 ### Reading Data
 
-* The output of the sensor is periodically published on the topic `/ariac/{sensor_name}` as a [sensor_msgs/LaserScan](http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html).
-* Run this command to see the output on the command line:
+- The output of the sensor is periodically published on the topic `/ariac/{sensor_name}` as a [sensor_msgs/LaserScan](http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html).
+- Run this command to see the output on the command line:
 
 ```bash
-rostopic echo /ariac/laser_profiler_1
+rostopic echo /ariac/laser_profiler_0
 ```
 
 - This can be visualized in RViz by adding a **LaserScan** display.
@@ -135,50 +151,43 @@ rostopic echo /ariac/laser_profiler_1
       rpy: ['pi/2', 'pi/2', 0]
 ```
 
+## Depth Camera
 
-
-## Depth Camera ##
-<img src="../figures/depth_camera.png" alt="alt text" width="900" class="center">
-
-* This is a simulated time-of-flight depth camera such as the Swissranger SR4000.
-* The output of the sensor is [sensor_msgs/Pointcloud](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html) 
-* **Cost**: $200
+- This is a simulated time-of-flight depth camera such as the Swissranger SR4000.
+- The output of the sensor is [sensor_msgs/Pointcloud](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html)
+- **Cost**: $200
 
 ### Reading Data
 
-* Because of the large amount of data being published, if you want to echo the sensor message you probably want to use `--noarr` to suppress the data values on the command line:
+- Because of the large amount of data being published, if you want to echo the sensor message you probably want to use `--noarr` to suppress the data values on the command line:
 
 ```bash
 rostopic echo /ariac/depth_camera_1/depth/image_raw --noarr
 ```
 
-* Pointclouds can be visualized in RViz using the **PointCloud** display.
-
-
+- Pointclouds can be visualized in RViz using the **PointCloud** display.
 
 ### Adding Camera
 
 - Here is an example of adding a depth camera to your configuration file:
 
 ```yaml
-depth_camera_0:
+  depth_camera_0:
     type: depth_camera
     pose:
-      xyz: [5, 3.641234, 2.49]
-      rpy: [0, 'pi', 0]
+      xyz: [3.082385, 1.750927, 1.82]
+      rpy: [0, 'pi/2', 0]
 ```
-
-
 
 ## RGBD Camera
 
-* This is a simulated time-of-flight depth camera such as the Swissranger SR4000.
-* The output of the sensor is [sensor_msgs/Pointcloud](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html) and [sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html).
-* **Cost**: $500
+- This is a simulated time-of-flight depth camera such as the Swissranger SR4000.
+- The output of the sensor is [sensor_msgs/Pointcloud](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html) and [sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html).
+- **Cost**: $500
 
 ### Reading Data
 
-* Because of the large amount of data being published, if you want to echo the sensor message you probably want to use `--noarr` to suppress the data values on the command line:
+- Because of the large amount of data being published, if you want to echo the sensor message you probably want to use `--noarr` to suppress the data values on the command line:
 
 ```bash
 rostopic echo /ariac/rgbd_camera_1/depth/image_raw --noarr
@@ -188,8 +197,8 @@ rostopic echo /ariac/rgbd_camera_1/depth/image_raw --noarr
 rostopic echo /ariac/rgbd_camera_1/ir/image_raw --noarr
 ```
 
-* Point clouds can be visualized in RViz using the **PointCloud** display.
-* Images can be visualized in RViz using the **Image** display.
+- Point clouds can be visualized in RViz using the **PointCloud** display.
+- Images can be visualized in RViz using the **Image** display.
 
 ### Adding Camera
 
@@ -203,11 +212,10 @@ rgbd_camera_0:
       rpy: [0, 'pi', 0]
 ```
 
+## Logical Camera
 
+![logicalcamera_2021.jpg](../figures/logicalcamera_2021.jpg)
 
-## Logical Camera ##
-
-<img src="../figures/logical_camera.png" alt="alt text" width="900" class="center">
 
 - This is a simulated camera with a built-in object classification and localization system.
 - The sensor reports the position and orientation of the camera in the world, as well as a collection of the objects detected within its frustum.
@@ -219,8 +227,8 @@ rgbd_camera_0:
 - In the sample environment there is a logical camera above one of the bins.
 - Run the following command to see the output of the logical camera:
 
-```
-rostopic echo /ariac/logical_camera_1
+```bash
+rostopic echo /ariac/logical_camera_0
 ```
 
 - Logical cameras also publish `tf` transforms.
@@ -230,13 +238,13 @@ rostopic echo /ariac/logical_camera_1
 - Note that the frame of the detected products is prefixed by the name of the camera that provides the transform, so if multiple cameras see the same product they will publish transforms with different frame names.
 
 ```bash
-rosrun tf tf_echo world logical_camera_0_gear_part_blue_17_frame
+rosrun tf tf_echo world logical_camera_0_assembly_pump_blue_2_frame
 
-At time 340.615
-- Translation: [4.716, 1.122, 0.726]
-- Rotation: in Quaternion [-0.004, 0.006, 0.007, 1.000]
-            in RPY (radian) [-0.008, 0.012, 0.014]
-            in RPY (degree) [-0.455, 0.661, 0.803]
+At time 82.601
+- Translation: [-1.798, 3.280, 0.784]
+- Rotation: in Quaternion [0.008, -0.008, 0.001, 1.000]
+            in RPY (radian) [0.017, -0.017, 0.003]
+            in RPY (degree) [0.967, -0.975, 0.153]
 ```
 
 For more information on working with TF frames programmatically see [the tf2 tutorials](http://wiki.ros.org/tf2/Tutorials).
@@ -248,30 +256,55 @@ For more information on working with TF frames programmatically see [the tf2 tut
 - Here is an example of adding a logical camera to your configuration file:
 
 ```yaml
-logical_camera_0:
+  logical_camera_0:
     type: logical_camera
     pose:
-      xyz: [5, 1.750927, 1.82]
-      rpy: [0, 'pi/2', 'pi/2']
+      xyz: [-2.515033, 2.925223, 1.82]
+      rpy: [-1.570796, 1.570796, 0]
 ```
-
-
 
 ## Quality Control Sensor
 
+![qcs_2021.jpg](../figures/qcs_2021.jpg)
+
 - This is a simulated sensor that reports the pose of the sensor itself in the world frame and the pose of faulty parts (non-faulty parts are not reported) in the sensor frame.
 
-- There are 2 quality control sensors in the environment (1 above each AGV).
+- There are 4 quality control sensors in the environment (1 above each AGV).
 
-- Locations of quality control sensors are set and participants cannot change those locations.
+- Locations of quality control sensors are set and competitors cannot change those locations.
 
 - Run the following command to see the output of the sensors:
+  
+```bash
+$ rostopic echo /ariac/quality_control_sensor_1
+$ rostopic echo /ariac/quality_control_sensor_2
+$ rostopic echo /ariac/quality_control_sensor_3
+$ rostopic echo /ariac/quality_control_sensor_4
+```
 
-  `rostopic echo /ariac/quality_control_sensor_1`
+## Camera Mounted on the Robot
 
-  `rostopic echo /ariac/quality_control_sensor_2`
+This depth camera is optional and free. It is located on the torso tray. The ARIAC organizers will activate this camera by default in trial configuration files with the following code snippet:
+
+```yaml
+options:
+  enable_robot_camera: true
+```
+
+Competitors can see the view from this camera in RViz.
+
+```bash
+$ roslaunch nist_gear sample_environment.launch
+$ rosrun rviz rviz
+```
+
+Then:
+
+- `File`->`Open Config`
+- Navigate to `ariac.rviz` located in `nist_gear/rviz`
+- Make sure the box for `Image` is checked.
+
+![ariac2021_gantry_camera](../figures/ariac2021_gantry_camera.png)
 
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
-
--------------------------------------------------
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)

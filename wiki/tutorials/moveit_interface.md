@@ -7,8 +7,6 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
     - [Install MoveIt](#install-moveit)
     - [Configure the Robot for MoveIt](#configure-the-robot-for-moveit)
   - [Run ARIAC and MoveIt](#run-ariac-and-moveit)
-  - [Interface with MoveIt](#interface-with-moveit)
-    - [RViz](#rviz)
     - [Programmatically](#programmatically)
     - [Troubleshooting](#troubleshooting)
 
@@ -48,7 +46,7 @@ command line argument for loading this node when launching the sample environmen
   ```bash
   $ roslaunch nist_gear sample_environment.launch load_moveit:=true
   ```
-
+<!-- 
 - The following command launches the MoveIt package for only the kitting robot:
   
   ```bash
@@ -59,7 +57,7 @@ command line argument for loading this node when launching the sample environmen
   
   ```bash
   $ roslaunch nist_gear sample_environment.launch load_gantry_moveit:=true
-  ```
+  ``` -->
 
 ## Interface with MoveIt
 
@@ -67,7 +65,9 @@ command line argument for loading this node when launching the sample environmen
 
 RViz is a visualization tool that can represent the state of robots, both simulated and real.
 There is an RViz plugin for motion planning with MoveIt which can be used to interactively interface with the move_group.
-To launch RViz with this plugin, we can use the following short launch file which you can create in your own package. **NOTE**: The code snippet below is included in `sample_environment.launch` but commented out.
+To launch RViz with this plugin, we can use the following short launch file which you can create in your own package. 
+
+**NOTE**: The code snippet below is included in `sample_environment.launch` but commented out.
 
 ```bash
 <launch>
@@ -99,7 +99,9 @@ You should see that the robot move in Gazebo, and that this movement is reflecte
 
 ### Programmatically
 
-We have provided an example competitor that uses MoveIt's python interface to control the robot. It can be found at [ariac_example/script/moveit_example.py](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/script/moveit_example.py). **NOTE**: This script is not updated for `sample-test.yaml` and may crash. We are working on it. You can still see how the MoveIt Commander is being used in Python.
+We have provided an example competitor that uses MoveIt's python interface to control the robot. It can be found at [ariac_example/script/moveit_example.py](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/script/moveit_example.py). 
+
+**NOTE**: This script is not updated for `sample-kitting.yaml` and may crash. We are working on it. You can still see how the MoveIt Commander is being used in Python.
 
 To run this example, launch ARIAC and MoveIt as before and then run:
 ```bash
@@ -114,6 +116,6 @@ and [API](https://moveit.ros.org/documentation/source-code-api/).
 As previously stated, this tutorial is provided as a starting point.
 The ARIAC competition support team will not provide technical support for using MoveIt.
 
-Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
-
 -------------------------------------------------
+
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)

@@ -20,7 +20,7 @@
         <geometry>
             <mesh>
             <uri>model://assembly_sensor_green_ariac/meshes/assembly_sensor_part_green.dae</uri>
-            <scale>1.05 1.05 1.05</scale>
+            <scale>0.95 0.95 0.95</scale>
             </mesh>
           </geometry>
         <surface>
@@ -36,7 +36,7 @@
          <geometry>
            <mesh>
              <uri>model://assembly_sensor_green_ariac/meshes/assembly_sensor_part_green.dae</uri>
-             <scale>1.05 1.05 1.05</scale>
+             <scale>0.95 0.95 0.95</scale>
            </mesh>
          </geometry>
        </visual>

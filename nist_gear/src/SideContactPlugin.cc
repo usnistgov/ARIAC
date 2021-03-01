@@ -41,6 +41,7 @@ SideContactPlugin::~SideContactPlugin()
 void SideContactPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   GZ_ASSERT(_model, "Model pointer is null");
+  gzerr << _model->GetName() << std::endl;
 
   if (!_sdf->HasElement("contact_sensor_name"))
   {
@@ -57,11 +58,13 @@ void SideContactPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     gzerr << "Contact sensor not found: " << this->contactSensorName << "\n";
   }
+  //  this->parentSensor->SetActive(true);
 
   std::string parentLinkName = this->parentLink->GetScopedName();
 
     // gzdbg << "---------parentLinkName: " << parentLinkName << "\n";
   std::string defaultCollisionName = parentLinkName + "::__default__";
+  // gzdbg << "---------defaultCollisionName: " << defaultCollisionName << "\n";
   if (this->parentSensor->GetCollisionCount() != 1)
   {
     gzerr << "SideContactPlugin requires a single collision to observe contacts for\n";
@@ -69,6 +72,7 @@ void SideContactPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
 
   this->collisionName = this->parentSensor->GetCollisionName(0);
+  // gzdbg << "---------collisionName: " << this->collisionName << "\n";
   if (this->collisionName == defaultCollisionName)
   {
     // Use the first collision of the parent link by default
@@ -82,16 +86,6 @@ void SideContactPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
   gzdbg << "[" << this->model->GetName() << "] Watching collisions on: " << this->collisionName << "\n";
 
-  /* this is not used anymore
-  if (_sdf->HasElement("contact_side_normal"))
-  {
-    this->sideNormal = _sdf->Get<ignition::math::Vector3d>("contact_side_normal");
-  }
-  else
-  {
-    this->sideNormal = ignition::math::Vector3d(0, 0, 1);
-  }
-  */
 
   if (_sdf->HasElement("update_rate"))
   {
@@ -115,6 +109,8 @@ void SideContactPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // FIXME: how to not hard-code this gazebo prefix?
   std::string contactTopic = "/gazebo/" + this->scopedContactSensorName;
   boost::replace_all(contactTopic, "::", "/");
+
+  gzdbg << "Gazebo contact topic: "<< contactTopic << "\n";
   this->contactSub =
     this->node->Subscribe(contactTopic, &SideContactPlugin::OnContactsReceived, this);
 
@@ -148,9 +144,14 @@ bool SideContactPlugin::FindContactSensor()
       {
         this->parentLink = link;
         this->scopedContactSensorName = scopedContactSensorName;
+        // gzdbg << scopedContactSensorName << "\n";
         this->parentSensor =
           std::static_pointer_cast<sensors::ContactSensor>(
             sensorManager->GetSensor(scopedContactSensorName));
+        
+       
+
+        // gzdbg << "Parent sensor name: " << this->parentSensor->Name() << "\n";
         return this->parentSensor != 0;
       }
     }

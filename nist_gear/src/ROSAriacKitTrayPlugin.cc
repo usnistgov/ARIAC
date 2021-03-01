@@ -275,11 +275,34 @@ void KitTrayPlugin::UnlockContactingModels()
 {
   boost::mutex::scoped_lock lock(this->mutex);
   physics::JointPtr fixedJoint;
+
   for (auto fixedJoint : this->fixedJoints)
   {
     fixedJoint->Detach();
   }
   this->fixedJoints.clear();
+
+  for (auto model : this->contactingModels)
+  {
+    model->SetGravityMode(false);
+    auto modelName = model->GetName();
+    auto linkName = modelName + "::link";
+    auto link = model->GetLink(linkName);
+    if (link == NULL)
+    {
+      // If the model was inserted into the world using the "population" SDF tag,
+      // the link will have an additional namespace of the model type.
+      linkName = modelName + "::" + ariac::DetermineModelType(modelName) + "::link";
+      link = model->GetLink(linkName);
+      if (link == NULL)
+      {
+        gzwarn << "Couldn't find link to remove joint with: " << linkName;
+        continue;
+      }
+    }
+    link->SetGravityMode(true);
+    model->SetAutoDisable(true);
+  }
 }
 
 /////////////////////////////////////////////////

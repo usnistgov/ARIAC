@@ -2,6 +2,20 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
+## Released 2021, Feb 28
+
+- Many bug fixes.
+- [Github ticket](https://github.com/usnistgov/ARIAC/issues/37) cleared on not activating the conveyor belt when parts are not spawned on the conveyor belt.
+- Ticket on [part slipping](https://github.com/usnistgov/ARIAC/issues/52) on the gantry tray "resolved". For now, competitors can lock/unlock parts with the use of a service. We will see how to automatically lock/unlock parts.
+- Added trial configuration files for each agility challenge (**NOTE**: The structure of the [config](../../nist_gear/config) directory has been slightly modified).
+- Services to ship AGVs and briefcases during development were added.
+- Announce a new order (priority = 1) when an AGV is submitted to an assembly station (see [GEAR Interface](../tutorials/gear_interface.md), [Agility Challenges](../documentation/agility_challenges.md), and [YAML Configuration Files](../documentation/configuration_files.md)).
+- In-process task change to force a robot breakdown based on world state (see [Agility Challenges](../documentation/agility_challenges.md)).
+- Competitors have to discard faulty products using the faulty product collector, which has a deletion wall (see [Competition Specifications](../documentation/competition_specifications.md)).
+  - The floor is lava: Parts falling on the floor will automatically be removed by the simulation. This plugin will be used to detect products falling on the floor and points will be removed if those parts are faulty. We are currently discussing about the point removal aspect.
+- Resized some parts so they can be placed in briefcases with less tolerance.
+- Each section of the wiki is now documented (except some sections about qualifiers and finals).
+
 ## Released 2021, Feb 21
 
 - Updates including more examples of trial configuration files and complete documentation.

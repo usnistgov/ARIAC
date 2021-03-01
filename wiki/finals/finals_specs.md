@@ -17,7 +17,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 ## Competition management
 
 - How many trials will be run?
-  - The competition will be made up of 15 trial runs.
+  - The competition will be made up of 20 trial runs.
   - Each trial run will use a unique competition scenario configuration, including any combination of [the released agility challenges](../documentation/agility_challenges.md).
 
 - Will there be a time limit for each trial run?

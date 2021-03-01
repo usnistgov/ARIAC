@@ -93,7 +93,10 @@ void AriacScorer::NotifyKittingShipmentReceived(gazebo::common::Time time,
   submitted_shipment_info.submit_time = time;
   submitted_shipment_info.type = type; //--type of the shipment, e.g., order_0_shipment_0
   submitted_shipment_info.station = actual_station;
-  // gzdbg << "actual_station\n";
+  
+ 
+  
+  
   submitted_shipment_info.shipment = nist_gear::DetectedKittingShipment::ConstPtr(new nist_gear::DetectedKittingShipment(shipment));
 
   boost::mutex::scoped_lock mutexLock(this->mutex);

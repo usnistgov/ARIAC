@@ -1,0 +1,71 @@
+#Number of orders: 1
+#Tasks: kitting
+#Number of shipments: 1
+#Insufficiently many products: No
+#Part re-orientation: No
+#In-process order update: No
+#Dropped products: No
+#In-process order interruption: No
+#Faulty products: Yes
+#Sensor blackout: No
+#Time limit: No
+options:
+  insert_models_over_bins: true
+  insert_models_over_stations: true
+  belt_population_cycles: 0
+  enable_robot_camera: true
+  time_limit: -1
+
+agv_infos:
+  agv1:
+    location: ks1
+  agv2:
+    location: ks2
+  agv3:
+    location: ks3
+  agv4:
+    location: as4
+    products:
+      part_0:
+        type: assembly_pump_blue
+        pose:
+          xyz: [0.15, -0.1, 0]
+          rpy: [0, 0, 0]
+    
+orders:
+  # Example for tasking one robot to do assembly and one robot to do kitting
+  order_0:
+    priority: 1
+    kitting_robot_health: 1 
+    assembly_robot_health: 1 
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    assembly:
+      shipment_count: 1
+      stations: [as4]
+      products:
+        part_0:
+          type: assembly_pump_blue
+          pose:
+            xyz: [0.032085, -0.152835, 0.25]
+            rpy: [0, 0, 0]
+
+          
+models_over_bins:
+   bin1:
+     models:
+       assembly_pump_blue:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 2
+
+models_over_stations:
+  as4:
+    models:
+      assembly_battery_green:
+        xyz: [-0.032465, 0.174845, 0.15]
+        rpy: [0, 0, 0]
+
+

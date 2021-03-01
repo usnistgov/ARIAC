@@ -525,12 +525,12 @@ namespace ariac
     ignition::math::Pose3d pose;
   };
 
-  class KittingRobotDisableCondition
+  class RobotDisableCondition
   {
-    ///@brief Task during which we deactivate the kitting robot
-    /// Options are: kitting, assembly
+    ///@brief Robot to disable
+    /// Options are: kitting_robot, assembly_robot
   public:
-    std::string task;
+    std::string robot_type;
     ///@brief Where are parts placed to disable the kitting robot
     /// Options are: agv#, as#
   public:
@@ -540,20 +540,6 @@ namespace ariac
     int number_of_parts;
   };
 
-  class AssemblyRobotDisableCondition
-  {
-    ///@brief Task during which we deactivate the kitting robot
-    /// Options are: kitting, assembly
-  public:
-    std::string task;
-    ///@brief Where are parts placed to disable the kitting robot
-    /// Options are: agv#, as#
-  public:
-    std::string location;
-    ///@brief Number of parts placed in location to disable the robot
-  public:
-    int number_of_parts;
-  };
 
   /////////////////////////////////////////////////////////////
   /// \brief Class to store information about a kitting shipment.
@@ -858,10 +844,7 @@ namespace ariac
     bool has_assembly_task;
   //--status of the kitting robot
   public:
-    ariac::KittingRobotDisableCondition kitting_robot_status;
-  //--status of the assembly robot
-  public:
-    ariac::AssemblyRobotDisableCondition assembly_robot_status;
+    ariac::RobotDisableCondition robot_disable_condition;
   //--halth status of the kitting robot
   public:
     int kitting_robot_health;

@@ -16,13 +16,13 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 ## Overview
 
 - Shelves have been removed from ARIAC 2021. ARIAC developers spent a lot of time on shelf configurations, so expect them to be back in the next ARIAC iteration.
-- Environment layout is more compact and less larger than ARIAC 2020. It should take the gantry robot less time to do kitting.
+- Environment layout is more compact and less larger than ARIAC 2020. It should take the gantry robot less time to navigate the workcell.
 - In previous years, building kits on the wrong AGV was one of the situations that would nullified the trial score. This year, delivering the AGV to the wrong assembly station will also nullified the trial score.
-- The orchestration for announcing new orders is more complex. See full description [here](../documentation/competition_specifications.md).
+- The orchestration for announcing new orders is more complex. See full description in the [Agility Challenges](../documentation/agility_challenges.md#new-order) page.
 
 ## Camera on Robot
 
-- Competitors have the ability to add a depth camera on the robot torso to visualize the environment. Sensor processing is necessary to fully use this camera.
+- Competitors have the ability to add a depth camera on the robot torso to visualize the environment. Sensor processing is necessary to fully use this camera. See how to activate the camera on the robot in the [YAML Configuration Files](../documentation/configuration_files.md).
   
 ## Automated Guided Vehicles (AGVs)
 
@@ -34,19 +34,21 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 - A robot mounted on a linear rail (aka **kitting robot**) can only perform kitting.
 - A gantry robot mounted on the ceiling (aka **assembly robot**) can perform both kitting and assembly.
-- More about robots [here](../documentation/competition_specifications.md#3.-Robot).
+- More information on robots and robot control can be found in the [Competition Specifications](../documentation/competition_specifications.md#3.-Robot) page and the [GEAR Interface](../tutorials/gear_interface.md) page.
 
 ## Parts
 
 - Four new parts were created for both kitting and assembly. 
 - Each part comes in 3 different colors (red, green, and blue).
-- More about parts [here](../documentation/competition_specifications.md#2.4.-Parts).
+- More information about parts can be found in the [Competition Specifications](../documentation/competition_specifications.md#2.4.-Parts) page.
 
 ## Tasks
 
 - Kitting is one of the two tasks that can be performed in ARIAC 2021. This year, competitors have access to four automated guided vehicles (AGVs) to build kits. After building kits, AGVs must be sent to the correct assembly stations to be scored against the goal state.
 - Assembly is introduced for the first time in ARIAC. Competitors need to pick up parts from AGVs or directly from bins/conveyor belt to do assembly. Once assembly is done, competitors can evaluate the final product.
   - Assembly is introduced for the first time. Assembly operations can be performed at four different assembly stations (`as1`, `as2`, `as3`, and `as4`).
+
+More information about submitting Kitting and Assembly shipments can be found in the [GEAR Interface](../tutorials/gear_interface.md) page.
 
 ## ROS Services, Topics, and Messages
 

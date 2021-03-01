@@ -78,7 +78,7 @@ $ rostopic echo /ariac/orders -n 1
 
 Below is an example of an order published on `ariac/orders`.
 
-```bash
+```bash {.line-numbers}
 order_id: "order_0"
 kitting_shipments: 
   - 
@@ -197,7 +197,8 @@ To submit the kitting shipment described in the order above, one needs to use th
 $ rosservice call /ariac/agv2/submit_shipment "as1" "order_0_kitting_shipment_0"
 ```
 
-- Once an AGV is submitted for an assembly station, competitors will not be able to move the AGV to another assembly station or back to the kiting station. The trial configuration files are carefully designed so that multiple kitting shipments do not use the same AGV.
+- **Once an AGV is submitted for an assembly station, competitors will not be able to move the AGV to another assembly station or back to the kitting station**. The trial configuration files are carefully designed so that multiple kitting shipments do not use the same AGV.
+- Once the service is called to submit a shipment a score will be computed for the shipment. If this is the last shipment in the current order then the score for the whole trial will be displayed on the screen.
 - Shipments built on the wrong AGV will receive a score of 0.
 - Shipments submitted to the wrong assembly station will receive a score of 0.
 
@@ -275,7 +276,7 @@ $ rostopic echo /ariac/quality_control_sensor_3
 
 You should get the following result.
 
-```bash
+```bash {.line-numbers}
 models: 
   - 
     type: "model"
@@ -302,8 +303,24 @@ pose:
 
 ```
 
-- The first part of the output (`models:`) shows that a faulty product has been detected. Reminder that this sensor does not report non-faulty products. The pose of the product is described in the sensor frame.
-- The seconf part of the output (`pose:`) describes the pose of the sensor itself in the world frame.
+- The first part of the output (`models:`) shows that a faulty product has been detected and its pose is reported in the QCS frame. Reminder that this sensor does not report non-faulty products. Therefore, if `assembly_pump_blue_5` was not a faulty product, the result would have been.
+
+```bash {.line-numbers}
+models: []
+pose: 
+  position: 
+    x: -2.393393
+    y: -1.325227
+    z: 1.506952
+  orientation: 
+    x: -0.707106896726
+    y: -1.22474483074e-07
+    z: 0.707106665647
+    w: -1.22474523098e-07
+
+```
+
+- The second part of the output (`pose:`) describes the pose of the sensor itself in the world frame.
 
 ## Control the Robots
 

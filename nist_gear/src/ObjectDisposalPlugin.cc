@@ -61,6 +61,21 @@ void ObjectDisposalPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   }
 
   this->disposalPose = _sdf->Get<ignition::math::Pose3d>("disposal_pose");
+
+  std::string penaltyTopic = "";
+  if (_sdf->HasElement("penalty_topic"))
+    penaltyTopic = _sdf->Get<std::string>("penalty_topic");
+
+
+  if (penaltyTopic != "")
+  {
+    this->node = transport::NodePtr(new transport::Node());
+    this->node->Init();
+    this->pub = this->node->Advertise<msgs::Model>(penaltyTopic);
+  } else {
+    this->node = nullptr;
+    this->pub = nullptr;
+  }
 }
 
 /////////////////////////////////////////////////
@@ -111,6 +126,15 @@ void ObjectDisposalPlugin::ActOnContactingModels()
       {
         gzdbg << "[" << this->model->GetName() << "] Removing model: " << model->GetName() << "\n";
         model->SetWorldPose(this->disposalPose);
+
+        model->SetStatic(true);
+        model->SetEnabled(false);
+        if (this->pub) //Publish info on deleted model for penalty scoring
+        {
+          gazebo::msgs::Model modelMsg;
+          model->FillMsg(modelMsg);
+          this->pub->Publish(modelMsg);
+        }
       }
     }
   }

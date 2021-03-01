@@ -2,8 +2,11 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
-# Wiki|Finals
+# Wiki | Finals
 
-- Dates for finals will be updated after the end of the qualifiers...stay tuned
+## Important Dates
+
+- 17-21 May 2021 - Smoke Test before Final Round
+- 24-28 May 2021 - Final Round
 
 - Information on Finals Specifications can be found [here](finals_specs.md).

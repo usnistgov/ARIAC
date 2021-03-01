@@ -24,6 +24,7 @@
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/sensors/sensors.hh>
 #include <gazebo/util/system.hh>
+#include <gazebo/transport/transport.hh>
 #include <ignition/math/Pose3.hh>
 
 #include "SideContactPlugin.hh"
@@ -34,28 +35,42 @@ namespace gazebo
   class GAZEBO_VISIBLE ObjectDisposalPlugin : public SideContactPlugin
   {
     /// \brief Constructor.
-    public: ObjectDisposalPlugin();
+  public:
+    ObjectDisposalPlugin();
 
     /// \brief Destructor.
-    public: virtual ~ObjectDisposalPlugin();
+  public:
+    virtual ~ObjectDisposalPlugin();
 
     /// \brief Load the model plugin.
     /// \param[in] _model Pointer to the model that loaded this plugin.
     /// \param[in] _sdf SDF element that describes the plugin.
-    public: virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
+  public:
+    virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
 
     /// \brief Callback that receives the world update event
-    protected: void OnUpdate(const common::UpdateInfo &_info);
+  protected:
+    void OnUpdate(const common::UpdateInfo &_info);
 
     /// \brief Act on models that are ontop of the sensor's link
-    protected: void ActOnContactingModels();
+  protected:
+    void ActOnContactingModels();
 
     /// \brief If true, only delete models if their CoG is within the bounding box of the link
-    protected: bool centerOfGravityCheck;
+  protected:
+    bool centerOfGravityCheck;
 
     /// \brief Pose where the object will be teleported.
-    protected: ignition::math::Pose3d disposalPose;
+  protected:
+    ignition::math::Pose3d disposalPose;
+
+    /// \brief Transportation node.
+  protected:
+    transport::NodePtr node;
+
+    /// \brief Publisher for reporting deleted parts.
+  protected:
+    transport::PublisherPtr pub;
   };
 }
 #endif
-

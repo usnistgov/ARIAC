@@ -71,6 +71,7 @@ namespace gazebo
     /// \brief Collection of orders to announce.
   public:
     std::vector<ariac::Order> ordersToAnnounce;
+    ariac::Order currentOrder;
 
     /// \brief Collection of orders which have been announced but are not yet complete.
     /// The order at the top of the stack is the active order.
@@ -220,6 +221,10 @@ namespace gazebo
   public:
     bool sensorBlackoutInProgress = false;
 
+    /// \brief flag to activate the belt
+  public:
+    bool belt_needed = false;
+
     /// \brief The start time of the sensor blackout.
   public:
     common::Time sensorBlackoutStartTime;
@@ -271,7 +276,15 @@ namespace gazebo
   public:
     transport::SubscriberPtr contactSub;
 
-    /// @brief The assembly station to which the agv is sent when submitting a kitting shipment
+    /// \brief Subscriber for the floor penalty topic
+  public:
+    transport::SubscriberPtr floorPenaltySub;
+
+    /// \brief Total number of parts dropped on floor
+  public:
+    int floorPenalty;
+
+    /// \brief The assembly station to which the agv is sent when submitting a kitting shipment
   public:
     std::string actual_station_for_kitting_shipment;
     /// @brief AGV id used when submitting a kitting shipment
@@ -471,7 +484,13 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   if (_sdf->HasElement("material_locations_service_name"))
     getMaterialLocationsServiceName = _sdf->Get<std::string>("material_locations_service_name");
 
-  std::string robot_health_topic = "robot_health";
+  std::string floorPenaltyTopic = "/ariac/floor_penalty";
+  if (_sdf->HasElement("floor_penalty_topic"))
+    floorPenaltyTopic = _sdf->Get<std::string>("floor_penalty_topic");
+
+  std::string robotHealthTopic = "robot_health";
+  if (_sdf->HasElement("robot_health_topic"))
+    robotHealthTopic = _sdf->Get<std::string>("robot_health_topic");
 
   std::map<int, std::string> agvDeliverServiceName;
   std::map<int, std::string> agvAnimateServiceName;
@@ -493,6 +512,19 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   //-- e.g., /ariac/agv1/to_assembly_station AS1 order_0_kitting_shipment_0
   std::map<int, std::string> agv_to_assembly_station_service_name;
   //<agv>...</agv>
+
+  //--Checking for belt population cycles
+
+  if (_sdf->HasElement("belt_population_cycles"))
+  {
+    // sdf::ElementPtr belt_cycles_element = _sdf->GetElement("belt_population_cycles");
+    int belt_cycles = _sdf->Get<int>("belt_population_cycles");
+
+    if (belt_cycles > 0)
+    {
+      this->dataPtr->belt_needed = true;
+    }
+  }
 
   //--take care of <station> tags
   if (_sdf->HasElement("station"))
@@ -645,55 +677,27 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
       interruptOnStationReached = interruptOnStationReachedElem->Get<std::string>();
     }
 
-    //--Does the kitting robot have to be disabled at some point?
-    ariac::KittingRobotDisableCondition kitting_robot_disable_condition;
-    std::string kitting_robot_disable_task{};
-    std::string kitting_robot_disable_location{};
-    int kitting_robot_disable_part_qty{0};
+    //--If the kitting robot has to be disabled at some point
+    ariac::RobotDisableCondition robot_disable_condition;
+    robot_disable_condition.robot_type = "";
+    robot_disable_condition.location = "";
+    robot_disable_condition.number_of_parts = 0;
 
-    if (orderElem->HasElement("kitting_robot_disable_task"))
+    if (orderElem->HasElement("robot_to_disable"))
     {
-      sdf::ElementPtr kitting_robot_disable_taskElem = orderElem->GetElement("kitting_robot_disable_task");
-      kitting_robot_disable_task = kitting_robot_disable_taskElem->Get<std::string>();
+      sdf::ElementPtr robot_to_disable_elem = orderElem->GetElement("robot_to_disable");
+      robot_disable_condition.robot_type = robot_to_disable_elem->Get<std::string>();
     }
-    if (orderElem->HasElement("kitting_robot_disable_location"))
+    if (orderElem->HasElement("location_to_disable"))
     {
-      sdf::ElementPtr kitting_robot_disable_locationElem = orderElem->GetElement("kitting_robot_disable_location");
-      kitting_robot_disable_location = kitting_robot_disable_locationElem->Get<std::string>();
+      sdf::ElementPtr location_to_disable_elem = orderElem->GetElement("location_to_disable");
+      robot_disable_condition.location = location_to_disable_elem->Get<std::string>();
     }
-    if (orderElem->HasElement("kitting_robot_disable_part_qty"))
+    if (orderElem->HasElement("part_quantity_to_disable"))
     {
-      sdf::ElementPtr kitting_robot_disable_part_qtyElem = orderElem->GetElement("kitting_robot_disable_part_qty");
-      kitting_robot_disable_part_qty = kitting_robot_disable_part_qtyElem->Get<int>();
+      sdf::ElementPtr part_quantity_elem = orderElem->GetElement("part_quantity_to_disable");
+      robot_disable_condition.number_of_parts = part_quantity_elem->Get<int>();
     }
-    kitting_robot_disable_condition.task = kitting_robot_disable_task;
-    kitting_robot_disable_condition.location = kitting_robot_disable_location;
-    kitting_robot_disable_condition.number_of_parts = kitting_robot_disable_part_qty;
-
-    //--Does the assembly robot have to be disabled at some point?
-    ariac::AssemblyRobotDisableCondition assembly_robot_disable_condition;
-    std::string assembly_robot_disable_task{};
-    std::string assembly_robot_disable_location{};
-    int assembly_robot_disable_part_qty{0};
-
-    if (orderElem->HasElement("assembly_robot_disable_task"))
-    {
-      sdf::ElementPtr assembly_robot_disable_taskElem = orderElem->GetElement("assembly_robot_disable_task");
-      assembly_robot_disable_task = assembly_robot_disable_taskElem->Get<std::string>();
-    }
-    if (orderElem->HasElement("assembly_robot_disable_location"))
-    {
-      sdf::ElementPtr assembly_robot_disable_locationElem = orderElem->GetElement("assembly_robot_disable_location");
-      assembly_robot_disable_location = assembly_robot_disable_locationElem->Get<std::string>();
-    }
-    if (orderElem->HasElement("assembly_robot_disable_part_qty"))
-    {
-      sdf::ElementPtr assembly_robot_disable_part_qtyElem = orderElem->GetElement("assembly_robot_disable_part_qty");
-      assembly_robot_disable_part_qty = assembly_robot_disable_part_qtyElem->Get<int>();
-    }
-    assembly_robot_disable_condition.task = assembly_robot_disable_task;
-    assembly_robot_disable_condition.location = assembly_robot_disable_location;
-    assembly_robot_disable_condition.number_of_parts = assembly_robot_disable_part_qty;
 
     //--The original health status for each robot
     int kitting_robot_health{};
@@ -936,8 +940,7 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
         0.0, //--time taken
         has_kitting_task,
         has_assembly_task,
-        kitting_robot_disable_condition,
-        assembly_robot_disable_condition,
+        robot_disable_condition,
         kitting_robot_health,
         assembly_robot_health};
     this->dataPtr->ordersToAnnounce.push_back(order);
@@ -1018,7 +1021,7 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
 
   //--Publisher for announcing the health of the robots
   this->dataPtr->robot_health_pub = this->dataPtr->rosnode->advertise<
-      nist_gear::RobotHealth>(robot_health_topic, 1000);
+      nist_gear::RobotHealth>(robotHealthTopic, 1000, true);
 
   // Service for ending the competition.
   this->dataPtr->compEndServiceServer =
@@ -1047,6 +1050,10 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   this->dataPtr->assemblyShipmentContentSubscriber =
       this->dataPtr->rosnode->subscribe(assemblyContentTopic, 1000,
                                         &ROSAriacTaskManagerPlugin::OnAssemblyShipmentContent, this);
+
+  // Gz Subscriber for floor penalty info
+  this->dataPtr->floorPenaltySub = this->dataPtr->node->Subscribe(floorPenaltyTopic, &ROSAriacTaskManagerPlugin::OnPenaltyReceived, this);
+  this->dataPtr->floorPenalty = 0;
 
   // Timer for regularly publishing state/score.
   this->dataPtr->statusPubTimer =
@@ -1206,11 +1213,19 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
     this->dataPtr->gameStartTime = currentSimTime;
     this->dataPtr->currentState = "go";
 
-    this->EnableConveyorBeltControl();
-    this->PopulateConveyorBelt();
+    if (this->dataPtr->belt_needed)
+    {
+      this->EnableConveyorBeltControl();
+      this->PopulateConveyorBelt();
+    }
   }
   else if (this->dataPtr->currentState == "go")
   {
+
+    // Check if we need to disable any robot
+      this->ProcessRobotStatus();
+    
+
     // Update the order manager.
     this->ProcessOrdersToAnnounce(currentSimTime);
 
@@ -1320,6 +1335,7 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
   }
   else if (this->dataPtr->currentState == "end_game")
   {
+    //TODO: Apply this-dataPtr->floorPenalty to GameScore calculation
     this->dataPtr->currentGameScore = this->dataPtr->ariacScorer.GetGameScore();
     if (this->dataPtr->gameStartTime != common::Time())
     {
@@ -1381,25 +1397,141 @@ void ROSAriacTaskManagerPlugin::PublishStatus(const ros::TimerEvent &)
 }
 
 /////////////////////////////////////////////////
+void ROSAriacTaskManagerPlugin::ProcessRobotStatus()
+{
+  /**
+  Check the field Order::robot_disable_condition against what we have in simulation
+  if location and number_of_parts match then disable the apropriate robot based (field robot_type)
+   */
+
+  // gzdbg << "ProcessRobotStatus: \n";
+  
+  auto robotDisableCondition = this->dataPtr->currentOrder.robot_disable_condition;
+  // gzdbg << "robotType: " << robotDisableCondition.robot_type << "\n";
+  if (robotDisableCondition.robot_type.empty())
+    return;
+  else{
+    auto robotType = robotDisableCondition.robot_type;
+    auto location = robotDisableCondition.location;
+    unsigned int nbOfParts = robotDisableCondition.number_of_parts;
+    // gzdbg << "robotType: " << robotType << "\n";
+    // gzdbg << "location: " << location << "\n";
+
+    //--check how many parts we have in location
+    //--call the service /ariac/kit_tray_x/get_content
+    std::string location_topic = "";
+    if (location == "agv1" || location == "agv2" || location == "agv3" || location == "agv4")
+    {
+      location_topic = "/ariac/kit_tray_";
+      location_topic += +location.back();
+      location_topic += "/get_content";
+      // gzdbg << "LOCATION TOPIC: " << location_topic<< "\n";
+      ros::ServiceClient client = this->dataPtr->rosnode->serviceClient<nist_gear::DetectKittingShipment>(location_topic);
+      nist_gear::DetectKittingShipment srv;
+      if (client.call(srv))
+      {
+        // gzdbg << "Service called" << std::endl;
+        auto resp_products = srv.response.shipment.products;
+        //--if the number of parts matches, then update the robot health status
+        if (resp_products.size() == nbOfParts)
+        {
+          nist_gear::RobotHealth robot_health_msg;
+          if (robotType == "kitting_robot")
+          {
+            gzdbg << "Disabling kitting_robot\n";
+            robot_health_msg.kitting_robot_enabled = 0;
+            robot_health_msg.assembly_robot_enabled = 1;
+            this->dataPtr->robot_health_pub.publish(robot_health_msg);
+          }
+          else if (robotType == "assembly_robot")
+          {
+            gzdbg << "Disabling assembly_robot\n";
+            robot_health_msg.kitting_robot_enabled = 1;
+            robot_health_msg.assembly_robot_enabled = 0;
+            this->dataPtr->robot_health_pub.publish(robot_health_msg);
+          }
+          //--update the conditions so this function is not called
+          this->dataPtr->currentOrder.robot_disable_condition.robot_type = "";
+          this->dataPtr->currentOrder.robot_disable_condition.location = "";
+          this->dataPtr->currentOrder.robot_disable_condition.number_of_parts = 0;
+        }
+        // gzdbg << "Nb of products: \n" << resp_products.size();
+        // for (auto product: resp_products){
+        //   gzdbg << product.type << std::endl;
+        // }
+      }
+    }
+
+    if (location == "as1" ||location == "as2" ||location == "as3" || location == "as4"){
+      location_topic = "/ariac/briefcase_";
+      location_topic += +location.back();
+      location_topic += "/get_content";
+      // gzdbg << "LOCATION TOPIC: " << location_topic<< "\n";
+      ros::ServiceClient client = this->dataPtr->rosnode->serviceClient<nist_gear::DetectAssemblyShipment>(location_topic);
+      nist_gear::DetectAssemblyShipment srv;
+      if (client.call(srv))
+      {
+        // gzdbg << "Service called" << std::endl;
+        auto resp_products = srv.response.shipment.products;
+        //--if the number of parts matches, then update the robot health status
+        if (resp_products.size() == nbOfParts)
+        {
+          nist_gear::RobotHealth robot_health_msg;
+          if (robotType == "assembly_robot")
+          {
+            gzdbg << "Disabling assembly_robot\n";
+            robot_health_msg.kitting_robot_enabled = 1;
+            robot_health_msg.assembly_robot_enabled = 0;
+            this->dataPtr->robot_health_pub.publish(robot_health_msg);
+          }
+          else if (robotType == "kitting_robot")
+          {
+            gzdbg << "Disabling kitting_robot\n";
+            robot_health_msg.kitting_robot_enabled = 0;
+            robot_health_msg.assembly_robot_enabled = 1;
+            this->dataPtr->robot_health_pub.publish(robot_health_msg);
+          }
+          //--update the conditions so this function is not called
+          this->dataPtr->currentOrder.robot_disable_condition.robot_type = "";
+          this->dataPtr->currentOrder.robot_disable_condition.location = "";
+          this->dataPtr->currentOrder.robot_disable_condition.number_of_parts = 0;
+        }
+        // gzdbg << "Nb of products: \n" << resp_products.size();
+        // for (auto product: resp_products){
+        //   gzdbg << product.type << std::endl;
+        // }
+      }
+    }
+  }
+}
+
+/////////////////////////////////////////////////
 void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time simTime)
 {
+  
   if (this->dataPtr->ordersToAnnounce.empty())
     return;
 
   auto nextOrder = this->dataPtr->ordersToAnnounce.front();
 
+  //--this is used to process the robots' health status
+  this->dataPtr->currentOrder = this->dataPtr->ordersToAnnounce.front();
+
   // gzdbg << "Orders:" << std::endl;
-  for (auto order : this->dataPtr->ordersToAnnounce){
-    gzdbg << order.order_id << std::endl;
-    gzdbg << order.has_assembly_task << std::endl;
-    gzdbg << order.has_kitting_task << std::endl;
-  }
+  // for (auto order : this->dataPtr->ordersToAnnounce)
+  // {
+  //   gzdbg << order.order_id << std::endl;
+  //   gzdbg << order.has_assembly_task << std::endl;
+  //   gzdbg << order.has_kitting_task << std::endl;
+  // }
 
   //--publish the health of each robot when announcing an order
   nist_gear::RobotHealth robot_health_msg;
   robot_health_msg.kitting_robot_enabled = nextOrder.kitting_robot_health;
   robot_health_msg.assembly_robot_enabled = nextOrder.assembly_robot_health;
   this->dataPtr->robot_health_pub.publish(robot_health_msg);
+
+  // gzwarn << "-------------PUBLISHING to robot_health\n";
 
   bool interruptOnUnwantedProducts = nextOrder.interrupt_on_unwanted_products > 0;
   bool interruptOnWantedProducts = nextOrder.interrupt_on_wanted_products > 0;
@@ -1552,7 +1684,7 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
           << nextOrder << std::endl;
     nist_gear::Order orderMsg;
     fillOrderMsg(nextOrder, orderMsg);
-    
+
     this->dataPtr->ariacScorer.NotifyOrderStarted(simTime, orderMsg, nextOrder.priority);
   }
 }
@@ -1631,16 +1763,15 @@ bool ROSAriacTaskManagerPlugin::HandleEndService(
   return true;
 }
 
-
 /////////////////////////////////////////////////
 bool ROSAriacTaskManagerPlugin::HandleSubmitKittingShipmentService(
-  ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> & event)
+    ros::ServiceEvent<nist_gear::SubmitShipment::Request, nist_gear::SubmitShipment::Response> &event)
 {
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
-  const nist_gear::SubmitShipment::Request& req = event.getRequest();
-  nist_gear::SubmitShipment::Response& res = event.getResponse();
+  const nist_gear::SubmitShipment::Request &req = event.getRequest();
+  nist_gear::SubmitShipment::Response &res = event.getResponse();
 
-  const std::string& callerName = event.getCallerName();
+  const std::string &callerName = event.getCallerName();
   gzdbg << "Submit shipment service called by: " << callerName << std::endl;
 
   if (this->dataPtr->competitionMode && callerName.compare("/gazebo") != 0)
@@ -1652,7 +1783,8 @@ bool ROSAriacTaskManagerPlugin::HandleSubmitKittingShipmentService(
     return true;
   }
 
-  if (this->dataPtr->currentState != "go") {
+  if (this->dataPtr->currentState != "go")
+  {
     std::string errStr = "Competition is not running so shipments cannot be submitted.";
     gzerr << errStr << std::endl;
     ROS_ERROR_STREAM(errStr);
@@ -1677,9 +1809,8 @@ bool ROSAriacTaskManagerPlugin::HandleSubmitKittingShipmentService(
     }
   }
 
-std::string current_station{};
+  std::string current_station{};
 
-    
   if (1 == destination_id.size() && '1' == destination_id[0])
   {
     agv_id = 1;
@@ -1690,12 +1821,12 @@ std::string current_station{};
     agv_id = 2;
     this->dataPtr->rosnode->getParam("/ariac/agv2_station", current_station);
   }
-   else if (1 == destination_id.size() && '3' == destination_id[0])
+  else if (1 == destination_id.size() && '3' == destination_id[0])
   {
     agv_id = 3;
     this->dataPtr->rosnode->getParam("/ariac/agv3_station", current_station);
   }
-   else if (1 == destination_id.size() && '4' == destination_id[0])
+  else if (1 == destination_id.size() && '4' == destination_id[0])
   {
     agv_id = 4;
     this->dataPtr->rosnode->getParam("/ariac/agv4_station", current_station);
@@ -1703,7 +1834,7 @@ std::string current_station{};
 
   if (0 == agv_id)
   {
-    ROS_ERROR_STREAM("[ARIAC TaskManager] Could not determing AGV from: " << req.destination_id);
+    ROS_ERROR_STREAM("[ARIAC TaskManager] Could not determine AGV from: " << req.destination_id);
     res.success = false;
     res.inspection_result = 0;
     return true;
@@ -1715,7 +1846,7 @@ std::string current_station{};
     return false;
   }
 
-  auto & getContentClient = this->dataPtr->agvGetContentClient.at(agv_id);
+  auto &getContentClient = this->dataPtr->agvGetContentClient.at(agv_id);
 
   if (!getContentClient.exists())
   {
@@ -1732,18 +1863,18 @@ std::string current_station{};
 
   auto currentSimTime = this->dataPtr->world->SimTime();
   res.success = true;
-  this->dataPtr->ariacScorer.NotifyKittingShipmentReceived(currentSimTime, 
-  req.shipment_type, 
-  shipment_content.
-  response.shipment,
-  req.station_id);
+  this->dataPtr->ariacScorer.NotifyKittingShipmentReceived(currentSimTime,
+                                                           req.shipment_type,
+                                                           shipment_content.response.shipment,
+                                                           req.station_id);
+  SetAGVParameter(shipment_content.response.shipment.destination_id, req.station_id);
 
   // Figure out what the score of that shipment was
   res.inspection_result = 0;
   this->dataPtr->currentGameScore = this->dataPtr->ariacScorer.GetGameScore();
-  for (auto & orderScorePair : this->dataPtr->currentGameScore.order_scores_map)
+  for (auto &orderScorePair : this->dataPtr->currentGameScore.order_scores_map)
   {
-    for (const auto & shipmentScorePair : orderScorePair.second.kitting_shipment_scores)
+    for (const auto &shipmentScorePair : orderScorePair.second.kitting_shipment_scores)
     {
       if (shipmentScorePair.first == req.shipment_type)
       {
@@ -1995,6 +2126,8 @@ bool ROSAriacTaskManagerPlugin::HandleSendAgvToASService(
     //--rosservice call /ariac/agv1/to_assembly station AS1 order_0_kitting_shipment_0
     //--in this example this->dataPtr->actual_station_for_kitting_shipment = "AS1"
     this->dataPtr->ariacScorer.NotifyKittingShipmentReceived(currentSimTime, req.shipment_type, shipment_content.response.shipment, this->dataPtr->actual_station_for_kitting_shipment);
+     SetAGVParameter(shipment_content.response.shipment.destination_id, this->dataPtr->actual_station_for_kitting_shipment);
+     
   }
   else
   {
@@ -2004,6 +2137,11 @@ bool ROSAriacTaskManagerPlugin::HandleSendAgvToASService(
   return true;
 }
 
+void ROSAriacTaskManagerPlugin::SetAGVParameter(std::string agv_frame, std::string assembly_station){
+  std::string agv = agv_frame.substr (0,4);
+  std::string parameter = "/ariac/"+agv+"_station";
+      this->dataPtr->rosnode->setParam(parameter, assembly_station);
+}
 /////////////////////////////////////////////////
 // bool ROSAriacTaskManagerPlugin::HandleAGVDeliverService(
 //     nist_gear::AGVControl::Request &req, nist_gear::AGVControl::Response &res, int agv_id)
@@ -2187,4 +2325,12 @@ void ROSAriacTaskManagerPlugin::OnContactsReceived(ConstContactsPtr &_msg)
       this->dataPtr->ariacScorer.NotifyArmArmCollision(time);
     }
   }
+}
+
+//////////////////////////////////////////////////
+void ROSAriacTaskManagerPlugin::OnPenaltyReceived(ConstModelPtr &_msg)
+{
+  std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+  this->dataPtr->floorPenalty += 1;
+  gzdbg << "Dropped Parts: " << this->dataPtr->floorPenalty << std::endl;
 }

@@ -8,7 +8,7 @@ def expand_snippet(filename, data=locals()):
 }@
 <?xml version="1.0" ?>
 <sdf version="1.5">
-  <world name="ariac2021_world">
+  <world name="world">
     <!-- Set the initial camera pose to be looking at the workspace. -->
     <gui fullscreen='0'>
       <camera name='user_camera'>
@@ -119,13 +119,13 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>-17.6 4.8 0. 0 0 0</pose>
       </model>
-      <!-- <model name="CageFactory3">
+      <model name="CageFactory3">
         <include>
           <static>true</static>
           <uri>model://cage_factory</uri>
         </include>
         <pose frame=''>-17.0 -2.03 2.6 0 0 3.1415</pose>
-      </model> -->
+      </model>
       <model name="FactoryShelf1">
         <include>
           <static>true</static>
@@ -168,7 +168,7 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>-14.137 -6.238 0.015890 0 0 1.570048</pose>
       </model>
-      <!-- <model name="Computer1">
+      <model name="Computer1">
         <include>
           <static>true</static>
           <uri>model://computer_2</uri>
@@ -181,7 +181,7 @@ def expand_snippet(filename, data=locals()):
           <uri>model://computer</uri>
         </include>
         <pose frame=''>-1.2 6.6 0.0 0 0 0</pose>
-      </model> -->
+      </model>
       <!-- <model name="BoxPallet2">
         <include>
           <static>true</static>
@@ -345,7 +345,13 @@ expand_snippet('rgbd_camera.sdf.template')
     <!-- a wall to delete objects at the end of the belt-->
     <include>
       <uri>model://deletion_wall</uri>
-      <pose>0. -4.53 0.473 0 -1.5708 1.5708</pose>
+      <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose>
+    </include>>
+
+    <!-- a wall to delete objects in the bin-->
+    <include>
+      <uri>model://bin_deletion_wall</uri>
+      <pose>-2.188252 -0.014119 0.50 0 0 0</pose>
     </include>>
 
 @{belt_models_loop = True}@
@@ -366,15 +372,14 @@ expand_snippet('rgbd_camera.sdf.template')
 
 
 <!-- a conveyor belt-->
-    <include>
-      <name>conveyor_belt</name>
-      <pose>0 0 0 0 0 3.14159</pose>
-      <uri>model://conveyor_belt</uri>
-      <pose>1.067526 -0.714548 3.14159 0 0 0</pose>
-    </include>
+  <include>
+    <name>conveyor_belt</name>
+    <pose>-0.573076 0 0 0 0 0</pose>
+    <uri>model://conveyor_belt</uri>
+    <!-- <pose>1.067526 -0.714548 0.0 0 0 0</pose> -->
+  </include>
 
       
-
 
 
     <!-- Populate stations, agvs, and bins -->
@@ -386,6 +391,8 @@ expand_snippet('rgbd_camera.sdf.template')
       </include>
   @[end for]@
 
+
+  
 
 
 
@@ -523,8 +530,8 @@ expand_snippet('rgbd_camera.sdf.template')
           <child>briefcase_@(str(station_id))::briefcase_@(str(station_id))::briefcase</child>
       </joint>
     </model>
-
 @[end for]@
+
 
 
 
@@ -534,6 +541,7 @@ expand_snippet('rgbd_camera.sdf.template')
     <!-- The NIST-ARIAC task manager -->
     <plugin filename="libROSAriacTaskManagerPlugin.so" name="task_manager">
       <robot_namespace>ariac</robot_namespace>
+      <belt_population_cycles>@(options['belt_population_cycles'])</belt_population_cycles>
       <competition_time_limit>@(time_limit)</competition_time_limit>
       <start_competition_service_name>/ariac/start_competition</start_competition_service_name>
       <end_competition_service_name>/ariac/end_competition</end_competition_service_name>
@@ -589,15 +597,10 @@ expand_snippet('rgbd_camera.sdf.template')
 @[if order['announcement_condition'] == 'agv_station_reached']@
         <interrupt_on_station_reached>@(order['announcement_condition_value'])</interrupt_on_station_reached>
 @[end if]@
-@[if order['kitting_robot']]@ 
-        <kitting_robot_disable_task>@(str(order['kitting_robot'][0]))</kitting_robot_disable_task>
-        <kitting_robot_disable_location>@(str(order['kitting_robot'][1]))</kitting_robot_disable_location>
-        <kitting_robot_disable_part_qty>@(str(order['kitting_robot'][2]))</kitting_robot_disable_part_qty>
-@[end if]@
-@[if order['assembly_robot']]@ 
-        <assembly_robot_disable_task>@(str(order['assembly_robot'][0]))</assembly_robot_disable_task>
-        <assembly_robot_disable_location>@(str(order['assembly_robot'][1]))</assembly_robot_disable_location>
-        <assembly_robot_disable_part_qty>@(str(order['assembly_robot'][2]))</assembly_robot_disable_part_qty>
+@[if order['disable_robot']]@ 
+        <robot_to_disable>@(str(order['disable_robot'][0]))</robot_to_disable>
+        <location_to_disable>@(str(order['disable_robot'][1]))</location_to_disable>
+        <part_quantity_to_disable>@(str(order['disable_robot'][2]))</part_quantity_to_disable>
 @[end if]@
 @[if order['kitting_flag'] == True]@            
 @[for shipment_index in range(order['kitting_shipment_count'])]
@@ -694,6 +697,10 @@ station = order['assembly_stations'][task_index]
       </link>
     </model>
 
+
+
+
+
     <!-- A ground plane to hide the under_workcell_plane -->
     <model name="ground_plane">
       <static>true</static>
@@ -717,7 +724,7 @@ station = order['assembly_stations'][task_index]
       </link>
     </model>
 
-    <!-- A visual and collision of the linear rail the robots ride on-->
+    <!-- A visual and collision of the linear rail the robot rides on-->
     <model name="linear_rail">
       <pose>-1.3 0 0.93 0 0 0</pose>
       <static>true</static>
@@ -731,7 +738,7 @@ station = order['assembly_stations'][task_index]
           <material>
             <script>
               <uri>file://media/materials/scripts/gazebo.material</uri>
-              <name>Gazebo/Grey</name>
+              <name>Gazebo/GreyTransparent </name>
             </script>
           </material>
         </visual>
@@ -745,6 +752,10 @@ station = order['assembly_stations'][task_index]
         </collision>
       </link>
     </model>
+
+    
+
+
 
     <!-- AGV path stop marks -->
     <!-- <include>

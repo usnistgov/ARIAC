@@ -15,9 +15,9 @@
  *
 */
 #ifdef _WIN32
-  // Ensure that Winsock2.h is included before Windows.h, which can get
-  // pulled in by anybody (e.g., Boost).
-  #include <Winsock2.h>
+// Ensure that Winsock2.h is included before Windows.h, which can get
+// pulled in by anybody (e.g., Boost).
+#include <Winsock2.h>
 #endif
 
 #include <memory>
@@ -49,142 +49,180 @@ namespace gazebo
     /// If the attached object is scheduled to be dropped, the drop will
     /// occur when the object enters inside the dropRegion. The object will
     /// be relocated to the respective pose.
-    public: class DropObject
-            {
-              /// \brief Equality operator, result = this == _obj
-              /// \param[in] _obj Object to check for equality
-              /// \return true if this == _obj
-              public: bool operator ==(const DropObject &_obj) const
-              {
-                return this->type == _obj.type && \
-                  this->dropRegion == _obj.dropRegion && \
-                  this->destination == _obj.destination;
-                  this->frame == _obj.frame;
-              }
+  public:
+    class DropObject
+    {
+      /// \brief Equality operator, result = this == _obj
+      /// \param[in] _obj Object to check for equality
+      /// \return true if this == _obj
+    public:
+      bool operator==(const DropObject &_obj) const
+      {
+        return this->type == _obj.type &&
+               this->dropRegion == _obj.dropRegion &&
+               this->destination == _obj.destination;
+        this->frame == _obj.frame;
+      }
 
-              /// \brief Stream insertion operator.
-              /// \param[in] _out output stream
-              /// \param[in] _obj object to output
-              /// \return The output stream
-              public: friend std::ostream &operator<<(std::ostream &_out,
-                                                      const DropObject &_obj)
-              {
-                _out << _obj.type << std::endl;
-                _out << _obj.dropRegion << std::endl;
-                _out << "  Dst: [" << _obj.destination << "]" << std::endl;
-                return _out;
-              }
+      /// \brief Stream insertion operator.
+      /// \param[in] _out output stream
+      /// \param[in] _obj object to output
+      /// \return The output stream
+    public:
+      friend std::ostream &operator<<(std::ostream &_out,
+                                      const DropObject &_obj)
+      {
+        _out << _obj.type << std::endl;
+        _out << _obj.dropRegion << std::endl;
+        _out << "  Dst: [" << _obj.destination << "]" << std::endl;
+        return _out;
+      }
 
-              /// \brief Object type.
-              public: std::string type;
+      /// \brief Object type.
+    public:
+      std::string type;
 
-              /// \brief Object type.
-              public: ignition::math::Box dropRegion;
+      /// \brief Object type.
+    public:
+      ignition::math::Box dropRegion;
 
-              /// \brief Destination where objects are teleported to after a drop
-              public: ignition::math::Pose3d destination;
+      /// \brief Destination where objects are teleported to after a drop
+    public:
+      ignition::math::Pose3d destination;
 
-              /// \brief Reference frame of the drop region/destination
-              public: physics::EntityPtr frame;
+      /// \brief Reference frame of the drop region/destination
+    public:
+      physics::EntityPtr frame;
 
-              /// \brief Getter for the type of object to drop
-              public: std::string getType() const
-              {
-                return this->type;
-              };
-            };
+      /// \brief Getter for the type of object to drop
+    public:
+      std::string getType() const
+      {
+        return this->type;
+      };
+    };
 
     /// \brief Collection of objects that have been dropped.
-    public: std::vector<std::string> droppedObjects;
+  public:
+    std::vector<std::string> dropped_objects;
 
     /// \brief Collection of objects to be dropped.
-    public: std::vector<DropObject> objectsToDrop;
+  public:
+    std::vector<DropObject> objects_to_drop;
 
     /// \brief Model that contains this gripper.
-    public: physics::ModelPtr model;
+  public:
+    physics::ModelPtr model;
 
     /// \brief Pointer to the world.
-    public: physics::WorldPtr world;
+  public:
+    physics::WorldPtr world;
 
     /// \brief A fixed joint to connect the gripper to an object.
-    public: physics::JointPtr fixedJoint;
+  public:
+    physics::JointPtr fixedJoint;
 
     /// \brief The suction cup link.
-    public: physics::LinkPtr suctionCupLink;
+  public:
+    physics::LinkPtr suction_cup_link;
 
     /// \brief Connection event.
-    public: event::ConnectionPtr connection;
+  public:
+    event::ConnectionPtr connection;
 
     /// \brief The collisions for the links in the gripper.
-    public: std::map<std::string, physics::CollisionPtr> collisions;
+  public:
+    std::map<std::string, physics::CollisionPtr> collisions;
 
     /// \brief The current contacts.
-    public: std::vector<msgs::Contact> contacts;
+  public:
+    std::vector<msgs::Contact> contacts;
 
     /// \brief Mutex used to protect reading/writing the sonar message.
-    public: std::mutex mutex;
+  public:
+    std::mutex mutex;
 
     /// \brief True if the gripper has an object.
-    public: bool attached = false;
+  public:
+    bool attached = false;
 
     /// \brief Rate at which to update the gripper.
-    public: common::Time updateRate;
+  public:
+    common::Time updateRate;
 
     /// \brief Previous time when the gripper was updated.
-    public: common::Time prevUpdateTime;
+  public:
+    common::Time prevUpdateTime;
 
     /// \brief Number of iterations the gripper was contacting the same
     /// object.
-    public: int posCount;
+  public:
+    int posCount;
 
     /// \brief Number of iterations the gripper was not contacting the same
     /// object.
-    public: int zeroCount;
+  public:
+    int zeroCount;
 
     /// \brief Minimum number of links touching.
-    public: unsigned int minContactCount;
+  public:
+    unsigned int minContactCount;
 
     /// \brief Steps touching before engaging fixed joint
-    public: int attachSteps;
+  public:
+    int attachSteps;
 
     /// \brief Steps not touching before disengaging fixed joint
-    public: int detachSteps;
+  public:
+    int detachSteps;
 
     /// \brief Name of the gripper.
-    public: std::string name;
+  public:
+    std::string name;
 
     /// \brief Node for communication.
-    public: transport::NodePtr node;
+  public:
+    transport::NodePtr node;
 
     /// \brief Subscription to contact messages from the physics engine.
-    public: transport::SubscriberPtr contactSub;
+  public:
+    transport::SubscriberPtr contactSub;
 
     /// \brief Whether the suction is enabled or not.
-    public: bool enabled = false;
+  public:
+    bool enabled = false;
 
     /// \brief Whether disabling of the suction has been requested or not.
-    public: bool disableRequested = false;
+  public:
+    bool disableRequested = false;
 
     /// \brief Whether there's an ongoing drop.
-    public: bool dropPending = false;
+  public:
+    bool dropPending = false;
 
     /// \brief Whether to grip all models or only specific types.
-    public: bool onlyGrippableModels = false;
+  public:
+    bool onlyGrippableModels = false;
 
     /// \brief Whitelist of the grippable model types to detect
-    public: std::vector<std::string> grippableModelTypes;
+  public:
+    std::vector<std::string> grippableModelTypes;
 
     /// \brief Attached model type.
-    public: std::string attachedObjType;
+  public:
+    std::string attachedObjType;
 
     /// \brief Attached model to be dropped.
-    public: physics::ModelPtr dropAttachedModel;
+  public:
+    physics::ModelPtr dropAttachedModel;
 
     /// \brief Collision with the model in contact.
-    public: physics::CollisionPtr modelCollision;
+  public:
+    physics::CollisionPtr modelCollision;
 
     /// \brief Normal of the contact with the model in collision.
-    public: ignition::math::Vector3d modelContactNormal;
+  public:
+    ignition::math::Vector3d modelContactNormal;
   };
 }
 
@@ -195,7 +233,7 @@ GZ_REGISTER_MODEL_PLUGIN(VacuumGripperPlugin)
 
 /////////////////////////////////////////////////
 VacuumGripperPlugin::VacuumGripperPlugin()
-  : dataPtr(new VacuumGripperPluginPrivate)
+    : dataPtr(new VacuumGripperPluginPrivate)
 {
   gzmsg << "VacuumGripper plugin loaded" << std::endl;
 
@@ -226,9 +264,9 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // Create the joint that will attach the objects to the suction cup
   this->dataPtr->fixedJoint =
       this->dataPtr->world->Physics()->CreateJoint(
-        "fixed", this->dataPtr->model);
+          "fixed", this->dataPtr->model);
   this->dataPtr->fixedJoint->SetName(this->dataPtr->model->GetName() +
-      "__vacuum_gripper_fixed_joint__");
+                                     "__vacuum_gripper_fixed_joint__");
 
   // Read the SDF parameters
   sdf::ElementPtr graspCheck = _sdf->GetElement("grasp_check");
@@ -237,9 +275,9 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->attachSteps = graspCheck->Get<int>("attach_steps");
   this->dataPtr->detachSteps = graspCheck->Get<int>("detach_steps");
   sdf::ElementPtr suctionCupLinkElem = _sdf->GetElement("suction_cup_link");
-  this->dataPtr->suctionCupLink =
-    this->dataPtr->model->GetLink(suctionCupLinkElem->Get<std::string>());
-  if (!this->dataPtr->suctionCupLink)
+  this->dataPtr->suction_cup_link =
+      this->dataPtr->model->GetLink(suctionCupLinkElem->Get<std::string>());
+  if (!this->dataPtr->suction_cup_link)
   {
     gzerr << "Suction cup link [" << suctionCupLinkElem->Get<std::string>()
           << "] not found!\n";
@@ -288,7 +326,7 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     }
     while (dropRegionElem)
     {
-        if (!dropRegionElem->HasElement("min"))
+      if (!dropRegionElem->HasElement("min"))
       {
         gzerr << "VacuumGripperPlugin: Unable to find <min> elements in "
               << "the <drop_region> section\n";
@@ -332,11 +370,12 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       {
         std::string dropFrameName = dropRegionElem->Get<std::string>("frame");
         dropFrame = this->dataPtr->world->EntityByName(dropFrameName);
-        if (!dropFrame) {
+        if (!dropFrame)
+        {
           gzthrow(std::string("The frame '") + dropFrameName + "' does not exist");
         }
         if (!dropFrame->HasType(physics::Base::LINK) &&
-          !dropFrame->HasType(physics::Base::MODEL))
+            !dropFrame->HasType(physics::Base::MODEL))
         {
           gzthrow("'frame' tag must list the name of a link or model");
         }
@@ -348,21 +387,19 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       ignition::math::Box dropRegion = ignition::math::Box(min, max);
       ignition::math::Pose3d destination = dstElement->Get<ignition::math::Pose3d>();
 
-      VacuumGripperPluginPrivate::DropObject dropObject {type, dropRegion, destination, dropFrame};
-      this->dataPtr->objectsToDrop.push_back(dropObject);
+      VacuumGripperPluginPrivate::DropObject dropObject{type, dropRegion, destination, dropFrame};
+      this->dataPtr->objects_to_drop.push_back(dropObject);
 
       dropRegionElem = dropRegionElem->GetNextElement("drop_region");
     }
-
   }
 
   // Find out the collision elements of the suction cup
-  for (auto j = 0u; j < this->dataPtr->suctionCupLink->GetChildCount(); ++j)
+  for (auto j = 0u; j < this->dataPtr->suction_cup_link->GetChildCount(); ++j)
   {
     physics::CollisionPtr collision =
-       this->dataPtr->suctionCupLink->GetCollision(j);
-    std::map<std::string, physics::CollisionPtr>::iterator collIter
-      = this->dataPtr->collisions.find(collision->GetScopedName());
+        this->dataPtr->suction_cup_link->GetCollision(j);
+    std::map<std::string, physics::CollisionPtr>::iterator collIter = this->dataPtr->collisions.find(collision->GetScopedName());
     if (collIter != this->dataPtr->collisions.end())
       continue;
 
@@ -377,7 +414,7 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     if (!this->dataPtr->contactSub)
     {
       this->dataPtr->contactSub = this->dataPtr->node->Subscribe(topic,
-          &VacuumGripperPlugin::OnContacts, this);
+                                                                 &VacuumGripperPlugin::OnContacts, this);
     }
   }
 
@@ -431,6 +468,7 @@ void VacuumGripperPlugin::Disable()
   this->dataPtr->disableRequested = true;
 }
 
+
 /////////////////////////////////////////////////
 void VacuumGripperPlugin::OnUpdate()
 {
@@ -445,7 +483,8 @@ void VacuumGripperPlugin::OnUpdate()
   }
 
   if (this->dataPtr->world->SimTime() -
-      this->dataPtr->prevUpdateTime < this->dataPtr->updateRate ||
+              this->dataPtr->prevUpdateTime <
+          this->dataPtr->updateRate ||
       !this->dataPtr->enabled)
   {
     return;
@@ -459,7 +498,7 @@ void VacuumGripperPlugin::OnUpdate()
 
   if (this->dataPtr->attached && this->dataPtr->dropPending)
   {
-    for (const auto dropObject : this->dataPtr->objectsToDrop)
+    for (const auto dropObject : this->dataPtr->objects_to_drop)
     {
       if (dropObject.type != this->dataPtr->attachedObjType)
       {
@@ -474,7 +513,7 @@ void VacuumGripperPlugin::OnUpdate()
         gzdbg << "dropAttachedModel and attachedObjType are different: " << objectType << " and "
               << this->dataPtr->attachedObjType << std::endl;
         continue;
-      }
+      } 
 
       auto objPose = this->dataPtr->dropAttachedModel->WorldPose();
       ignition::math::Pose3d dropFramePose;
@@ -496,7 +535,7 @@ void VacuumGripperPlugin::OnUpdate()
       // Drop the object.
       this->HandleDetach();
 
-      auto objDest= dropObject.destination;
+      auto objDest = dropObject.destination;
       if (dropObject.frame)
       {
         // Determine the destination in the world frame.
@@ -509,7 +548,7 @@ void VacuumGripperPlugin::OnUpdate()
       this->dataPtr->dropAttachedModel->SetLinearVel(ignition::math::Vector3d::Zero);
       this->dataPtr->dropAttachedModel->SetLinearAccel(ignition::math::Vector3d::Zero);
 
-      this->dataPtr->droppedObjects.push_back(this->dataPtr->attachedObjType);
+      this->dataPtr->dropped_objects.push_back(this->dataPtr->attachedObjType);
 
       this->dataPtr->dropPending = false;
       gzdbg << "Object dropped and teleported" << std::endl;
@@ -567,7 +606,7 @@ bool VacuumGripperPlugin::GetContactNormal()
     {
       // Model in contact is the second name
       this->dataPtr->modelCollision = boost::dynamic_pointer_cast<Collision>(
-        this->dataPtr->world->EntityByName(name1));
+          this->dataPtr->world->EntityByName(name1));
       this->dataPtr->modelContactNormal = -1 * msgs::ConvertIgn(this->dataPtr->contacts[i].normal(0));
       return true;
     }
@@ -577,7 +616,7 @@ bool VacuumGripperPlugin::GetContactNormal()
     {
       // Model in contact is the first name -- frames are reversed
       this->dataPtr->modelCollision = boost::dynamic_pointer_cast<Collision>(
-        this->dataPtr->world->EntityByName(name2));
+          this->dataPtr->world->EntityByName(name2));
       this->dataPtr->modelContactNormal = msgs::ConvertIgn(this->dataPtr->contacts[i].normal(0));
       return true;
     }
@@ -600,8 +639,8 @@ void VacuumGripperPlugin::HandleAttach()
   }
   this->dataPtr->attached = true;
 
-  this->dataPtr->fixedJoint->Load(this->dataPtr->suctionCupLink,
-      this->dataPtr->modelCollision->GetLink(), ignition::math::Pose3d());
+  this->dataPtr->fixedJoint->Load(this->dataPtr->suction_cup_link,
+                                  this->dataPtr->modelCollision->GetLink(), ignition::math::Pose3d());
   this->dataPtr->fixedJoint->Init();
 
   auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
@@ -614,20 +653,20 @@ void VacuumGripperPlugin::HandleAttach()
   this->dataPtr->dropAttachedModel.reset();
 
   // Check if the object should drop.
-  auto it = find_if(this->dataPtr->objectsToDrop.begin(), this->dataPtr->objectsToDrop.end(),
-    [&objectType](const VacuumGripperPluginPrivate::DropObject& obj) {
-      return obj.getType() == objectType;
-    });
+  auto it = find_if(this->dataPtr->objects_to_drop.begin(), this->dataPtr->objects_to_drop.end(),
+                    [&objectType](const VacuumGripperPluginPrivate::DropObject &obj) {
+                      return obj.getType() == objectType;
+                    });
   this->dataPtr->attachedObjType = objectType;
-  bool objectToBeDropped = it != this->dataPtr->objectsToDrop.end();
+  bool objectToBeDropped = it != this->dataPtr->objects_to_drop.end();
 
   if (!objectToBeDropped)
   {
     return;
   }
-  auto found = std::find(std::begin(this->dataPtr->droppedObjects),
-                 std::end(this->dataPtr->droppedObjects), this->dataPtr->attachedObjType);
-  bool alreadyDropped = found != std::end(this->dataPtr->droppedObjects);
+  auto found = std::find(std::begin(this->dataPtr->dropped_objects),
+                         std::end(this->dataPtr->dropped_objects), this->dataPtr->attachedObjType);
+  bool alreadyDropped = found != std::end(this->dataPtr->dropped_objects);
   if (!alreadyDropped)
   {
     this->dataPtr->dropPending = true;
@@ -661,7 +700,7 @@ bool VacuumGripperPlugin::CheckModelContact()
   else
   {
     this->dataPtr->zeroCount++;
-    this->dataPtr->posCount = std::max(0, this->dataPtr->posCount-1);
+    this->dataPtr->posCount = std::max(0, this->dataPtr->posCount - 1);
   }
 
   if (this->dataPtr->posCount > this->dataPtr->attachSteps &&
@@ -690,13 +729,14 @@ bool VacuumGripperPlugin::CheckModelContact()
     }
 
     // Only consider models with collision normals aligned with the normal of the gripper
-    auto gripperLinkPose = this->dataPtr->suctionCupLink->WorldPose();
+    auto gripperLinkPose = this->dataPtr->suction_cup_link->WorldPose();
     ignition::math::Vector3d gripperLinkNormal =
-      gripperLinkPose.Rot().RotateVector(ignition::math::Vector3d(0, 0, 1));
+        gripperLinkPose.Rot().RotateVector(ignition::math::Vector3d(0, 0, 1));
     double alignment = gripperLinkNormal.Dot(this->dataPtr->modelContactNormal);
 
     // Alignment of > 0.95 represents alignment angle of < acos(0.95) = ~18 degrees
-    if (alignment > 0.95) {
+    if (alignment > 0.95)
+    {
       modelInContact = true;
     }
   }

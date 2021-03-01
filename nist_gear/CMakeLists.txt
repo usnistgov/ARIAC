@@ -169,6 +169,18 @@ install(TARGETS ${side_contact_plugin_name}
   RUNTIME DESTINATION bin
 )
 
+# Create the libURDFContactPlugin.so library.
+# set(urdf_contact_plugin_name URDFContactPlugin)
+# add_library(${urdf_contact_plugin_name} src/URDFContactPlugin.cc)
+# target_link_libraries(${urdf_contact_plugin_name}
+#   ${GAZEBO_LIBRARIES}
+# )
+# install(TARGETS ${urdf_contact_plugin_name}
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION bin
+# )
+
 # Create the libROSAGVPlugin.so library.
 set(ros_agv_plugin_name ROSAGVPlugin)
 add_library(${ros_agv_plugin_name} src/ROSAGVPlugin.cc)
@@ -395,6 +407,28 @@ install(TARGETS ${briefcase_plugin_name}
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+
+
+
+
+# Create the libROSAriacGantryTrayPlugin.so library.
+set(gantry_tray_plugin_name ROSAriacGantryTrayPlugin)
+add_library(${gantry_tray_plugin_name} src/ROSAriacGantryTrayPlugin.cc)
+target_link_libraries(${gantry_tray_plugin_name}
+  ${GAZEBO_LIBRARIES}
+  ${roscpp_LIBRARIES}
+  ${side_contact_plugin_name}
+)
+add_dependencies(${gantry_tray_plugin_name}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
+install(TARGETS ${gantry_tray_plugin_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+
 
 # Create the libAriacScorer.so library.
 set(target_name AriacScorer)

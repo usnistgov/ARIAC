@@ -265,7 +265,7 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
       }
       std::string modelFrameId = this->modelFramePrefix + modelNameToUse + "_frame";
 
-      bool isAgv = modelType == "agv1" || modelType == "agv2";
+      bool isAgv = modelType == "agv1" || modelType == "agv2" || modelType == "agv3" || modelType == "agv4";
       if (isAgv)
       {
         // If AGVs are detected, also publish the pose to the respective kit tray.
@@ -280,6 +280,14 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
         {
           transforms.push_back(this->ToTransformStamped(noisyKitTrayPose, modelFrameId, this->modelFramePrefix + "kit_tray_2_frame"));
         }
+        else if (modelType == "agv3")
+        {
+          transforms.push_back(this->ToTransformStamped(noisyKitTrayPose, modelFrameId, this->modelFramePrefix + "kit_tray_3_frame"));
+        }
+        else if (modelType == "agv4")
+        {
+          transforms.push_back(this->ToTransformStamped(noisyKitTrayPose, modelFrameId, this->modelFramePrefix + "kit_tray_4_frame"));
+        }
       }
       else
       {
@@ -287,6 +295,7 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
       }
       this->AddModelToMsg(modelTypeToUse, modelPose, imageMsg);
       transforms.push_back(this->ToTransformStamped(modelPose, this->name + "_frame", modelFrameId));
+
     }
 
     // Check any children models
@@ -387,6 +396,11 @@ geometry_msgs::TransformStamped ROSLogicalCameraPlugin::ToTransformStamped(
 {
   ros::Time currentTime = ros::Time::now();
 
+  // tf::Quaternion qt(pose.Rot().X(), pose.Rot().Y(), pose.Rot().Z(), pose.Rot().W());
+  // tf::Vector3 vt(pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
+
+  // tf::Transform transform (qt, vt);
+  // transformBroadcaster->sendTransform(tf::StampedTransform(transform, currentTime, parentFrame, frame));
   geometry_msgs::TransformStamped ts;
   ts.header.stamp = currentTime;
   ts.header.frame_id = parentFrame;
@@ -399,6 +413,7 @@ geometry_msgs::TransformStamped ROSLogicalCameraPlugin::ToTransformStamped(
   ts.transform.rotation.z = pose.Rot().Z();
   ts.transform.rotation.w = pose.Rot().W();
   return ts;
+
 }
 
 /////////////////////////////////////////////////

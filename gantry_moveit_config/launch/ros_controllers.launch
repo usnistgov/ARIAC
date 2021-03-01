@@ -6,6 +6,6 @@
 
   <!-- Load the controllers -->
   <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" args="gantry_controller gantry_arm_controller "/>
+    output="screen" args="gantry_arm_controller gantry_controller "/>
 
 </launch>

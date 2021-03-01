@@ -102,7 +102,7 @@ $ rosdep install --from-paths ./src --ignore-packages-from-source -y
 If not installed, make sure you install ros_control:
 
 ```bash
-$ sudo apt-get install ros-melodic-ros-control ros-melodic-ros-controllers
+$ sudo apt install ros-melodic-ros-control* ros-melodic-control* ros-melodic-gazebo-ros-control*
 ```
 
 ## Build GEAR

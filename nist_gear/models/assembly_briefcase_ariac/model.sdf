@@ -2,7 +2,7 @@
 <sdf version="1.6">
   <model name="assembly_briefcase_ariac">
     <static>true</static>
-    <link name="link">
+    <link name="briefcase">
     <kinematic>0</kinematic>
             <inertial>
         <pose>0 0 0.01 0 0 0</pose>
@@ -16,7 +16,13 @@
           <izz>0.0012</izz>
         </inertia>
       </inertial>
-      <collision name='collision'>
+      <sensor name='briefcase_contact' type='contact'>
+        <update_rate>1</update_rate>
+        <contact>
+          <collision>briefcase_collision</collision>
+        </contact>
+      </sensor>
+      <collision name='briefcase_collision'>
         <pose frame=''>0 0 0 0 0 0</pose>
         <geometry>
             <mesh>
@@ -33,7 +39,7 @@
           </contact>
         </surface>
       </collision>
-      <visual name="visual">
+      <visual name="briefcase_visual">
          <geometry>
            <mesh>
              <uri>model://assembly_briefcase_ariac/meshes/briefcase.dae</uri>

@@ -1,0 +1,28 @@
+controller_list:
+  - name: fake_gantry_torso_controller
+    joints:
+      - small_long_joint
+      - torso_rail_joint
+      - torso_base_main_joint
+  - name: fake_gantry_arm_controller
+    joints:
+      - gantry_arm_shoulder_pan_joint
+      - gantry_arm_shoulder_lift_joint
+      - gantry_arm_elbow_joint
+      - gantry_arm_wrist_1_joint
+      - gantry_arm_wrist_2_joint
+      - gantry_arm_wrist_3_joint
+  - name: fake_gantry_full_controller
+    joints:
+      - small_long_joint
+      - torso_rail_joint
+      - torso_base_main_joint
+      - gantry_arm_shoulder_pan_joint
+      - gantry_arm_shoulder_lift_joint
+      - gantry_arm_elbow_joint
+      - gantry_arm_wrist_1_joint
+      - gantry_arm_wrist_2_joint
+      - gantry_arm_wrist_3_joint
+initial:  # Define initial robot poses.
+  - group: gantry_torso
+    pose: gantry_home

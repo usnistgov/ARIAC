@@ -1,8 +1,10 @@
--------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+  
 -------------------------------------------------
 
+Being updated...
 # Wiki | Documentation | Environment and Trials
+
 - This page describes how to configure the simulated workcell environment by selecting and placing sensors.
 - Additionally, how to configure the behavior/challenges of trials is described (only available for development, not available during the competition).
 - The entire trial configuration is typically comprised of two configuration files:

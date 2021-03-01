@@ -1,8 +1,9 @@
--------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+
 -------------------------------------------------
 
 # Wiki | Bug Reports #
+
 * We strive to provide responsive and high-quality support for our software.
 * Please use the [Github Issues](https://github.com/usnistgov/ARIAC/issues) for submitting and following bugs, feature requests and enhancements.
 

@@ -37,7 +37,7 @@ namespace ariac
   /////////////////////////////////////////////////////////////
   /// \brief The score of a kitting shipment.
   /////////////////////////////////////////////////////////////
-  class ShipmentScore
+  class KittingShipmentScore
   {
     /// \brief Stream insertion operator.
     /// \param[in] _out output stream.
@@ -45,19 +45,19 @@ namespace ariac
     /// \return The output stream
   public:
     friend std::ostream &operator<<(std::ostream &_out,
-                                    const ShipmentScore &_obj)
+                                    const KittingShipmentScore &_obj)
     {
-      _out << "kitting_shipment_score" << std::endl;
-      _out << "...shipment type: [" << _obj.kittingShipmentType << "]" << std::endl;
-      _out << "...completion score: [" << _obj.total() << "]" << std::endl;
-      _out << "...complete: [" << (_obj.isComplete ? "true" : "false") << "]" << std::endl;
-      _out << "...submitted: [" << (_obj.isSubmitted ? "true" : "false") << "]" << std::endl;
-      _out << "...used correct agv: [" << (_obj.correctAGV ? "true" : "false") << "]" << std::endl;
-      _out << "...sent to correct station: [" << (_obj.correctDestination ? "true" : "false") << "]" << std::endl;
-      _out << "...product type presence score: [" << _obj.productOnlyTypePresence << "]" << std::endl;
-      _out << "...product color presence score: [" << _obj.productTypeAndColorPresence << "]" << std::endl;
-      _out << "...product pose score: [" << _obj.productPose << "]" << std::endl;
-      _out << "...all products bonus: [" << _obj.allProductsBonus << "]" << std::endl;
+      // _out << "kitting_shipment_score" << std::endl;
+      // _out << "...shipment type: [" << _obj.kittingShipmentType << "]" << std::endl;
+      _out << "      ...completion score: [" << _obj.total() << "]" << std::endl;
+      _out << "      ...complete: [" << (_obj.is_kitting_shipment_complete ? "true" : "false") << "]" << std::endl;
+      _out << "      ...submitted: [" << (_obj.is_kitting_shipment_submitted ? "true" : "false") << "]" << std::endl;
+      _out << "      ...used correct agv: [" << (_obj.is_kitting_correct_agv ? "true" : "false") << "]" << std::endl;
+      _out << "      ...sent to correct station: [" << (_obj.is_kitting_correct_destination ? "true" : "false") << "]" << std::endl;
+      _out << "      ...product type presence score: [" << _obj.productOnlyTypePresence << "]" << std::endl;
+      _out << "      ...product color presence score: [" << _obj.productTypeAndColorPresence << "]" << std::endl;
+      _out << "      ...product pose score: [" << _obj.productPose << "]" << std::endl;
+      _out << "      ...all products bonus: [" << _obj.allProductsBonus << "]" << std::endl;
       // _out << "</kitting_shipment_score>" << std::endl;
       return _out;
     }
@@ -68,20 +68,20 @@ namespace ariac
     double productTypeAndColorPresence = 0.0;
     double allProductsBonus = 0.0;
     double productPose = 0.0;
-    bool isComplete = false;  // All products present
-    bool isSubmitted = false; // the shipment has been submitted for evaluation
-    bool correctAGV = false;  // The shipment was submitted to the desired AGV
-    bool correctDestination = false;
+    bool is_kitting_shipment_complete = false;  // All products present
+    bool is_kitting_shipment_submitted = false; // the shipment has been submitted for evaluation
+    bool is_kitting_correct_agv = false;        // The shipment was submitted to the desired AGV
+    bool is_kitting_correct_destination = false;
     gazebo::common::Time submit_time; // sim time when shipment submitted
 
     /// \brief Calculate the total score.
     double total() const
     {
-      if (!correctAGV)
+      if (!is_kitting_correct_agv)
       {
         return 0.0;
       }
-      if (!correctDestination)
+      if (!is_kitting_correct_destination)
       {
         return 0.0;
       }
@@ -92,7 +92,7 @@ namespace ariac
   /////////////////////////////////////////////////////////////
   /// \brief The score of a finished product from assembly.
   /////////////////////////////////////////////////////////////
-  class AssemblyScore
+  class AssemblyShipmentScore
   {
     /// \brief Stream insertion operator.
     /// \param[in] _out output stream.
@@ -100,18 +100,16 @@ namespace ariac
     /// \return The output stream
   public:
     friend std::ostream &operator<<(std::ostream &_out,
-                                    const AssemblyScore &_obj)
+                                    const AssemblyShipmentScore &_obj)
     {
-      _out << "<assembly_score " << _obj.assemblyShipmentType << ">" << std::endl;
-      _out << "...completion score: [" << _obj.total() << "]" << std::endl;
-      _out << "...complete: [" << (_obj.isComplete ? "true" : "false") << "]" << std::endl;
-      _out << "...evaluated: [" << (_obj.isEvaluated ? "true" : "false") << "]" << std::endl;
-      _out << "...product type presence score: [" << _obj.productOnlyTypePresence << "]" << std::endl;
-      _out << "...product color presence score: [" << _obj.productTypeAndColorPresence << "]" << std::endl;
-      _out << "...all products bonus: [" << _obj.allProductsBonus << "]" << std::endl;
-      _out << "...product pose score: [" << _obj.productPose << "]" << std::endl;
-      _out << "...correct assembly station: [" << (_obj.correctStation ? "true" : "false") << "]" << std::endl;
-      _out << "</assembly_score>" << std::endl;
+      _out << "      ...completion score: [" << _obj.total() << "]" << std::endl;
+      _out << "      ...complete: [" << (_obj.is_assembly_shipment_complete ? "true" : "false") << "]" << std::endl;
+      _out << "      ...shipped: [" << (_obj.is_assembly_shipment_submitted ? "true" : "false") << "]" << std::endl;
+      _out << "      ...product type presence score: [" << _obj.productOnlyTypePresence << "]" << std::endl;
+      _out << "      ...product color presence score: [" << _obj.productTypeAndColorPresence << "]" << std::endl;
+      _out << "      ...product pose score: [" << _obj.productPose << "]" << std::endl;
+      _out << "      ...all products bonus: [" << _obj.allProductsBonus << "]" << std::endl;
+      _out << "      ...correct assembly station: [" << (_obj.correctStation ? "true" : "false") << "]" << std::endl;
       return _out;
     }
 
@@ -121,10 +119,10 @@ namespace ariac
     double productTypeAndColorPresence = 0.0;
     double allProductsBonus = 0.0;
     double productPose = 0.0;
-    bool isComplete = false;          // All products present
-    bool isEvaluated = false;         // The finished product has been submitted for evaluation
-    bool correctStation = false;      // The finished product was built at the correct station
-    gazebo::common::Time submit_time; // Sim time when finished product was submitted
+    bool is_assembly_shipment_complete = false;  // All products present
+    bool is_assembly_shipment_submitted = false; // The finished product has been submitted for evaluation
+    bool correctStation = false;                 // The finished product was built at the correct station
+    gazebo::common::Time submit_time;            // Sim time when finished product was submitted
 
     /// \brief Calculate the total score.
     double total() const
@@ -152,16 +150,47 @@ namespace ariac
     friend std::ostream &operator<<(std::ostream &_out,
                                     const OrderScore &_obj)
     {
-      _out << "order score"<< std::endl;
-      _out << "...order ID [" << _obj.order_id << "]" << std::endl;
-      _out << "...total order score: [" << _obj.computeKittingTotal() << "]" << std::endl;
-      _out << "...completion score: [" << _obj.computeKittingCompletionScore() << "]" << std::endl;
-      _out << "...time taken: [" << _obj.time_taken << "]" << std::endl;
-      _out << "...kitting complete: [" << (_obj.isKittingComplete() ? "true" : "false") << "]" << std::endl;
-      _out << "...priority: [" << (_obj.priority) << "]\n";
-      for (const auto &item : _obj.kitting_shipment_scores)
+      // int final_completion_score{0};
+      // int final_order_score{0};
+      _out << "   [order score]" << std::endl;
+      _out << "   ...order ID [" << _obj.order_id << "]" << std::endl;
+      _out << "   ...total order score: [" << _obj.computeKittingTotal() + _obj.computeAssemblyTotal() << "]" << std::endl;
+      
+      // if (_obj.kitting_shipment_scores.size() > 0 && _obj.assembly_shipment_scores.size() == 0)
+      // {
+      //   final_completion_score = _obj.computeKittingCompletionScore();
+      // }
+      // else if (_obj.kitting_shipment_scores.size() == 0 && _obj.assembly_shipment_scores.size() > 0)
+      // {
+      //   final_completion_score = _obj.computeAssemblyCompletionScore();
+      // }
+      // else if (_obj.kitting_shipment_scores.size() > 0 && _obj.assembly_shipment_scores.size() > 0)
+      // {
+      //   final_completion_score = _obj.computeAssemblyCompletionScore() + _obj.computeKittingCompletionScore();
+      // }
+      _out << "   ...completion score: [" << _obj.computeAssemblyCompletionScore() + _obj.computeKittingCompletionScore() << "]" << std::endl;
+      _out << "   ...time taken: [" << _obj.time_taken << "]" << std::endl;
+      // _out << "...kitting complete: [" << (_obj.isKittingComplete() ? "true" : "false") << "]" << std::endl;
+      _out << "   ...priority: [" << (_obj.priority) << "]\n";
+      if (_obj.kitting_shipment_scores.size() > 0)
       {
-        _out << item.second << std::endl;
+        for (const auto &item : _obj.kitting_shipment_scores)
+        {
+          _out << "      [kitting score]" << std::endl;
+          _out << "      ...shipment type: [" << item.first << "]" << std::endl;
+          // _out << item.first<< std::endl;
+          _out << item.second << std::endl;
+        }
+      }
+      if (_obj.assembly_shipment_scores.size() > 0)
+      {
+        for (const auto &item : _obj.assembly_shipment_scores)
+        {
+          _out << "      [assembly score]" << std::endl;
+          _out << "      ...shipment type: [" << item.first << "]" << std::endl;
+          // _out << item.first<< std::endl;
+          _out << item.second << std::endl;
+        }
       }
       return _out;
     }
@@ -176,49 +205,109 @@ namespace ariac
       size_t kitting_shipments_completed = 0;
       size_t kitting_shipments_wrong_agv = 0;
       size_t kitting_shipments_wrong_station = 0;
-      for (const auto shipment_tuple : kitting_shipment_scores)
+      if (kitting_shipments_requested > 0)
       {
-        if (shipment_tuple.second.isSubmitted)
+        for (const auto shipment_tuple : kitting_shipment_scores)
         {
-          ++kitting_shipments_submitted;
-          if (shipment_tuple.second.isComplete)
+          if (shipment_tuple.second.is_kitting_shipment_submitted)
           {
-            ++kitting_shipments_completed;
-          }
-          if (!shipment_tuple.second.correctAGV)
-          {
-            ++kitting_shipments_wrong_agv;
-          }
-          if (!shipment_tuple.second.correctDestination)
-          {
-            ++kitting_shipments_wrong_station;
+            ++kitting_shipments_submitted;
+            if (shipment_tuple.second.is_kitting_shipment_complete)
+            {
+              ++kitting_shipments_completed;
+            }
+            if (!shipment_tuple.second.is_kitting_correct_agv)
+            {
+              ++kitting_shipments_wrong_agv;
+            }
+            if (!shipment_tuple.second.is_kitting_correct_destination)
+            {
+              ++kitting_shipments_wrong_station;
+            }
           }
         }
+        // Output header
+        if (output_header)
+        {
+          out << "[kitting]:\"order_id\",\"completion_score\",\"priority\",\"time\",\"is_complete\","
+              << "\"shipments_requested\",\"shipments_submitted\",\"shipments_completed\","
+              << "\"shipments_wrong_agv\", \"shipments_wrong_station\"\r\n";
+        }
+        // Output data
+        out << "\"" << order_id << "\",";
+        out << computeKittingCompletionScore() << ",";
+        out << priority << ",";
+        out << time_taken << ",";
+        out << (isKittingComplete() ? "1" : "0") << ",";
+        out << kitting_shipments_requested << ",";
+        out << kitting_shipments_submitted << ",";
+        out << kitting_shipments_completed << ",";
+        out << kitting_shipments_wrong_agv << ",";
+        out << kitting_shipments_wrong_station << "\r\n";
       }
-      // Output header
-      if (output_header)
+      else
       {
-        out << "\"order_id\",\"completion_score\",\"priority\",\"time\",\"is_complete\","
-            << "\"shipments_requested\",\"shipments_submitted\",\"shipments_completed\","
-            << "\"shipments_wrong_agv\", \"shipments_wrong_station\"\r\n";
+        out << "[kitting]: No kitting shipment was requested in this order"
+            << "\r\n";
       }
-      // Output data
-      out << "\"" << order_id << "\",";
-      out << computeKittingCompletionScore() << ",";
-      out << priority << ",";
-      out << time_taken << ",";
-      out << (isKittingComplete() ? "1" : "0") << ",";
-      out << kitting_shipments_requested << ",";
-      out << kitting_shipments_submitted << ",";
-      out << kitting_shipments_completed << ",";
-      out << kitting_shipments_wrong_agv << ",";
-      out << kitting_shipments_wrong_station << "\r\n";
       return out.str();
     }
 
+  public:
+    std::string csv_assembly(bool output_header = true) const
+    {
+      std::stringstream out;
+      // Gather data
+      size_t assembly_shipments_requested = assembly_shipment_scores.size();
+      size_t assembly_shipments_submitted = 0;
+      size_t assembly_shipments_completed = 0;
+      size_t assembly_shipments_wrong_station = 0;
+      if (assembly_shipments_requested > 0)
+      {
+        for (const auto shipment_tuple : assembly_shipment_scores)
+        {
+          if (shipment_tuple.second.is_assembly_shipment_submitted)
+          {
+            ++assembly_shipments_submitted;
+            if (shipment_tuple.second.is_assembly_shipment_complete)
+            {
+              ++assembly_shipments_completed;
+            }
+            if (!shipment_tuple.second.correctStation)
+            {
+              ++assembly_shipments_wrong_station;
+            }
+          }
+        }
+        // Output header
+        if (output_header)
+        {
+          out << "[assembly]: \"order_id\",\"completion_score\",\"priority\",\"time\",\"is_complete\","
+              << "\"shipments_requested\",\"shipments_submitted\",\"shipments_completed\","
+              << "\"shipments_wrong_station\"\r\n";
+        }
+        // Output data
+        out << "\"" << order_id << "\",";
+        out << computeAssemblyCompletionScore() << ",";
+        out << priority << ",";
+        out << time_taken << ",";
+        out << (isAssemblyComplete() ? "1" : "0") << ",";
+        out << assembly_shipments_requested << ",";
+        out << assembly_shipments_submitted << ",";
+        out << assembly_shipments_completed << ",";
+        out << assembly_shipments_wrong_station << "\r\n";
+      }
+      else
+      {
+        out << "[assembly]: No assembly shipment was requested in this order"
+            << "\r\n";
+      }
+      return out.str();
+    }
     /// \brief Mapping between shipment IDs and scores.
   public:
-    std::map<KittingShipmentType_t, ShipmentScore> kitting_shipment_scores;
+    std::map<KittingShipmentType_t, KittingShipmentScore> kitting_shipment_scores;
+    std::map<AssemblyShipmentType_t, AssemblyShipmentScore> assembly_shipment_scores;
     /// \brief ID of the order being scored.
     OrderID_t order_id;
     /// \brief Time in seconds spend on the order.
@@ -232,14 +321,38 @@ namespace ariac
     /// \brief simulation time when order was started
     gazebo::common::Time start_time;
 
-    /// \brief Calculate if the order is complete.
-    /// \return True if all shipping boxes have been submitted.
+    /// \brief Calculate if the kitting shipment is complete.
+    /// \return True if all kitting shipping boxes have been submitted.
     ///   Will return false if there are no shipping boxes in the order.
     bool isKittingComplete() const
     {
+      if (this->kitting_shipment_scores.size() == 0)
+      {
+        return false;
+      }
+
       for (const auto &item : this->kitting_shipment_scores)
       {
-        if (!item.second.isSubmitted)
+        // gzdbg << "isKittingComplete: " << item.first << std::endl;
+        if (!item.second.is_kitting_shipment_submitted)
+        {
+          return false;
+        }
+      }
+      return true;
+    };
+    /// \brief Calculate if the assembly shipment is complete.
+    /// \return True if all assembly shipments have been submitted.
+    ///   Will return false if there are no shipping boxes in the order.
+    bool isAssemblyComplete() const
+    {
+      if (this->assembly_shipment_scores.size() == 0)
+      {
+        return false;
+      }
+      for (const auto &item : this->assembly_shipment_scores)
+      {
+        if (!item.second.is_assembly_shipment_submitted)
         {
           return false;
         }
@@ -253,11 +366,26 @@ namespace ariac
       return computeKittingCompletionScore() * priority;
     };
 
+    double computeAssemblyTotal() const
+    {
+      return computeAssemblyCompletionScore() * priority;
+    };
+
     /// \brief Get score without priority factor.
     double computeKittingCompletionScore() const
     {
       double total = 0.0;
       for (const auto &item : this->kitting_shipment_scores)
+      {
+        total += item.second.total();
+      }
+      return total;
+    };
+
+    double computeAssemblyCompletionScore() const
+    {
+      double total = 0.0;
+      for (const auto &item : this->assembly_shipment_scores)
       {
         total += item.second.total();
       }
@@ -279,7 +407,8 @@ namespace ariac
     friend std::ostream &operator<<(std::ostream &_out,
                                     const GameScore &_obj)
     {
-      _out << "<game_score>" << std::endl;
+
+      _out << "[game_score]" << std::endl;
       _out << "...total game score: [" << _obj.total() << "]" << std::endl;
       _out << "...total process time: [" << _obj.total_process_time << "]" << std::endl;
       _out << "...arms collision?: [" << _obj.was_arm_arm_collision << "]" << std::endl;
@@ -287,7 +416,6 @@ namespace ariac
       {
         _out << item.second << std::endl;
       }
-      _out << "</game_score>" << std::endl;
       return _out;
     }
 
@@ -310,6 +438,7 @@ namespace ariac
       for (const auto &item : this->order_scores_map)
       {
         total += item.second.computeKittingTotal();
+        total += item.second.computeAssemblyTotal();
       }
       return total;
     };
@@ -374,9 +503,11 @@ namespace ariac
                                     const Product &_obj)
     {
       _out << "  <product>" << std::endl;
-      _out << "    <type>" << _obj.type << "" << "</type>" << std::endl;
+      _out << "    <type>" << _obj.type << ""
+           << "</type>" << std::endl;
       _out << "    <faulty>" << (_obj.isFaulty ? "true" : "false") << "</faulty>" << std::endl;
-      _out << "    <pose>" << _obj.pose << "" << "</pose>" << std::endl;
+      _out << "    <pose>" << _obj.pose << ""
+           << "</pose>" << std::endl;
       _out << "  </product>" << std::endl;
       return _out;
     }
@@ -394,6 +525,22 @@ namespace ariac
     ignition::math::Pose3d pose;
   };
 
+  class RobotDisableCondition
+  {
+    ///@brief Robot to disable
+    /// Options are: kitting_robot, assembly_robot
+  public:
+    std::string robot_type;
+    ///@brief Where are parts placed to disable the kitting robot
+    /// Options are: agv#, as#
+  public:
+    std::string location;
+    ///@brief Number of parts placed in location to disable the robot
+  public:
+    int number_of_parts;
+  };
+
+
   /////////////////////////////////////////////////////////////
   /// \brief Class to store information about a kitting shipment.
   /////////////////////////////////////////////////////////////
@@ -409,7 +556,8 @@ namespace ariac
     {
       _out << "<kitting_shipment type='" << _shipment.shipment_type << "' agv='" << _shipment.agv_id << "' station='" << _shipment.assembly_station << "'>";
       for (const auto &obj : _shipment.products)
-        _out << std::endl<< obj;
+        _out << std::endl
+             << obj;
       _out << "</kitting_shipment>" << std::endl;
 
       return _out;
@@ -654,7 +802,8 @@ namespace ariac
     /// \brief The ID of this order.
   public:
     OrderID_t order_id;
-
+  public:
+    int priority;
     /// \brief Simulation time in which the order should be triggered.
   public:
     double start_time;
@@ -668,8 +817,8 @@ namespace ariac
     int interrupt_on_wanted_products;
 
     /// \brief Which station to send the AGV
-  // public:
-  //   std::string stationToReach;
+    public:
+      std::string interrupt_on_station_reached;
 
     /// \brief Simulation time in seconds permitted for the order to be
     /// completed before cancelling it. Infinite by default.
@@ -693,6 +842,15 @@ namespace ariac
 
   public:
     bool has_assembly_task;
+  //--status of the kitting robot
+  public:
+    ariac::RobotDisableCondition robot_disable_condition;
+  //--halth status of the kitting robot
+  public:
+    int kitting_robot_health;
+  //--health status of the assembly robot
+  public:
+    int assembly_robot_health;
   };
   //-- end class Order
 

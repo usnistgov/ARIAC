@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nist_gear</name>
-  <version>3.0.6</version>
+  <version>5.0.0</version>
   <description>
     The ROS package for the NIST Industrial Automation Competition.
   </description>
@@ -38,12 +38,15 @@
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
   <depend>tf</depend>
+  
   <depend>geometry_msgs</depend>
   <depend>python-rospkg</depend>
   <depend>robot_state_publisher</depend>
   <depend>rospack</depend>
 
   <build_depend>message_generation</build_depend>
+
+
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>effort_controllers</exec_depend>
   <exec_depend>message_runtime</exec_depend>

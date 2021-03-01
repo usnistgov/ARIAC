@@ -5,7 +5,7 @@
 string shipment_type
 
 # station used to do assembly
-string station
+string station_id
 
 # Collection of products
 Product[] products

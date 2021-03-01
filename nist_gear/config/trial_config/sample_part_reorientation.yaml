@@ -1,0 +1,88 @@
+#Number of orders: 1
+#Tasks: kitting
+#Number of shipments: 1
+#Insufficiently many products: No
+#Part re-orientation: Yes
+#In-process order update: No
+#Dropped products: No
+#In-process order interruption: No
+#Faulty products: No
+#Sensor blackout: No
+#Time limit: No
+options:
+  insert_models_over_bins: true
+  insert_models_over_stations: false
+  belt_population_cycles: 10
+  enable_robot_camera: true
+  time_limit: -1
+
+agv_infos:
+  agv1:
+    location: ks1
+  agv2:
+    location: ks2
+  agv3:
+    location: ks3
+  agv4:
+    location: ks4
+    
+orders:
+  order_0:
+    priority: 1
+    kitting_robot_health: 1 # information on health for kitting robot
+    assembly_robot_health: 1 # information on health for assembly robot
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    kitting:
+      shipment_count: 1
+      agvs: [agv2]
+      destinations: [as1]
+      products:
+        part_0:
+          type: assembly_pump_blue
+          pose:
+            xyz: [0.0, -0.2, 0]
+            rpy: ['pi', 0, 0]
+        part_1:
+          type: assembly_regulator_red
+          pose:
+            xyz: [0.0, 0.2, 0]
+            rpy: [0, 0, 'pi/2']
+        part_2:
+          type: assembly_sensor_blue
+          pose:
+            xyz: [0.0, 0.0, 0]
+            rpy: [0, 0, 0]
+
+models_over_bins:
+   bin1:
+     models:
+       assembly_pump_blue:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 1
+   bin8:
+     models:
+       assembly_regulator_red:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 'pi/4']
+         num_models_x: 2
+         num_models_y: 1
+   bin5:
+     models:
+       assembly_sensor_blue:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 'pi/4']
+         num_models_x: 1
+         num_models_y: 2
+
+belt_models:
+  assembly_pump_blue:
+    3.0:
+      pose:
+        xyz: [0.0, 4.3, 0.92]
+        rpy: [0, 0, 0]

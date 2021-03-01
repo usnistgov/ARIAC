@@ -34,8 +34,8 @@
 #include <gazebo/transport/transport.hh>
 #include <gazebo/util/system.hh>
 #include <nist_gear/ARIAC.hh>
-#include <nist_gear/DetectedShipment.h>
-#include <nist_gear/DetectShipment.h>
+#include <nist_gear/DetectedKittingShipment.h>
+#include <nist_gear/DetectKittingShipment.h>
 #include "SideContactPlugin.hh"
 
 namespace gazebo
@@ -85,7 +85,7 @@ namespace gazebo
 
     /// \brief Service for geting the content of a tray
     protected: bool HandleGetContentService(
-      ros::ServiceEvent<nist_gear::DetectShipment::Request, nist_gear::DetectShipment::Response> & event);
+      ros::ServiceEvent<nist_gear::DetectKittingShipment::Request, nist_gear::DetectKittingShipment::Response> & event);
 
     protected: void PublishTFTransform(const common::Time sim_time);
 
@@ -95,8 +95,8 @@ namespace gazebo
     /// \brief ID of tray
     protected: std::string trayID;
 
-       /// \brief ID of the station
-    protected: std::string stationID;
+     /// \brief ID of the station
+    protected: std::string station_name;
 
     /// \brief Fixed joints to lock contacting models
     protected: std::vector<physics::JointPtr> fixedJoints;

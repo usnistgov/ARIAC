@@ -1,0 +1,13 @@
+controller_list:
+  - name: fake_kitting_arm_controller
+    joints:
+      - linear_arm_actuator_joint
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+initial:  # Define initial robot poses.
+  - group: kitting_arm
+    pose: kitting_home

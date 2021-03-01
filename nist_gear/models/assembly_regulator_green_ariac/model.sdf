@@ -20,7 +20,7 @@
         <geometry>
             <mesh>
             <uri>model://assembly_regulator_green_ariac/meshes/assembly_regulator_part_green.dae</uri>
-            <scale>1.1 1.1 1.1</scale>
+            <scale>0.85 0.85 0.95</scale>
             </mesh>
           </geometry>
         <surface>
@@ -36,7 +36,7 @@
          <geometry>
            <mesh>
              <uri>model://assembly_regulator_green_ariac/meshes/assembly_regulator_part_green.dae</uri>
-             <scale>1.1 1.1 1.1</scale>
+             <scale>0.95 0.95 0.95</scale>
            </mesh>
          </geometry>
        </visual>

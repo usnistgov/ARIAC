@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: ""
+    relative_path: /tmp/ariac/kitting.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/kitting.srdf
+  CONFIG:
+    author_name: Zeid Kootbally
+    author_email: zeid.kootbally@nist.gov
+    generated_timestamp: 1611208823

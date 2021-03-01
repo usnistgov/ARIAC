@@ -18,7 +18,7 @@
 #include <cstdlib>
 #include <string>
 
-#include <nist_gear/DetectedShipment.h>
+#include <nist_gear/DetectedKittingShipment.h>
 
 #include "ROSAriacKitTrayPlugin.hh"
 
@@ -67,6 +67,8 @@ void KitTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     gzdbg << "KitTrayPlugin running at the default update rate\n";
 
   this->trayID = this->parentLink->GetScopedName();
+  
+  
 
   // Make sure the ROS node for Gazebo has already been initialized
   if (!ros::isInitialized())
@@ -78,7 +80,7 @@ void KitTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   this->rosNode = new ros::NodeHandle("");
 
-  this->currentKitPub = this->rosNode->advertise<nist_gear::DetectedShipment>(
+  this->currentKitPub = this->rosNode->advertise<nist_gear::DetectedKittingShipment>(
     "/ariac/trays", 1000, boost::bind(&KitTrayPlugin::OnSubscriberConnect, this, _1));
   this->publishingEnabled = true;
 
@@ -219,15 +221,40 @@ void KitTrayPlugin::OnSubscriberConnect(const ros::SingleSubscriberPublisher& pu
 /////////////////////////////////////////////////
 void KitTrayPlugin::PublishKitMsg()
 {
+  int agv_id = std::stoi(this->trayID.substr(3,1)); //--get the id of the agv
+  // std::string agv_name = this->trayID.substr(3,1);
+
+  std::string current_station{};
+  if (agv_id == 1)
+  {
+    this->rosNode->getParam("/ariac/agv1_station", current_station);
+  }
+  if (agv_id == 2)
+  {
+    this->rosNode->getParam("/ariac/agv2_station", current_station);
+  }
+  if (agv_id == 3)
+  {
+    this->rosNode->getParam("/ariac/agv3_station", current_station);
+  }
+  if (agv_id == 4)
+  {
+    this->rosNode->getParam("/ariac/agv4_station", current_station);
+  }
+  this->station_name = current_station;
+  
+  // ROS_WARN_STREAM("this->trayID " << this->trayID);
+  // ROS_WARN_STREAM("agv_id " << agv_id);
+  // ROS_WARN_STREAM("station " << this->station_name);
+
   // Publish current kit
-  nist_gear::DetectedShipment kitTrayMsg;
+  nist_gear::DetectedKittingShipment kitTrayMsg;
   kitTrayMsg.destination_id = this->trayID;
-  // ROS_INFO_STREAM(kitTrayMsg.destination_id);
+  kitTrayMsg.station_id = this->station_name;
   for (const auto &obj : this->currentKit.objects)
   {
     nist_gear::DetectedProduct msgObj;
     msgObj.type = obj.type;
-    // ROS_INFO_STREAM(obj.type);
     msgObj.is_faulty = obj.isFaulty;
     msgObj.pose.position.x = obj.pose.Pos().X();
     msgObj.pose.position.y = obj.pose.Pos().Y();
@@ -248,11 +275,34 @@ void KitTrayPlugin::UnlockContactingModels()
 {
   boost::mutex::scoped_lock lock(this->mutex);
   physics::JointPtr fixedJoint;
+
   for (auto fixedJoint : this->fixedJoints)
   {
     fixedJoint->Detach();
   }
   this->fixedJoints.clear();
+
+  for (auto model : this->contactingModels)
+  {
+    model->SetGravityMode(false);
+    auto modelName = model->GetName();
+    auto linkName = modelName + "::link";
+    auto link = model->GetLink(linkName);
+    if (link == NULL)
+    {
+      // If the model was inserted into the world using the "population" SDF tag,
+      // the link will have an additional namespace of the model type.
+      linkName = modelName + "::" + ariac::DetermineModelType(modelName) + "::link";
+      link = model->GetLink(linkName);
+      if (link == NULL)
+      {
+        gzwarn << "Couldn't find link to remove joint with: " << linkName;
+        continue;
+      }
+    }
+    link->SetGravityMode(true);
+    model->SetAutoDisable(true);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -335,7 +385,7 @@ bool KitTrayPlugin::HandleClearService(
 
 /////////////////////////////////////////////////
 bool KitTrayPlugin::HandleGetContentService(
-  ros::ServiceEvent<nist_gear::DetectShipment::Request, nist_gear::DetectShipment::Response> & event)
+  ros::ServiceEvent<nist_gear::DetectKittingShipment::Request, nist_gear::DetectKittingShipment::Response> & event)
 {
   const std::string& callerName = event.getCallerName();
   gzdbg << this->trayID << ": Handle get content service called by: " << callerName << std::endl;
@@ -353,8 +403,33 @@ bool KitTrayPlugin::HandleGetContentService(
     return true;
   }
 
-  nist_gear::DetectedShipment kitTrayMsg;
+  int agv_id = std::stoi(this->trayID.substr(3,1)); //--get the id of the agv
+  // std::string agv_name = this->trayID.substr(3,1);
+
+  std::string current_station{};
+  if (agv_id == 1)
+  {
+    this->rosNode->getParam("/ariac/agv1_station", current_station);
+  }
+  if (agv_id == 2)
+  {
+    this->rosNode->getParam("/ariac/agv2_station", current_station);
+  }
+  if (agv_id == 3)
+  {
+    this->rosNode->getParam("/ariac/agv3_station", current_station);
+  }
+  if (agv_id == 4)
+  {
+    this->rosNode->getParam("/ariac/agv4_station", current_station);
+  }
+  this->station_name = current_station;
+  // ROS_WARN_STREAM("station " << this->station_name);
+
+  nist_gear::DetectedKittingShipment kitTrayMsg;
   kitTrayMsg.destination_id = this->trayID;
+  kitTrayMsg.station_id = this->station_name;
+  
   for (const auto &obj : this->currentKit.objects)
   {
     nist_gear::DetectedProduct msgObj;

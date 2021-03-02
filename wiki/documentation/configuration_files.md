@@ -573,7 +573,6 @@ This field is used to trigger the [Faulty Sensor challenge](agility_challenges.m
 - For users experiencing low real-time factors, reducing the number of products that are in the scenario will help.
   - If you are focusing on grasping products from the bins, you can set `belt_population_cycles` to `0` to avoid spawning parts on the conveyor belt.
   - If you are focusing on grasping products from a particular bin, you can comment out the other bins listed in `models_over_bins` to temporarily not spawn them.
-  - If you are focusing on grasping products from a particular shelf, you can comment out the other shelves listed in `models_over_shelves` to temporarily not spawn them.
 
 -------------------------------------------------
 

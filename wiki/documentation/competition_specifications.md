@@ -81,9 +81,9 @@ The figures below shows where AGVs stop for each of the three locations. To lear
 
 ### Conveyor Belt
 
-- The conveyor belt is a $0.65\,m$ wide, $9\,m$ long plane that transports objects across the work environment.
+- The conveyor belt is a **0.65\,m** wide, **9\,m** long plane that transports objects across the work environment.
 - The following properties impact teams' interaction with the belt:
-  - Products will travel down the belt at a fixed speed of $0.2\,m/s$.
+  - Products will travel down the belt at a fixed speed of **0.2\,m/s**.
   - Competitors can control the conveyor belt during development, but not during the final competition.
   - There is a limited supply of products on the belt, and any products placed on the belt are automatically removed if they reach the end of the belt. Products will not be replaced once removed.
 
@@ -96,7 +96,7 @@ The figures below shows where AGVs stop for each of the three locations. To lear
 - There are 8 product bins that may be used for building kits.
 - Products in these bins will not be replaced once used.
 - All products in a particular storage bin are of the same type and have the same orientation.
-- The product bins are shallow boxes measuring $0.6 \times 0.6\,m$.
+- The product bins are shallow boxes measuring **0.6 \times 0.6\,m**.
 
 ### Parts
 
@@ -107,7 +107,7 @@ The figures below shows where AGVs stop for each of the three locations. To lear
 
 ### Trays
 
-Kitting shipments must be performed on trays located on AGVs. When a shipment is complete, competitors programmatically signal the AGVs to go to an assembly station. Based on the environment shown earlier, AGV1 and AGV2 can only go to assembly stations 1 and 2. AGV3 and AGV4 can only go to assembly stations 3 and 4. Each tray is shallow and measures $0.5\times0.7\,m$.
+Kitting shipments must be performed on trays located on AGVs. When a shipment is complete, competitors programmatically signal the AGVs to go to an assembly station. Based on the environment shown earlier, AGV1 and AGV2 can only go to assembly stations 1 and 2. AGV3 and AGV4 can only go to assembly stations 3 and 4. Each tray is shallow and measures **0.5\times0.7\,m**.
 
 ### Briefcases
 
@@ -127,7 +127,7 @@ ARIAC 2021 consists of two robots: kitting robot and assembly robot.
 
 Single 6 DoF UR10 arm mounted on a linear rail. This robot can only do kitting as it cannot reach the assembly stations.
 
-- The base moves at a velocity of $4 m/s$ and its range on the linear rail is $y=[-4.80, 4.80]$
+- The base moves at a velocity of **4 m/s** and its range on the linear rail is **y=[-4.80, 4.80]**
 - The end of the arm is equipped with a vacuum gripper. The vacuum gripper is controlled in a binary manner (on/off) and reports whether or not it is successfully gripping an object.
 
 
@@ -143,9 +143,9 @@ rosrun rqt_joint_trajectory_controller rqt_joint_trajectory_controller robot_des
 
 The assembly robot is a gantry robot mounted on the ceiling, the robot consists of:
 
-- One linear actuator (`small_long_joint`) which allows the small rail to move along the two long rails at a velocity of $4\,m/s$ within the range $[-12.40, 2.40]$.
-- One linear actuator (`torso_rail_joint`) which controls the base of the torso on the small rail at a velocity of $4\,m/s$ and is within the range $y=[-4.50, 4.50]$.
-- One rotatory torso (`torso_base_main_joint`) which rotates 360 degrees around the base z-axis with the range $[-6.28, 6.28]$.
+- One linear actuator (`small_long_joint`) which allows the small rail to move along the two long rails at a velocity of **4\,m/s** within the range **[-12.40, 2.40]**.
+- One linear actuator (`torso_rail_joint`) which controls the base of the torso on the small rail at a velocity of **4\,m/s** and is within the range **y=[-4.50, 4.50]**.
+- One rotatory torso (`torso_base_main_joint`) which rotates 360 degrees around the base z-axis with the range **[-6.28, 6.28]**.
 - One 6 DoF UR10 arm attached to the torso with a fixed joint.
 - One tray is attached to the torso. Participants may put parts in this tray while fetching other parts in the environment.
 - The end of each arm is equipped with a vacuum gripper.
@@ -199,7 +199,7 @@ Each trial will consist of the following steps:
 2. The first Order (`order_0`) is sent to the topic `ariac/orders`.
    1. **NOTE**: If multiple orders are published on this topic, only the newest order will be visible as it replaces the previous order. It is recommended that competitors store all orders in a data structure.
 3. Complete each shipment in each order and then submit the shipments.
-4. When all orders are completed (all shipments submitted), the trial will automatically end and a breakdown of the final score is announced to the competitors. There are no time limits for individual orders, but each trial has a time limit ($500$ simulation seconds). The time limit is not broadcast on the ARIAC server but will be communicated to competitors beforehand.
+4. When all orders are completed (all shipments submitted), the trial will automatically end and a breakdown of the final score is announced to the competitors. There are no time limits for individual orders, but each trial has a time limit (**500** simulation seconds). The time limit is not broadcast on the ARIAC server but will be communicated to competitors beforehand.
 
 For details on how the communication with the competition system is performed during the trial, see the [competition interface](competition_interface_documentation.md) page.
 

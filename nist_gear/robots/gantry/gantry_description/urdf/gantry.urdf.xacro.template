@@ -352,6 +352,9 @@
             <near>0.05</near>
             <far>5</far>
           </clip>
+          <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
+            <activation_topic>/ariac/sensor_enable</activation_topic>
+          </plugin>
         </camera>
         <plugin name="rgbd_camera" filename="libgazebo_ros_openni_kinect.so">
           <baseline>0.2</baseline>

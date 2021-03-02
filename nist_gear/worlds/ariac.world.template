@@ -224,6 +224,15 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>-2.186829 0 -0.054593 0 0 0</pose>
       </model>   
+
+        <model name="ConveyorCollector">
+        <include>
+          <static>true</static>
+          <uri>model://trash_bin_blue</uri>
+        </include>
+        <pose frame=''>-0.577 -4.719131 0 0 0 0</pose>
+      </model>   
+
       <model name="workcell_floor_2021">
         <include>
           <static>true</static>
@@ -345,14 +354,15 @@ expand_snippet('rgbd_camera.sdf.template')
     <!-- a wall to delete objects at the end of the belt-->
     <include>
       <uri>model://deletion_wall</uri>
-      <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose>
-    </include>>
+      <pose>-0.573076 -4.53 0.07237 0 -1.5708 1.5708</pose>
+      <!-- <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose> -->
+    </include>
 
     <!-- a wall to delete objects in the bin-->
     <include>
       <uri>model://bin_deletion_wall</uri>
-      <pose>-2.188252 -0.014119 0.50 0 0 0</pose>
-    </include>>
+            <pose>-2.188252 -0.014119 0 0 0 0</pose>
+    </include>
 
 @{belt_models_loop = True}@
 @{belt_population_cycles = options['belt_population_cycles'] if belt_models_loop else 1}

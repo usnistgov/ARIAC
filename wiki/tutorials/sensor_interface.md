@@ -284,7 +284,7 @@ $ rostopic echo /ariac/quality_control_sensor_4
 
 ## Camera Mounted on the Robot
 
-This depth camera is optional and free. It is located on the torso tray. The ARIAC organizers will activate this camera by default in trial configuration files with the following code snippet:
+This depth camera is located on the torso tray. For now, the ARIAC organizers are taking charge of activating/deactivating this camera during a trial. This ability will be transferred to competitors. The ARIAC organizers will activate this camera by default in trial configuration files with the following code snippet:
 
 ```yaml
 options:

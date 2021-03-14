@@ -22,7 +22,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ## Camera on Robot
 
-- Competitors have the ability to add a depth camera on the robot torso to visualize the environment. Sensor processing is necessary to fully use this camera. See how to activate the camera on the robot in the [YAML Configuration Files](../documentation/configuration_files.md).
+- Competitors have the ability to add a depth camera on the robot torso to visualize the environment. Sensor processing is necessary to fully use this camera. See how to activate the camera on the robot in the [YAML Configuration Files](../documentation/configuration_files.md) (look for `enable_robot_camera`).
   
 ## Automated Guided Vehicles (AGVs)
 

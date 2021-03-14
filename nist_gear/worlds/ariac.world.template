@@ -224,6 +224,15 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>-2.186829 0 -0.054593 0 0 0</pose>
       </model>   
+
+        <model name="ConveyorCollector">
+        <include>
+          <static>true</static>
+          <uri>model://trash_bin_blue</uri>
+        </include>
+        <pose frame=''>-0.577 -4.719131 0 0 0 0</pose>
+      </model>   
+
       <model name="workcell_floor_2021">
         <include>
           <static>true</static>
@@ -345,14 +354,15 @@ expand_snippet('rgbd_camera.sdf.template')
     <!-- a wall to delete objects at the end of the belt-->
     <include>
       <uri>model://deletion_wall</uri>
-      <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose>
-    </include>>
+      <pose>-0.573076 -4.53 0.07237 0 -1.5708 1.5708</pose>
+      <!-- <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose> -->
+    </include>
 
     <!-- a wall to delete objects in the bin-->
     <include>
       <uri>model://bin_deletion_wall</uri>
-      <pose>-2.188252 -0.014119 0.50 0 0 0</pose>
-    </include>>
+            <pose>-2.188252 -0.014119 0 0 0 0</pose>
+    </include>
 
 @{belt_models_loop = True}@
 @{belt_population_cycles = options['belt_population_cycles'] if belt_models_loop else 1}
@@ -424,15 +434,22 @@ expand_snippet('rgbd_camera.sdf.template')
 
 
 
-@[for agv_id, agv_pose in agv_infos.items()]@
+@[for agv_id, agv_values in agv_infos.items()]@
     <!-- AGV@(str(agv_id)) -->
     <model name="agv@(str(agv_id))">
-      <pose>@(' '.join(agv_pose.xyz)) @(' '.join(agv_pose.rpy))</pose>
+    @[for agv_key, agv_values_values in agv_values.items()]@
+    <!-- <key>@(str(agv_key))</key> -->
+    @[if str(agv_key) == 'pose']@
+    <!-- <key>@(str(agv_key))</key> -->
+      <pose>@(' '.join(agv_values_values.xyz)) @(' '.join(agv_values_values.rpy))</pose>
+    @[end if]@
+    @[end for]@
       <include>
         <name>agv@(str(agv_id))</name>
         <uri>model://warehouse_robot_ariac</uri>
       </include>
       <plugin name="agv_plugin" filename="libROSAGVPlugin.so">
+        <agv_location_topic_name>/ariac/agv@(str(agv_id))/station</agv_location_topic_name>
 @[if agv_id == str(1) or agv_id == str(2)]@
         <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
         <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>
@@ -443,7 +460,7 @@ expand_snippet('rgbd_camera.sdf.template')
 @[end if]@
         <agv_control_service_name>/ariac/agv@(str(agv_id))/animate</agv_control_service_name>
         <clear_tray_service_name>/ariac/kit_tray_@(str(agv_id))/clear_tray</clear_tray_service_name>
-        <lock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/lock_models</lock_tray_service_name>
+        <lock_unlock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/lock_unlock_models</lock_unlock_tray_service_name>
         <index>@(str(agv_id))</index>
       </plugin>
       <!-- a tray for building kits -->
@@ -458,7 +475,7 @@ expand_snippet('rgbd_camera.sdf.template')
           <contact_sensor_name>kit_tray_contact</contact_sensor_name>
           <tf_frame_name>kit_tray_@(str(agv_id))</tf_frame_name>
           <clear_tray_service_name>/ariac/kit_tray_@(str(agv_id))/clear_tray</clear_tray_service_name>
-          <lock_models_service_name>/ariac/kit_tray_@(str(agv_id))/lock_models</lock_models_service_name>
+          <lock_unlock_models_service_name>/ariac/kit_tray_@(str(agv_id))/lock_unlock_models</lock_unlock_models_service_name>
           <get_content_service_name>/ariac/kit_tray_@(str(agv_id))/get_content</get_content_service_name>
           <update_rate>20</update_rate>
           <faulty_parts>
@@ -564,6 +581,16 @@ expand_snippet('rgbd_camera.sdf.template')
         <agv_control_service_name>/ariac/agv@(agv_id)</agv_control_service_name>
         <agv_animate_service_name>/ariac/agv@(agv_id)/animate</agv_animate_service_name>
         <agv_to_as_service_name>/ariac/agv@(agv_id)/submit_shipment</agv_to_as_service_name>
+        <agv_location_topic>/ariac/agv@(str(agv_id))/station</agv_location_topic>
+    @[for agv, agv_values in agv_infos.items()]@
+    @[if str(agv) == str(agv_id)]@
+    @[for agv_key, agv_values_values in agv_values.items()]@
+    @[if str(agv_key) == 'location']@
+    <agv_start_location_name>@(str(agv_values_values))</agv_start_location_name>
+    @[end if]@
+    @[end for]@
+    @[end if]@
+    @[end for]@
 @[if agv_id == 1 or agv_id == 2]@
         <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
         <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>

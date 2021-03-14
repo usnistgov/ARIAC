@@ -18,8 +18,6 @@ Being updated...
 rosrun nist_gear gear.py -f <trial_config_file> <competitor_config_file>
 ```
 
-
-
 # Competitor configuration file
 
 * As a competitor, you are allowed to select the quantity, type, and location of sensors.

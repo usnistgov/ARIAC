@@ -55,6 +55,8 @@ namespace gazebo
     /// \brief Subscriber to the activation topic.
     protected: transport::SubscriberPtr activationSub;
 
+    private: double sensor_update_rate;
+
   };
 }
 #endif

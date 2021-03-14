@@ -8,6 +8,7 @@
   <!-- sensor links and fixed joints -->
 @[for name, sensor in sensors.items()]@
 
+
   <!-- a @(sensor.type) type sensor in the frame @(name)_frame -->
   <link name="@(name)_frame" />
   <joint name="@(name)_joint" type="fixed">

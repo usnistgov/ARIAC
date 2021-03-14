@@ -214,7 +214,7 @@ rgbd_camera_0:
 
 ## Logical Camera
 
-![logicalcamera_2021.jpg](../figures/logicalcamera_2021.jpg)
+![logicalcamera_2021.jpg](../figures/logical_camera_view.jpg)
 
 
 - This is a simulated camera with a built-in object classification and localization system.
@@ -284,11 +284,13 @@ $ rostopic echo /ariac/quality_control_sensor_4
 
 ## Camera Mounted on the Robot
 
-This depth camera is optional and free. It is located on the torso tray. The ARIAC organizers will activate this camera by default in trial configuration files with the following code snippet:
+- **Cost**: $600
+
+This depth camera is located on the torso tray and can be enabled (`enable: true`) or disabled (`enable: false`) using the following code snippet in the user configuration file (see [sample_user_config.yaml](../../nist_gear/config/user_config/sample_user_config.yaml)):
 
 ```yaml
-options:
-  enable_robot_camera: true
+robot_camera:
+  enable: true
 ```
 
 Competitors can see the view from this camera in RViz.

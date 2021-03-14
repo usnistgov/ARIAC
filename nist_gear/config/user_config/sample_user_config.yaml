@@ -2,23 +2,13 @@ sensors:
   logical_camera_0:
     type: logical_camera
     pose:
-      xyz: [-2.515033, 2.925223, 1.82]
-      rpy: [-1.570796, 1.570796, 0]
-  logical_camera_station1:
+      xyz: [-2.512438, 3.062523, 1.820000]
+      rpy: [-3.122690, 1.570796, 0]
+  logical_camera_1:
     type: logical_camera
     pose:
-      xyz: [-7.404807, 3.089804, 2.232627]
-      rpy: [1.570794, 1.570792, 1.570792]
-  logical_camera_agv2_station1:
-    type: logical_camera
-    pose:
-      xyz: [-5.503480, 1.716366, 1.868509]
-      rpy: [1.570797, 1.570792, 1.570796]
-  logical_camera_station2:
-    type: logical_camera
-    pose:
-      xyz: [-7.404807, 3.089804, 2.232627]
-      rpy: [1.570794, 1.570792, 1.570792]  
+      xyz: [-6.223534, 1.990132, 1.831789]
+      rpy: [1.570779, 1.346996, 2.391937]  
   laser_profiler_1:
     type: laser_profiler
     pose:
@@ -33,7 +23,13 @@ sensors:
     type: break_beam
     pose:
       xyz: [-0.557152, 4.485425, 0.879306]
-      rpy: [0, 0, -1.557900]    
+      rpy: [0, 0, -1.557900]
+      
+robot_camera:
+  enable: false
+
+
+
   # rgbd_1:
   #   type: rgbd_camera
   #   pose:

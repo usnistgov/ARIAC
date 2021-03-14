@@ -84,6 +84,19 @@ void KitTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     "/ariac/trays", 1000, boost::bind(&KitTrayPlugin::OnSubscriberConnect, this, _1));
   this->publishingEnabled = true;
 
+  this->agv1LocationSubscriber =
+      this->rosNode->subscribe("/ariac/agv1/station",
+                               1000, &KitTrayPlugin::OnAGV1Location, this);
+  this->agv2LocationSubscriber =
+      this->rosNode->subscribe("/ariac/agv2/station",
+                               1000, &KitTrayPlugin::OnAGV2Location, this);
+  this->agv3LocationSubscriber =
+      this->rosNode->subscribe("/ariac/agv3/station",
+                               1000, &KitTrayPlugin::OnAGV3Location, this);
+  this->agv4LocationSubscriber =
+      this->rosNode->subscribe("/ariac/agv4/station",
+                               1000, &KitTrayPlugin::OnAGV4Location, this);
+
   this->tf_frame_name = "kit_tray_frame";
   if (_sdf->HasElement("tf_frame_name"))
     this->tf_frame_name = _sdf->Get<std::string>("tf_frame_name");
@@ -107,16 +120,43 @@ void KitTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->gzNode->Init();
 
   // Gazebo subscription for the lock trays topic
-  std::string lockModelsServiceName = "lock_models";
-  if (_sdf->HasElement("lock_models_service_name"))
-    lockModelsServiceName = _sdf->Get<std::string>("lock_models_service_name");
+  std::string lockUnlockModelsServiceName = "lock_models";
+  if (_sdf->HasElement("lock_unlock_models_service_name"))
+    lockUnlockModelsServiceName = _sdf->Get<std::string>("lock_unlock_models_service_name");
   this->lockModelsSub = this->gzNode->Subscribe(
-    lockModelsServiceName, &KitTrayPlugin::HandleLockModelsRequest, this);
+    lockUnlockModelsServiceName, &KitTrayPlugin::HandleLockModelsRequest, this);
 
   // cache tray pose
   this->tray_pose = this->model->WorldPose();
 }
 
+void KitTrayPlugin::OnAGV1Location(std_msgs::String::ConstPtr _msg)
+{
+    // std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+    this->agv1CurrentStation = _msg->data;
+    // gzdbg << "current_station: "<< this->dataPtr->current_station << "\n";
+}
+
+void KitTrayPlugin::OnAGV2Location(std_msgs::String::ConstPtr _msg)
+{
+    // std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+    this->agv2CurrentStation = _msg->data;
+    // gzdbg << "current_station: "<< this->dataPtr->current_station << "\n";
+}
+
+void KitTrayPlugin::OnAGV3Location(std_msgs::String::ConstPtr _msg)
+{
+    // std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+    this->agv3CurrentStation = _msg->data;
+    // gzdbg << "current_station: "<< this->dataPtr->current_station << "\n";
+}
+
+void KitTrayPlugin::OnAGV4Location(std_msgs::String::ConstPtr _msg)
+{
+    // std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+    this->agv4CurrentStation = _msg->data;
+    // gzdbg << "current_station: "<< this->dataPtr->current_station << "\n";
+}
 /////////////////////////////////////////////////
 void KitTrayPlugin::OnUpdate(const common::UpdateInfo & _info)
 {
@@ -136,7 +176,7 @@ void KitTrayPlugin::OnUpdate(const common::UpdateInfo & _info)
   this->CalculateContactingModels();
   if (prevContactingModels.size() != this->contactingModels.size()) {
     ROS_DEBUG_STREAM(this->parentLink->GetScopedName() << ": number of contacting models: "
-      << this->contactingModels.size());
+      << this->contactingModels.size()<< std::endl);
   }
 
   // Look for models that were contacting tray but now aren't.
@@ -227,19 +267,19 @@ void KitTrayPlugin::PublishKitMsg()
   std::string current_station{};
   if (agv_id == 1)
   {
-    this->rosNode->getParam("/ariac/agv1_station", current_station);
+    current_station = this->agv1CurrentStation;
   }
   if (agv_id == 2)
   {
-    this->rosNode->getParam("/ariac/agv2_station", current_station);
+    current_station = this->agv2CurrentStation;
   }
   if (agv_id == 3)
   {
-    this->rosNode->getParam("/ariac/agv3_station", current_station);
+    current_station = this->agv3CurrentStation;
   }
   if (agv_id == 4)
   {
-    this->rosNode->getParam("/ariac/agv4_station", current_station);
+    current_station = this->agv4CurrentStation;
   }
   this->station_name = current_station;
   
@@ -270,47 +310,71 @@ void KitTrayPlugin::PublishKitMsg()
   this->currentKitPub.publish(kitTrayMsg);
 }
 
-/////////////////////////////////////////////////
-void KitTrayPlugin::UnlockContactingModels()
-{
-  boost::mutex::scoped_lock lock(this->mutex);
-  physics::JointPtr fixedJoint;
 
-  for (auto fixedJoint : this->fixedJoints)
-  {
-    fixedJoint->Detach();
-  }
-  this->fixedJoints.clear();
 
-  for (auto model : this->contactingModels)
-  {
-    model->SetGravityMode(false);
-    auto modelName = model->GetName();
-    auto linkName = modelName + "::link";
-    auto link = model->GetLink(linkName);
-    if (link == NULL)
-    {
-      // If the model was inserted into the world using the "population" SDF tag,
-      // the link will have an additional namespace of the model type.
-      linkName = modelName + "::" + ariac::DetermineModelType(modelName) + "::link";
-      link = model->GetLink(linkName);
-      if (link == NULL)
-      {
-        gzwarn << "Couldn't find link to remove joint with: " << linkName;
-        continue;
-      }
-    }
-    link->SetGravityMode(true);
-    model->SetAutoDisable(true);
-  }
-}
+// /////////////////////////////////////////////////
+// void KitTrayPlugin::LockContactingModels()
+// {
+//   ROS_WARN_STREAM("LockContactingModels");
+//   boost::mutex::scoped_lock lock(this->mutex);
+//   physics::JointPtr fixedJoint;
+//   gzdbg << "Number of models in contact with the tray: " << this->contactingModels.size() << std::endl;
+//   for (auto model : this->contactingModels)
+//   {
+//   // Create the joint that will attach the models
+//   fixedJoint = this->world->Physics()->CreateJoint(
+//         "fixed", this->model);
+//   auto jointName = this->model->GetName() + "_" + model->GetName() + "__joint__";
+//   gzdbg << "Creating fixed joint: " << jointName << std::endl;
+//   fixedJoint->SetName(jointName);
 
-/////////////////////////////////////////////////
+//   model->SetGravityMode(false);
+
+//   // Lift the part slightly because it will fall through the tray if the tray is animated
+//   model->SetWorldPose(model->WorldPose() + ignition::math::Pose3d(0,0,0.01,0,0,0));
+
+//   auto modelName = model->GetName();
+//   auto linkName = modelName + "::link";
+//   auto link = model->GetLink(linkName);
+//   if (link == NULL)
+//   {
+//     // If the model was inserted into the world using the "population" SDF tag,
+//     // the link will have an additional namespace of the model type.
+//     linkName = modelName + "::" + ariac::DetermineModelType(modelName) + "::link";
+//     link = model->GetLink(linkName);
+//     if (link == NULL)
+//     {
+//       gzwarn << "Couldn't find link to make joint with: " << linkName;
+//       continue;
+//     }
+//   }
+//   link->SetGravityMode(false);
+//   fixedJoint->Load(link, this->parentLink, ignition::math::Pose3d());
+//   fixedJoint->Attach(this->parentLink, link);
+//   fixedJoint->Init();
+//   this->fixedJoints.push_back(fixedJoint);
+//   model->SetAutoDisable(true);
+//   }
+// }
+
+
+// void KitTrayPlugin::UnlockContactingModels()
+// {
+//   boost::mutex::scoped_lock lock(this->mutex);
+//   physics::JointPtr fixedJoint;
+//   for (auto fixedJoint : this->fixedJoints)
+//   {
+//     fixedJoint->Detach();
+//   }
+//   this->fixedJoints.clear();
+// }
+
+///////////////////////////////////////////////////////////
 void KitTrayPlugin::LockContactingModels()
 {
   boost::mutex::scoped_lock lock(this->mutex);
   physics::JointPtr fixedJoint;
-  gzdbg << "Number of models in contact with the tray: " << this->contactingModels.size() << std::endl;
+  gzdbg << "Number of models in contact with the tray: " << this->contactingModels.size() << "\n";
   for (auto model : this->contactingModels)
   {
   // Create the joint that will attach the models
@@ -323,7 +387,7 @@ void KitTrayPlugin::LockContactingModels()
   model->SetGravityMode(false);
 
   // Lift the part slightly because it will fall through the tray if the tray is animated
-  model->SetWorldPose(model->WorldPose() + ignition::math::Pose3d(0,0,0.01,0,0,0));
+  model->SetWorldPose(model->WorldPose() + ignition::math::Pose3d(0,0,0.0001,0,0,0));
 
   auto modelName = model->GetName();
   auto linkName = modelName + "::link";
@@ -350,11 +414,62 @@ void KitTrayPlugin::LockContactingModels()
 }
 
 /////////////////////////////////////////////////
+void KitTrayPlugin::UnlockContactingModels()
+{
+  boost::mutex::scoped_lock lock(this->mutex);
+  physics::JointPtr fixedJoint;
+
+  for (auto fixedJoint : this->fixedJoints)
+  {
+    // gzdbg << fixedJoint->GetParent()->GetName() << "\n";
+    // gzdbg << fixedJoint->GetChild()->GetName() << "\n";
+    fixedJoint->Detach();
+  }
+  this->fixedJoints.clear();
+  for (auto model : this->contactingModels)
+  {
+    gzdbg << model->GetName() << "\n";
+    model->SetGravityMode(true);
+    model->SetAutoDisable(false);
+  }
+  //   auto modelName = model->GetName();
+  //   auto linkName = modelName + "::link";
+  //   auto link = model->GetLink(linkName);
+  //   if (link == NULL)
+  //   {
+  //     // If the model was inserted into the world using the "population" SDF tag,
+  //     // the link will have an additional namespace of the model type.
+  //     linkName = modelName + "::" + ariac::DetermineModelType(modelName) + "::link";
+  //     link = model->GetLink(linkName);
+  //     if (link == NULL)
+  //     {
+  //       gzwarn << "Couldn't find link to remove joint with: " << linkName;
+  //       continue;
+  //     }
+  //   }
+  //   link->SetGravityMode(true);
+  //   model->SetAutoDisable(true);
+  // }
+}
+
+/////////////////////////////////////////////////
 void KitTrayPlugin::HandleLockModelsRequest(ConstGzStringPtr &_msg)
 {
-  gzdbg << this->trayID << ": Handle clear tray service called.\n";
-  (void)_msg;
-  this->LockContactingModels();
+  gzdbg << this->trayID << ": Handle lock/unlock models service called.\n";
+
+  // gzdbg << "lockunlock---------- " << _msg->data() << "\n";
+
+  if (_msg->data() == "lock")
+  {
+    this->LockContactingModels();
+  }
+  else if (_msg->data() == "unlock")
+  {
+    this->UnlockContactingModels();
+  }
+
+  // (void)_msg;
+  
 }
 
 /////////////////////////////////////////////////
@@ -409,19 +524,19 @@ bool KitTrayPlugin::HandleGetContentService(
   std::string current_station{};
   if (agv_id == 1)
   {
-    this->rosNode->getParam("/ariac/agv1_station", current_station);
+    current_station = this->agv1CurrentStation;
   }
   if (agv_id == 2)
   {
-    this->rosNode->getParam("/ariac/agv2_station", current_station);
+    current_station = this->agv2CurrentStation;
   }
   if (agv_id == 3)
   {
-    this->rosNode->getParam("/ariac/agv3_station", current_station);
+    current_station = this->agv3CurrentStation;
   }
   if (agv_id == 4)
   {
-    this->rosNode->getParam("/ariac/agv4_station", current_station);
+    current_station = this->agv4CurrentStation;
   }
   this->station_name = current_station;
   // ROS_WARN_STREAM("station " << this->station_name);

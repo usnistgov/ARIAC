@@ -18,7 +18,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 # Wiki | Tutorials | Installation
 
-Currently, GEAR can only be built from source. We are working on a debian package for GEAR.
+Currently, GEAR can only be built from source.
 
 ## Prerequisites
 
@@ -35,9 +35,17 @@ You should see 18.04 Bionic Beaver in that file.
 
 ### Install ROS and Gazebo
 
-- GEAR uses [ROS Melodic](http://www.ros.org/) and [Gazebo 9](http://gazebosim.org/blog/gazebo9) to simulate the environment
+- GEAR uses [ROS Melodic](http://www.ros.org/) and Gazebo 9.16.0 to simulate the environment
   - Follow these instructions to install [ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu).
-  - Follow these instructions to install [Gazebo 9](http://gazebosim.org/tutorials?tut=install_ubuntu&cat=install).
+  
+  - The default version of Gazebo (9.0) that comes with ROS Melodic will not work with the current version of GEAR. Gazebo 9.16.0 is recommended and can be installed with the following instructions.
+  
+  ```bash
+  $ sudo sh -c 'echo "deb http://packages.osrfoundation.org/gazebo/ubuntu-stable `lsb_release -cs` main" > /etc/apt/sources.list.d/gazebo-stable.list'
+  $ wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
+  $ sudo apt update
+  $ sudo apt upgrade
+  ```
 
 **Note**, if you see a crash complaining about missing a symbol in an ignition library, run this to fix it
 

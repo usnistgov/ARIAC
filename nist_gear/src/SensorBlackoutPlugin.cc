@@ -45,6 +45,7 @@ void SensorBlackoutPlugin::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf
     std::string worldName = this->parentSensor->WorldName();
     this->node = transport::NodePtr(new transport::Node());
     this->node->Init(this->parentSensor->WorldName());
+    this->sensor_update_rate = this->parentSensor->UpdateRate();
 
     if (!_sdf->HasElement("activation_topic"))
     {
@@ -62,10 +63,12 @@ void SensorBlackoutPlugin::OnActivationMsg(ConstGzStringPtr &_msg)
   if (_msg->data() == "activate")
   {
     this->parentSensor->SetActive(true);
+    this->parentSensor->SetUpdateRate(this->sensor_update_rate); //Hack for rgbd camera
   }
   else if (_msg->data() == "deactivate")
   {
     this->parentSensor->SetActive(false);
+    this->parentSensor->SetUpdateRate(1e-7); //Hack for rgbd camera
   }
   else
   {

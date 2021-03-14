@@ -2,6 +2,22 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
+## Released 2021, Mar 13
+
+- This new update should fix most of the tickets created on Github. Please, close tickets for which you have received answers or for which the original issues are fixed in this new update.
+- Updated the [Installation](../tutorials/installation.md#install-ros-and-gazebo) page to prevent segmentation fault from happening when launching GEAR.
+  - The link to the installation instructions have been moved to the Home page of the wiki.
+- Added a cost for the camera mounted on the robot. Used properly, this camera can greatly reduce the number of logical cameras in the environment. Therefore, we added a cost of $600 for this camera.
+  - Competitors now have the ability to enable/disable this camera in the user configuration file (see [Sensor Interface](../tutorials/sensor_interface.md#camera-mounted-on-the-robot)).
+- We are working on increasing the field of view of the logical camera (while keeping its current cost). Once done, you will be able to cover, for instance, `agv1`, `agv2`, `bin1`, `bin2`, `bin3`, `bin4` (see new field of view [here](../tutorials/sensor_interface.md#logical-camera)).
+- Fixed some typos in the documentation.
+- Added more explanations in the documentation to answer questions asked on Github.
+- Scoring formulas updated for both assembly and kitting (see [Scoring](../documentation/scoring.md)).
+- Penalty for parts dropped on the floor has been implemented (see [Scoring](../documentation/scoring.md#trial-score-ts)).
+- Added a topic (`/ariac/agv#/station` which reports the location of each AGV in the workcell (see [Competition Interface](../documentation/competition_interface_documentation.md#process-management)).
+
+<!-- - Added a Python test competitor which does both kitting and assembly (see `ariac2021_example.py` in the `scripts` directory). -->
+
 ## Released 2021, Feb 28
 
 - Many bug fixes.

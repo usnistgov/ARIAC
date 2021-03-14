@@ -147,7 +147,6 @@ options:
   insert_models_over_bins: true
   insert_models_over_stations: true
   belt_population_cycles: 15
-  enable_robot_camera: true
   time_limit: -1
 
 agv_infos:
@@ -302,7 +301,6 @@ options:
   insert_models_over_bins: true
   insert_models_over_stations: true
   belt_population_cycles: 15
-  enable_robot_camera: true
   time_limit: -1
 ```
 
@@ -311,7 +309,6 @@ The `options` field is used for optional parameters.
 - `insert_models_over_bins` allows models in bins to spawn in the workcell.
 - `insert_models_over_stations` allows to start the trial with briefcases partially filled with some parts. Competitors will need to complete the briefcases with missing parts for the ventilators.
 - `belt_population_cycles` informs how many parts will spawn on the belt. In this example, 15 parts. This option is linked with the field `belt_models`. Setting the value for this field to 0 will deactivate the belt for this trial.
-- `enable_robot_camera` is used to enable/disable the camera mounted on the gantry torso. See the section on [Sensor Interface](../tutorials/sensor_interface.md) to learn about this camera.
 - `time_limit` dictates how long competitors have to complete the trial.
   - `-1`: No time limit.
   - `500`: Time limit used during qualifiers and finals (in simulation seconds unit).

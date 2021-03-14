@@ -169,18 +169,6 @@ install(TARGETS ${side_contact_plugin_name}
   RUNTIME DESTINATION bin
 )
 
-# Create the libURDFContactPlugin.so library.
-# set(urdf_contact_plugin_name URDFContactPlugin)
-# add_library(${urdf_contact_plugin_name} src/URDFContactPlugin.cc)
-# target_link_libraries(${urdf_contact_plugin_name}
-#   ${GAZEBO_LIBRARIES}
-# )
-# install(TARGETS ${urdf_contact_plugin_name}
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib
-#   RUNTIME DESTINATION bin
-# )
-
 # Create the libROSAGVPlugin.so library.
 set(ros_agv_plugin_name ROSAGVPlugin)
 add_library(${ros_agv_plugin_name} src/ROSAGVPlugin.cc)

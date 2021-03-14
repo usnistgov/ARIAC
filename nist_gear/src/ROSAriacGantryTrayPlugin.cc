@@ -62,8 +62,8 @@ void GantryTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
  
 
   this->tf_frame_name = "gantry_tray_frame";;
-  if (_sdf->HasElement("tf_frame_name"))
-    this->tf_frame_name = _sdf->Get<std::string>("tf_frame_name");
+  if (_sdf->HasElement("frameName"))
+    this->tf_frame_name = _sdf->Get<std::string>("frameName");
 
   // ROS service for clearing the tray
   std::string clearServiceName{};
@@ -97,7 +97,7 @@ void GantryTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // cache tray pose
   //FIXME
   this->tray_pose = this->model->WorldPose();
-  gzdbg << "Gantry tray pose: " << this->tray_pose << "\n";
+  // gzdbg << "Gantry tray pose: " << this->tray_pose << "\n";
 }
 
 /////////////////////////////////////////////////
@@ -329,7 +329,7 @@ bool GantryTrayPlugin::HandleClearService(
   std_srvs::Trigger::Response& res = event.getResponse();
 
   const std::string& callerName = event.getCallerName();
-  gzdbg << "Handle clear tray service called by: " << callerName << std::endl;
+  gzdbg << "Handle gantry clear tray service called by: " << callerName << std::endl;
 
   // During the competition, this environment variable will be set.
   auto compRunning = std::getenv("ARIAC_COMPETITION");

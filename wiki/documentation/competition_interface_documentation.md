@@ -3,6 +3,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 -------------------------------------------------
 
 - [Wiki | Documentation |Competition Interface](#wiki--documentation-competition-interface)
+  - [- **T**=Topic](#--ttopic)
   - [Sensors](#sensors)
   - [TF frames](#tf-frames)
   - [Actuators](#actuators)
@@ -17,52 +18,26 @@ This interface can be used by teams to control all available actuators, read sen
 During the competition, it is against the rules to control the ARIAC simulation using anything other than the interface specified below.
 **Teams are not permitted to use any of the topics or services in the `/gazebo/` namespace prefix to control the Gazebo simulation or get information about the simulation state. These interfaces will be blocked during the Finals.**
 
+---
+- In the following Tables:
+  - **S**=Service
+  - **T**=Topic
+---
+
 ## Sensors
 
 
 - In the following table:
   - {name} is replaced with the name you give the sensor in the config file (see [Configuration of the environment and trials](configuration_spec.md)). Since the sensor names are unique, it ensures that all sensors publish data to unique topics.
-  - **M**=Message
 
-
-
-<table>
-   <tr>
-     <th>Topic</th>
-     <th>Description</th>
-     <th>Message</th>
-   </tr>
-   <tr>
-     <td width="40%"><ul><li>/ariac/{name}</li></ul></td>
-     <td width="30%"><b>M</b>: break beam's output</td>
-     <td width="30%"><a href="https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/Proximity.msg">nist_gear/Proximity.msg</a></td>
-   </tr>
-   <tr>
-     <td width="40%"><ul><li>/ariac/{name}_change</li></ul></td>
-     <td width="30%"><b>M</b>: break beam's output (output changes only)</td>
-     <td width="30%"><a href="https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/Proximity.msg">nist_gear/Proximity.msg</a></td>
-   </tr>
-   <tr>
-     <td width="40%"><ul><li>/ariac/{name}</li></ul></td>
-     <td width="30%"><b>M</b>: proximity sensor's output</td>
-     <td width="30%"><a href="http://docs.ros.org/api/sensor_msgs/html/msg/Range.html">sensor_msgs/Range.msg</a></td>
-   </tr>
-   <tr>
-     <td width="40%"><ul><li>/ariac/{name}</li></ul></td>
-     <td width="30%"><b>M</b>: laser profiler's output</td>
-     <td width="30%"><a href="http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.html">sensor_msgs/LaserScan.msg</a></td>
-   </tr>
-   <tr>
-     <td width="40%"><ul><li>/ariac/{name}</li></ul></td>
-     <td width="30%"><b>M</b>: depth camera's output</td>
-     <td width="30%"><a href="http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html">sensor_msgs/PointCloud.msg</a></td>
-   </tr>
-   <tr>
-     <td width="40%"><ul><li>/ariac/{name}</li></ul></td>
-     <td width="30%"><b>M</b>: logical camera's output</td>
-     <td width="30%"><a href="https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/LogicalCameraImage.msg">nist_gear/LogicalCameraImage.msg</a></td>
-   </tr>
-</table>
+| Topic                         	| Description                               	| Message    |
+|-------------------------------	|-------------------------------------------	|--------------------------------------------------------------------------------------------------------------------------	|
+| `/ariac/{sensor_name}`        	| output of the breakbeam sensor            	| [nist_gear/Proximity.msg](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/Proximity.msg)                    	|
+| `/ariac/{sensor_name}_change` 	| break beam's output (output changes only) 	| [nist_gear/Proximity.msg](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/Proximity.msg)                    	|
+| `/ariac/{sensor_name}`        	| proximity sensor's output                 	| [sensor_msgs/Range.msg](http://docs.ros.org/api/sensor_msgs/html/msg/Range.html)                                         	|
+| `/ariac/{sensor_name}`        	| laser profiler's output                   	| [sensor_msgs/LaserScan.msg](http://docs.ros.org/api/sensor_msgs/html/msg/LaserScan.htm)                                  	|
+| `/ariac/{sensor_name}`        	| depth camera's output                     	| [sensor_msgs/PointCloud.msg](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html)                               	|
+| `/ariac/{sensor_name}`        	| logical camera's output                   	| [nist_gear/LogicalCameraImage.msg](hhttps://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/LogicalCameraImage.msg) 	|
 
 ## TF frames
 
@@ -82,16 +57,9 @@ The following frames are published on the global `/tf` and `/tf_static` topics.
 
 ## Actuators
 
-- In the following Tables:
-  - **M**=Message
-  - **T**=Topic
-
-
-
-
 <table>
  <tr>
-   <th>Action</th>
+   <th>Topic/Service</th>
    <th>Description</th>
    <th>Message</th>
  </tr>
@@ -179,7 +147,7 @@ The following frames are published on the global `/tf` and `/tf_static` topics.
 
 <table>
    <tr>
-     <th>Topic</th>
+     <th>Topic/Service</th>
      <th>Description</th>
      <th>Message</th>
    </tr>
@@ -230,6 +198,11 @@ The following frames are published on the global `/tf` and `/tf_static` topics.
      <td width="30%"><b>S</b>: submit shipment for assembly station {N} (N=1,2,3,4)</td>
      <td width="30%"><a href="https://github.com/usnistgov/ARIAC/blob/master/nist_gear/srv/AGVControl.srv">nist_gear/AssemblyStationSubmitShipment.srv</a></td>
    </tr>
+      <tr>
+     <td width="40%"><ul><li>/ariac/agv{N}/station</li></ul></td>
+     <td width="30%"><b>T</b>: station where AGV{N} is at. (N=1,2,3,4)</td>
+     <td width="30%"><a href="http://docs.ros.org/api/std_msgs/html/msg/String.html">std_msgs/String.msg</a></td>
+   </tr>
 </table>  
 
 
@@ -240,18 +213,18 @@ These are only provided for debugging/development purposes and their use is not 
 
 <table>
    <tr>
-     <th>Topic</th>
+     <th>Topic/Service</th>
      <th>Description</th>
      <th>Message</th>
    </tr>
    <tr>
      <td width="40%"><ul><li>/ariac/current_score</li></ul></td>
-     <td width="30%"><b>M</b>: current completion score</td>
+     <td width="30%"><b>T</b>: current completion score</td>
      <td width="30%"><a href="http://docs.ros.org/api/std_msgs/html/msg/Float32.html">std_msgs/Float32.msg</a></td>
    </tr>
    <tr>
      <td width="40%"><ul><li>/ariac/trays</li></ul></td>
-     <td width="30%"><b>M</b>: state of the kit being built on each tray</td>
+     <td width="30%"><b>T</b>: state of the kit being built on each tray</td>
      <td width="30%"><a href="https://github.com/usnistgov/ARIAC/blob/master/nist_gear/msg/TrayContents.msg">nist_gear/TrayContents.msg </a></td>
    </tr>
    <tr>

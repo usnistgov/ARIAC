@@ -177,22 +177,22 @@ void BriefcasePlugin::ProcessContactingModels()
   for (auto model : this->contactingModels) {
     if (model) {
       model->SetAutoDisable(false);
-      ariac::AssemblyObject object;
+      ariac::BriefcaseProduct object;
 
       // Determine the object type
-      object.type = ariac::DetermineModelType(model->GetName());
+      object.productType = ariac::DetermineModelType(model->GetName());
 
       // Determine if the object is faulty
       auto modelName = ariac::TrimNamespace(model->GetName());
       auto it = std::find(this->faulty_part_names.begin(), this->faulty_part_names.end(), modelName);
-      object.isFaulty = it != this->faulty_part_names.end();
+      object.isProductFaulty = it != this->faulty_part_names.end();
 
       // Determine the pose of the object in the frame of the tray
       ignition::math::Pose3d objectPose = model->WorldPose();
       ignition::math::Matrix4d transMat(trayPose);
       ignition::math::Matrix4d objectPoseMat(objectPose);
-      object.pose = (transMat.Inverse() * objectPoseMat).Pose();
-      object.pose.Rot().Normalize();
+      object.productPose = (transMat.Inverse() * objectPoseMat).Pose();
+      object.productPose.Rot().Normalize();
 
       this->current_assembly.objects.push_back(object);
     }
@@ -228,16 +228,16 @@ void BriefcasePlugin::PublishAssemblyMsg()
   for (const auto &obj : this->current_assembly.objects)
   {
     nist_gear::DetectedProduct msgObj;
-    msgObj.type = obj.type;
+    msgObj.type = obj.productType;
     // ROS_INFO_STREAM(obj.type);
-    msgObj.is_faulty = obj.isFaulty;
-    msgObj.pose.position.x = obj.pose.Pos().X();
-    msgObj.pose.position.y = obj.pose.Pos().Y();
-    msgObj.pose.position.z = obj.pose.Pos().Z();
-    msgObj.pose.orientation.x = obj.pose.Rot().X();
-    msgObj.pose.orientation.y = obj.pose.Rot().Y();
-    msgObj.pose.orientation.z = obj.pose.Rot().Z();
-    msgObj.pose.orientation.w = obj.pose.Rot().W();
+    msgObj.is_faulty = obj.isProductFaulty;
+    msgObj.pose.position.x = obj.productPose.Pos().X();
+    msgObj.pose.position.y = obj.productPose.Pos().Y();
+    msgObj.pose.position.z = obj.productPose.Pos().Z();
+    msgObj.pose.orientation.x = obj.productPose.Rot().X();
+    msgObj.pose.orientation.y = obj.productPose.Rot().Y();
+    msgObj.pose.orientation.z = obj.productPose.Rot().Z();
+    msgObj.pose.orientation.w = obj.productPose.Rot().W();
 
     // Add the object to the kit.
     assembly_msg.products.push_back(msgObj);
@@ -359,15 +359,15 @@ bool BriefcasePlugin::HandleGetContentService(
   for (const auto &obj : this->current_assembly.objects)
   {
     nist_gear::DetectedProduct msgObj;
-    msgObj.type = obj.type;
-    msgObj.is_faulty = obj.isFaulty;
-    msgObj.pose.position.x = obj.pose.Pos().X();
-    msgObj.pose.position.y = obj.pose.Pos().Y();
-    msgObj.pose.position.z = obj.pose.Pos().Z();
-    msgObj.pose.orientation.x = obj.pose.Rot().X();
-    msgObj.pose.orientation.y = obj.pose.Rot().Y();
-    msgObj.pose.orientation.z = obj.pose.Rot().Z();
-    msgObj.pose.orientation.w = obj.pose.Rot().W();
+    msgObj.type = obj.productType;
+    msgObj.is_faulty = obj.isProductFaulty;
+    msgObj.pose.position.x = obj.productPose.Pos().X();
+    msgObj.pose.position.y = obj.productPose.Pos().Y();
+    msgObj.pose.position.z = obj.productPose.Pos().Z();
+    msgObj.pose.orientation.x = obj.productPose.Rot().X();
+    msgObj.pose.orientation.y = obj.productPose.Rot().Y();
+    msgObj.pose.orientation.z = obj.productPose.Rot().Z();
+    msgObj.pose.orientation.w = obj.productPose.Rot().W();
 
     // Add the object to the kit.
     assembly_msg.products.push_back(msgObj);

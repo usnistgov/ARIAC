@@ -90,7 +90,7 @@ drops:
       max:
         xyz: [0.3, 0.3, 0.5]
       destination:
-        xyz: [0.3, 0.3, 0.05]
+        xyz: [0.2, 0.3, 0.05]
         rpy: [0, 0, 0.2]
       product_type_to_drop: assembly_regulator_red
     shipping_box_1_impeding:
@@ -100,7 +100,7 @@ drops:
       max:
         xyz: [0.3, 0.3, 0.5]
       destination:
-        xyz: [0.3, 0.3, 0.05]
+        xyz: [0.2, 0.3, 0.05]
         rpy: [0, 0, 0.2]
       product_type_to_drop: assembly_sensor_blue
 

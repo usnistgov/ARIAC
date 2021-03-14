@@ -34,16 +34,16 @@ joint_limits:
     max_acceleration: 0
   small_long_joint:
     has_velocity_limits: true
-    max_velocity: 4
+    max_velocity: 1
     has_acceleration_limits: false
     max_acceleration: 0
   torso_base_main_joint:
     has_velocity_limits: true
-    max_velocity: 3.14159265359
+    max_velocity: 0.785398163397
     has_acceleration_limits: false
     max_acceleration: 0
   torso_rail_joint:
     has_velocity_limits: true
-    max_velocity: 4
+    max_velocity: 1
     has_acceleration_limits: false
     max_acceleration: 0

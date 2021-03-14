@@ -26,6 +26,7 @@
 #include "nist_gear/AGVToKittingStation.h"  //--custom service
 // ROS
 #include <ros/ros.h>
+#include <std_msgs/String.h>
 #include <std_srvs/Trigger.h>
 
 namespace gazebo
@@ -68,6 +69,7 @@ namespace gazebo
     bool OnCommandAGVToAS4(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
     bool OnCommandAGVToAS5(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
     bool OnCommandAGVToAS6(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
+    void OnAGVLocation(std_msgs::String::ConstPtr msg);
 
   public:
     bool OnCommandToAssemblyStation(nist_gear::AGVToAssemblyStation::Request &_req,

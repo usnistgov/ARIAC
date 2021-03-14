@@ -37,6 +37,7 @@
 #include <nist_gear/DetectedKittingShipment.h>
 #include <nist_gear/DetectKittingShipment.h>
 #include "SideContactPlugin.hh"
+#include <std_msgs/String.h>
 
 namespace gazebo
 {
@@ -139,6 +140,19 @@ namespace gazebo
 
     /// \brief Gazebo subscriber to the lock models topic
     protected: transport::SubscriberPtr lockModelsSub;
+
+    ros::Subscriber agv1LocationSubscriber;
+    ros::Subscriber agv2LocationSubscriber;
+    ros::Subscriber agv3LocationSubscriber;
+    ros::Subscriber agv4LocationSubscriber;
+    std::string agv1CurrentStation;
+    std::string agv2CurrentStation;
+    std::string agv3CurrentStation;
+    std::string agv4CurrentStation;
+    void OnAGV1Location(std_msgs::String::ConstPtr msg);
+    void OnAGV2Location(std_msgs::String::ConstPtr msg);
+    void OnAGV3Location(std_msgs::String::ConstPtr msg);
+    void OnAGV4Location(std_msgs::String::ConstPtr msg);
   };
 }
 #endif

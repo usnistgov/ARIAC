@@ -17,6 +17,8 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
     - [Assembly Robot](#assembly-robot)
   - [Sensors](#sensors)
   - [Order](#order)
+    - [Kitting Shipments](#kitting-shipments)
+    - [Assembly Shipments](#assembly-shipments)
   - [Agility Challenges](#agility-challenges)
   - [Scoring](#scoring)
   - [Competition Process](#competition-process)
@@ -37,14 +39,7 @@ This scenario is intended as a baseline set of kitting tasks for the other kitti
 
 - **Scenario 2: Baseline Assembly**
 
-This scenario is intended as a baseline set of assembly tasks for the other assembly test methods to be compared against. The task for this scenario is to pick products and place them in briefcases located at assembly stations. In baseline assembly, an order that contains at least one assembly shipment will be announced on the `/ariac/orders` topic. Similar to kit building, assembly shipments in this order will provide a list of product types and poses in briefcase frames. When assembly is announced in an order, competitors will encounter the following situations (either one of them or both of them):
-
-1. At the beginning of a trial some AGVs will already be located at assembly stations where assembly is required.
-2. Competitors will first receive a kitting shipment to complete. Once the shipment is submitted a new order will be announced with an assembly to be performed at the station where the AGV was delivered.
-
-- **NOTE**: Competitors are not forced to do assembly from parts located on the AGVs, however, this is strongly recommended. Although competitors are free to pick up parts from bins/conveyor belt and bring them directly to briefcases, there are a few points to consider in doing so:
-    - Taking parts from bins/conveyor belt are not guaranteed to be non-faulty parts. AGVs already located at assembly stations (situation 1.) are guaranteed to be free of faulty parts. In the situation where  competitors are tasked to do kitting first and then assembly (situation 2.), the probability of using faulty parts at an assembly station is still lower than picking up parts directly from bins/conveyor belt (assuming competitors removed faulty parts before submitting the AGVs).
-    - It may take longer to pick parts from bins/conveyor belt than to use the ones already located on the AGVs.
+This scenario is intended as a baseline set of assembly tasks for the other assembly test methods to be compared against. The task for this scenario is to pick products and place them in briefcases located at assembly stations. In baseline assembly, an order that contains at least one assembly shipment will be announced on the `/ariac/orders` topic. Similar to kit building, assembly shipments in this order will provide a list of product types and poses in briefcase frames. 
   
 - **Scenario 3: In-Process Order Change**
 
@@ -54,7 +49,7 @@ This scenario is intended as a baseline set of assembly tasks for the other asse
     <!-- While the robot is in the middle of doing kitting or assembly, an event will trigger one of the two robots to breakdown. The disabled robot can not be used for any task and the other robot needs to do a task changeover.  -->
 
 ---
-The competition will consist of 20 trials: 5 trials of each of the 4 scenarios. Each trial will receive a score based on completion and efficiency metrics outlined on the [Scoring section](scoring.md). Details of the agility challenges used in these scenarios can be found on the [agility challenge](agility_challenges.md) page.
+The competition will consist of 15 trials: 5 trials for each scenario. Each trial will receive a score based on completion and efficiency metrics outlined on the [Scoring section](scoring.md). Details of the agility challenges used in these scenarios can be found on the [agility challenge](agility_challenges.md) page.
 
 ---
 
@@ -186,9 +181,127 @@ For the details about how to configure the sensor locations, see the [YAML Confi
 
 An order is an instruction containing kits or assembly products for the robot system to complete. Each order will specify the list of products to be put in the shipment, including the type, color, and position/orientation of each product.
 
-An order consists of at least one task, either `kitting` or `assembly`. Each task consists of at least one shipment and each shipment consists of at least one product. To deliver `kitting` shipments, competitors must deliver the AGVs to assembly stations. To deliver assembly shipments, competitors must submit the assembly product (nothing visually happens when an assembly shipment is submitted).
+An order consists of at least one task, either `kitting` or `assembly`. Each task consists of at least one shipment and each shipment consists of at least one product.
+
+For each trial, the first order (`order_0`) is always announced at the start of the competition (after the call to `start_competition` is made). If the trial consists of multiple orders, subsequent orders are announced either as part of the agility challenge [New Order](agility_challenges.md#new-order) or as a new order with only an assembly shipment. The latter order is not considered a high-priority order (`priority = 1`) and is announced once the competitors deliver an AGV to an assembly station. An example of such orders can be found in [sample_multiple_non_high_priority_orders.yaml](../../nist_gear/config/trial_config/sample_multiple_non_high_priority_orders.yaml)
 
 More information on how to read orders published on `/ariac/orders` can be found on the [GEAR Interface](../tutorials/gear_interface.md) page. To understand how orders are described in YAML, please see the [YAML Configuration Files](configuration_files.md) page.
+
+
+
+### Kitting Shipments
+
+- To deliver `kitting` shipments, competitors must deliver the AGVs to assembly stations. Below is an example of a kitting shipment as published on the topic `ariac/orders`.
+  - The id of the order is `order_0`
+  - The order consists of only one shipment (`order_0_kitting_shipment_0`) which must be built on `agv2` and delivered to the assembly station `as1`. The shipment consists of 3 products and the pose of each product is expressed in the frame of the kit tray located on `agv2`.
+  
+```bash
+order_id: "order_0"
+kitting_shipments: 
+  - 
+    shipment_type: "order_0_kitting_shipment_0"
+    agv_id: "agv2"
+    station_id: "as1"
+    products: 
+      - 
+        type: "assembly_battery_blue"
+        pose: 
+          position: 
+            x: 0.1
+            y: 0.1
+            z: 0.0
+          orientation: 
+            x: 0.0
+            y: 0.0
+            z: 0.0
+            w: 1.0
+      - 
+        type: "assembly_regulator_red"
+        pose: 
+          position: 
+            x: 0.15
+            y: 0.1
+            z: 0.0
+          orientation: 
+            x: 0.0
+            y: 0.0
+            z: 0.0
+            w: 1.0
+      - 
+        type: "assembly_sensor_blue"
+        pose: 
+          position: 
+            x: -0.1
+            y: -0.1
+            z: 0.0
+          orientation: 
+            x: 0.0
+            y: 0.0
+            z: 0.0
+            w: 1.0
+assembly_shipments: []
+---
+```
+
+- When kitting shipments are required on a specific AGV, the AGV will be empty (no products in the tray of the AGV) and located at its kitting station (`agv1` at `ks1`, `agv2` at `ks2`, `agv3` at `ks3`, and `agv4` at  `ks4`).
+- In the situation where `agv_id: "any"`, competitors will have the choice of the AGV and there will always be an available AGV for the shipment. For instance, in the following order snippet, competitors will have the choice between `agv1` or `agv2` because only these two AGVs can reach `as1` (see the section on AGV above).
+
+```bash
+    agv_id: "any"
+    station_id: "as1"
+```
+
+### Assembly Shipments
+
+- To deliver assembly shipments, competitors must submit the assembly product (nothing visually happens when an assembly shipment is submitted). 
+
+When assembly is announced in an order, competitors will encounter the following situations (either one of them or both of them):
+
+1. At the beginning of a trial some AGVs will already be located at assembly stations where assembly is required.
+2. Competitors will first receive a kitting shipment to complete. Once the shipment is submitted a new order will be announced with an assembly to be performed at the station where the AGV was delivered.
+
+- **NOTE**: Competitors are not forced to do assembly from parts located on the AGVs, however, this is strongly recommended. Although competitors are free to pick up parts from bins/conveyor belt and bring them directly to briefcases, there are a few points to consider in doing so:
+    - Taking parts from bins/conveyor belt are not guaranteed to be non-faulty parts. AGVs already located at assembly stations (situation 1.) are guaranteed to be free of faulty parts. In the situation where  competitors are tasked to do kitting first and then assembly (situation 2.), the probability of using faulty parts at an assembly station is still lower than picking up parts directly from bins/conveyor belt (assuming competitors removed faulty parts before submitting the AGVs).
+    - It may take longer to pick parts from bins/conveyor belt than to use the ones already located on the AGVs.
+
+An order which consists of only one assembly shipment is displayed below. `station_id` shows that assembly has to be performed at assembly station `as1` and the pose of each product in this shipment is in the frame of the briefcase at the assembly station.
+
+```bash
+order_id: "order_0"
+kitting_shipments: []
+assembly_shipments: 
+  - 
+    shipment_type: "order_0_assembly_shipment_0"
+    station_id: "as1"
+    products: 
+      - 
+        type: "assembly_battery_green"
+        pose: 
+          position: 
+            x: -0.032465
+            y: 0.174845
+            z: 0.15
+          orientation: 
+            x: 0.0
+            y: 0.0
+            z: 0.0
+            w: 1.0
+      - 
+        type: "assembly_pump_blue"
+        pose: 
+          position: 
+            x: 0.032085
+            y: -0.152835
+            z: 0.25
+          orientation: 
+            x: 0.0
+            y: 0.0
+            z: 0.0
+            w: 1.0
+---
+```
+
+
 
 ## Agility Challenges
 

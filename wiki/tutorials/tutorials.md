@@ -4,9 +4,9 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 # Wiki | Tutorials
 
-## [Installation](installation.md)
+<!-- ## [Installation](installation.md)
 
-This tutorial describes how to install the Gazebo Environment for Agile Robots (GEAR).
+This tutorial describes how to install the Gazebo Environment for Agile Robots (GEAR). -->
 
 ## [Interacting with GEAR](gear_interface.md)
 

@@ -26,6 +26,11 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 This page describes how to configure the simulated workcell environment by selecting and placing sensors. Moreover, during development, competitors will find it useful to create new or update existing trial configuration files in order to configure the behavior and the challenges during trials. Therefore, this page consists of a section describing each field of a trial configuration file. Trial and user configuration files are [YAML](http://yaml.org/) formatted files.
 
+```diff
+- Competitors are not allowed to read trial configuration files and user configuration files directly. 
+- Everything has to be done through the GEAR interface.
+```
+
 - A trial configuration file details specifics of a particular trial of the competition. In a trial configuration file, ARIAC organizers can describe orders, shipments, agility challenges, and the location of parts in the environment. These files are used to test competitors' systems during the qualifier and final rounds. Configuration files are located in the [nist_gear/config](../../nist_gear/config) directory.
 - A user configuration file is a file created by each competitor which describes the type and the location of each sensor in the workcell. During the qualifier and final rounds, one single user configuration file will be used for all the trials. User configuration files should be placed in the [nist_gear/config/user_config](../../nist_gear/config/user_config) directory.
 
@@ -301,7 +306,7 @@ options:
   time_limit: -1
 ```
 
-The `options:` field is used for optional parameters.
+The `options` field is used for optional parameters.
 
 - `insert_models_over_bins` allows models in bins to spawn in the workcell.
 - `insert_models_over_stations` allows to start the trial with briefcases partially filled with some parts. Competitors will need to complete the briefcases with missing parts for the ventilators.

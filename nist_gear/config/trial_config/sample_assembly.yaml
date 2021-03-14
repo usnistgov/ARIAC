@@ -60,23 +60,23 @@ orders:
             xyz: [0.032085, -0.152835, 0.25]
             rpy: [0, 0, 0]
 
-# models_over_bins:
-#    bin2:
-#      models:
-#        assembly_battery_green:
-#          xyz_start: [0.2, 0.2, 0.0]
-#          xyz_end: [0.4, 0.4, 0.0]
-#          rpy: [0, 0, 0]
-#          num_models_x: 1
-#          num_models_y: 2
-#    bin8:
-#      models:
-#        assembly_battery_blue:
-#          xyz_start: [0.2, 0.2, 0.0]
-#          xyz_end: [0.4, 0.4, 0.0]
-#          rpy: [0, 0, 0]
-#          num_models_x: 2
-#          num_models_y: 1
+models_over_bins:
+   bin2:
+     models:
+       assembly_battery_green:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 1
+         num_models_y: 2
+   bin8:
+     models:
+       assembly_pump_blue:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 1
 
 # models_over_stations:
 #   as1:

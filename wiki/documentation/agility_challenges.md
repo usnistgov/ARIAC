@@ -9,6 +9,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
     - [Assembly](#assembly)
   - [Faulty Gripper](#faulty-gripper)
   - [Faulty Product](#faulty-product)
+  - [Insufficient Products](#insufficient-products)
   - [Faulty Sensor](#faulty-sensor)
   - [New Order](#new-order)
   - [New Task](#new-task)
@@ -36,6 +37,7 @@ The ARIAC organizers wanted to be sure that the challenges that were captured wi
 | Part re-orientation |         1         |         2         | [sample_part_reorientation.yaml](../../nist_gear/config/trial_config/sample_part_reorientation.yaml) |
 | Faulty gripper      |         1         |         4         | [sample_faulty_gripper.yaml](../../nist_gear/config/trial_config/sample_faulty_gripper.yaml)         |
 | Faulty product      |         2         |         2         | [sample_kitting.yaml](../../nist_gear/config/trial_config/sample_kitting.yaml)         |
+| Insufficient product      |         2         |         2         | [sample_kitting.yaml](../../nist_gear/config/trial_config/sample_kitting.yaml)         |
 | Faulty sensor       |         3         |         3         | [sample_faulty_sensor.yaml](../../nist_gear/config/trial_config/sample_faulty_sensor.yaml)           |
 | New order           |         3         |         5         | [sample_new_order.yaml](../../nist_gear/config/trial_config/sample_new_order.yaml)                   |
 | New task            |         4         |         5         | [sample_task_changeover.yaml](../../nist_gear/config/trial_config/sample_task_changeover.yaml)                     |
@@ -52,7 +54,7 @@ During development, competitors will find it very useful to spawn parts directly
 
 **TASK**: Kitting
 
-A part is presented to the robots in an orientation that is different than its desired final orientation. The robot needs to rotate the part around its $x$-axis (or 'flip the part') before it is placed in the tray or in the briefcase.
+A part is presented to the robots in an orientation that is different than its desired final orientation. The robot needs to rotate the part around its x-axis (or 'flip the part') before it is placed in the tray or in the briefcase.
 
 ### Kitting
 
@@ -216,6 +218,12 @@ faulty_products:
  * Sample trial:
    * [<b>sample_not_enough_products.yaml</b>](https://github.com/usnistgov/ARIAC/blob/master/nist_gear/config/sample_not_enough_products.yaml) -->
 
+## Insufficient Products
+
+**TASK**: Kitting
+
+In this challenge the trial consists of kitting shipments that will need to be submitted as incomplete kits. This is due to the environment not having enough non-faulty products to fill the shipments. 
+
 ## Faulty Sensor
 
 **TASK**: Kitting and Assembly
@@ -240,7 +248,7 @@ How `wanted_products` and `unwanted_products`  are useful depends on how much ov
 
 These conditions can make interesting scenarios, such as guaranteeing competitors have to remove parts or have to re-arrange parts in the tray of the previous order.
 
-**NOTE**: In ARIAC 2021 there is a new way to announce a new order, which is not considered a high-priority order (`priority = 1`). The new order can be a kitting order, an assembly order, or both. This new order is announced once the competitors deliver an AGV to an assembly station. An example of such orders can be found in [sample_multiple_non_high_priority_orders.yaml](../../nist_gear/config/trial_config/sample_multiple_non_high_priority_orders.yaml)
+
 
 ## New Task
 

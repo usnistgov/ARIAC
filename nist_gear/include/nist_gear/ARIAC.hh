@@ -34,7 +34,6 @@ namespace ariac
   typedef std::string AssemblyShipmentType_t;
   typedef std::string OrderID_t;
 
-
   /////////////////////////////////////////////////////////////
   /// \brief The score of a kitting shipment.
   /////////////////////////////////////////////////////////////
@@ -90,38 +89,6 @@ namespace ariac
     }
   };
 
-/////////////////////////////////////////////////////////////
-  /// \brief Class to store information about each object contained in a briefcase for assembly.
-  /////////////////////////////////////////////////////////////
-  class BriefcaseProduct
-  {
-    /// \brief Stream insertion operator.
-    /// \param[in] _out output stream.
-    /// \param[in] _obj Assembly object to output.
-    /// \return The output stream
-  public:
-    friend std::ostream &operator<<(std::ostream &_out,
-                                    const BriefcaseProduct &_obj)
-    {
-      _out << "<object>" << std::endl;
-      _out << "...type: [" << _obj.productType << "]" << std::endl;
-      _out << "...faulty: [" << (_obj.isProductFaulty ? "true" : "false") << "]" << std::endl;
-      _out << "...pose: [" << _obj.productPose << "]" << std::endl;
-      _out << "</object>" << std::endl;
-      return _out;
-    }
-
-  public:
-  bool isProductCorrectPose = false;
-  bool isProductCorrectType = false;
-  bool isProductCorrectColor = false;
-  bool isProductFaulty = false;
-  int productSuccess = 0;
-  std::string productName;            /*!< Name of the product. */
-  std::string productType;            /*!< Type of the product. */
-  ignition::math::Pose3d productPose; /*!< Pose in which the object should be placed. */
-  };
-
   /////////////////////////////////////////////////////////////
   /// \brief The score of a finished product from assembly.
   /////////////////////////////////////////////////////////////
@@ -132,85 +99,39 @@ namespace ariac
     /// \param[in] _obj ShipmentScore object to output.
     /// \return The output stream
   public:
-
-    
-
-
     friend std::ostream &operator<<(std::ostream &_out,
                                     const AssemblyShipmentScore &_obj)
     {
       _out << "      ...completion score: [" << _obj.total() << "]" << std::endl;
-      _out << "         +2pts x (correct type AND correct pose): [2pts x " << _obj.computeNbCorrectPoseAndType() << "]" << std::endl;
-      _out << "           +1pt x (correct color): [1pt x " << _obj.computeNbCorrectColor() << "]" << std::endl;
-      _out << "             +all products bonus: [" << _obj.allProductsBonus << "]" << std::endl;
-      _out << "      ...complete: [" << (_obj.isShipmentComplete ? "true" : "false") << "]" << std::endl;
-      _out << "      ...shipped: [" << (_obj.isShipmentSubmitted ? "true" : "false") << "]" << std::endl;
-      _out << "      ...number of products shipped: [" << (_obj.numberOfProductsInShipment) << "]" << std::endl;
-      _out << "      ...has faulty products: [" << (_obj.hasFaultyProduct ? "true" : "false") << "]" << std::endl;
-      _out << "      ...has missing products: [" << (_obj.hasMissingProduct ? "true" : "false") << "]" << std::endl;
-      _out << "      ...has unwanted products: [" << (_obj.hasUnwantedProduct ? "true" : "false") << "]" << std::endl;
-      _out << "      ...number of products shipped with correct type: [" << _obj.numberOfProductsWithCorrectType << "]" << std::endl;
-      _out << "      ...number of products shipped with correct pose: [" << _obj.numberOfProductsWithCorrectPose << "]" << std::endl;
-      _out << "      ...number of products shipped with correct color: [" << _obj.numberOfProductsWithCorrectColor << "]" << std::endl;
-      _out << "      ...correct assembly station: [" << (_obj.isCorrectStation ? "true" : "false") << "]" << std::endl;
+      _out << "      ...complete: [" << (_obj.is_assembly_shipment_complete ? "true" : "false") << "]" << std::endl;
+      _out << "      ...shipped: [" << (_obj.is_assembly_shipment_submitted ? "true" : "false") << "]" << std::endl;
+      _out << "      ...product type presence score: [" << _obj.productOnlyTypePresence << "]" << std::endl;
+      _out << "      ...product color presence score: [" << _obj.productTypeAndColorPresence << "]" << std::endl;
+      _out << "      ...product pose score: [" << _obj.productPose << "]" << std::endl;
+      _out << "      ...all products bonus: [" << _obj.allProductsBonus << "]" << std::endl;
+      _out << "      ...correct assembly station: [" << (_obj.correctStation ? "true" : "false") << "]" << std::endl;
       return _out;
     }
 
   public:
     AssemblyShipmentType_t assemblyShipmentType;
-    std::map<std::string, BriefcaseProduct> briefcaseProducts{};
-    std::string assemblyStation;
-    int allProductsBonus = 0;
-    int success = 0;
-    int numberOfProductsWithCorrectColor = 0;
-    int numberOfProductsInShipment = 0;
-    int numberOfProductsWithCorrectType = 0;
-    int numberOfProductsWithCorrectPose = 0;
-    bool hasFaultyProduct = false;
-    bool hasMissingProduct = false;
-    bool hasUnwantedProduct = false;
-    bool isShipmentComplete = false;  // All products present
-    bool isShipmentSubmitted = false; // The finished product has been submitted for evaluation
-    bool isCorrectStation = false;                 // The finished product was built at the correct station
+    double productOnlyTypePresence = 0.0;
+    double productTypeAndColorPresence = 0.0;
+    double allProductsBonus = 0.0;
+    double productPose = 0.0;
+    bool is_assembly_shipment_complete = false;  // All products present
+    bool is_assembly_shipment_submitted = false; // The finished product has been submitted for evaluation
+    bool correctStation = false;                 // The finished product was built at the correct station
     gazebo::common::Time submit_time;            // Sim time when finished product was submitted
+
     /// \brief Calculate the total score.
     double total() const
     {
-      if (!isCorrectStation)
+      if (!correctStation)
       {
         return 0.0;
       }
-      int total = 2 * computeNbCorrectPoseAndType();
-      total += computeNbCorrectColor();
-      return total + allProductsBonus;
-    }
-
-    int computeNbCorrectPoseAndType() const{
-      int result{};
-      for (const auto& x : briefcaseProducts)
-      {
-        auto product = x.second;
-        if (product.isProductCorrectPose && product.isProductCorrectType){
-          result++;
-        }  
-      }
-      return result;
-    }
-
-    int computeNbCorrectColor() const
-    {
-      int result{};
-
-      for (const auto& x : briefcaseProducts)
-      {
-        auto product = x.second;
-        if (product.isProductCorrectPose && product.isProductCorrectType)
-        {
-          if (product.isProductCorrectColor)
-            result++;
-        }
-      }
-      return result;
+      return productOnlyTypePresence + productTypeAndColorPresence + allProductsBonus + productPose;
     }
   };
 
@@ -229,11 +150,27 @@ namespace ariac
     friend std::ostream &operator<<(std::ostream &_out,
                                     const OrderScore &_obj)
     {
+      // int final_completion_score{0};
+      // int final_order_score{0};
       _out << "   [order score]" << std::endl;
       _out << "   ...order ID [" << _obj.order_id << "]" << std::endl;
       _out << "   ...total order score: [" << _obj.computeKittingTotal() + _obj.computeAssemblyTotal() << "]" << std::endl;
+      
+      // if (_obj.kitting_shipment_scores.size() > 0 && _obj.assembly_shipment_scores.size() == 0)
+      // {
+      //   final_completion_score = _obj.computeKittingCompletionScore();
+      // }
+      // else if (_obj.kitting_shipment_scores.size() == 0 && _obj.assembly_shipment_scores.size() > 0)
+      // {
+      //   final_completion_score = _obj.computeAssemblyCompletionScore();
+      // }
+      // else if (_obj.kitting_shipment_scores.size() > 0 && _obj.assembly_shipment_scores.size() > 0)
+      // {
+      //   final_completion_score = _obj.computeAssemblyCompletionScore() + _obj.computeKittingCompletionScore();
+      // }
       _out << "   ...completion score: [" << _obj.computeAssemblyCompletionScore() + _obj.computeKittingCompletionScore() << "]" << std::endl;
       _out << "   ...time taken: [" << _obj.time_taken << "]" << std::endl;
+      // _out << "...kitting complete: [" << (_obj.isKittingComplete() ? "true" : "false") << "]" << std::endl;
       _out << "   ...priority: [" << (_obj.priority) << "]\n";
       if (_obj.kitting_shipment_scores.size() > 0)
       {
@@ -251,6 +188,7 @@ namespace ariac
         {
           _out << "      [assembly score]" << std::endl;
           _out << "      ...shipment type: [" << item.first << "]" << std::endl;
+          // _out << item.first<< std::endl;
           _out << item.second << std::endl;
         }
       }
@@ -328,14 +266,14 @@ namespace ariac
       {
         for (const auto shipment_tuple : assembly_shipment_scores)
         {
-          if (shipment_tuple.second.isShipmentSubmitted)
+          if (shipment_tuple.second.is_assembly_shipment_submitted)
           {
             ++assembly_shipments_submitted;
-            if (shipment_tuple.second.isShipmentComplete)
+            if (shipment_tuple.second.is_assembly_shipment_complete)
             {
               ++assembly_shipments_completed;
             }
-            if (!shipment_tuple.second.isCorrectStation)
+            if (!shipment_tuple.second.correctStation)
             {
               ++assembly_shipments_wrong_station;
             }
@@ -414,7 +352,7 @@ namespace ariac
       }
       for (const auto &item : this->assembly_shipment_scores)
       {
-        if (!item.second.isShipmentSubmitted)
+        if (!item.second.is_assembly_shipment_submitted)
         {
           return false;
         }
@@ -470,11 +408,10 @@ namespace ariac
                                     const GameScore &_obj)
     {
 
-      _out << "[trial_score]" << std::endl;
-      _out << "...total trial score: [" << _obj.total()  << "]" << std::endl;
+      _out << "[game_score]" << std::endl;
+      _out << "...total game score: [" << _obj.total() << "]" << std::endl;
       _out << "...total process time: [" << _obj.total_process_time << "]" << std::endl;
       _out << "...arms collision?: [" << _obj.was_arm_arm_collision << "]" << std::endl;
-      _out << "...dropped part penalty: [" << _obj.penalty << "]" << std::endl;
       for (const auto &item : _obj.order_scores_map)
       {
         _out << item.second << std::endl;
@@ -485,7 +422,6 @@ namespace ariac
   public:
     double total_process_time = 0.0;
     bool was_arm_arm_collision = false;
-    int penalty = 0;
 
     // The score of each of the orders during the game.
     std::map<OrderID_t, OrderScore> order_scores_map;
@@ -504,10 +440,6 @@ namespace ariac
         total += item.second.computeKittingTotal();
         total += item.second.computeAssemblyTotal();
       }
-
-      if (total >= 0)
-        total = total - penalty;
-
       return total;
     };
   };
@@ -749,7 +681,39 @@ namespace ariac
     std::vector<KitObject> objects;
   };
 
-  
+  /////////////////////////////////////////////////////////////
+  /// \brief Class to store information about each object contained in a briefcase for assembly.
+  /////////////////////////////////////////////////////////////
+  class AssemblyObject
+  {
+    /// \brief Stream insertion operator.
+    /// \param[in] _out output stream.
+    /// \param[in] _obj Assembly object to output.
+    /// \return The output stream
+  public:
+    friend std::ostream &operator<<(std::ostream &_out,
+                                    const AssemblyObject &_obj)
+    {
+      _out << "<object>" << std::endl;
+      _out << "...type: [" << _obj.type << "]" << std::endl;
+      _out << "...faulty: [" << (_obj.isFaulty ? "true" : "false") << "]" << std::endl;
+      _out << "...pose: [" << _obj.pose << "]" << std::endl;
+      _out << "</object>" << std::endl;
+      return _out;
+    }
+
+    /// \brief Object type.
+  public:
+    std::string type;
+
+    /// \brief Whether or not the object is faulty.
+  public:
+    bool isFaulty;
+
+    /// \brief Pose in which the object should be placed.
+  public:
+    ignition::math::Pose3d pose;
+  };
 
   /////////////////////////////////////////////////////////////
   /// \brief Class to store information about assembly.
@@ -784,7 +748,7 @@ namespace ariac
 
     /// \brief Assembly is composed of multiple objects.
   public:
-    std::vector<BriefcaseProduct> objects;
+    std::vector<AssemblyObject> objects;
   };
 
   /////////////////////////////////////////////////////////////

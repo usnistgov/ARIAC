@@ -19,15 +19,13 @@
  * Author: Deanna Hood
  * Author: Zeid Kootbally
  */
-#ifndef NIST_GEAR_ARIACSCORER_H
-#define NIST_GEAR_ARIACSCORER_H
+#ifndef _ROS_ARIAC_SCORER_HH_
+#define _ROS_ARIAC_SCORER_HH_
 
 #include <map>
 #include <string>
-#include <vector>
+
 #include <ros/ros.h>
-#include <utility>
-#include <algorithm>
 
 #include <nist_gear/ARIAC.hh>
 #include <nist_gear/DetectedKittingShipment.h>
@@ -35,7 +33,6 @@
 #include <nist_gear/Order.h>
 #include <nist_gear/SubmitShipment.h>
 #include "nist_gear/VacuumGripperState.h"
-
 
 // Ariac scorer needs to know when an order starts
 // -Order
@@ -118,7 +115,6 @@ public:
   void NotifyOrderUpdated(gazebo::common::Time time, ariac::OrderID_t old_order, const nist_gear::Order &order);
 
   /// \brief Tell scorer a shipment was recieved
-  /// Allows ROSAriacTaskManagerPlugin.cc to pass data to AriacScorer.cpp
 public:
   void NotifyKittingShipmentReceived(gazebo::common::Time time,
                                      ariac::KittingShipmentType_t type,
@@ -139,7 +135,7 @@ public:
   /// \brief Get the current score.
   /// \return The score for the game.
 public:
-  ariac::GameScore GetGameScore(int penalty);
+  ariac::GameScore GetGameScore();
 
   /// \brief Score a single shipment
   /// \return The score for the game.
@@ -170,11 +166,11 @@ protected:
   /// \brief Collection of shipments that have been received
 protected:
   std::vector<struct KittingShipmentInfo> received_kitting_shipments_vec;
+
+protected:
   std::vector<struct AssemblyShipmentInfo> received_assembly_shipments_vec;
   /// \brief True if the arms collided with each other
+protected:
   bool arm_arm_collision = false;
-
-  
 };
-
-#endif  // NIST_GEAR_ARIACSCORER_H
+#endif

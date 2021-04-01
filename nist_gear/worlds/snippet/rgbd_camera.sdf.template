@@ -40,8 +40,8 @@
           </plugin>
           <camera>
             <clip>
-              <near>0.2</near>
-              <far>1.1</far>
+              <near>1.5</near>
+              <far>2.3</far>
             </clip>
             <horizontal_fov>1.5</horizontal_fov>
             <image>

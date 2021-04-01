@@ -1,0 +1,18 @@
+sensors:
+  laser_profiler_0:
+    type: laser_profiler
+    pose:
+      xyz: [-0.559490, 2.307264, 1.507532]
+      rpy: [-1.570796, 1.570796, 0]
+
+  proximity_sensor_0:
+    type: proximity_sensor
+    pose:
+      xyz: [-0.786464, 2.963990, 0.886511]
+      rpy: [3.141593, 0.000000, 0.000000]
+
+  breakbeam_0:
+    type: break_beam
+    pose:
+      xyz: [-0.346650, 2.664459, 0.934996]
+      rpy: [0.000000, 0.000000, 3.141593]

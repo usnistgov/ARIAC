@@ -1,0 +1,38 @@
+sensors:
+
+  rgbd_camera_bins0:
+    type: rgbd_camera
+    pose:
+      xyz: [-1.691850, 2.963994, 3.000004]
+      rpy: [3.141593, 0.000000, 1.5707923]
+
+  rgbd_camera_bins1:
+    type: rgbd_camera
+    pose:
+      xyz: [-1.691850, -2.963994, 3.000004]
+      rpy: [3.141593, 0.000000, 1.5707923]
+
+  rgbd_camera_station1:
+    type: rgbd_camera
+    pose:
+      xyz: [-6.429914, 2.963994, 3.000004]
+      rpy: [3.141593, 0.000000, 1.5707923]
+
+  rgbd_camera_station2:
+    type: rgbd_camera
+    pose:
+      xyz: [-11.41392, 2.963994, 3.000004]
+      rpy: [3.141593, 0.000000, 1.5707923]
+ 
+  rgbd_camera_station3:
+    type: rgbd_camera
+    pose:
+      xyz: [-6.429914, -2.963994, 3.000004]
+      rpy: [3.141593, 0.000000, 1.5707923]
+
+  rgbd_camera_station4:
+    type: rgbd_camera
+    pose:
+      xyz: [-11.41392, -2.963994, 3.000004]
+      rpy: [3.141593, 0.000000, 1.5707923]
+

@@ -40,8 +40,6 @@
     <end_effector name="gantry_ee" parent_link="gantry_arm_ee_link" group="gantry_arm" />
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <virtual_joint name="virtual_joint_gantry" type="fixed" parent_frame="world" child_link="long_rail_1" />
-    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
-    <passive_joint name="torso_main_torso_tray_joint" />
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="gantry_arm_base_link" link2="gantry_arm_shoulder_link" reason="Adjacent" />
     <disable_collisions link1="gantry_arm_base_link" link2="gantry_arm_upper_arm_link" reason="Never" />

@@ -64,6 +64,7 @@ arm_configs = {
 }
 
 
+
 possible_products = [
     'assembly_battery_red',
     'assembly_battery_green',
@@ -90,92 +91,92 @@ sensor_configs = {
 }
 
 default_agv_origins = {
-    'agv1': [-2.265685, 4.675404, 0],
-    'agv2': [-2.265685, 1.367643, 0],
-    'agv3': [-2.265685, -1.333917, 0],
+    'agv1': [-2.265685,4.675404,0],
+    'agv2': [-2.265685,1.367643, 0],
+    'agv3': [-2.265685,-1.333917, 0],
     'agv4': [-2.265685, -4.696062, 0],
 }
 
 
-agv1_y = 4.675404
-agv2_y = 1.367643
-agv3_y = -1.333917
-agv4_y = -4.696062
+agv1_y=4.675404
+agv2_y=1.367643
+agv3_y=-1.333917
+agv4_y=-4.696062
 
-agv1_agv2_AS1_x = -5.60
-agv1_agv2_AS2_x = -10.590274
+agv1_agv2_AS1_x=-5.60
+agv1_agv2_AS2_x=-10.590274
 
-agv3_agv4_AS3_x = -5.60
-agv3_agv4_AS4_x = -10.590274
+agv3_agv4_AS3_x=-5.60
+agv3_agv4_AS4_x=-10.590274
 
 # Pose of all the different stations for each agv
 # KS is the kitting station
 stations = {
-    'agv1': {
+    'agv1':{
         'ks1': {
-            'pose': {
-                'xyz': [-2.265685, agv1_y, 0]
+            'pose':{
+                'xyz': [-2.265685, agv1_y, 0] 
             }
         },
         'as1': {
-            'pose': {
-                'xyz': [agv1_agv2_AS1_x, agv1_y, 0]
+            'pose':{
+                'xyz': [agv1_agv2_AS1_x, agv1_y, 0]       
             }
         },
         'as2': {
-            'pose': {
-                'xyz': [agv1_agv2_AS2_x, agv1_y, 0]
+            'pose':{
+                'xyz': [agv1_agv2_AS2_x, agv1_y, 0]   
             }
         },
     },
-    'agv2': {
+    'agv2':{
         'ks2': {
-            'pose': {
-                'xyz': [-2.265685, agv2_y, 0]
+            'pose':{
+                'xyz': [-2.265685, agv2_y, 0]   
             }
         },
         'as1': {
-            'pose': {
-                'xyz': [agv1_agv2_AS1_x, agv2_y, 0]
+            'pose':{
+                'xyz': [agv1_agv2_AS1_x, agv2_y, 0] 
             }
         },
         'as2': {
-            'pose': {
-                'xyz': [agv1_agv2_AS2_x, agv2_y, 0]
+            'pose':{
+                'xyz': [agv1_agv2_AS2_x, agv2_y, 0]    
             }
         },
     },
-    'agv3': {
+    'agv3':{
         'ks3': {
-            'pose': {
-                'xyz': [-2.265685, agv3_y, 0]
+            'pose':{
+                'xyz': [-2.265685, agv3_y, 0] 
             }
         },
         'as3': {
-            'pose': {
+            'pose':{
                 'xyz': [agv3_agv4_AS3_x, agv3_y, 0]
             }
         },
         'as4': {
-            'pose': {
-                'xyz': [agv3_agv4_AS4_x, agv3_y, 0]
+            'pose':{
+                'xyz': [agv3_agv4_AS4_x, agv3_y, 0]   
             }
         },
     },
-    'agv4': {
+    'agv4':{
         'ks4': {
-            'pose': {
-                'xyz': [-2.265685, agv4_y, 0]
+            'pose':{
+                'xyz': [-2.265685,agv4_y, 0]    
             }
         },
         'as3': {
-            'pose': {
-                'xyz': [agv3_agv4_AS3_x, agv4_y, 0]
+            'pose':{
+                'xyz': [agv3_agv4_AS3_x, agv4_y, 0]  
             }
         },
         'as4': {
-            'pose': {
-                'xyz': [agv3_agv4_AS4_x, agv4_y, 0]
+            'pose':{
+                'xyz': [agv3_agv4_AS4_x, agv4_y, 0]   
             }
         },
     }
@@ -211,11 +212,12 @@ default_sensors = {
             'xyz': [-2.393395, -4.698129, 1.506952],
             'rpy': [-3.141593, 1.570796, 0]
         }
-    }
+    },  
 }
 
 default_belt_models = {
 }
+
 
 
 bin_width = 0.6
@@ -239,6 +241,7 @@ default_bin_origins = {
     'bin6': [-1.898993, -2.565006, 0],
     'bin7': [-2.651690, -2.565006, 0],
     'bin8': [-2.651690, -3.379920, 0],
+    
 }
 
 
@@ -265,7 +268,7 @@ default_briefcase_origins = {
 configurable_options = {
     'insert_models_over_bins': False,
     'insert_models_over_stations': False,
-    'enable_robot_camera': False,
+    'enable_robot_camera': True,
     'disable_shadows': False,
     'belt_population_cycles': 0,
     'gazebo_state_logging': False,
@@ -281,17 +284,16 @@ configurable_options = {
 default_time_limit = 500  # seconds
 max_count_per_model = 30  # limit on the number of instances of each model type
 
-
-def update_dict(tree, key, value):
+def update_dict(tree,key,value):
     """Return true if update, else false"""
-
     if key in tree:
         tree[key].update(value)
         return True
     for branch in tree.values():
-        if update_dict(branch, key, value):
+        if update_dict(branch,key,value):
             return True
     return False
+
 
 
 def initialize_model_id_mappings(random_seed=None):
@@ -358,10 +360,10 @@ def prepare_arguments(parser):
         help="don't run the gazebo client gui")
     add('--load-moveit', action='store_true', default=False,
         help='automatically launch move_group node for both robots')
-    # add('--load-kitting-moveit', action='store_true', default=False,
-    #     help='automatically launch move_group node for kitting robot')
-    # add('--load-gantry-moveit', action='store_true', default=False,
-    #     help='automatically launch move_group node for gantry robot')
+    add('--load-kitting-moveit', action='store_true', default=False,
+        help='automatically launch move_group node for kitting robot')
+    add('--load-gantry-moveit', action='store_true', default=False,
+        help='automatically launch move_group node for gantry robot')
     add('-l', '--state-logging', action='store', type=str2bool, nargs='?',
         help='generate gazebo state logs (will override config file option)')
     add('--log-to-file', action='store_true', default=False,
@@ -417,12 +419,10 @@ class SensorInfo:
         self.type = sensor_type
         self.pose = pose
 
-
 class AGVInfo:
     def __init__(self, id, pose):
         self.id = id
         self.pose = pose
-
 
 class PoseInfo:
     def __init__(self, xyz, rpy):
@@ -486,13 +486,11 @@ def create_pose_info(pose_dict, offset=None):
         xyz = [sum(i) for i in zip(xyz, offset)]
     return PoseInfo(xyz, rpy)
 
-
 def create_arm_info(name, arm_dict):
     arm_type = arm_dict['arm_type']
     initial_joint_states = arm_dict['default_initial_joint_states']
     pose = create_pose_info(arm_dict['pose'])
     return ArmInfo(name, arm_type, initial_joint_states, pose)
-
 
 def create_sensor_info(name, sensor_data, allow_protected_sensors=False, offset=None):
     sensor_type = get_required_field(name, sensor_data, 'type')
@@ -517,6 +515,8 @@ def create_sensor_infos(sensors_dict, allow_protected_sensors=False, offset=None
             name, sensor_data,
             allow_protected_sensors=allow_protected_sensors, offset=offset)
     return sensor_infos
+
+
 
 
 def create_model_info(model_name, model_data):
@@ -555,17 +555,20 @@ def create_agv_info(agv_yaml_dict):
             agv_info[agv_id] = {}
             location = agv_info_dict_yaml['location']
             all_stations = stations[agv_name_yaml]
-            if location in all_stations:
+            if all_stations.has_key(location):
                 station = all_stations[location]
                 station_xyz = station['pose']['xyz']
-                station_rpy = [0, 0, -1.570796]
-                agv_info[agv_id]['pose'] = PoseInfo(station_xyz, station_rpy)
-                agv_info[agv_id]['location'] = location
+                station_rpy = [0,0,-1.570796]
+                agv_info[agv_id] = PoseInfo(station_xyz, station_rpy)
             else:
                 print('=' * 80)
-                print("Error: " + agv_name_yaml + " can not be assigned the station: " + location, file=sys.stderr)
+                print("Error: "+ agv_name_yaml +" can not be assigned the station: " + location, file=sys.stderr)
                 print('=' * 80)
     return agv_info
+
+
+       
+        
 
 
 def create_models_over_bins_infos(models_over_bins_dict):
@@ -619,31 +622,54 @@ def create_models_over_bins_infos(models_over_bins_dict):
                     models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
 
+# def spawn_briefcase_over_stations_infos(station_name, station_xyz):
+#     models_to_spawn_infos = {}
+#     model_to_spawn_data = {}
+#     model_to_spawn_data['type'] = 'assembly_briefcase'
+#     model_to_spawn_data['reference_frame'] = 'world'
+#     xyz = [brief_case_offset_x, brief_case_offset_y, brief_case_offset_z]
+#     rpy = [0, 0, 0]
+#     offset_xyz = [
+#         station_xyz[0] + xyz[0],
+#         station_xyz[1] + xyz[1],
+#         xyz[2]]
+                 
+#     model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
+#     model_info = create_model_info('assembly_briefcase', model_to_spawn_data)
+#     # assign each model a unique name because gazebo can't do this
+#     # if the models all spawn at the same time
+#     scoped_model_name = station_name + '|assembly_briefcase'
+#     model_info.briefcase = station_name
+#     models_to_spawn_infos[scoped_model_name] = model_info
+#     return models_to_spawn_infos
+
+
+
 
 def create_briefcase_over_stations_infos(models_over_stations_dict):
     models_to_spawn_infos = {}
     for station_name in default_station_origins:
-        model_to_spawn_data = {}
-        model_to_spawn_data['type'] = 'assembly_briefcase'
-        model_to_spawn_data['reference_frame'] = 'world'
-        xyz = [brief_case_offset_x, brief_case_offset_y, brief_case_offset_z]
-        rpy = [0, 0, 0]
-
-        # make sure the station name is expected
-        if station_name in default_station_origins:
+         model_to_spawn_data = {}
+         model_to_spawn_data['type'] = 'assembly_briefcase'
+         model_to_spawn_data['reference_frame'] = 'world'
+         xyz = [brief_case_offset_x, brief_case_offset_y, brief_case_offset_z]
+         rpy = [0, 0, 0]
+         
+         if station_name in default_station_origins:
             offset_xyz = [
                  default_station_origins[station_name][0] + xyz[0],
                  default_station_origins[station_name][1] + xyz[1],
                  xyz[2]]
-
+                 
             model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
             model_info = create_model_info('assembly_briefcase', model_to_spawn_data)
             # assign each model a unique name because gazebo can't do this
             # if the models all spawn at the same time
-            scoped_model_name = station_name + '|assembly_briefcase' + station_name.replace('station', '')
+            scoped_model_name = station_name + '|assembly_briefcase' + station_name.replace('station','')
             model_info.briefcase = station_name
             models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
+
 
 
 def create_models_over_stations_infos(models_over_stations_dict):
@@ -651,7 +677,7 @@ def create_models_over_stations_infos(models_over_stations_dict):
     for station_name, station_dict in models_over_stations_dict.items():
         # print("********", station_name)
         models = get_required_field(station_name, station_dict, 'models') or {}
-        station_id = station_name.replace('as', '')
+        station_id = station_name.replace('as','')
         for model_type, model_to_spawn_dict in models.items():
             # print("********", model_type)
             model_to_spawn_data = {}
@@ -665,18 +691,20 @@ def create_models_over_stations_infos(models_over_stations_dict):
             # print("********", rpy)
 
             if station_name in default_station_origins:
+                
                 offset_xyz = [
                     default_briefcase_origins['briefcase'+station_id][0] + xyz[0],
                     default_briefcase_origins['briefcase'+station_id][1] + xyz[1],
                     default_briefcase_origins['briefcase'+station_id][2] + xyz[2]]
+                
                 # print("********", offset_xyz)
                 # spawn_briefcase_over_stations_infos(station_name, default_station_origins[station_name])
-
+            
             model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
             model_info = create_model_info(model_type, model_to_spawn_data)
             # assign each model a unique name because gazebo can't do this
             # if the models all spawn at the same time
-            scoped_model_name = station_name + '|assembly_briefcase' + str(station_id) + '|' + \
+            scoped_model_name = station_name + '|assembly_briefcase' + str(station_id) +'|'+ \
                     model_info.type + '_' + str(get_next_model_id(model_type))
             model_info.station = station_name
             models_to_spawn_infos[scoped_model_name] = model_info
@@ -692,17 +720,17 @@ def create_models_over_agvs_infos(agv_yaml_dict):
             agv_info[agv_id] = {}
             location = agv_info_dict_yaml['location']
             all_stations = stations[agv_name_yaml]
-            if location in all_stations:
+            if all_stations.has_key(location):
                 station = all_stations[location]
                 station_xyz = station['pose']['xyz']
-                station_rpy = [0, 0, -1.570796]
+                station_rpy = [0,0,-1.570796]
                 agv_info[agv_id] = PoseInfo(station_xyz, station_rpy)
             else:
                 print('=' * 80)
-                print("Error: " + agv_name_yaml + " can not be assigned the station: " + location, file=sys.stderr)
+                print("Error: "+ agv_name_yaml +" can not be assigned the station: " + location, file=sys.stderr)
                 print('=' * 80)
             # spawn parts on the agv
-            if 'products' in agv_info_dict_yaml:
+            if agv_info_dict_yaml.has_key('products'):
                 product_dict = agv_info_dict_yaml['products']
                 # create_models_over_agvs_infos(agv_name_yaml,station_xyz,station_rpy, product_dict)
                 for part_info in product_dict.items():
@@ -728,7 +756,16 @@ def create_models_over_agvs_infos(agv_yaml_dict):
                     tray_y_in_world - part_pose_type['pose']['xyz'][0],
                     tray_z_in_world + 0.1]
 
-                    rpy = [part_pose_type['pose']['rpy'][0], part_pose_type['pose']['rpy'][1], (part_pose_type['pose']['rpy'][2])-1.571]
+                    # print(model_type, part_pose_type['pose']['xyz'][0], part_pose_type['pose']['xyz'][1])
+                    # print(location, station_xyz[0], station_xyz[1])
+                    # print(model_type, xyz[0], xyz[1])
+                    
+                    
+                    # print("TEST", xyz[0], xyz[1])
+        
+                    rpy = [part_pose_type['pose']['rpy'][0],
+                    part_pose_type['pose']['rpy'][1],
+                    (part_pose_type['pose']['rpy'][2])-1.571]
 
                     model_to_spawn_data['type'] = model_type
                     model_to_spawn_data['reference_frame'] = 'world'
@@ -736,11 +773,13 @@ def create_models_over_agvs_infos(agv_yaml_dict):
                     model_info = create_model_info(model_type, model_to_spawn_data)
                     # assign each model a unique name because gazebo can't do this
                     # # if the models all spawn at the same time
+                    
                     scoped_model_name = agv_name_yaml + '|tray_' + agv_id + "|" + \
                     model_info.type + '_' + str(get_next_model_id(model_type))
                     model_info.agv = agv_name_yaml
                     models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
+
 
 
 def create_belt_model_infos(belt_models_dict):
@@ -813,7 +852,7 @@ orders:
     '''
 
     # get the list of robots to disable
-    disable_robot = order_dict.get('disable_robot', [])
+    disable_robot = order_dict.get('disable_robot',[])
     disable_kitting_robot = []
     disable_assembly_robot = []
 
@@ -825,24 +864,27 @@ orders:
         robot_name, location, number_of_parts = disable_robot
         if robot_name != "kitting_robot" and robot_name != "assembly_robot":
             error_message = """[FATAL] In yaml file: the field disable_robot contains a wrong robot type.
-            Options are kitting_robot or assembly_robot
+            Options are kitting_robot or assembly_robot 
             Given robot name is: {}""".format(robot_name)
             print(error_message, file=sys.stderr)
 
-    order_priority = order_dict.get('priority', 1)
-    kitting_robot_health = order_dict.get('kitting_robot_health', 1)
-    assembly_robot_health = order_dict.get('assembly_robot_health', 1)
+
+    # disable_assembly_robot = order_dict.get('disable_assembly_robot',[])
+    order_priority = order_dict.get('priority',1)
+    kitting_robot_health = order_dict.get('kitting_robot_health',1)
+    assembly_robot_health = order_dict.get('assembly_robot_health',1)
     announcement_condition = get_required_field(name, order_dict, 'announcement_condition')
     announcement_condition_value = get_required_field(
         name, order_dict, 'announcement_condition_value')
-
+    
     returned_dict = {}
     kitting_flag = False
     assembly_flag = False
 
-    if ('kitting' not in order_dict) and ('assembly' not in order_dict):
+    if (not 'kitting' in order_dict) and (not 'assembly' in order_dict):
         error_message = """ [FATAL] In yaml file: There is no kitting or assembly shipment"""
         print(error_message, file=sys.stderr)
+
 
     if 'kitting' in order_dict:
         kitting_dict = order_dict['kitting']
@@ -859,7 +901,8 @@ orders:
         returned_dict['kitting_agvs'] = agvs
         returned_dict['kitting_agv_stations'] = stations
         returned_dict['kitting_products'] = products
-
+        
+    
     if 'assembly' in order_dict:
         assembly_flag = True
         assembly_dict = order_dict['assembly']
@@ -886,6 +929,7 @@ orders:
     returned_dict['kitting_robot_health'] = kitting_robot_health
     returned_dict['assembly_robot_health'] = assembly_robot_health
 
+
     return returned_dict
 
 
@@ -910,12 +954,13 @@ def create_bin_infos():
         # print(bin_infos[bin_name])
     return bin_infos
 
-
 def create_station_infos():
     station_infos = {}
     for station_name, xyz in default_station_origins.items():
         station_infos[station_name] = PoseInfo(xyz, [0, 0, 0])
     return station_infos
+
+
 
 
 def create_material_location_info(belt_models, models_over_bins, models_over_agvs):
@@ -958,7 +1003,7 @@ def create_options_info(options_dict):
 def prepare_template_data(config_dict, args):
     template_data = {
         'arms': [create_arm_info(name, conf) for name, conf in arm_configs.items()],
-        'robot_camera': {},
+
         'sensors': create_sensor_infos(default_sensors, allow_protected_sensors=True),
         'agv_infos': {},
         'models_to_insert': {},
@@ -991,7 +1036,6 @@ def prepare_template_data(config_dict, args):
                 create_sensor_infos(value))
         elif key == 'agv_infos':
             template_data['agv_infos'].update(create_agv_info(value))
-            # print(template_data['agv_infos'])
             models_over_agvs = create_models_over_agvs_infos(value)
             template_data['models_to_insert'].update(models_over_agvs)
         elif key == 'models_over_bins':
@@ -1022,14 +1066,8 @@ def prepare_template_data(config_dict, args):
                 create_models_to_spawn_infos(value))
         elif key == 'time_limit':
             template_data['time_limit'] = value
-        elif key == 'robot_camera':
-            if value['enable']:
-                template_data['options']['enable_robot_camera'] = True
-            else:
-                template_data['options']['enable_robot_camera'] = False
-            # print(template_data['options']['enable_robot_camera'])
-        # elif key == 'use_robot_camera':
-        #     template_data['use_robot_camera'] = value
+        elif key == 'use_robot_camera':
+            template_data['use_robot_camera'] = value
         else:
             print("Error: unknown top level entry '{0}'".format(key), file=sys.stderr)
             sys.exit(1)
@@ -1115,6 +1153,10 @@ def main(sysargv=None):
         cmd += ['gui:=false']
     if args.load_moveit:
         cmd += ['load_moveit:=true']
+    if args.load_kitting_moveit:
+        cmd += ['load_kitting_moveit:=true']
+    if args.load_gantry_moveit:
+        cmd += ['load_gantry_moveit:=true']
 
     if not args.development_mode:
         os.environ['ARIAC_COMPETITION'] = '1'
@@ -1136,4 +1178,5 @@ if __name__ == '__main__':
     # This is necessary if the script is being run from a ROS launch file.
     import rospy
     filtered_argv = rospy.myargv(sys.argv)
+
     sys.exit(main(filtered_argv[1:]))

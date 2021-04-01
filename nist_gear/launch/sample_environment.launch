@@ -19,12 +19,22 @@
   <arg unless="$(arg load_moveit)" name="load_moveit_args" value="" />
   <arg if="$(arg load_moveit)" name="load_moveit_args" value="--load-moveit" />
 
+  <arg name="load_gantry_moveit" default="false" />
+  <arg unless="$(arg load_gantry_moveit)" name="load_gantry_moveit_args" value="" />
+  <arg if="$(arg load_gantry_moveit)" name="load_gantry_moveit_args" value="--load-gantry-moveit" />
+
+<arg name="load_kitting_moveit" default="false" />
+  <arg unless="$(arg load_kitting_moveit)" name="load_kitting_moveit_args" value="" />
+  <arg if="$(arg load_kitting_moveit)" name="load_kitting_moveit_args" value="--load-kitting-moveit" />
+
   <node name="ariac_sim" pkg="nist_gear" type="gear.py"
         args="--development-mode
           $(arg verbose_args)
           $(arg state_logging_args)
           $(arg gui_args)
           $(arg load_moveit_args)
+          $(arg load_gantry_moveit_args)
+          $(arg load_kitting_moveit_args)
           $(arg fill_demo_shipment_args)
           --visualize-sensor-views
           -f $(find nist_gear)/config/trial_config/sample_kitting.yaml
@@ -40,5 +50,5 @@
     <include file="$(find kitting_moveit_config)/launch/moveit_rviz.launch">
       <arg name="rviz_config" value="$(find kitting_moveit_config)/launch/moveit.rviz"/>
     </include>
-  </group>-->
+  </group> -->
 </launch>

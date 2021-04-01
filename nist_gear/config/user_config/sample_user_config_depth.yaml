@@ -1,0 +1,40 @@
+sensors:
+
+  depth_camera_bins0:
+    type: depth_camera
+    pose:
+      xyz: [-1.691850, 2.963994, 3.000004]
+      rpy: [3.141593, 1.570792, -1.570792]
+
+  depth_camera_bins1:
+    type: depth_camera
+    pose:
+      xyz: [-1.691850, -2.963994, 3.000004]
+      rpy: [3.141593, 1.570792, -1.570792]
+
+
+  depth_camera_station1:
+    type: depth_camera
+    pose:
+      xyz: [-6.429914, 2.963994, 3.000004]
+      rpy: [3.141593, 1.570792, -1.570792]
+
+  depth_camera_station2:
+    type: depth_camera
+    pose:
+      xyz: [-11.41392, 2.963994, 3.000004]
+      rpy: [3.141593, 1.570792, -1.570792]
+
+ 
+  depth_camera_station3:
+    type: depth_camera
+    pose:
+      xyz: [-6.429914, -2.963994, 3.000004]
+      rpy: [3.141593, 1.570792, -1.570792]
+
+  depth_camera_station4:
+    type: depth_camera
+    pose:
+      xyz: [-11.41392, -2.963994, 3.000004]
+      rpy: [3.141593, 1.570792, -1.570792]
+

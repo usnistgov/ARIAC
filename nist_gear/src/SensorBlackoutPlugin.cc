@@ -63,12 +63,12 @@ void SensorBlackoutPlugin::OnActivationMsg(ConstGzStringPtr &_msg)
   if (_msg->data() == "activate")
   {
     this->parentSensor->SetActive(true);
-    this->parentSensor->SetUpdateRate(this->sensor_update_rate); //Hack for rgbd camera
+    this->parentSensor->SetUpdateRate(this->sensor_update_rate); //Hack for rgbd
   }
   else if (_msg->data() == "deactivate")
   {
     this->parentSensor->SetActive(false);
-    this->parentSensor->SetUpdateRate(1e-7); //Hack for rgbd camera
+    this->parentSensor->SetUpdateRate(1e-7); //Hack for rgbd
   }
   else
   {

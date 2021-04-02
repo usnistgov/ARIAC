@@ -39,9 +39,9 @@
           </plugin>
           <ray>
             <range>
-              <min>1.5</min>
-              <max>3.0</max>
-              <resolution>0.01</resolution>
+              <min>0.4</min>
+              <max>1.5</max>
+              <resolution>0.001</resolution>
             </range>
             <scan>
               <horizontal>

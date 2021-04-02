@@ -57,10 +57,10 @@
 
         <sensor name="logical_camera" type="logical_camera">
           <logical_camera>
-            <near>1.5</near>
-            <far>2.3</far>
+            <near>0.2</near>
+            <far>1.1</far>
             <horizontal_fov>1.5</horizontal_fov>
-            <aspect_ratio>1.333</aspect_ratio>
+            <aspect_ratio>1.2</aspect_ratio>
           </logical_camera>
 
           <visualize>@(options['visualize_sensor_views'])</visualize>

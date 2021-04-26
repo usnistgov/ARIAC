@@ -1,8 +1,11 @@
 Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 -------------------------------------------------
+## Expected release 2021, Mar 13
 
-## Released 2021, Mar 13
+## Released 2021, Apr 26
+- A new release of the software is expected today. The release will fix many ongoing issues and will be used as the docker image for the qualifiers.
+- Documentation on the qualifiers will be posted in the wiki, which will also include access to scripts to work with docker.
 
 - This new update should fix most of the tickets created on Github. Please, close tickets for which you have received answers or for which the original issues are fixed in this new update.
 - Updated the [Installation](../tutorials/installation.md#install-ros-and-gazebo) page to prevent segmentation fault from happening when launching GEAR.

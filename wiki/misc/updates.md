@@ -1,10 +1,12 @@
 Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 -------------------------------------------------
-## Expected release 2021, Apr 26
+## Expected release 2021
 
-- A new release of the software is expected today. The release will fix many ongoing issues and will be used as the docker image for the qualifiers.
+- A new release of the software is expected Tuesday or Wednesday. The release will fix many ongoing issues and will be used as the docker image for the qualifiers.
 - Documentation on the qualifiers will be posted in the wiki, which will also include access to scripts to work with docker.
+- New docker image has been created an uploaded on the docker website. 
+- Scripts are being updated for the new version of the software.
 
 
 ## Released 2021, Mar 13

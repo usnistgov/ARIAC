@@ -28,9 +28,13 @@
 #include <nist_gear/GetMaterialLocations.h>
 #include <nist_gear/SubmitShipment.h>
 #include <nist_gear/AssemblyStationSubmitShipment.h>
+#include <nist_gear/RobotHealth.h>
 #include <sdf/sdf.hh>
 #include <std_msgs/String.h>
 #include <std_srvs/Trigger.h>
+#include <controller_manager_msgs/SwitchController.h>
+#include <controller_manager_msgs/ListControllers.h>
+
 
 namespace gazebo
 {
@@ -67,7 +71,6 @@ namespace gazebo
   ///        </product>
   ///      </shipment>
   ///   </kitting>
-  ///
   ///  </order>
   ///
   /// A task can have multiple orders. Each order has a time element. At that
@@ -132,7 +135,7 @@ namespace gazebo
     void ProcessRobotStatus();
     /// \brief Set the assembly station of an AGV on the parameter server
   protected:
-    void SetAGVParameter(std::string agv_frame, std::string assembly_station);
+    void SetAGVLocation(std::string agv_frame, std::string assembly_station);
 
     /// \brief Enable control of the conveyor belt.
   protected:
@@ -194,11 +197,11 @@ namespace gazebo
   public:
     void OnAssemblyShipmentContent(nist_gear::DetectedAssemblyShipment::ConstPtr shipment);
 
-    /// \brief Callback that recieves the contact sensor's messages.
+    /// \brief Callback that receives the contact sensor's messages.
   protected:
     void OnContactsReceived(ConstContactsPtr &_msg);
 
-    /// \brief Callback that recieves the models from the floor deletion plugin
+    /// \brief Callback that receives the models from the floor deletion plugin
   protected:
     void OnPenaltyReceived(ConstModelPtr &_msg);
 
@@ -209,6 +212,17 @@ namespace gazebo
     /// \brief Stop scoring the current order and assign the next order on stack.
   protected:
     void StopCurrentOrder();
+  protected:
+    void OnAGV1Location(std_msgs::String::ConstPtr msg);
+  protected:
+    void OnAGV2Location(std_msgs::String::ConstPtr msg);
+  protected:
+    void OnAGV3Location(std_msgs::String::ConstPtr msg);
+  protected:
+    void OnAGV4Location(std_msgs::String::ConstPtr msg);
+  /// \brief Callback that receives the status of the robots
+  protected:
+    void OnRobotHealthContent(nist_gear::RobotHealth _msg);
 
     /// \brief Private data pointer.
   private:

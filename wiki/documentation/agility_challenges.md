@@ -58,7 +58,7 @@ A part is presented to the robots in an orientation that is different than its d
 
 ### Kitting
 
-The `pump` part (i.e., `assembly_pump_red`, `assembly_pump_blue`, and `assembly_pump_green`) is the only part in the environment designed to be flipped in this agility challenge. `pump` parts that need to be-reoriented are spawned in the environment with a `roll` value of $0$. To know if a `pump` needs to be re-oriented, competitors have to check the `roll` value of each `pump` part in an order. If `roll` = $\pi$ then the part has to be re-oriented.
+The `pump` part (i.e., `assembly_pump_red`, `assembly_pump_blue`, and `assembly_pump_green`) is the only part in the environment designed to be flipped in this agility challenge. `pump` parts that need to be-reoriented are spawned in the environment with a `roll` value of 0. To know if a `pump` needs to be re-oriented, competitors have to check the `roll` value of each `pump` part in an order. If `roll` = ***pi*** then the part has to be re-oriented.
 
 **NOTE**: See documentation on [frame specifications](frame_specifications.md#flipped-products) for details on re-orienting products.
 
@@ -146,7 +146,7 @@ The `pump` part (i.e., `assembly_pump_red`, `assembly_pump_blue`, and `assembly_
 
 ### Assembly
 
-If the trial starts with AGVs already located at assembly stations, then no part flipping will be required for competitors. It is not an easy task to flip a part with the assembly robot while this challenge is much more manageable with te kitting robot.
+If the trial starts with AGVs already located at assembly stations, then no part flipping will be required for competitors. It is not an easy task to flip a part with the assembly robot while this challenge is much more manageable with the kitting robot.
 
 Although part flipping is not present during assembly, competitors will still need to re-orientate the parts to place them in slots in the briefcases.
 <!-- 
@@ -238,13 +238,13 @@ Competitors' systems have to use an internal world model to continue to fill the
 
 **TASK**: Kitting
 
-Order announcements during trials are controlled in the trial configuration file with an announcement condition and an announcement value. The first order is  announced at the start of the competition with time and 0 for condition and value, respectively. An announcement condition can take two other separated values, namely `wanted_products` and `unwanted_products`. The value for each of these two conditions is an integer number $n$, which is used  to control when a new order is announced. This agility challenge is mainly used in the High-priority Kit Change scenarios to tests the ability of competitors' systems to put the previous order on hold, to quickly complete the new order, and to resume the previous order.
+Order announcements during trials are controlled in the trial configuration file with an announcement condition and an announcement value. The first order is  announced at the start of the competition with time and 0 for condition and value, respectively. An announcement condition can take two other separated values, namely `wanted_products` and `unwanted_products`. The value for each of these two conditions is an integer number ***n***, which is used  to control when a new order is announced. This agility challenge is mainly used in the High-priority Kit Change scenarios to tests the ability of competitors' systems to put the previous order on hold, to quickly complete the new order, and to resume the previous order.
 
 How `wanted_products` and `unwanted_products`  are useful depends on how much overlap there is between the previous order and the new one.
 
-- When the condition is set to `wanted_products`, the previous order is interrupted when $n$ products have been placed in the tray of the previous order that are also in the new order.
+- When the condition is set to `wanted_products`, the previous order is interrupted when ***n*** products have been placed in the tray of the previous order that are also in the new order.
   
-- When the condition is set to `unwanted_products`, the previous order is interrupted when $n$ products not in the next order have been placed in the tray of the previous order.
+- When the condition is set to `unwanted_products`, the previous order is interrupted when ***n*** products not in the next order have been placed in the tray of the previous order.
 
 These conditions can make interesting scenarios, such as guaranteeing competitors have to remove parts or have to re-arrange parts in the tray of the previous order.
 

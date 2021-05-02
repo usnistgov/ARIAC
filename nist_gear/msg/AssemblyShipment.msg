@@ -1,11 +1,11 @@
 # Shipment message
 # This structure contains the information of shipment.
 
-# The type of shipment
+# type of shipment
 string shipment_type
 
 # station used to do assembly
 string station_id
 
-# Collection of products
+# collection of products at station_id
 Product[] products

@@ -24,5 +24,5 @@ controller_list:
       - gantry_arm_wrist_2_joint
       - gantry_arm_wrist_3_joint
 initial:  # Define initial robot poses.
-  - group: gantry_torso
+  - group: gantry_full
     pose: gantry_home

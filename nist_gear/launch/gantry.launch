@@ -10,28 +10,7 @@
       use_effort_interface:=true
       joint_limited:=$(arg limited)"/>
 
-    <!-- Load joint_states topic -->
-    <rosparam command="load" file="$(find joint_state_controller)/joint_state_controller.yaml"/>
-    <node name="joint_state_controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="joint_state_controller"/>
-
-    <!-- Publish robot to tf tree -->
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-
-    <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot-->
-    <node name="gantry_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-          args="-urdf -model gantry -param robot_description
-	  -J small_long_joint -1.45
-    -J torso_rail_joint 0
-	  -J torso_base_main_joint 0
-    -J torso_main_torso_tray_joint 0
-    -J gantry_arm_shoulder_pan_joint 0.00
-    -J gantry_arm_shoulder_lift_joint -1.13
-    -J gantry_arm_elbow_joint 1.88
-    -J gantry_arm_wrist_1_joint -0.72
-    -J gantry_arm_wrist_2_joint 1.55
-    -J gantry_arm_wrist_3_joint 0.83"/>
-
-    <!-- Load joint controller configurations from YAML file to parameter server-->
+       <!-- Load joint controller configurations from YAML file to parameter server-->
     <rosparam file="$(find nist_gear)/robots/gantry/gantry_description/controller/gantry_control.yaml" command="load"/>
     <rosparam file="$(find nist_gear)/robots/ur10/ur_description/controller/gantry_arm_controller_ur10_custom.yaml" command="load"/>
 
@@ -41,4 +20,29 @@
       gantry_controller
       gantry_arm_controller
     "/>
+
+    <!-- Load joint_states topic -->
+    <rosparam command="load" file="$(find joint_state_controller)/joint_state_controller.yaml"/>
+    <node name="joint_state_controller_spawner" pkg="controller_manager" type="spawner" output="screen" args="joint_state_controller"/>
+
+    <!-- Publish robot to tf tree -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+    <!-- Run a python script to send a service call to gazebo_ros to spawn a URDF robot-->
+    <node name="gantry_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+          args="
+          -urdf 
+          -model gantry 
+          -param robot_description
+          -J small_long_joint -1.45
+          -J torso_rail_joint 0
+          -J torso_base_main_joint 0
+          -J gantry_arm_shoulder_pan_joint 0.00
+          -J gantry_arm_shoulder_lift_joint -1.13
+          -J gantry_arm_elbow_joint 1.88
+          -J gantry_arm_wrist_1_joint -0.72
+          -J gantry_arm_wrist_2_joint 1.55
+          -J gantry_arm_wrist_3_joint 0.83"/>
+
+ 
 </launch>

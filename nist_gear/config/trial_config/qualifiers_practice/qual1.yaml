@@ -1,19 +1,27 @@
 #Number of orders: 1
 #Tasks: kitting
-#Number of shipments: 1
+#Number of shipments: 2
 #Insufficiently many products: No
 #Part re-orientation: No
 #In-process order update: No
 #Dropped products: Yes
 #In-process order interruption: No
-#Faulty products: No
-#Sensor blackout: No
+#Faulty products: Yes
+#Sensor blackout: Yes
 #Time limit: No
+
+# One order with two shipments.
+# These shipments can be submitted in any order.
+# Sensor blackout triggered after a second product is placed on the agv.
+# Faulty parts: Both on belt and in bins
+# Faulty gripper triggers when placing the blue battery.
+
 options:
   insert_models_over_bins: true
   insert_models_over_shelves: true
-  belt_population_cycles: 0
-  time_limit: -1
+  belt_population_cycles: 10
+  gazebo_state_logging: true
+time_limit: 500
 
 #location of each agv and products on agvs when the simulation starts
 agv_infos:
@@ -26,6 +34,7 @@ agv_infos:
   agv4:
     location: ks4
 
+# Only one order with two shipments
 orders:
   order_0:
     priority: 1
@@ -34,9 +43,9 @@ orders:
     announcement_condition: time
     announcement_condition_value: 0.0
     kitting:
-      shipment_count: 1
-      agvs: [agv3]
-      destinations: [as1]
+      shipment_count: 2
+      agvs: [agv3, agv3]
+      destinations: [as3, as4]
       products:
         part_0:
           type: assembly_battery_blue
@@ -44,10 +53,10 @@ orders:
             xyz: [0.1, 0.1, 0]
             rpy: [0, 0, 0]
         part_1:
-          type: assembly_battery_blue
+          type: assembly_battery_green
           pose:
             xyz: [-0.15, -0.1, 0]
-            rpy: [0, 0, 0]
+            rpy: [0, 0, 'pi/4']
 
 
 models_over_bins:
@@ -59,23 +68,22 @@ models_over_bins:
          rpy: [0, 0, 0]
          num_models_x: 2
          num_models_y: 2
-   bin4:
+   bin8:
      models:
-       assembly_regulator_red:
-         xyz_start: [0.1, 0.2, 0.0]
-         xyz_end: [0.4, 0.5, 0.0]
-         rpy: [0, 0, 'pi/4']
-         num_models_x: 2
-         num_models_y: 2
-   bin5:
-     models:
-       assembly_sensor_blue:
+       assembly_battery_blue:
          xyz_start: [0.1, 0.2, 0.0]
          xyz_end: [0.4, 0.5, 0.0]
          rpy: [0, 0, 'pi/4']
          num_models_x: 2
          num_models_y: 2
 
+
+belt_models:
+  assembly_battery_green:
+    10.0:
+      pose:
+        xyz: [0.0, 4.3, 0.92]
+        rpy: [0, 0, 0]
 
 drops:
   drop_regions:
@@ -86,18 +94,18 @@ drops:
       max:
         xyz: [0.3, 0.3, 0.5]
       destination:
-        xyz: [0.2, 0.3, 0.05]
+        xyz: [0.1, 0.3, 0.05]
         rpy: [0, 0, 0.2]
-      product_type_to_drop: assembly_regulator_red
-    shipping_box_1_impeding:
-      frame: agv3::kit_tray_3
-      min:
-        xyz: [-0.3, -0.3, 0.0]
-      max:
-        xyz: [0.3, 0.3, 0.5]
-      destination:
-        xyz: [0.2, 0.3, 0.05]
-        rpy: [0, 0, 0.2]
-      product_type_to_drop: assembly_sensor_blue
+      product_type_to_drop: assembly_battery_blue
+
+sensor_blackout:
+  product_count: 2 #sensor blackout triggered after second product is placed
+  duration: 60
+
+faulty_products:
+  - assembly_battery_green_2
+  - assembly_battery_green_4
+  - assembly_battery_blue_1
+  - assembly_battery_blue_5
 
 

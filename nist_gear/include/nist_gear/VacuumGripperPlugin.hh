@@ -24,6 +24,8 @@
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/msgs/contacts.pb.h>
 #include <gazebo/physics/PhysicsTypes.hh>
+#include "nist_gear/DropProducts.h"
+#include "nist_gear/DropProduct.h"
 #include <sdf/sdf.hh>
 
 namespace gazebo
@@ -69,6 +71,8 @@ namespace gazebo
     /// \brief Callback used when the gripper contacts an object.
     /// \param[in] _msg Message that contains contact information.
     private: void OnContacts(ConstContactsPtr &_msg);
+    private:
+      void OnDropObjectContent(nist_gear::DropProducts::ConstPtr drop_object);
 
     /// \brief Determine if the colliding model is sufficiently in contact with the gripper.
     /// \return True if the colliding model is sufficiently in contact with the gripper.

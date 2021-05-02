@@ -55,7 +55,7 @@ The competition will consist of 15 trials: 5 trials for each scenario. Each tria
 
 ## Environment
 
-The simulation environment is a representation of an order fulfillment workcell with a kitting robot and an assembly robot (gantry robot), a conveyor belt, product bins, assembly stations, and AGVs.
+The simulation environment is a representation of an order fulfillment workcell with a kitting robot (on rail) and an assembly robot (gantry robot), a conveyor belt, product bins, assembly stations, and AGVs.
 
 ![ariac2021_environment.png](../figures/ariac2021_environment.png)
 
@@ -102,7 +102,7 @@ The figures below shows where AGVs stop for each of the three locations. To lear
 
 - There are 8 product bins that may be used for building kits.
 - Products in these bins will not be replaced once used.
-- All products in a particular storage bin are of the same type and have the same orientation.
+- All products in a particular storage bin are of the same type, of the same color, and have the same orientation.
 - The product bins are shallow boxes measuring **0.6 x 0.6 m**.
 
 ### Parts
@@ -155,7 +155,7 @@ The assembly robot is a gantry robot mounted on the ceiling, the robot consists 
 - One rotatory torso (`torso_base_main_joint`) which rotates 360 degrees around the base z-axis with the range **[-6.28, 6.28]**.
 - One 6 DoF UR10 arm attached to the torso with a fixed joint.
 - One tray is attached to the torso. Participants may put parts in this tray while fetching other parts in the environment.
-- The end of each arm is equipped with a vacuum gripper.
+- The end of the arm is equipped with a vacuum gripper.
 
 To start the arm in rqt with the `joint_trajectory_controller` plugin:
 
@@ -173,7 +173,7 @@ Competitors can place sensors around the environment in static locations. Sensor
 - **Cognex logical camera**: provides information about the pose and type of all models within its field of
    view. **NOTE**: The range of the logical camera has been increased to cover 4 bins at a time (instead of 1 bin previously). With this new range, 2 logical cameras should be sufficient to cover the surface of a shelf.
 - **Proximity sensor** outputs how far an object is from the sensor.
-- **RGB-D camera**: provides point cloud data (similar to the depth camera) along image data.
+- **RGB-D camera**: provides point cloud data (similar to the depth camera) along image data. RGB-D cameras can be mounted anywhere in the workcell and one RGB-D camera on the gantry can be activated by competitors.
 
 For the details about how to configure the sensor locations, see the [YAML Configuration Files](configuration_files.md) page. More details on each sensor can be found on the [sensor Interface](../tutorials/sensor_interface.md) page.
 

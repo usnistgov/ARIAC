@@ -41,7 +41,7 @@ SideContactPlugin::~SideContactPlugin()
 void SideContactPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
   GZ_ASSERT(_model, "Model pointer is null");
-  gzerr << _model->GetName() << std::endl;
+  // gzerr << _model->GetName() << std::endl;
 
   if (!_sdf->HasElement("contact_sensor_name"))
   {
@@ -217,7 +217,7 @@ void SideContactPlugin::CalculateContactingModels()
 }
 
 /////////////////////////////////////////////////
-void SideContactPlugin::ClearContactingModels()
+void SideContactPlugin::  ClearContactingModels()
 {
   boost::mutex::scoped_lock lock(this->mutex);
 

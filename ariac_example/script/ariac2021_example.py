@@ -46,36 +46,60 @@ from math import pi, sqrt
 
 
 def start_competition():
+    """ Start the competition through ROS service call """
+
     rospy.wait_for_service('/ariac/start_competition')
     rospy.ServiceProxy('/ariac/start_competition', Trigger)()
 
 
 def end_competition():
+    """ End the competition through ROS service call"""
+
     rospy.wait_for_service('/ariac/end_competition')
     rospy.ServiceProxy('/ariac/end_competition', Trigger)()
 
 
-def submit_shipment(agv, name):
-    rospy.wait_for_service('/ariac/' + agv + '/to_assembly_station')
-    # rospy.ServiceProxy('/ariac/' + agv + '', AGVControl)(name)
-    rospy.ServiceProxy('/ariac/' + agv + '/to_assembly_station', AGVToAssemblyStation)('AS2')
+def submit_kitting_shipment(agv, assembly_station, shipment_type):
+    """ ROS service call to submit a kitting shipment
+
+    Args:
+    assembly_station (str): The name of the assembly station where the shipment should be delivered
+    shipment_type (str): Type of shipment, which is retrieved from the topic /ariac/orders
+
+    Returns:
+    bool: status of the service call
+    """
+
+    rospy.wait_for_service('/ariac/' + agv + '/submit_shipment')
+    rospy.ServiceProxy('/ariac/' + agv + '/submit_shipment', AGVToAssemblyStation)(assembly_station, shipment_type)
+
+
+def submit_assembly_shipment(assembly_station, shipment_type):
+    """ ROS service call to submit an assembly shipment"""
+
+    rospy.wait_for_service('/ariac/' + assembly_station + '/submit_shipment')
+    rospy.ServiceProxy('/ariac/' + assembly_station + '/submit_shipment', AssemblyStationSubmitShipment)(shipment_type)
 
 
 def get_order():
+    """ Get the current order from the /ariac/orders topic"""
+
     order = rospy.wait_for_message('/ariac/orders', Order)
     return order
 
 
 def get_part_type_location(part):
+    """ Get vessels where a specific part type can be found. This function will not work in competition mode. """
+
     rospy.wait_for_service('/ariac/material_locations')
     response = rospy.ServiceProxy('/ariac/material_locations',
                                   GetMaterialLocations)(part.type)
     reachable_location = None
     for loc in response.storage_units:
-        if 'shelf' in loc.unit_id or 'bin' in loc.unit_id:
+        if 'bin' in loc.unit_id:
             reachable_location = loc.unit_id
             break
-    assert(reachable_location), "This implementation only reaches shelves/bins"
+    assert(reachable_location), "This implementation only reaches bins"
     return reachable_location
 
 
@@ -131,9 +155,23 @@ def get_target_world_pose(target, agv):
     tf_buffer = tf2_ros.Buffer()
     tf_listener = tf2_ros.TransformListener(tf_buffer)
     tf_broadcaster = tf2_ros.StaticTransformBroadcaster()
+    h_frame = ''
+
+    if agv == 'agv1':
+        h_frame = 'kit_tray_1'
+    elif agv == 'agv2':
+        h_frame = 'kit_tray_2'
+    elif agv == 'agv3':
+        h_frame = 'kit_tray_3'
+    elif agv == 'agv4':
+        h_frame = 'kit_tray_4'
 
     tf_msg = TransformStamped()
-    tf_msg.header.frame_id = 'kit_tray_1' if agv == 'agv1' else 'kit_tray_2'
+    if not h_frame:
+        tf_msg.header.frame_id = h_frame
+    else:
+        assert(h_frame), "No AGV provided"
+
     tf_msg.header.stamp = rospy.Time()
     tf_msg.child_frame_id = 'target_frame'
     tf_msg.transform.translation = target.pose.position
@@ -170,9 +208,8 @@ def get_target_world_pose(target, agv):
 
 
 class MoveitRunner():
-    def __init__(self, group_names, node_name='ariac_moveit_example',
-                 ns='', robot_description='robot_description'):
 
+    def __init__(self, group_names, node_name='ariac_moveit_example', ns='', robot_description='robot_description'):
         mc.roscpp_initialize(sys.argv)
         rospy.init_node(node_name, anonymous=True)
 
@@ -188,67 +225,76 @@ class MoveitRunner():
             group.set_goal_tolerance(0.05)
             self.groups[group_name] = group
 
-        self.define_preset_locations()
+        self.set_preset_location()
         self.goto_preset_location('start')
 
-    def define_preset_locations(self):
-
+    def set_preset_location(self):
         '''
         Define preset locations for easy navigation.
 
-        The order for the joints are:
-        [elbow_joint, linear_arm_actuator_joint, shoulder_lift_joint, shoulder_pan_joint, wrist_1_joint, wrist_2_joint, wrist_3_joint]
-        ['elbow_joint', 'linear_arm_actuator_joint', 'shoulder_lift_joint', 'shoulder_pan_joint', 'vacuum_gripper_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']
+        For the kitting robot, the order of the joints are:
+        - linear_arm_actuator_joint
+        - shoulder_pan_joint
+        - shoulder_lift_joint
+        - elbow_joint
+        - wrist_1_joint
+        - wrist_2_joint
+        - wrist_3_joint
+
+        For the gantry_torso group, the joints are:
+        - small_long_joint
+        - torso_base_main_joint
+        - torso_main_torso_tray_joint,
+        - torso_rail_joint
+
+        For the gantry_arm group, the joints are:
+        - gantry_arm_elbow_joint
+        - gantry_arm_shoulder_lift_joint
+        - gantry_arm_shoulder_pan_joint
+        - gantry_arm_vacuum_gripper_joint
+        - gantry_arm_wrist_1_joint
+        - gantry_arm_wrist_2_joint
+        - gantry_arm_wrist_3_joint
         '''
+
         locations = {}
 
-        name = 'start'
-        #moveit: ['linear_arm_actuator_joint', 'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']
-        # rqt: ['elbow_joint', 'linear_arm_actuator_joint', 'shoulder_lift_joint', 'shoulder_pan_joint', 'vacuum_gripper_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']
-        kitting = [0, 3.141594222190707 , -1.128743290405139, 1.5106304587276407, 4.25, -1.5079761953269788, 0]
+        name = 'home'
+        kitting_arm = [0, 3.141594222190707, -1.128743290405139, 1.5106304587276407, 4.25, -1.5079761953269788, 0]
+        gantry_torso = [0, 0, 0]
+        gantry_arm = [0.0, -1.13, 1.88, -0.72, 1.55, 0.83]
+        locations[name] = (kitting_arm, gantry_torso, gantry_arm)
+
+        name = 'bin8'
+        kitting_arm = [1.3458887656258813, -0.5601138939850792, -0.2804510290896989, 0, -0.8072468824120538, 1.5385783777411373, 0.8298981409931709]
+        gantry_torso = [-2.48400006879773, -1.6336322021423504, 0, 3.4200004668605506]
+        gantry_arm = [0.0, -pi/4, pi/2, -pi/4, pi/2, 0]
         locations[name] = (kitting)
-
-#3.77
-        name = 'bin2'
-        kitting = [2.72, 3.141594222190707 , -1.01, 1.88, 3.90, -1.57, 0]
-        locations[name] = (kitting)
-
-        # name = 'bin3'
-        # kitting = [-1.3, 2.565006, 0.]
-        # locations[name] = (kitting)
-
-        # name = 'bin4'
-        # kitting = [-1.3, 3.379920, 0.]
-        # locations[name] = (kitting)
-
-
-# rqt:
-# ['elbow_joint', 'linear_arm_actuator_joint', 'shoulder_lift_joint', 'shoulder_pan_joint', 'vacuum_gripper_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint']
-# (0.0006704767895193697, -4.58066684595153e-07, 0.0024011208859358035, -0.00020532990478816515, -4.618336402195666e-06, -7.98926677347822e-06, -2.9301353275279496e-05, 5.8839257981446735e-06)
-
-
-
 
         name = 'standby'
-        kitting = [2.70, 3.141594222190707 , -1.01, 1.88, 3.77, -1.55, 0]
+        kitting_arm = [2.70, 3.141594222190707, -1.01, 1.88, 3.77, -1.55, 0]
+        gantry_torso = [0, 0, 0]
+        gantry_arm = [0.0, -pi/4, pi/2, -pi/4, pi/2, 0]
         locations[name] = (kitting)
 
-        name = 'agv1'
-        kitting = [4.62, 3.141594222190707 , -1.01, 1.88, 3.77, -1.55, 0]
-        locations[name] = (kitting)
-
-        name = 'agv2'
-        kitting = [1.50, 3.141594222190707 , -1.01, 1.88, 3.77, -1.55, 0]
+        name = 'agv4'
+        kitting_arm = [1.50, 3.141594222190707, -1.01, 1.88, 3.77, -1.55, 0]
+        gantry_torso = [0, 0, 0]
+        gantry_arm = [0.0, -pi/4, pi/2, -pi/4, pi/2, 0]
         locations[name] = (kitting)
 
         self.locations = locations
 
-    def goto_preset_location(self, location_name):
-        group = self.groups['kitting_arm']
-        kitting = self.locations[location_name]
-        location_pose = group.get_current_joint_values()
+    def goto_preset_location(self, location_name, robot_type):
 
-        # print(location_name)
+        group = None
+        if robot_type == 'kitting_robot':
+            group = self.groups['kitting_arm']
+        elif robot_type == 'gantry_robot':
+            group = self.groups['gantry_full']
+
+        kitting_arm, gantry_torso, gantry_arm = self.locations[location_name]
+        location_pose = group.get_current_joint_values()
 
         if kitting:
             location_pose[:] = kitting
@@ -262,7 +308,17 @@ class MoveitRunner():
             attempts += 1
             assert(attempts < MAX_ATTEMPTS)
 
-    def move_part(self, part, target, part_location, agv):
+    def move_part(self, part, target, part_location, agv, robot_type):
+        """
+        Pick a part from a bin and place it in the tray of an AGV
+        Args:
+        part (str): The name of the assembly station where the shipment should be delivered
+        target (str): Type of shipment, which is retrieved from the topic /ariac/orders
+
+        Returns:
+        bool: status of the service call
+        """
+
         # This example only uses the kitting robot only
         group = self.groups['kitting_arm']
         gm = GripperManager(ns='/ariac/kitting/arm/gripper/')
@@ -295,11 +351,6 @@ class MoveitRunner():
             self.goto_preset_location('start')
             return False
 
-        # if 'shelf' in part_location:
-        #     self.goto_preset_location(part_location)
-        #     # self.goto_preset_location('standby')
-        #     # self.goto_preset_location('start')
-        
         self.goto_preset_location('standby')
         self.goto_preset_location(agv)
 
@@ -337,23 +388,32 @@ class GripperManager():
 
 if __name__ == '__main__':
 
-    group_names = ['kitting_arm']
-    moveit_runner = MoveitRunner(group_names, ns='/ariac/kitting')
+    # all moveit groups defined for both robots
+    kitting_group_names = ['kitting_arm']
+    gantry_group_names = ['gantry_full', 'gantry_arm', 'gantry_torso']
+
+    # an instance of MoveitRunner for the kitting robot
+    moveit_runner_kitting = MoveitRunner(kitting_group_names, ns='/ariac/kitting')
+    # an instance of MoveitRunner for the gantry robot
+    moveit_runner_gantry = MoveitRunner(gantry_group_names, ns='/ariac/gantry')
 
     start_competition()
     order = get_order()
-    print(order)
-    agv_states = {'agv1': [], 'agv2': []}
+    # print(order)
+    agv_states = {'agv1': [], 'agv2': [], 'agv3': [], 'agv4': []}
 
     all_known_parts = get_parts_from_cameras()
-    print(all_known_parts)
+    # print(all_known_parts)
 
     for shipment in order.shipments:
-        active_agv = 'agv1' if shipment.agv_id == 'agv1' else 'agv2'
+        if shipment.agv_id == 'any':
+            active_agv = 'agv1'
+        else:
+            active_agv = shipment.agv_id
+
         agv_state = agv_states[active_agv]
 
         while True:
-
             valid_products = []
             for product in shipment.products:
                 if product not in agv_state:

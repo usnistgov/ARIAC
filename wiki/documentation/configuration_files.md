@@ -63,7 +63,7 @@ rosrun nist_gear gear.py -f <trial_config_file> <competitor_config_file>
 
 ## User Configuration File
 
-Competitors are allowed to select the quantity, type, and location of sensors.Sensors can only be placed in static locations, they cannot be attached to the robots (unless done by the organizers themselves) or otherwise be moved around the environment. Choices of sensors must be written using the YAML syntax. A sensor's position and orientation is specified in global coordinates using and XYZ vector and Euler angles (roll, pitch, yaw).
+Competitors are allowed to select the quantity, type, and location of sensors. Sensors can only be placed in static locations, they cannot be attached to the robots (unless done by the organizers themselves) or otherwise be moved around the environment. Choices of sensors must be written using the YAML syntax. A sensor's position and orientation is specified in global coordinates using an  XYZ vector and Euler angles (roll, pitch, yaw).
 
 ### How to Add Sensors
 
@@ -75,6 +75,7 @@ The configuration YAML file contains a list of sensors denoted by the `sensors:`
 - laser_profiler
 - depth_camera
 - rgbd_camera
+- camera on the gantry
 
 An example of a user configuration file is shown below:
 
@@ -94,7 +95,7 @@ sensors:
 
 ### How to Visualize Sensor Views
 
-By default, the view of the sensors in the Gazebo simulation will not be displayed. Enabling the sensor visualization may be useful while you are decided where to place sensors in the world. Competitors can enable sensor visualization by adding `--visualize-sensor-views` in the launch file (as seen in `sample_environment.launch` file above).
+By default, the view of the sensors in the Gazebo simulation will not be displayed. Enabling the sensor visualization may be useful while you are deciding where to place sensors in the world. Competitors can enable sensor visualization by adding `--visualize-sensor-views` in the launch file (as seen in `sample_environment.launch` file above).
 
 ### How to Read Sensor Data
 

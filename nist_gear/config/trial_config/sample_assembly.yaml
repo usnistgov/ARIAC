@@ -78,26 +78,29 @@ orders:
 #          num_models_x: 2
 #          num_models_y: 1
 
-# models_over_stations:
-#   as1:
-#     models:
-#       assembly_battery_green:
-#         xyz: [-0.032465, 0.174845, 0.15]
-#         rpy: [0, 0, 0]
-#       # assembly_pump_red:
-#       #   xyz: [0.032085, -0.152835, 0.15]
-#       #   rpy: [0, 0, 0]
-#   as2:
-#     models:
-#       assembly_battery_blue:
-#         xyz: [-0.032465, 0.174845, 0.15]
-#         rpy: [0, 0, 0]
-#   as3:
-#     models:
-#       assembly_pump_blue:
-#         xyz: [0.032085, -0.152835, 0.25]
-#         rpy: [0, 0, 0]
- 
+models_over_stations:
+  as1:
+    models:
+      assembly_battery_green:
+        xyz: [-0.032465, 0.174845, 0.15]
+        rpy: [0, 0, 'pi']
+      assembly_pump_red:
+        xyz: [0.032085, -0.152835, 0.15]
+        rpy: [0, 0, 0]
+  as2:
+    models:
+      assembly_battery_blue:
+        xyz: [-0.032465, 0.174845, 0.15]
+        rpy: [0, 0, 0]
+  as3:
+    models:
+      assembly_pump_blue:
+        xyz: [0.032085, -0.152835, 0.25]
+        rpy: [0, 0, 0]
+
+# faulty_products:
+#   - assembly_battery_green_1
+
 # belt_models:
 #   assembly_pump_blue:
 #     1.0:

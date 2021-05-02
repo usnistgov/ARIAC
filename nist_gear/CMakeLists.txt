@@ -37,6 +37,8 @@ add_message_files(DIRECTORY msg
   DetectedAssemblyShipment.msg
   LogicalCameraImage.msg
   Model.msg
+  DropProducts.msg
+  DropProduct.msg
   Order.msg
   PopulationState.msg
   Proximity.msg

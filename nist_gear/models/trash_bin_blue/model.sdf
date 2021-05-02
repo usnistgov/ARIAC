@@ -36,7 +36,7 @@
          <geometry>
            <mesh>
              <uri>model://trash_bin_blue/meshes/trash_bin_blue.dae</uri>
-            <scale>1.2 1.2 0.8</scale>
+             <scale>1.2 1.2 0.8</scale>
            </mesh>
          </geometry>
        </visual>

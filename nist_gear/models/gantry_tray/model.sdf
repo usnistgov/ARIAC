@@ -14,12 +14,6 @@
           <izz>0.0616</izz>
         </inertia>
       </inertial>
-      <sensor name='gantry_tray_contact' type='contact'>
-        <update_rate>1</update_rate>
-        <contact>
-          <collision>gantry_tray_collision</collision>
-        </contact>
-      </sensor>
       <gravity>true</gravity>
       <collision name="gantry_tray_collision">
         <pose>0 0 0 0 0 0</pose>

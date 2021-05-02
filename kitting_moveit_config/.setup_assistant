@@ -8,4 +8,4 @@ moveit_setup_assistant_config:
   CONFIG:
     author_name: Zeid Kootbally
     author_email: zeid.kootbally@nist.gov
-    generated_timestamp: 1611208823
+    generated_timestamp: 1618798375

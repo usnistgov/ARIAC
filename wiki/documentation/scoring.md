@@ -45,7 +45,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 - Cost of a competitor's system (sum of the cost of sensors used).
   - $600 Camera mounted on the robot. **\*\*New this year\*\***
   - $500 for each logical camera used.
-  - $500 for each RGBD camera used.
+  - $300 for each RGBD camera used.
   - $200 for each depth camera used.
   - $100 for each other sensor used.
   
@@ -59,7 +59,7 @@ A comparison of <img src="https://render.githubusercontent.com/render/math?math=
    - Competitors that have the same <img src="https://render.githubusercontent.com/render/math?math=TC"> will have <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} = 1">
    - Competitors with a <img src="https://render.githubusercontent.com/render/math?math=TC"> lower than <img src="https://render.githubusercontent.com/render/math?math=BC"> are rewarded by having  <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} > 1"> 
    - Teams with a <img src="https://render.githubusercontent.com/render/math?math=TC"> higher than <img src="https://render.githubusercontent.com/render/math?math=BC"> are penalized by having  <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} < 1">
-   - <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} = \frac{BC}{TC}\,\text{where}\,BC = 10000">
+   - <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} = \frac{BC}{TC}\,\text{where}\,BC = 8200">
    <!-- - **CF** = (BC / TC) where BC = 10000 -->
 
    <!--* `CF = (BC / TC)` where `BC = 1700`-->

@@ -1,0 +1,31 @@
+sensors:
+
+  logical_camera_bins0:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, 2.963994, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_bins1:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, -2.963994, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+      
+robot_camera:
+  enable: false
+
+
+
+  # rgbd_1:
+  #   type: rgbd_camera
+  #   pose:
+  #     xyz: [-0.004795, 4.492549, 0.879306]
+  #     rpy: [0, 0, -1.557900] 
+  # depth_camera_0:
+  #   type: depth_camera
+  #   pose:
+  #     xyz: [3.082385, 1.750927, 1.82]
+  #     rpy: [0, 'pi/2', 0]
+
+ 

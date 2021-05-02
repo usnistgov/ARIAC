@@ -8,7 +8,7 @@ def expand_snippet(filename, data=locals()):
 }@
 <?xml version="1.0" ?>
 <sdf version="1.5">
-  <world name="ariac2021_world">
+  <world name="world">
     <!-- Set the initial camera pose to be looking at the workspace. -->
     <gui fullscreen='0'>
       <camera name='user_camera'>
@@ -119,13 +119,13 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>-17.6 4.8 0. 0 0 0</pose>
       </model>
-      <!--model name="CageFactory3">
+      <model name="CageFactory3">
         <include>
           <static>true</static>
           <uri>model://cage_factory</uri>
         </include>
         <pose frame=''>-17.0 -2.03 2.6 0 0 3.1415</pose>
-      </model-->
+      </model>
       <model name="FactoryShelf1">
         <include>
           <static>true</static>
@@ -182,34 +182,34 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>-1.2 6.6 0.0 0 0 0</pose>
       </model>
-      <model name="BoxPallet2">
+      <!-- <model name="BoxPallet2">
         <include>
           <static>true</static>
           <uri>model://box_pallets_2</uri>
         </include>
           <pose frame=''>-18.33 -6.65 0.01589 0 0 -0.094651</pose>
-      </model>
-      <model name="BoxPallet3">
+      </model>   -->
+      <!-- <model name="BoxPallet3">
         <include>
           <static>true</static>
           <uri>model://box_pallets_2</uri>
         </include>
         <pose frame=''>0.2729 -6.247 0.01589 0 0 -0.094651</pose>
-      </model>
-      <model name="BoxPallet4">
+      </model>   -->
+      <!-- <model name="BoxPallet4">
         <include>
           <static>true</static>
           <uri>model://box_pallets</uri>
         </include>
         <pose frame=''>2.955 -4.343 0.01589 0 0 -1.570881</pose>
-      </model>
-      <model name="BoxPallet5">
+      </model>                -->
+      <!-- <model name="BoxPallet5">
         <include>
           <static>true</static>
           <uri>model://box_pallets_3</uri>
         </include>
         <pose frame=''>-15.87 -8.663 0.01589 0 0 -0.065512</pose>
-      </model>
+      </model>    -->
       <model name="BoxPallet6">
         <include>
           <static>true</static>
@@ -217,20 +217,22 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>0.5554 -7.468 0.01589 0 0 -0.065512</pose>
       </model>   
-      <model name="PartCollector">
+            <model name="PartCollector">
         <include>
           <static>true</static>
           <uri>model://trash_bin_blue</uri>
         </include>
         <pose frame=''>-2.186829 0 -0.054593 0 0 0</pose>
-      </model>
-      <model name="ConveyorCollector">
+      </model>   
+
+        <model name="ConveyorCollector">
         <include>
           <static>true</static>
           <uri>model://trash_bin_blue</uri>
         </include>
         <pose frame=''>-0.577 -4.719131 0 0 0 0</pose>
-      </model>
+      </model>   
+
       <model name="workcell_floor_2021">
         <include>
           <static>true</static>
@@ -353,21 +355,32 @@ expand_snippet('rgbd_camera.sdf.template')
     <include>
       <uri>model://deletion_wall</uri>
       <pose>-0.573076 -4.53 0.07237 0 -1.5708 1.5708</pose>
-    </include>>
+      <!-- <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose> -->
+    </include>
 
     <!-- a wall to delete objects in the bin-->
     <include>
       <uri>model://bin_deletion_wall</uri>
-      <pose>-2.188252 -0.014119 0 0 0 0</pose>
-    </include>>
+            <pose>-2.188252 -0.014119 0 0 0 0</pose>
+    </include>
 
 @{belt_models_loop = True}@
 @{belt_population_cycles = options['belt_population_cycles'] if belt_models_loop else 1}
 
 @{obj_type_index = 0}@
-@[for obj_type, spawn_times in belt_models.items()]@
-    <!-- Pool of @(obj_type) objects -->
-@[  for index in range(belt_population_cycles * len(spawn_times))]@
+@{start_index = 0}@
+@[for obj_type, dict_values in belt_models.items()]@
+@[for key, value in dict_values.items()]@
+@[if isinstance(key, str)]@
+@{start_index = value}@
+@[end if]@
+@[end for]@
+@[end for]@
+
+@[for obj_type, dict_values in belt_models.items()]@
+@[for key, value in dict_values.items()]@
+@[if isinstance(key, float)]@
+@[  for index in range(start_index, start_index+belt_population_cycles)]@
     <include>
       <uri>model://@(obj_type)_ariac</uri>
       <name>@(obj_type)_@(index)</name>
@@ -375,7 +388,11 @@ expand_snippet('rgbd_camera.sdf.template')
     </include>
 @[  end for]@
 @{obj_type_index += 1}@
+@[end if]@
 @[end for]@
+@[end for]@
+
+
 
 
 <!-- a conveyor belt-->
@@ -386,8 +403,10 @@ expand_snippet('rgbd_camera.sdf.template')
     <!-- <pose>1.067526 -0.714548 0.0 0 0 0</pose> -->
   </include>
 
+      
 
-<!-- Populate stations, agvs, and bins -->
+
+    <!-- Populate stations, agvs, and bins -->
   @[for model_name, model in models_to_insert.items()]@
       <include>
         <name>@(model_name)</name>
@@ -413,14 +432,19 @@ expand_snippet('rgbd_camera.sdf.template')
       <loop_forever>@("true" if belt_models_loop else "false")</loop_forever>
       <frame>conveyor_belt::conveyor_belt_fixed</frame>
       <object_sequence>
-@[for product_name, spawn_times in belt_models.items()]@
-  @[for spawn_time, product in spawn_times.items()]@
+
+
+
+@[for obj_type, dict_values in belt_models.items()]@
+@[for key, value in dict_values.items()]@
+@[if isinstance(key, float)]@
         <object>
-          <time>@(spawn_time)</time>
-          <type>@(product.type)</type>
-          <pose>@(' '.join(product.pose.xyz)) @(' '.join(product.pose.rpy))</pose>
+          <time>@(key)</time>
+          <type>@(value.type)</type>
+          <pose>@(' '.join(value.pose.xyz)) @(' '.join(value.pose.rpy))</pose>
         </object>
-  @[end for]@
+@[end if]@
+@[end for]@
 @[end for]@
       </object_sequence>
       <update_rate>10</update_rate>
@@ -429,15 +453,22 @@ expand_snippet('rgbd_camera.sdf.template')
 
 
 
-@[for agv_id, agv_pose in agv_infos.items()]@
+@[for agv_id, agv_values in agv_infos.items()]@
     <!-- AGV@(str(agv_id)) -->
     <model name="agv@(str(agv_id))">
-      <pose>@(' '.join(agv_pose.xyz)) @(' '.join(agv_pose.rpy))</pose>
+    @[for agv_key, agv_values_values in agv_values.items()]@
+    <!-- <key>@(str(agv_key))</key> -->
+    @[if str(agv_key) == 'pose']@
+    <!-- <key>@(str(agv_key))</key> -->
+      <pose>@(' '.join(agv_values_values.xyz)) @(' '.join(agv_values_values.rpy))</pose>
+    @[end if]@
+    @[end for]@
       <include>
         <name>agv@(str(agv_id))</name>
         <uri>model://warehouse_robot_ariac</uri>
       </include>
       <plugin name="agv_plugin" filename="libROSAGVPlugin.so">
+        <agv_location_topic_name>/ariac/agv@(str(agv_id))/station</agv_location_topic_name>
 @[if agv_id == str(1) or agv_id == str(2)]@
         <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
         <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>
@@ -448,7 +479,7 @@ expand_snippet('rgbd_camera.sdf.template')
 @[end if]@
         <agv_control_service_name>/ariac/agv@(str(agv_id))/animate</agv_control_service_name>
         <clear_tray_service_name>/ariac/kit_tray_@(str(agv_id))/clear_tray</clear_tray_service_name>
-        <lock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/lock_models</lock_tray_service_name>
+        <lock_unlock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/lock_unlock_models</lock_unlock_tray_service_name>
         <index>@(str(agv_id))</index>
       </plugin>
       <!-- a tray for building kits -->
@@ -463,7 +494,7 @@ expand_snippet('rgbd_camera.sdf.template')
           <contact_sensor_name>kit_tray_contact</contact_sensor_name>
           <tf_frame_name>kit_tray_@(str(agv_id))</tf_frame_name>
           <clear_tray_service_name>/ariac/kit_tray_@(str(agv_id))/clear_tray</clear_tray_service_name>
-          <lock_models_service_name>/ariac/kit_tray_@(str(agv_id))/lock_models</lock_models_service_name>
+          <lock_unlock_models_service_name>/ariac/kit_tray_@(str(agv_id))/lock_unlock_models</lock_unlock_models_service_name>
           <get_content_service_name>/ariac/kit_tray_@(str(agv_id))/get_content</get_content_service_name>
           <update_rate>20</update_rate>
           <faulty_parts>
@@ -569,6 +600,16 @@ expand_snippet('rgbd_camera.sdf.template')
         <agv_control_service_name>/ariac/agv@(agv_id)</agv_control_service_name>
         <agv_animate_service_name>/ariac/agv@(agv_id)/animate</agv_animate_service_name>
         <agv_to_as_service_name>/ariac/agv@(agv_id)/submit_shipment</agv_to_as_service_name>
+        <agv_location_topic>/ariac/agv@(str(agv_id))/station</agv_location_topic>
+    @[for agv, agv_values in agv_infos.items()]@
+    @[if str(agv) == str(agv_id)]@
+    @[for agv_key, agv_values_values in agv_values.items()]@
+    @[if str(agv_key) == 'location']@
+    <agv_start_location_name>@(str(agv_values_values))</agv_start_location_name>
+    @[end if]@
+    @[end for]@
+    @[end if]@
+    @[end for]@
 @[if agv_id == 1 or agv_id == 2]@
         <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
         <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>
@@ -602,8 +643,8 @@ expand_snippet('rgbd_camera.sdf.template')
 @[if order['announcement_condition'] == 'agv_station_reached']@
         <interrupt_on_station_reached>@(order['announcement_condition_value'])</interrupt_on_station_reached>
 @[end if]@
-@[if order['disable_robot']]@
-	<robot_to_disable>@(str(order['disable_robot'][0]))</robot_to_disable>
+@[if order['disable_robot']]@ 
+        <robot_to_disable>@(str(order['disable_robot'][0]))</robot_to_disable>
         <location_to_disable>@(str(order['disable_robot'][1]))</location_to_disable>
         <part_quantity_to_disable>@(str(order['disable_robot'][2]))</part_quantity_to_disable>
 @[end if]@

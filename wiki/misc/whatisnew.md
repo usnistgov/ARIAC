@@ -16,7 +16,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 ## Overview
 
 - Shelves have been removed from ARIAC 2021. ARIAC developers spent a lot of time on shelf configurations, so expect them to be back in the next ARIAC iteration.
-- Environment layout is more compact and less larger than ARIAC 2020. It should take the gantry robot less time to navigate the workcell.
+- Environment layout is more compact and less large than ARIAC 2020. It should take the gantry robot less time to navigate the workcell.
 - In previous years, building kits on the wrong AGV was one of the situations that would nullified the trial score. This year, delivering the AGV to the wrong assembly station will also nullified the trial score.
 - The orchestration for announcing new orders is more complex. See full description in the [Agility Challenges](../documentation/agility_challenges.md#new-order) page.
 

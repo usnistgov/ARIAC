@@ -2,7 +2,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
   
 -------------------------------------------------
 
-Being updated...
+
 # Wiki | Documentation | Environment and Trials
 
 - This page describes how to configure the simulated workcell environment by selecting and placing sensors.
@@ -128,6 +128,6 @@ These config files can be used to practice with the [various agility challenges]
   - If you are focusing on grasping products from a particular shelf, you can comment out the other shelves listed in `models_over_shelves` to temporarily not spawn them.
 
 -------------------------------------------------
-- Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
--------------------------------------------------
+Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
+

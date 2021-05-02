@@ -23,6 +23,7 @@
 #include <memory>
 #include <mutex>
 #include <ostream>
+#include <ros/ros.h>
 #include <vector>
 #include <string>
 #include <gazebo/common/Events.hh>
@@ -102,6 +103,9 @@ namespace gazebo
       };
     };
 
+  public:
+    ros::Publisher drop_object_publisher;
+    ros::Subscriber drop_object_subscriber;
     /// \brief Collection of objects that have been dropped.
   public:
     std::vector<std::string> dropped_objects;
@@ -109,6 +113,7 @@ namespace gazebo
     /// \brief Collection of objects to be dropped.
   public:
     std::vector<DropObject> objects_to_drop;
+    std::vector<nist_gear::DropProduct> object_to_drop_from_topic;
 
     /// \brief Model that contains this gripper.
   public:
@@ -183,6 +188,8 @@ namespace gazebo
     /// \brief Node for communication.
   public:
     transport::NodePtr node;
+    // std::unique_ptr<ros::NodeHandle> rosnode;
+    ros::NodeHandle *rosnode;
 
     /// \brief Subscription to contact messages from the physics engine.
   public:
@@ -235,8 +242,6 @@ GZ_REGISTER_MODEL_PLUGIN(VacuumGripperPlugin)
 VacuumGripperPlugin::VacuumGripperPlugin()
     : dataPtr(new VacuumGripperPluginPrivate)
 {
-  gzmsg << "VacuumGripper plugin loaded" << std::endl;
-
   this->dataPtr->attached = false;
   this->dataPtr->updateRate = common::Time(0, common::Time::SecToNano(0.1));
 }
@@ -249,6 +254,7 @@ VacuumGripperPlugin::~VacuumGripperPlugin()
     auto mgr = this->dataPtr->world->Physics()->GetContactManager();
     mgr->RemoveFilter(this->Name());
   }
+  this->dataPtr->rosnode->shutdown();
 }
 
 /////////////////////////////////////////////////
@@ -257,9 +263,36 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->model = _model;
   this->dataPtr->world = this->dataPtr->model->GetWorld();
 
+  gzmsg << "VacuumGripper plugin loaded for: " << this->dataPtr->model->GetName() << " " << std::endl;
+
   this->dataPtr->node = transport::NodePtr(new transport::Node());
   this->dataPtr->node->Init(this->dataPtr->world->Name());
   this->dataPtr->name = _sdf->Get<std::string>("name");
+
+  std::string robotNamespace = "";
+  if (_sdf->HasElement("robot_namespace"))
+  {
+    robotNamespace = _sdf->GetElement(
+                             "robot_namespace")
+                         ->Get<std::string>() +
+                     "/";
+  }
+
+  // gzdbg << "Namespace -- " << robotNamespace << "\n";
+
+  // initialize ROS
+  this->dataPtr->rosnode = new ros::NodeHandle(this->dataPtr->model->GetName() + "/vacuumplugin");
+  // this->dataPtr->rosnode.reset(new ros::NodeHandle(robotNamespace+"/vacuumplugin"));
+
+  this->dataPtr->drop_object_publisher =
+      this->dataPtr->rosnode->advertise<nist_gear::DropProducts>("/ariac/drop_products", 1000, false);
+
+  this->dataPtr->drop_object_subscriber =
+      this->dataPtr->rosnode->subscribe("/ariac/drop_products", 1000,
+                                        &VacuumGripperPlugin::OnDropObjectContent, this);
+
+  // build a message of products to drop
+  nist_gear::DropProducts msgDropProducts;
 
   // Create the joint that will attach the objects to the suction cup
   this->dataPtr->fixedJoint =
@@ -366,9 +399,11 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
       // Parse the frame of the drop.
       physics::EntityPtr dropFrame = NULL;
+      std::string dropFrameName{};
+
       if (dropRegionElem->HasElement("frame"))
       {
-        std::string dropFrameName = dropRegionElem->Get<std::string>("frame");
+        dropFrameName = dropRegionElem->Get<std::string>("frame");
         dropFrame = this->dataPtr->world->EntityByName(dropFrameName);
         if (!dropFrame)
         {
@@ -387,11 +422,32 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       ignition::math::Box dropRegion = ignition::math::Box(min, max);
       ignition::math::Pose3d destination = dstElement->Get<ignition::math::Pose3d>();
 
+      nist_gear::DropProduct msgDropProduct;
+      msgDropProduct.type = type;
+      msgDropProduct.status = false;  // this product hasn't been dropped yet
+      msgDropProduct.frame = dropFrameName;
+
+      msgDropProducts.drop_products.push_back(msgDropProduct);
+
       VacuumGripperPluginPrivate::DropObject dropObject{type, dropRegion, destination, dropFrame};
       this->dataPtr->objects_to_drop.push_back(dropObject);
 
       dropRegionElem = dropRegionElem->GetNextElement("drop_region");
     }
+    // publish this message
+    // for (auto product : msgDropProducts.drop_products)
+    // {
+    //   gzdbg << "drop type: " << product.type << "\n";
+    //   gzdbg << "drop frame: " << product.frame << "\n";
+    //   gzdbg << "drop status: " << product.status << "\n";
+    // }
+
+    while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1)
+    {
+      gzdbg << "wait for a connection to publisher"
+            << "\n";
+    }
+    this->dataPtr->drop_object_publisher.publish(msgDropProducts);
   }
 
   // Find out the collision elements of the suction cup
@@ -399,7 +455,8 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   {
     physics::CollisionPtr collision =
         this->dataPtr->suction_cup_link->GetCollision(j);
-    std::map<std::string, physics::CollisionPtr>::iterator collIter = this->dataPtr->collisions.find(collision->GetScopedName());
+    std::map<std::string, physics::CollisionPtr>::iterator collIter =
+        this->dataPtr->collisions.find(collision->GetScopedName());
     if (collIter != this->dataPtr->collisions.end())
       continue;
 
@@ -422,6 +479,24 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   this->dataPtr->connection = event::Events::ConnectWorldUpdateEnd(
       boost::bind(&VacuumGripperPlugin::OnUpdate, this));
+}
+
+/////////////////////////////////////////////////
+void VacuumGripperPlugin::OnDropObjectContent(nist_gear::DropProducts::ConstPtr msgDropProducts)
+{
+  std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+  auto msg = msgDropProducts->drop_products;
+  this->dataPtr->object_to_drop_from_topic.clear();
+
+  for (const auto &product : msg)
+  {
+    nist_gear::DropProduct msgDropProduct;
+    msgDropProduct.type = product.type;
+    msgDropProduct.frame = product.frame;
+    msgDropProduct.status = product.status;
+
+    this->dataPtr->object_to_drop_from_topic.push_back(msgDropProduct);
+  }
 }
 
 /////////////////////////////////////////////////
@@ -468,7 +543,6 @@ void VacuumGripperPlugin::Disable()
   this->dataPtr->disableRequested = true;
 }
 
-
 /////////////////////////////////////////////////
 void VacuumGripperPlugin::OnUpdate()
 {
@@ -513,7 +587,14 @@ void VacuumGripperPlugin::OnUpdate()
         gzdbg << "dropAttachedModel and attachedObjType are different: " << objectType << " and "
               << this->dataPtr->attachedObjType << std::endl;
         continue;
-      } 
+      }
+
+      if (objectType != this->dataPtr->attachedObjType)
+      {
+        gzdbg << "dropAttachedModel and attachedObjType are different: " << objectType << " and "
+              << this->dataPtr->attachedObjType << std::endl;
+        continue;
+      }
 
       auto objPose = this->dataPtr->dropAttachedModel->WorldPose();
       ignition::math::Pose3d dropFramePose;
@@ -543,16 +624,60 @@ void VacuumGripperPlugin::OnUpdate()
         objDest = (dropFrameTransMat * objDestLocal).Pose();
       }
 
-      // Teleport it to the destination.
-      this->dataPtr->dropAttachedModel->SetWorldPose(objDest);
-      this->dataPtr->dropAttachedModel->SetLinearVel(ignition::math::Vector3d::Zero);
-      this->dataPtr->dropAttachedModel->SetLinearAccel(ignition::math::Vector3d::Zero);
+      if (!this->dataPtr->object_to_drop_from_topic.empty())
+      {
+        for (const auto &product : this->dataPtr->object_to_drop_from_topic)
+        {
+          nist_gear::DropProduct msgDropProduct;
+          msgDropProduct.type = product.type;
+          msgDropProduct.frame = product.frame;
+          msgDropProduct.status = product.status;
 
-      this->dataPtr->dropped_objects.push_back(this->dataPtr->attachedObjType);
+          // gzdbg << "drop type: " << product.type << "\n";
+          // gzdbg << "drop frame: " << product.frame << "\n";
+          // gzdbg << "drop status: " << product.status << "\n";
 
-      this->dataPtr->dropPending = false;
-      gzdbg << "Object dropped and teleported" << std::endl;
-      break;
+          // gzdbg << "DROP: " << objectType << " " << dropObject.frame->GetName() << "\n";
+
+          if (objectType == msgDropProduct.type &&
+              msgDropProduct.frame.find(dropObject.frame->GetName()) != std::string::npos && // e.g., kit_tray_3 is in agv3::kit_tray_3
+              !msgDropProduct.status)
+          {
+            // Teleport it to the destination.
+            this->dataPtr->dropAttachedModel->SetWorldPose(objDest);
+            this->dataPtr->dropAttachedModel->SetLinearVel(ignition::math::Vector3d::Zero);
+            this->dataPtr->dropAttachedModel->SetLinearAccel(ignition::math::Vector3d::Zero);
+
+            this->dataPtr->dropped_objects.push_back(this->dataPtr->attachedObjType);
+
+            this->dataPtr->dropPending = false;
+            gzdbg << "Object dropped and teleported" << std::endl;
+
+
+            // update the message with status=true for the part that was just dropped
+            nist_gear::DropProducts updatedDropProducts;
+            for (const auto &product : this->dataPtr->object_to_drop_from_topic)
+            {
+              nist_gear::DropProduct msgDropProduct;
+              msgDropProduct.type = product.type;
+              msgDropProduct.frame = product.frame;
+              if (msgDropProduct.type == objectType &&
+                  msgDropProduct.frame.find(dropObject.frame->GetName()) != std::string::npos)
+              {
+                msgDropProduct.status = true;
+              }
+              updatedDropProducts.drop_products.push_back(msgDropProduct);
+            }
+            while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1)
+            {
+              gzdbg << "wait for a connection to publisher"
+                    << "\n";
+            }
+            this->dataPtr->drop_object_publisher.publish(updatedDropProducts);
+            break;
+          }
+        }
+      }
     }
   }
 

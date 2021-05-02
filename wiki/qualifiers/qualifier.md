@@ -44,7 +44,7 @@ Part A consists of three trial files where each trial focuses on one of the [thr
 ### qual1
 
 - This trial focuses on baseline kit building.
-    - One order with 2 shipments. Both shipments need to be built on the same agv (`agv3`).
+    - One order with 2 shipments. One shipment on `agv2` and one shipment on `agv3`.
     - Agility challenges:
       - Faulty sensors will be triggered after a second product is placed on any agv.
       - Faulty gripper: A blue battery will drop from the gripper's grasp when placing this part on the agv.

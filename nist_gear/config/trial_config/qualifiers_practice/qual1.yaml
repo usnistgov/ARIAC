@@ -44,8 +44,8 @@ orders:
     announcement_condition_value: 0.0
     kitting:
       shipment_count: 2
-      agvs: [agv3, agv3]
-      destinations: [as3, as4]
+      agvs: [agv2, agv3]
+      destinations: [as1, as4]
       products:
         part_0:
           type: assembly_battery_blue

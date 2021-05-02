@@ -99,10 +99,14 @@ target_link_libraries(${vacuum_gripper_plugin_name}
   ${roscpp_LIBRARIES}
   ${sensor_msgs_LIBRARIES}
 )
+add_dependencies(${vacuum_gripper_plugin_name}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
 install(TARGETS ${vacuum_gripper_plugin_name}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
+  
 
 # Create the libROSVacuumGripperPlugin.so library.
 set(ros_vacuum_gripper_plugin_name ROSVacuumGripperPlugin)

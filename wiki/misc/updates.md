@@ -6,7 +6,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 - This update provides the software that will be used for the qualifiers.
 - Information on the qualifiers is provided [here](../qualifiers/qualifier.md).
-- Due to some technical issues (especially with the docker website) we have updated the deadline for qualifiers submissions. You should have received an email about this as well.
+- Due to some technical issues (especially with the docker website) we have updated the deadline for qualifiers submissions. You should have received an email about this as well. The new deadline for qualifiers submission is May 10.
 - This update cleared many github tickets. We are working on the remaining tickets.
 
 ## Released 2021, Mar 13

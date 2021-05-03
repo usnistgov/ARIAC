@@ -6,7 +6,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 - Updated images have been uploaded on docker hub.
 - An updated folder has been pushed on https://github.com/zeidk/nist_team.git
-- Please re-run all the commands located found on the [Automated Evaluation](../documentation/automated_evaluation.md) page.
+- Please re-run all the commands found on the [Automated Evaluation](../documentation/automated_evaluation.md) page.
 - Documentation updated for [Automated Evaluation](../documentation/automated_evaluation.md).
 
 ## Released 2021, May 02 (part I)

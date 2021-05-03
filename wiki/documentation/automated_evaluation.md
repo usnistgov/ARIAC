@@ -70,7 +70,8 @@ Docker is used to create these containers.
 
 Clone this code repository locally:
 
-```
+```bash
+# Note: if ariac_ws already exists on your system, you can choose a different name
 mkdir -p ~/ariac_ws && cd ~/ariac_ws
 git clone https://github.com/usnistgov/ariac-docker.git
 cd ~/ariac_ws/ariac-docker
@@ -89,6 +90,14 @@ To prepare the ARIAC competition system (but not run it), call:
 
 ```bash
 ./pull_dockerhub_images.bash
+```
+
+Inspect the images with `docker image ls`. You should get something like this:
+
+```text
+REPOSITORY                             TAG       IMAGE ID       CREATED       SIZE
+zeidk/ariac5-competitor-base-melodic   latest    daea85457852   6 hours ago   3.62GB
+zeidk/ariac5-server-melodic            latest    dac83a3acfcb   6 hours ago   5.94GB
 ```
 
 This will pull a Docker image of the latest version of the competition server and the base competitor machine image. This process will take a while to download, so get some coffee or watch an episode of Survivors.
@@ -133,7 +142,11 @@ catkin build
 
 ### Edit run_team_system.bash
 
-Edit `run_team_system.sh` to run your code. This is usually a `roslaunch` command or a `rosrun` command.
+Edit `run_team_system.sh` to run your code. This is usually a `roslaunch` command or a `rosrun` command. Below is the command used to run a node from the package `nist_team`:
+
+```bash
+rosrun nist_team ariac_example_cpp_node
+```
 
 ## Preparing Competitors' Systems
 
@@ -152,21 +165,27 @@ Edit `run_team_system.sh` to run your code. This is usually a `roslaunch` comman
 ```
 
 - This command will do multiple things including running the script `build_team_system.bash` which install dependencies, downloading your competitor package, and compiling it.
+- Inspect the images with `docker image ls`. You should get something like below with `ariac-competitor-nist_team` being `ariac-competitor<your_team>`:
 
+```text
+REPOSITORY                             TAG       IMAGE ID       CREATED         SIZE
+ariac-competitor-nist_team             latest    a68b57a374e1   4 seconds ago   3.62GB
+zeidk/ariac5-competitor-base-melodic   latest    daea85457852   6 hours ago     3.62GB
+zeidk/ariac5-server-melodic            latest    dac83a3acfcb   6 hours ago     5.94GB
+```
 
 ## Running a Single Trial
 
 To run an example trial (in this case the trial associated with `trial_config/sample_kitting.yaml`), call:
 
 ```bash
-./run_trial.bash nist_team sample_kitting # note: it's sample_kitting and not sample_kitting.yaml
+./run_trial.bash nist_team sample_kitting # note: sample_kitting and not sample_kitting.yaml
 
 # For your team you will run:
 ./run_trial.bash <your_team_name> <trial_name>
 ```
 
-This will instantiate Docker containers from the images that were prepared earlier: one for the ARIAC competition server, and one for your team's system.
-The ARIAC environment will be started using the competition configuration file associated with the trial name (i.e. `trial_config/sample_kitting.yaml`), and the user configuration file associated with the team name (i.e. `team_config/nist_team/team_config.yaml`).
+This will instantiate Docker containers from the images that were prepared earlier: one for the ARIAC competition server, and one for your team's system. The ARIAC environment will be started using the competition configuration file associated with the trial name (i.e. `trial_config/sample_kitting.yaml`), and the user configuration file associated with the team name (i.e. `team_config/nist_team/team_config.yaml`).
 
 **Note**: The team's Docker container is started before the ARIAC competition server container. As such you might see the following message before the ARIAC server with the ROS master starts:
 
@@ -176,46 +195,49 @@ The ARIAC environment will be started using the competition configuration file a
 
 >[Wrn] [RenderEngine.cc:97] Unable to create X window. Rendering will be disabled
 
-Once the trial has finished (because your system completed the trial, because you made a call to the `/ariac/end_competition` service, or because time ran out), the logs from the trial will be available in the `logs` directory that has now been created locally.
-In the above invocation, the example code will end the competition and errors being printed to the terminal as the trial shuts down are expected.
+Once the trial has finished (because your system completed the trial, because you made a call to the `/ariac/end_competition` service, or because time ran out), the logs from the trial will be available in the `logs` directory that has now been created locally (in `~/ariac_ws/ariac-docker`).
+In the invocation of `./run_trial.bash <your_team_name> <trial_name>`, the code will end the competition and errors being printed to the terminal as the trial shuts down are expected.
 
-**All the sections below will be updated with correct file paths**
 
 ## Reviewing the Trial Performance
 
 Once the behavior observed when playing back the trial's log file looks correct, you should then check the completion score. To do so, open the relevant `performance.log` file (e.g. `logs/nist_team/sample_kitting/performance.log`) and check the score output at the end of the file as it lists the scores for each order.
 
-```text
-$ tail logs/nist_team/sample_kitting/performance.log -n 25
-(1518553810 6169392) [Dbg] [ROSAriacTaskManagerPlugin.cc:492] Sim time: 22
-(1518553810 675725351) [Dbg] [ROSAriacTaskManagerPlugin.cc:717] Handle end service called
-(1518553810 676916277) [Dbg] [ROSAriacTaskManagerPlugin.cc:579] End of trial. Final score: 0
-Score breakdown:
-<game_score>
-Total game score: [0]
-Total process time: [10.433]
-Product travel time: [0]
-<order_score order_0>
-Total order score: [0]
-Time taken: [10.432]
-Complete: [false]
-<shipment_score order_0_shipment_0>
-Completion score: [0]
-Complete: [false]
-Submitted: [false]
-Product presence score: [0]
-All products bonus: [0]
-Product pose score: [0]
-</shipment_score>
-
-</order_score>
-
-</game_score>
+```bash
+tail logs/nist_team/sample_kitting/performance.log -n 27
 ```
 
-- In this example the score is 0 because the example team system does not actually complete any orders.
-- The general output structure of the `logs` directory is:
+```text
+Score breakdown:
+[trial_score]
+...total trial score: [4]
+...total process time: [73.644]
+...arms collision?: [0]
+...dropped part penalty: [0]
+   [order score]
+   ...order ID [order_0]
+   ...total order score: [4]
+   ...completion score: [4]
+   ...time taken: [73.641]
+   ...priority: [1]
+      [kitting score]
+      ...shipment type: [order_0_kitting_shipment_0]
+      ...completion score: [4]
+      ...complete: [true]
+      ...submitted: [true]
+      ...used correct agv: [true]
+      ...sent to correct station: [true]
+      ...product type presence score: [2]
+      ...product color presence score: [2]
+      ...product pose score: [0]
+      ...all products bonus: [0]
 
+
+
+(1619989610 722894488) [Msg] Requesting that Gazebo shut down
+```
+
+In this example the score is 4 and not 8 because the pose of products in the tray were not correct (I need to get this fixed). The general output structure of the `logs` directory is:
 
 ```
 logs
@@ -234,8 +256,9 @@ logs
             └── example_node-1-stdout.log
 ```
 
-- Additionally, there may be a `video` directory containing a video produced from playback of the simulation state log file recorded during the trial(s).
-- The following properties are relevant:
+Additionally, there may be a `video` directory containing a video produced from playback of the simulation state log file recorded during the trial(s).
+
+The following properties are relevant:
   - Logs playback at a slower speed and therefore a 5 minute simulation may result in a 10-15 minute video. 
   - The simulation time is displayed in the bottom right.
   - Simulation time may jump forward a number of seconds if there is a length of time where no movement is detected in the simulation.
@@ -243,35 +266,80 @@ logs
 
 ### Playing back the simulation
 
-- To play back a specific trial's log file, you will need to start the `gear_playback.launch` which is located in `nist_gear/launch`, so make sure you have ARIAC installed and sourced.
+- To play back a specific trial's log file, you will need to start the `gear_playback.launch` which is located in `nist_gear/launch` (on your system, nothing to do with docker), so make sure you have ARIAC sourced.
 - `gear_playback.launch` works with `state.log`, which will be created in the `ariac-docker/logs/<team_name>/<trial_file_name>/gazebo` directory. `gazebo/state.log` will only be generated if you have the following in your trial file:
+  
 ```
 options:
    gazebo_state_logging: true
 ```
-- Next, you need to either create symlinks or add a directory which contains the robot meshes and textures. If you do not perform either one of these two actions, you will get the error messages shown in the figure below. `gear_playback.launch` will try to look for robot meshes and textures on the host machine the same way the robot model is fetched in the docker container, that is, in `/home/ariac/ariac_ws/src/nist_gear/robots`. Since this path does not exist on the host, Gazebo will crash when you click the play button.
-  
-  - The easiest way to not get these errors is to create the following directory structure on the host `/home/ariac/ariac_ws/src/nist_gear`, then copy the whole `robots` directory from ARIAC into it. The path will finally be `/home/ariac/ariac_ws/src/nist_gear/robots`. **Note**: Make sure you are working in the `/home` directory and not in the Home directory `~`.
-  - If you do not want to create a new directory just for the robot meshes/textures, you can create symbolic links that point to an existing robot model files on your machine. For instance, below is an example of a symbolic link that points to the file `torso_base.dae`
 
+- Next, you need to either create symlinks to the directory which contains the robot meshes and textures. If you do not perform this step, you will get the following error messages after pressing play. 
+
+```text
+[ INFO] [1620000001.608039307]: Finished loading Gazebo ROS API Plugin.
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/gantry/gantry_description/meshes/torso_base.dae"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/gantry/gantry_description/meshes/torso_base.dae]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/gantry/gantry_description/meshes/torso_fixed_normals.dae"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/gantry/gantry_description/meshes/torso_fixed_normals.dae]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/base.stl"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/base.stl]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/shoulder.stl"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/shoulder.stl]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/upperarm.stl"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/upperarm.stl]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/forearm.stl"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/forearm.stl]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/wrist1.stl"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/wrist1.stl]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/wrist2.stl"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/wrist2.stl]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/wrist3.stl"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/robots/ur10/ur_description/meshes/ur10/collision/wrist3.stl]
+[Err] [MeshShape.cc:60] No mesh specified
+[Wrn] [SystemPaths.cc:464] File or path does not exist ["/home/ariac/ariac_ws/src/ariac_ws/nist_gear/models/gantry_tray/mesh/gantry_tray.dae"] [/home/ariac/ariac_ws/src/ariac_ws/nist_gear/models/gantry_tray/mesh/gantry_tray.dae]
+[Err] [MeshShape.cc:60] No mesh specified
+gzserver: symbol lookup error: /home/zeid/ariac2021/devel/lib/libROSAriacGantryTrayPlugin.so: undefined symbol: _ZN7tf2_ros20TransformBroadcasterC1Ev
+================================================================================REQUIRED process [gazebo-2] has died!
+process has died [pid 15611, exit code 127, cmd /home/zeid/ariac2021/src/ariac-gazebo_ros_pkgs/gazebo_ros/scripts/gzserver -p /home/zeid/ariac2021/src/ariac-docker-competitor/logs/nist_team/sample_kitting/gazebo/state.log -s /home/zeid/ariac2021/devel/share/nist_gear/../../lib/libLogPlaybackPlugin.so --pause --verbose __name:=gazebo __log:=/home/zeid/.ros/log/814ed240-aba2-11eb-8f6b-3c58c2fe5925/gazebo-2.log].
+log file: /home/zeid/.ros/log/814ed240-aba2-11eb-8f6b-3c58c2fe5925/gazebo-2*.log
+Initiating shutdown!
+================================================================================
+[gazebo_gui-3] killing on exit
+[gazebo-2] killing on exit
+[rosout-1] killing on exit
+[master] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+done
 ```
-  sudo ln -s  /home/zeid/ariac_ws/src/ARIAC/nist_gear/robots/torso/meshes/torso_base.dae /home/ariac/ariac_ws/src/nist_gear/robots/torso/meshes/torso_base.dae
+
+- `gear_playback.launch` will try to look for robot meshes and textures on your system the same way the robot model is fetched in the docker container, that is, in `/home/ariac/ariac_ws/src/nist_gear/robots`. Since this path does not exist on your machine, Gazebo will crash when you click the play button.
+  - To make this works:
+
+```bash
+sudo mkdir -p /home/ariac/ariac_ws/src/ariac_ws
+sudo ln -s /home/<path_where_ariac_is_installed_on_your_system>/nist_gear /home/ariac/ariac_ws/src/ariac_ws
 ```
+
 - Start the launch file for playback:
 
-```
+```bash
 roslaunch nist_gear gear_playback.launch state_log_path:=<absolute_path_to_state.log>
+# <absolute_path_to_state.log> should include logs/nist_team/sample_kitting/gazebo/state.log
 ```
 
-    - A concrete example is:
-    
-  ```
-  roslaunch nist_gear gear_playback.launch state_log_path:=/home/zeid/github/ariac-docker/logs/moveit_example_team/qual_a_1/gazebo/state.log
-  ```
-<img src="../figures/playback-issue.png" width="900" class="center">
+- On my system, this command is:
+  
+```bash
+roslaunch nist_gear gear_playback.launch state_log_path:=/ariac_ws/ariac-docker/logs/nist_team/sample_kitting/gazebo/state.log
+```
 
-  - You should see the ARIAC environment start up with parts in the bins and, sometimes, on shelves. The robot is invisible until you press the play button in the Gazebo window.
-  - **Note**: this is currently only possible for user accounts with user ID of 1000.
+- You should see the ARIAC environment starts up with parts. The robot is invisible until you press the play button in the Gazebo window.
+- **Note**: We are aware of the error below when you press play and we are working on it.
+
+```text
+libROSAriacGantryTrayPlugin.so: undefined symbol: _ZN7tf2_ros20TransformBroadcasterC1Ev
+```
 
 ## Running all trials
 
@@ -279,11 +347,10 @@ _Only one trial config file is provided at the moment; this command will be more
 
 To run all trials listed in the `trial_config` directory, call:
 
-```
-./run_all_trials.bash example_team
+```bash
+./run_all_trials.bash nist_team
 
-# For your team you will run:
-# ./run_all_trials.bash <your_team_name>
+# For your team you will run: ./run_all_trials.bash <your_team_name>
 ```
 
 - This will run each of the trials sequentially in an automated fashion.
@@ -297,7 +364,7 @@ To run all trials listed in the `trial_config` directory, call:
 - New releases of the ARIAC software will be accompanied by new releases of the Docker images, so that the latest ARIAC version is installed in both the ARIAC competition server image and the base competitor image.
 - Whenever there is a new release of the ARIAC software, or whenever you are informed of any other changes to the competition system setup, you will have to run `git pull` to get any recent modifications to the competition system setup, and re-run all scripts in order for the changes to take effect:
 
-```
+```bash
 cd ~/ariac_ws/ariac-docker
 # Get any changes to the scripts in this repo.
 git pull
@@ -311,8 +378,7 @@ git pull
 
 - If during your development you need to kill the ARIAC server/competitor containers, you can do so with:
 
-
-```
+```bash
 ./kill_ariac_containers.bash
 ```
 
@@ -321,7 +387,7 @@ git pull
 
 ### Utilizing the Docker cache to when re-building the competitor system
 
-- By default, runnng `./build_team_system.bash <your_team_name>` will re-build the image from scratch.
+- By default, running `./build_team_system.bash <your_team_name>` will re-build the image from scratch.
 - During development you may find it useful to call `./prepare_team_system.bash <your_team_name> --use-cache` to re-use already-built image in the Docker cache if appropriate.
 - However, new versions of packages may have been released since the images in the cache were built, and this will not trigger images to be re-built. Therefore you must not use this option when testing your finalized system for submission.
 
@@ -329,11 +395,10 @@ git pull
 
 - If you are having difficulties installing your team's system with the `prepare_team_system` script, you can open a terminal in a clean competitor container (before the script has been run) and see which commands you need to type manually to get your system installed.
 
+- First, run:
 
-First, run:
-
-```
-docker run -it --rm --name ariac-competitor-clean-system zeidk/ariac4-competitor-base-melodic:latest
+```bash
+docker run -it --rm --name ariac-competitor-clean-system zeidk/ariac5-competitor-base-melodic:latest
 ```
 
 - This will start a container with the state immediately before trying to run your `build_team_system` script.
@@ -347,17 +412,17 @@ Type `exit` to stop the container.
 - Once your team's system has been successfully installed in the competitor container, if you are having difficulties *running* your team's system, you can open a terminal in the container that has your system installed with:
 
 
-```
+```bash
 docker run -it --rm --name ariac-competitor-system ariac-competitor-<your_team_name>
 # e.g. for ariac_example_team:
-# docker run -it --rm --name ariac-competitor-system ariac-competitor-ariac_example_team
+# docker run -it --rm --name ariac-competitor-system ariac-competitor-nist_team
 ```
 
 - Inside the container you can look around with, for example:
 
 
-```
-ls ~/my_team_ws
+```bash
+ls ~/nist_team_ws
 ```
 
 - Type `exit` to stop the container.

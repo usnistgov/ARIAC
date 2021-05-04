@@ -22,6 +22,8 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
   - [Agility Challenges](#agility-challenges)
   - [Scoring](#scoring)
   - [Competition Process](#competition-process)
+  - [Improving real-time factor during development](#improving-real-time-factor-during-development)
+    - [Remove models from worlds/ariac.world.template](#remove-models-from-worldsariacworldtemplate)
 
 # Wiki | Documentation | Competition Specifications
 
@@ -327,6 +329,28 @@ Each trial will consist of the following steps:
 4. When all orders are completed (all shipments submitted), the trial will automatically end and a breakdown of the final score is announced to the competitors. There are no time limits for individual orders, but each trial has a time limit (**500** simulation seconds). The time limit is not broadcast on the ARIAC server but will be communicated to competitors beforehand.
 
 For details on how the communication with the competition system is performed during the trial, see the [competition interface](competition_interface_documentation.md) page.
+
+## Improving real-time factor during development
+
+- The real-time factor of a scenario is impacted by the number of models in the environment.
+- For users experiencing low real-time factors, reducing the number of products that are in the scenario will help.
+  - If you are focusing on grasping products from the bins, you can set `belt_population_cycles` to `0` to avoid spawning parts on the conveyor belt.
+  - If you are focusing on grasping products from a particular bin, you can comment out the other bins listed in `models_over_bins` to temporarily not spawn them.
+
+### Remove models from worlds/ariac.world.template
+
+Another thing you can try is to manually remove some models from Gazebo. For this, you will need to start the simulation, click on the models you want to remove, get their names, and comment out these models from worlds/ariac.world.template. The models you can remove are the ones placed in the world for aesthetics. An example is:
+
+```xml
+<!-- Models for aesthetics -->
+  <model name="CageFactory1">
+    <include>
+      <static>true</static>
+      <uri>model://cage_factory</uri>
+    </include>
+      <pose frame=''>-17.6 -0.5 0. 0 0 0</pose>
+  </model>
+```
 
 -------------------------------------------------
 

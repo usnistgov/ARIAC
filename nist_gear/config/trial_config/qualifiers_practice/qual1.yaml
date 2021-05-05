@@ -100,7 +100,7 @@ drops:
 
 sensor_blackout:
   product_count: 2 #sensor blackout triggered after second product is placed
-  duration: 60
+  duration: 15
 
 faulty_products:
   - assembly_battery_green_2

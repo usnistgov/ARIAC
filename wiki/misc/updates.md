@@ -2,6 +2,16 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
+## Pre-release 2021, May 24 
+
+- We will release a new version of the software on Tuesday 05/25.
+- We spent time on fixing part of the code based on github tickets.
+- We have added documentation and 3 config file examples for the finals.
+- Please test the new release when it becomes available and make sure your code is capable of handling the 3 config files that come  with the new release.
+- We will make adjustments to the release during this week if needed (mainly addressing bugs).
+- Once the majority of competitors are satisfied with the release we will push new docker images towards the end of this week.
+- At the end of **next week** it is expected that competitors submit their docker scripts to be run against all 15 trial files used for the finals.
+
 ## Released 2021, May 02 (part II)
 
 - Updated images have been uploaded on docker hub.

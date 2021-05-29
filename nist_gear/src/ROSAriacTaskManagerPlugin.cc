@@ -322,7 +322,7 @@ ROSAriacTaskManagerPlugin::~ROSAriacTaskManagerPlugin()
 void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
                                      sdf::ElementPtr _sdf)
 {
-  gzdbg << "ARIAC VERSION: v.04.26.2021\n";
+  gzdbg << "ARIAC VERSION: v.05.20.2021\n";
   auto competitionEnv = std::getenv("ARIAC_COMPETITION");
   this->dataPtr->competitionMode = competitionEnv != NULL;
   gzdbg << "ARIAC COMPETITION MODE: " << (this->dataPtr->competitionMode ? competitionEnv : "false") << std::endl;
@@ -396,6 +396,8 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
   std::string populationActivateTopic = "populate_belt";
   if (_sdf->HasElement("population_activate_topic"))
     populationActivateTopic = _sdf->Get<std::string>("population_activate_topic");
+
+  gzdbg << "population active topic: " << populationActivateTopic << "/n";
 
   std::string ordersTopic = "orders";
   if (_sdf->HasElement("orders_topic"))
@@ -1072,6 +1074,7 @@ void ROSAriacTaskManagerPlugin::Load(physics::WorldPtr _world,
       this->dataPtr->rosnode->createTimer(ros::Duration(0.1),
                                           &ROSAriacTaskManagerPlugin::PublishStatus, this);
 
+  // Gazebo topic publisher for belt population
   this->dataPtr->populatePub =
       this->dataPtr->node->Advertise<msgs::GzString>(populationActivateTopic);
 
@@ -1289,7 +1292,6 @@ void ROSAriacTaskManagerPlugin::OnUpdate()
     this->ProcessRobotStatus();
     // Update the order manager.
     this->ProcessOrdersToAnnounce(currentSimTime);
-
     // Update the sensors if appropriate.
     this->ProcessSensorBlackout();
 
@@ -1465,11 +1467,11 @@ void ROSAriacTaskManagerPlugin::ProcessRobotStatus()
   if location and number_of_parts match then disable the apropriate robot based (field robot_type)
   */
 
-  if (!this->dataPtr->gantry_controller_manager_srv.waitForExistence())
-    ROS_ERROR_STREAM("Service /ariac/gantry/controller_manager/switch_controller unavailable.");
+  // if (!this->dataPtr->gantry_controller_manager_srv.waitForExistence())
+  //   ROS_ERROR_STREAM("Service /ariac/gantry/controller_manager/switch_controller unavailable.");
 
-  if (!this->dataPtr->gantry_controller_list_srv.waitForExistence())
-    ROS_ERROR_STREAM("Service /ariac/gantry/controller_manager/list_controllers unavailable.");
+  // if (!this->dataPtr->gantry_controller_list_srv.waitForExistence())
+  //   ROS_ERROR_STREAM("Service /ariac/gantry/controller_manager/list_controllers unavailable.");
 
 
   auto robotDisableCondition = this->dataPtr->currentOrder.robot_disable_condition;
@@ -1580,7 +1582,6 @@ void ROSAriacTaskManagerPlugin::ProcessRobotStatus()
 /////////////////////////////////////////////////
 void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time simTime)
 {
-
   if (this->dataPtr->ordersToAnnounce.empty())
     return;
 
@@ -1598,10 +1599,10 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
   // }
 
   // publish the health of each robot when announcing an order
-  nist_gear::RobotHealth robot_health_msg;
-  robot_health_msg.kitting_robot_enabled = nextOrder.kitting_robot_health;
-  robot_health_msg.assembly_robot_enabled = nextOrder.assembly_robot_health;
-  this->dataPtr->robot_health_pub.publish(robot_health_msg);
+  // nist_gear::RobotHealth robot_health_msg;
+  // robot_health_msg.kitting_robot_enabled = nextOrder.kitting_robot_health;
+  // robot_health_msg.assembly_robot_enabled = nextOrder.assembly_robot_health;
+  // this->dataPtr->robot_health_pub.publish(robot_health_msg);
 
   // gzwarn << "-------------PUBLISHING to robot_health\n";
 
@@ -1615,10 +1616,10 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
   // Check whether announce a new order from the list.
   // Announce next order if the appropriate amount of time has elapsed
   announceNextOrder |= elapsed.Double() >= nextOrder.start_time;
-  gzdbg << "announceNextOrder time: " << announceNextOrder << std::endl;
+  // gzdbg << "announceNextOrder time: " << announceNextOrder << std::endl;
   // Announce next order if there is no active order and we are waiting to interrupt
   announceNextOrder |= noActiveOrder && (interruptOnWantedProducts || interruptOnUnwantedProducts);
-  gzdbg << "announceNextOrder condition: " << announceNextOrder << std::endl;
+  // gzdbg << "announceNextOrder condition: " << announceNextOrder << std::endl;
   // Check if it's time to interrupt (skip if we're already interrupting anyway)
   if (!announceNextOrder && (interruptOnWantedProducts || interruptOnUnwantedProducts || interruptOnStationReached))
   {
@@ -1627,7 +1628,7 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
      * Dealing with interruptOnStationReached 
      * ******************************************
      */
-    if (nextOrder.has_assembly_task && !nextOrder.has_kitting_task)
+    if (nextOrder.has_kitting_task || nextOrder.has_assembly_task)
     {
       // let's check if a kitting shipment has been submitted
       // we know if a kitting shipment was submitted by checking the following variables
@@ -1661,7 +1662,6 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
         }
       }
     }
-    gzdbg << "announceNextOrder reached: " << announceNextOrder << std::endl;
     /**
      * *****************************************************************************************
      * Dealing with wanted and unwanted products only if the second order has kitting shipments
@@ -1720,10 +1720,71 @@ void ROSAriacTaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time sim
       // Announce next order if a tray has more than enough wanted or unwanted products
       announceNextOrder |= interruptOnWantedProducts &&
                            (max_num_wanted_products >= nextOrder.interrupt_on_wanted_products);
-      gzdbg << "announceNextOrder interruptOnWantedProducts: " << announceNextOrder << std::endl;
+      // gzdbg << "announceNextOrder interruptOnWantedProducts: " << announceNextOrder << std::endl;
       announceNextOrder |= interruptOnUnwantedProducts &&
                            (max_num_unwanted_products >= nextOrder.interrupt_on_unwanted_products);
-      gzdbg << "announceNextOrder interruptOnUnwantedProducts: " << announceNextOrder << std::endl;
+      // gzdbg << "announceNextOrder interruptOnUnwantedProducts: " << announceNextOrder << std::endl;
+    }
+
+    /**
+     * *****************************************************************************************
+     * Dealing with wanted and unwanted products only if the second order has assembly shipments
+     * *****************************************************************************************
+     */
+    if (nextOrder.has_assembly_task && !nextOrder.has_kitting_task)
+    {
+      std::vector<std::string> productsInNextOrder;
+      for (const auto &shipment : nextOrder.assembly_shipments)
+      {
+        for (const auto &product : shipment.products)
+        {
+          productsInNextOrder.push_back(product.type);
+        }
+      }
+      
+      // Check whether the briefcase has products for the next order or not
+      // This is used to trigger the announcement of the next order at convenient or inconvenient times
+      int max_num_wanted_products = 0;
+      int max_num_unwanted_products = 0;
+      for (auto &cpair : this->dataPtr->assemblyShipmentContents)
+      {
+        std::vector<std::string> productsInNextOrder_copy(productsInNextOrder);
+        int num_wanted_products = 0;
+        int num_unwanted_products = 0;
+        for (const auto &product : cpair.second->products)
+        {
+          // Don't count faulty products, because they have to be removed anyway.
+          if (!product.is_faulty)
+          {
+            auto it = std::find(productsInNextOrder_copy.begin(), productsInNextOrder_copy.end(), product.type);
+            if (it == productsInNextOrder_copy.end())
+            {
+              ++num_unwanted_products;
+            }
+            else
+            {
+              ++num_wanted_products;
+              productsInNextOrder_copy.erase(it);
+            }
+          }
+        }
+        if (num_wanted_products > max_num_wanted_products)
+        {
+          max_num_wanted_products = num_wanted_products;
+        }
+        if (num_unwanted_products > max_num_unwanted_products)
+        {
+          max_num_unwanted_products = num_unwanted_products;
+        }
+      }
+
+      // Announce next order if a tray has more than enough wanted or unwanted products
+      announceNextOrder |= interruptOnWantedProducts &&
+                           (max_num_wanted_products >= nextOrder.interrupt_on_wanted_products);
+      // gzdbg << "announceNextOrder interruptOnWantedProducts: " << announceNextOrder << std::endl;
+      announceNextOrder |= interruptOnUnwantedProducts &&
+                           (max_num_unwanted_products >= nextOrder.interrupt_on_unwanted_products);
+      // gzdbg << "announceNextOrder interruptOnUnwantedProducts: " << announceNextOrder << std::endl;
     }
   }
 
@@ -2064,7 +2125,8 @@ bool ROSAriacTaskManagerPlugin::HandleSendAgvToASService(
   std::string shipment_type = req.shipment_type;
 
   gzdbg << "AGV go to station service called for agv" << agv_id << "\n";
-  if (agv_id == 1 || agv_id == 2) // for AGV1 and AGV2
+
+  if (agv_id == 1 || agv_id == 2)  // for AGV1 and AGV2
   {
     if (this->dataPtr->agvToAS1AnimateClient.end() == this->dataPtr->agvToAS1AnimateClient.find(agv_id))
     {
@@ -2076,11 +2138,6 @@ bool ROSAriacTaskManagerPlugin::HandleSendAgvToASService(
       ROS_ERROR_STREAM("[ARIAC TaskManager] NO \"to_as2\" animate client for agv " << agv_id);
       return false;
     }
-    // if (this->dataPtr->agvToAS3AnimateClient.end() == this->dataPtr->agvToAS3AnimateClient.find(agv_id))
-    // {
-    //   ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as3\" animate client for agv " << agv_id);
-    //   return false;
-    // }
   }
   else if (agv_id == 3 || agv_id == 4)  // for AGV3 and AGV4
   {
@@ -2094,11 +2151,6 @@ bool ROSAriacTaskManagerPlugin::HandleSendAgvToASService(
       ROS_ERROR_STREAM("[ARIAC TaskManager] NO \"to_as4\" animate client for agv " << agv_id);
       return false;
     }
-    // if (this->dataPtr->agvToAS6AnimateClient.end() == this->dataPtr->agvToAS6AnimateClient.find(agv_id))
-    // {
-    //   ROS_ERROR_STREAM("[ARIAC TaskManager] no \"to_as6\" animate client for agv " << agv_id);
-    //   return false;
-    // }
   }
 
   ros::ServiceClient agv_to_as_animate_client;
@@ -2199,6 +2251,7 @@ void ROSAriacTaskManagerPlugin::SetAGVLocation(std::string agv_frame, std::strin
 /////////////////////////////////////////////////
 void ROSAriacTaskManagerPlugin::EnableConveyorBeltControl()
 {
+  gzdbg << "Enabling conveyor belt" << "\n";
   if (!this->dataPtr->conveyorControlClient.exists())
   {
     ROS_ERROR_STREAM("[ARIAC TaskManager] conveyor belt control service does not exist");
@@ -2228,6 +2281,14 @@ void ROSAriacTaskManagerPlugin::AnnounceOrder(const ariac::Order &order)
   // Publish the order to ROS topic
   std::ostringstream logMessage;
   logMessage << "Announcing order: " << order.order_id << std::endl;
+
+  nist_gear::RobotHealth robot_health_msg;
+  robot_health_msg.kitting_robot_enabled = order.kitting_robot_health;
+  robot_health_msg.assembly_robot_enabled = order.assembly_robot_health;
+  this->dataPtr->robot_health_pub.publish(robot_health_msg);
+
+
+
   ROS_INFO_STREAM(logMessage.str().c_str());
   gzdbg << logMessage.str() << std::endl;
   nist_gear::Order orderMsg;
@@ -2259,7 +2320,6 @@ void ROSAriacTaskManagerPlugin::OnKittingShipmentContent(nist_gear::DetectedKitt
 /////////////////////////////////////////////////
 void ROSAriacTaskManagerPlugin::OnRobotHealthContent(nist_gear::RobotHealth _msg)
 {
-  // store the shipment content to be used for deciding when to interrupt orders
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
 }
 

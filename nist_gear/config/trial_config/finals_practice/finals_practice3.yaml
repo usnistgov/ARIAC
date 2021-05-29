@@ -1,0 +1,107 @@
+#Number of orders: 1
+#Tasks: kitting
+#Number of shipments: 1
+#Insufficiently many products: No
+#Part re-orientation: No
+#In-process order update: No
+#Dropped products: No
+#In-process order interruption: No
+#In-process task interruption: Yes
+#Faulty products: Yes
+#Sensor blackout: No
+#Time limit: No
+
+options:
+  insert_models_over_bins: true
+  insert_models_over_stations: false
+  belt_population_cycles: 10
+  gazebo_state_logging: true
+time_limit: 500
+
+agv_infos:
+  agv1:
+    location: ks1
+  agv2:
+    location: ks2
+  agv3:
+    location: ks3
+  agv4:
+    location: ks4
+    
+orders:
+  order_0:
+    priority: 1
+    kitting_robot_health: 1 # information on health for kitting robot
+    assembly_robot_health: 1 # information on health for assembly robot
+    disable_robot: [kitting_robot, agv2, 1]
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    kitting:
+      shipment_count: 2
+      agvs: [agv1, agv2]
+      destinations: [as2, as2]
+      products:
+        part_0:
+          type: assembly_pump_red
+          pose:
+            xyz: [0.1, 0.1, 0]
+            rpy: ['pi', 0, 0]
+        part_1:
+          type: assembly_battery_red
+          pose:
+            xyz: [0.0, -0.1, 0]
+            rpy: [0, 0, 0]
+  
+  order_1:
+    priority: 1
+    kitting_robot_health: 1 # information on health for kitting robot
+    assembly_robot_health: 1 # information on health for assembly robot
+    announcement_condition: agv_station_reached
+    announcement_condition_value: agv2_at_as2
+    assembly:
+      shipment_count: 1
+      stations: [as2]
+      products:
+        part_0:
+          type: assembly_pump_red
+          pose:
+            xyz: [0.032085, -0.152835, 0.25]
+            rpy: ['pi', 0, 0]
+        part_1:
+          type: assembly_battery_red
+          pose:
+            xyz: [-0.032465, 0.174845, 0.15]
+            rpy: [0, 0, 0]
+
+          
+models_over_bins:
+   bin8:
+     models:
+       assembly_battery_red:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 2
+   bin5:
+     models:
+       assembly_battery_red:
+         xyz_start: [0.2, 0.2, 0.0]
+         xyz_end: [0.4, 0.4, 0.0]
+         rpy: [0, 0, 0]
+         num_models_x: 2
+         num_models_y: 2
+ 
+belt_models:
+  assembly_pump_red:
+    10.0:
+      pose:
+        xyz: [0.0, 4.3, 0.92]
+        rpy: [0, 0, 'pi/2']
+
+faulty_products:
+  - assembly_pump_red_1
+  - assembly_pump_red_2
+  - assembly_battery_red_5
+  - assembly_battery_red_7
+

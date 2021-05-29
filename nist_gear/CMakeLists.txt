@@ -201,17 +201,17 @@ install(TARGETS ${ros_agv_plugin_name}
 )
 
 # Create the libROSPersonPlugin.so library.
-set(ros_person_plugin_name ROSPersonPlugin)
-add_library(${ros_person_plugin_name} src/ROSPersonPlugin.cc)
-target_link_libraries(${ros_person_plugin_name} ${GAZEBO_LIBRARIES})
-add_dependencies(${ros_person_plugin_name}
-  ${${PROJECT_NAME}_EXPORTED_TARGETS}
-)
-install(TARGETS ${ros_person_plugin_name}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
+# set(ros_person_plugin_name ROSPersonPlugin)
+# add_library(${ros_person_plugin_name} src/ROSPersonPlugin.cc)
+# target_link_libraries(${ros_person_plugin_name} ${GAZEBO_LIBRARIES})
+# add_dependencies(${ros_person_plugin_name}
+#   ${${PROJECT_NAME}_EXPORTED_TARGETS}
+# )
+# install(TARGETS ${ros_person_plugin_name}
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION bin
+# )
 
 # Create the libConveyorBeltPlugin.so library.
 set(conveyor_belt_plugin_name ConveyorBeltPlugin)

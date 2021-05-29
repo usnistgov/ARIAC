@@ -45,7 +45,7 @@ This scenario is intended as a baseline set of assembly tasks for the other asse
   
 - **Scenario 3: In-Process Order Change**
 
-    While the robot is in the middle of doing kitting or assembly, a new high-priority order will be received. This new order needs to be completed as fast as possible. The robot will need to decide how best to complete this new order first before resuming the first order.
+    While the robot is in the middle of doing kitting or assembly, a new high-priority order will be received. This new order needs to be completed as fast as possible. The robot will need to decide how best to complete this new order first before resuming the first order. Trials in this scenario mainly consist of 2 orders where each order can be either kitting or assembly. 
   
 
     <!-- While the robot is in the middle of doing kitting or assembly, an event will trigger one of the two robots to breakdown. The disabled robot can not be used for any task and the other robot needs to do a task changeover.  -->

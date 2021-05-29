@@ -39,5 +39,5 @@ sensors:
       rpy: [3.141593, 1.570792, 0.000000]
 
 robot_camera:
-  enable: false
+  enable: true
 

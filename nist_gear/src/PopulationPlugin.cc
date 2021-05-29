@@ -192,7 +192,8 @@ void PopulationPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
   {
     std::string frameName = _sdf->Get<std::string>("frame");
     this->dataPtr->frame = this->dataPtr->world->EntityByName(frameName);
-    if (!this->dataPtr->frame) {
+    if (!this->dataPtr->frame)
+    {
       gzthrow(std::string("The frame '") + frameName + "' does not exist");
     }
     if (!this->dataPtr->frame->HasType(physics::Base::LINK) &&
@@ -263,13 +264,17 @@ void PopulationPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
   // manual activation.
   if (_sdf->HasElement("activation_topic"))
   {
+    // gzlog << "activation topic: " << _sdf->Get<std::string>("activation_topic") << "\n";
     // Subscribe to the activation topic.
     this->dataPtr->activationSub = this->dataPtr->node->Subscribe(
         _sdf->Get<std::string>("activation_topic"),
         &PopulationPlugin::OnActivation, this);
   }
   else
+  {
+    // gzerr << "RESTART"  << "\n";
     this->Restart();
+  }
 
   this->dataPtr->lastUpdateTime = this->dataPtr->world->SimTime();
 
@@ -313,9 +318,9 @@ void PopulationPlugin::Resume()
 
   this->dataPtr->enabled = true;
   this->dataPtr->startTime = this->dataPtr->world->SimTime() -
-    this->dataPtr->elapsedWhenPaused;
+                             this->dataPtr->elapsedWhenPaused;
 
-   gzmsg << "Object population resumed" << std::endl;
+  gzmsg << "Object population resumed" << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -326,7 +331,7 @@ void PopulationPlugin::Restart()
   this->dataPtr->startTime = this->dataPtr->world->SimTime();
   this->dataPtr->objects = this->dataPtr->initialObjects;
 
-  // gzmsg << "Object population restarted" << std::endl;
+  gzdbg << "Object population restarted" << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -351,6 +356,8 @@ void PopulationPlugin::OnUpdate()
   {
     if (this->dataPtr->loopForever)
     {
+      // gzdbg << "Restarting belt"
+      //       << "\n";
       this->Restart();
     }
     else
@@ -362,9 +369,15 @@ void PopulationPlugin::OnUpdate()
 
   // Check whether spawn a new object from the list.
   auto elapsedTime = this->dataPtr->world->SimTime() - this->dataPtr->lastUpdateTime;
+
+    // gzdbg << "[OnUpdate] elapsedTime " << elapsedTime.Double() << std::endl;
+    // gzdbg << "[OnUpdate] rateModifier " << this->dataPtr->rateModifier << std::endl;
+  
   // The rate modifier has the effect of slowing down sim time in this plugin.
   // If the rate modifier is 0.5, we will wait for twice as much time before spawning a new object.
   this->dataPtr->elapsedEquivalentTime += elapsedTime.Double() * this->dataPtr->rateModifier;
+
+  // gzdbg << "[OnUpdate] elapsedEquivalentTime " << this->dataPtr->elapsedEquivalentTime << std::endl;
   if (this->dataPtr->elapsedEquivalentTime >= this->dataPtr->objects.front().time)
   {
     auto obj = this->dataPtr->objects.front();
@@ -416,7 +429,7 @@ void PopulationPlugin::OnUpdate()
 void PopulationPlugin::OnActivation(ConstGzStringPtr &_msg)
 {
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
-  gzdbg << "PopulationPlugin: received activation request: " << _msg->data() << std::endl;
+  // gzdbg << "PopulationPlugin: received activation request: " << _msg->data() << std::endl;
 
   if (_msg->data() == "restart")
     this->Restart();

@@ -18,8 +18,8 @@
 
 options:
   insert_models_over_bins: true
-  insert_models_over_shelves: true
   belt_population_cycles: 10
+  insert_models_over_stations: false
   gazebo_state_logging: true
 time_limit: 500
 
@@ -103,8 +103,6 @@ sensor_blackout:
   duration: 15
 
 faulty_products:
-  - assembly_battery_green_2
-  - assembly_battery_green_4
   - assembly_battery_blue_1
   - assembly_battery_blue_5
 

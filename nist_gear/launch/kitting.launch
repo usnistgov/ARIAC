@@ -22,13 +22,13 @@
         args="
           -urdf
           -param robot_description
-          -J linear_arm_actuator_joint 0
-          -J shoulder_pan_joint 0
+          -J linear_arm_actuator_joint 0.0
+          -J shoulder_pan_joint 0.0
           -J shoulder_lift_joint -1.25
           -J elbow_joint 1.74
-          -J wrist_1_joint -2.66
-          -J wrist_2_joint -1.51
-          -J wrist_3_joint 0
+          -J wrist_1_joint 4.20
+          -J wrist_2_joint -1.58
+          -J wrist_3_joint 0.0
           -model kitting"
         respawn="false" output="screen">
   </node>

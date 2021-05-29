@@ -315,9 +315,10 @@
             <near>0.05</near>
             <far>5</far>
           </clip>
-          <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
+          <activation_topic>/ariac/sensor_enable</activation_topic>
+          <!-- <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
             <activation_topic>/ariac/sensor_enable</activation_topic>
-          </plugin>
+          </plugin> -->
         </camera>
         <plugin name="rgbd_camera" filename="libgazebo_ros_openni_kinect.so">
           <baseline>0.2</baseline>
@@ -410,7 +411,7 @@
   </gazebo> -->
 
 
-  <gazebo>
+  <!-- <gazebo>
       <plugin name="gantry_tray_plugin" filename="libROSAriacGantryTrayPlugin.so">
       <lock_models_service_name>/ariac/gantry_tray/lock_models</lock_models_service_name>
       <unlock_models_service_name>/ariac/gantry_tray/unlock_models</unlock_models_service_name>
@@ -420,9 +421,12 @@
       <clear_tray_service_name>/ariac/gantry_tray/clear_tray</clear_tray_service_name>
       <frameName>gantry_contact_frame</frameName>  
       </plugin>
-  </gazebo>
+  </gazebo> 
+  -->
+
 
   <!-- Defining the contact sensor for torso_tray -->
+    <!--
   <gazebo reference="torso_tray">
     <sensor name="gantry_tray_contact" type="contact">
       <contact>
@@ -433,7 +437,8 @@
       <plugin name="gantry_tray_plugin" filename="libROSAriacGantryTrayPlugin.so"/>
     </sensor>
     <material>Gazebo/GreyTransparent</material>
-  </gazebo>
+  </gazebo> 
+  -->
 
   <gazebo>
     <static>false</static>

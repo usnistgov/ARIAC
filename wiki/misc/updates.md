@@ -2,15 +2,13 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
-## Pre-release 2021, May 24 
+## Released 2021, May 28
 
-- We will release a new version of the software on Tuesday 05/25.
-- We spent time on fixing part of the code based on github tickets.
-- We have added documentation and 3 config file examples for the finals.
-- Please test the new release when it becomes available and make sure your code is capable of handling the 3 config files that come  with the new release.
-- We will make adjustments to the release during this week if needed (mainly addressing bugs).
-- Once the majority of competitors are satisfied with the release we will push new docker images towards the end of this week.
-- At the end of **next week** it is expected that competitors submit their docker scripts to be run against all 15 trial files used for the finals.
+- New code release that is expected to be used to evaluate competitors' systems during the finals.
+- Please test the code and see if issues in your tickets have been fixed.
+- 3 config files are provided to practice a trial from each of the 3 scenarios. More information on the finals can be found on the [Finals](../finals/finals.md) page.
+- In order to attempt to improve the real time factor, many things have been simplified, which do not affect your code. The only thing that was disabled is the plugin which attaches/detaches products on the gantry tray. If you are using the gantry tray send me an email zeid.kootbally@gmail.com and I will reactivate it.
+- I will generate the docker images corresponding to the source code from the master branch on Monday evening. So please, provide feedback on the new code.
 
 ## Released 2021, May 02 (part II)
 

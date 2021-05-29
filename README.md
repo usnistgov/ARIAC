@@ -21,8 +21,8 @@
 
 - 22-26 March 2021 - Smoke Test Week before Qualifier Round
 - 03-10 May 2021 - Qualifier Round (Files must be submitted by May 10, 9 am EST)
-- 17-21 May 2021 - Smoke Test before Final Round
-- 24-28 May 2021 - Final Round
+- 31 May-04 June 2021 - Smoke Test before Final Round
+- 07-11 June 2021 - Final Round
 
 ## [Installation](wiki/tutorials/installation.md)
 

@@ -18,7 +18,6 @@
 #include <math.h>
 #include <string>
 
-
 #include <gazebo/common/Console.hh>
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
@@ -63,9 +62,9 @@ void AriacScorer::NotifyOrderStarted(gazebo::common::Time time, const nist_gear:
 
 /////////////////////////////////////////////////
 void AriacScorer::NotifyOrderUpdated(
-  gazebo::common::Time time,
-  ariac::OrderID_t old_order,
-  const nist_gear::Order &order)
+    gazebo::common::Time time,
+    ariac::OrderID_t old_order,
+    const nist_gear::Order &order)
 {
   AriacScorer::OrderUpdateInfo updateInfo;
   updateInfo.update_time = time;
@@ -83,7 +82,6 @@ void AriacScorer::NotifyOrderUpdated(
   this->order_updates.push_back(updateInfo);
 }
 
-
 void AriacScorer::NotifyKittingShipmentReceived(gazebo::common::Time time,
                                                 ariac::KittingShipmentType_t type,
                                                 const nist_gear::DetectedKittingShipment &shipment,
@@ -93,11 +91,11 @@ void AriacScorer::NotifyKittingShipmentReceived(gazebo::common::Time time,
   // information about the shipment that was actually submitted by the participant.
   AriacScorer::KittingShipmentInfo submitted_shipment_info;
   submitted_shipment_info.submit_time = time;
-  submitted_shipment_info.type = type;  // type of the shipment, e.g., order_0_shipment_0
+  submitted_shipment_info.type = type; // type of the shipment, e.g., order_0_shipment_0
   submitted_shipment_info.station = actual_station;
 
   submitted_shipment_info.shipment =
-  nist_gear::DetectedKittingShipment::ConstPtr(new nist_gear::DetectedKittingShipment(shipment));
+      nist_gear::DetectedKittingShipment::ConstPtr(new nist_gear::DetectedKittingShipment(shipment));
 
   boost::mutex::scoped_lock mutexLock(this->mutex);
   this->received_kitting_shipments_vec.push_back(submitted_shipment_info);
@@ -112,10 +110,10 @@ void AriacScorer::NotifyAssemblyShipmentReceived(gazebo::common::Time time,
   // information about the shipment that was actually submitted by the participant.
   AriacScorer::AssemblyShipmentInfo submitted_shipment_info;
   submitted_shipment_info.submit_time = time;
-  submitted_shipment_info.type = type;  // type of the shipment, e.g., order_0_shipment_0
+  submitted_shipment_info.type = type; // type of the shipment, e.g., order_0_shipment_0
   submitted_shipment_info.station = actual_station;
   submitted_shipment_info.shipment =
-  nist_gear::DetectedAssemblyShipment::ConstPtr(new nist_gear::DetectedAssemblyShipment(shipment));
+      nist_gear::DetectedAssemblyShipment::ConstPtr(new nist_gear::DetectedAssemblyShipment(shipment));
 
   boost::mutex::scoped_lock mutexLock(this->mutex);
   this->received_assembly_shipments_vec.push_back(submitted_shipment_info);
@@ -142,7 +140,7 @@ ariac::GameScore AriacScorer::GetGameScore(int penalty)
 
   // Calculate the current score based on received orders and shipments
   // For each order, how many shipments was it supposed to have?
-  for (auto &opair : this->orders)  // this->orders has order info from ariac.world
+  for (auto &opair : this->orders) // this->orders has order info from ariac.world
   {
     auto order_id = opair.first;
     auto order_info = opair.second;
@@ -164,9 +162,9 @@ ariac::GameScore AriacScorer::GetGameScore(int penalty)
 
     // Create score class for orderGetShipmentScore
     ariac::OrderScore order_score;
-    order_score.order_id = order_id;  // e.g., order_0
+    order_score.order_id = order_id; // e.g., order_0
 
-    order_score.priority = priority;  // e.g., 1
+    order_score.priority = priority; // e.g., 1
     auto oit = game_score.order_scores_map.find(order_id);
     if (oit != game_score.order_scores_map.end())
     {
@@ -187,7 +185,7 @@ ariac::GameScore AriacScorer::GetGameScore(int penalty)
         ariac::KittingShipmentScore shipment_score;
 
         shipment_score.kittingShipmentType =
-        expected_shipment.shipment_type;  // e.g., order_0_kitting_shipment_0
+            expected_shipment.shipment_type; // e.g., order_0_kitting_shipment_0
         // ROS_WARN_STREAM("shipment_score.kittingShipmentType " << shipment_score.kittingShipmentType);
         auto it = order_score.kitting_shipment_scores.find(expected_shipment.shipment_type);
         if (it != order_score.kitting_shipment_scores.end())
@@ -254,7 +252,7 @@ ariac::GameScore AriacScorer::GetGameScore(int penalty)
         }
         order_score.time_taken = (end - start_time).Double();
       }
-    }  // end if (!received_kitting_shipments_vec.empty())
+    } // end if (!received_kitting_shipments_vec.empty())
 
     ////////////////////////////////////
     // Take care of assembly shipments
@@ -267,12 +265,11 @@ ariac::GameScore AriacScorer::GetGameScore(int penalty)
         ariac::AssemblyShipmentScore shipment_score;
 
         shipment_score.assemblyShipmentType =
-        expected_assembly_shipment.shipment_type;  // e.g., order_0_assembly_shipment_0
+            expected_assembly_shipment.shipment_type; // e.g., order_0_assembly_shipment_0
         auto it = order_score.assembly_shipment_scores.find(expected_assembly_shipment.shipment_type);
         if (it != order_score.assembly_shipment_scores.end())
         {
-          gzerr << "[ARIAC ERROR] Order contained duplicate shipment types:" <<
-          expected_assembly_shipment.shipment_type << "\n";
+          gzerr << "[ARIAC ERROR] Order contained duplicate shipment types:" << expected_assembly_shipment.shipment_type << "\n";
         }
         order_score.assembly_shipment_scores[expected_assembly_shipment.shipment_type] = shipment_score;
       }
@@ -328,9 +325,11 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
     const nist_gear::KittingShipment &desired_shipment,
     const nist_gear::DetectedKittingShipment &actual_shipment, std::string station)
 {
+  // gzdbg << "[AriacScorer.cpp]: GetKittingShipmentScore \n";
   ariac::KittingShipmentScore scorer;
   scorer.is_kitting_shipment_submitted = true;
   scorer.submit_time = submit_time;
+  std::vector<nist_gear::DetectedProduct> wrong_color_products;
 
   bool has_faulty_product = false;
   bool is_missing_products = false;
@@ -367,9 +366,6 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
   {
     gzerr << "[ARIAC ERROR] desired shipment agv invalid:" << desired_shipment.agv_id << "\n";
   }
-
-  // ROS_WARN_STREAM("desired station: " << desired_shipment.station_id);
-  // ROS_WARN_STREAM("actual station: " << station);
 
   // make sure the AGV was sent to the correct station
   if ("as1" == desired_shipment.station_id)
@@ -413,20 +409,20 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
   // check product type is correct even if color is wrong
   for (size_t d = 0; d < desired_shipment.products.size(); ++d)
   {
-    // bool found_exact_product_type = false;
-
     auto desired_product = desired_shipment.products[d].type;
-    auto desired_product_name = desired_product;
+    auto desired_product_type = desired_product;
     // ROS_WARN_STREAM("desired_product_name: " << desired_product_name);
 
     // keep only the product type and remove the product color
     //-- e.g., assembly_battery_blue becomes assembly_battery
-    auto desired_product_type = desired_product.erase(desired_product.rfind('_'));
-    // ROS_WARN_STREAM("desired_product_type: " << desired_product_type);
+    // gzdbg << "product: " << desired_product << "\n";
+    desired_product_type.erase(desired_product.rfind('_'));
+    // gzdbg << "product type: " << desired_product_type << "\n";
 
     for (size_t a = 0; a < tmp_non_faulty_products.size(); ++a)
     {
       auto actual_product_name = tmp_non_faulty_products[a].type;
+      // gzdbg << "actual product name: " << actual_product_name << "\n";
 
       // In the case the actual_product_name has the following format: agv2::tray_2::assembly_battery_blue
       auto pos = actual_product_name.rfind(':');
@@ -437,6 +433,7 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
       // now, let's grab only the type of the product and discard the color
       auto actual_product_type = actual_product_name.erase(actual_product_name.rfind('_'));
 
+      // if we have a match in term of product type
       if (desired_product_type.compare(actual_product_type) == 0)
       {
         // found_exact_product_type = true;
@@ -451,15 +448,12 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
     }
   }
 
-  // +1 pt if color is correct (part type has to be correct)
-  // e.g., if 'assembly_battery_red' is required but 'assembly_pump_red' is provided
-  // then no point is awarded even though the wrong product is red
-
   // Map of product type to indexes in desired products (first) and indexes in non faulty actual products (second)
   std::map<std::string, std::pair<std::vector<size_t>, std::vector<size_t>>> product_type_map;
 
   for (size_t d = 0; d < desired_shipment.products.size(); ++d)
   {
+    // aliases
     const auto &desired_product = desired_shipment.products[d];
     auto &mapping = product_type_map[desired_product.type];
     mapping.first.push_back(d);
@@ -468,18 +462,22 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
   for (size_t a = 0; a < detected_non_faulty_products.size(); ++a)
   {
     auto &actual_product = detected_non_faulty_products[a];
-    // ROS_WARN_STREAM("actual_product " << actual_product.type);
+    gzdbg << "detected product: " << actual_product.type << "\n";
     // if the name contains :: then clean the name
-
     auto pos = actual_product.type.rfind(':');
     if (pos != std::string::npos)
     {
       actual_product.type.erase(0, pos + 1);
     }
+
+    // 0u = 0 unsigned
     if (0u == product_type_map.count(actual_product.type))
     {
       // since desired products were put into the type map first, this product must be unwanted
       has_unwanted_product = true;
+      // add this unwanted product to a different list
+      // we will reuse it later to check its pose
+      wrong_color_products.push_back(actual_product);
       continue;
     }
     auto &mapping = product_type_map.at(actual_product.type);
@@ -491,9 +489,9 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
     const std::vector<size_t> &desired_indexes = type_pair.second.first;
     const std::vector<size_t> &actual_indexes = type_pair.second.second;
     auto product_name = type_pair.first;
-    // ROS_WARN_STREAM("desired_indexes: "<< desired_indexes.size());
-    // ROS_WARN_STREAM("actual_indexes: "<< actual_indexes.size());
-    // ROS_WARN_STREAM("product_name: "<< product_name);
+    // gzdbg << "desired_indexes: " << desired_indexes.size() << "\n";
+    // gzdbg << "actual_indexes: " << actual_indexes.size() << "\n";
+    // gzdbg << "product_name: " << product_name << "\n";
 
     if (desired_indexes.size() > actual_indexes.size())
     {
@@ -520,7 +518,9 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
     {
       permutation[i] = i;
     }
-    // Now iterate through all permutations of actual matched with desired to find the highest pose score
+
+    // check if poses are correct
+    // iterate through all permutations of actual matched with desired to find the highest pose score
     do
     {
       double permutation_pose_score = 0;
@@ -529,14 +529,14 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
         const size_t actual_index_index = permutation[d];
         if (actual_index_index >= actual_indexes.size())
         {
-          // There were fewer actual products than the order called for
+          // there were fewer actual products than the order called for
           continue;
         }
         const auto &desired_product = desired_shipment.products[desired_indexes[d]];
         const auto &actual_product = detected_non_faulty_products[actual_indexes[actual_index_index]];
 
         // Add points for each product in the correct pose
-        const double translation_target = 0.03;  // 3 cm
+        const double translation_target = 0.03; // 3 cm
         const double orientation_target = 0.1;  // 0.1 rad
         // get translation distance
         ignition::math::Vector3d posnDiff(
@@ -584,7 +584,7 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
         // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
         double angleDiff = objOrientation.Yaw() - orderOrientation.Yaw();
         if ((std::abs(angleDiff) < orientation_target) ||
-        (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
+            (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
         {
           permutation_pose_score += 1.0;
         }
@@ -593,11 +593,89 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
       {
         contributing_pose_score = permutation_pose_score;
       }
-    }
-    while (std::next_permutation(permutation.begin(), permutation.end()));
+    } while (std::next_permutation(permutation.begin(), permutation.end()));
 
     // Add the pose score contributed by the highest scoring permutation
     scorer.productPose += contributing_pose_score;
+
+    // let's see if unwanted products have the correct pose
+    for (const auto &type_pair : product_type_map)
+    {
+      const std::vector<size_t> &desired_indexes = type_pair.second.first;
+      for (size_t d = 0; d < desired_indexes.size(); ++d)
+      {
+        const auto desired_product = desired_shipment.products[desired_indexes[d]];
+        gzdbg << "desired product: " << desired_product.type << "\n";
+        for (const auto &wrong_color_product : wrong_color_products)
+        {
+          gzdbg << "wrong color product: " << wrong_color_product.type << "\n";
+
+          // check if desired and actual products are of the same type (regardless of color)
+          auto desired_product_type = desired_product.type;
+          desired_product_type.erase(desired_product_type.rfind('_'));
+
+          auto actual_product_type = wrong_color_product.type;
+          actual_product_type.erase(actual_product_type.rfind('_'));
+
+          // check the pose if we are talking about the same product type
+          if (actual_product_type.compare(desired_product_type) == 0)
+          {
+            // Add points for each product in the correct pose
+            const double translation_target = 0.03; // 3 cm
+            const double orientation_target = 0.1;  // 0.1 rad
+            // get translation distance
+            ignition::math::Vector3d posnDiff(
+                desired_product.pose.position.x - wrong_color_product.pose.position.x,
+                desired_product.pose.position.y - wrong_color_product.pose.position.y,
+                0);
+
+            const double distance = posnDiff.Length();
+
+            if (distance > translation_target)
+            {
+              // skipping product because translation error is too big
+              continue;
+            }
+
+            ignition::math::Quaterniond orderOrientation(
+                desired_product.pose.orientation.w,
+                desired_product.pose.orientation.x,
+                desired_product.pose.orientation.y,
+                desired_product.pose.orientation.z);
+
+            ignition::math::Quaterniond objOrientation(
+                wrong_color_product.pose.orientation.w,
+                wrong_color_product.pose.orientation.x,
+                wrong_color_product.pose.orientation.y,
+                wrong_color_product.pose.orientation.z);
+
+            // Filter products that aren't in the appropriate orientation (loosely).
+            // If the quaternions represent the same orientation, q1 = +-q2 => q1.dot(q2) = +-1
+            const double orientationDiff = objOrientation.Dot(orderOrientation);
+            // TODO(zeid): this value can probably be derived using relationships between
+            // euler angles and quaternions.
+            const double quaternionDiffThresh = 0.05;
+            if (std::abs(orientationDiff) < (1.0 - quaternionDiffThresh))
+            {
+              // skipping product because it is not in the correct orientation (roughly)
+              continue;
+            }
+
+            // filter the yaw based on a threshold set in radians (more user-friendly).
+            // account for wrapping in angles. E.g. -pi compared with pi should "pass".
+            double angleDiff = objOrientation.Yaw() - orderOrientation.Yaw();
+
+            if ((std::abs(angleDiff) < orientation_target) ||
+                (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
+            {
+              scorer.productPose++;
+            }
+          }
+        }
+      }
+    }
+
+    // check if pose is correct even for products with wrong colors but with the correct type
   }
 
   if (!is_missing_products)
@@ -635,9 +713,9 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
 {
   ariac::AssemblyShipmentScore scorer;
 
-  scorer.assemblyStation = station;   // assembly station this shipment was sent for
-  scorer.submit_time = submit_time;   // time the shipment was submitted
-  scorer.isShipmentSubmitted = true;  // true since we are in this function
+  scorer.assemblyStation = station;  // assembly station this shipment was sent for
+  scorer.submit_time = submit_time;  // time the shipment was submitted
+  scorer.isShipmentSubmitted = true; // true since we are in this function
   scorer.allProductsBonus = 0;
   scorer.isCorrectStation = false;
   scorer.numberOfProductsInShipment = actual_shipment.products.size();
@@ -732,7 +810,7 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
         briefcaseProduct.isProductCorrectType = true;
         scorer.numberOfProductsWithCorrectType++;
         mapOfBriefcaseProducts.insert(
-          std::pair<std::string, ariac::BriefcaseProduct>(actual_product, briefcaseProduct));
+            std::pair<std::string, ariac::BriefcaseProduct>(actual_product, briefcaseProduct));
         tmp_non_faulty_products.erase(tmp_non_faulty_products.begin() + a);
         break;
       }
@@ -820,8 +898,8 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
         // ROS_WARN_STREAM("actual_product: "<< actual_product.type);
 
         // Add points for each product in the correct pose
-        const double translation_target = 0.02;  // 2 cm
-        const double orientation_target = 0.1;   // 0.1 rad
+        const double translation_target = 0.02; // 2 cm
+        const double orientation_target = 0.1;  // 0.1 rad
         // get translation distance
         ignition::math::Vector3d posnDiff(
             desired_product.pose.position.x - actual_product.pose.position.x,
@@ -868,7 +946,7 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
         // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
         double angleDiff = objOrientation.Yaw() - orderOrientation.Yaw();
         if ((std::abs(angleDiff) < orientation_target) ||
-        (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
+            (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
         {
           permutation_pose_score += 1.0;
         }
@@ -881,8 +959,8 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
         if (contributing_pose_score > 0)
         {
           // ROS_WARN_STREAM("Product type: " <<  briefcase_actual_product);
-          std::map<std::string, ariac::BriefcaseProduct>::iterator it = 
-          mapOfBriefcaseProducts.find(briefcase_actual_product);
+          std::map<std::string, ariac::BriefcaseProduct>::iterator it =
+              mapOfBriefcaseProducts.find(briefcase_actual_product);
           if (it != mapOfBriefcaseProducts.end())
           {
             it->second.isProductCorrectPose = true;
@@ -890,39 +968,38 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
           }
         }
       }
-    }
-    while (std::next_permutation(permutation.begin(), permutation.end()));
+    } while (std::next_permutation(permutation.begin(), permutation.end()));
 
-  unsigned nbOfProductsInBriefcase = mapOfBriefcaseProducts.size();
-  // scoring for each product
-  for (auto &product : mapOfBriefcaseProducts)
-  {
-    // +2pts if correct pose AND correct type
-    if (product.second.isProductCorrectPose && product.second.isProductCorrectPose)
+    unsigned nbOfProductsInBriefcase = mapOfBriefcaseProducts.size();
+    // scoring for each product
+    for (auto &product : mapOfBriefcaseProducts)
     {
-      product.second.productSuccess = 2;
-      // +1pt if correct pose AND correct type AND correct color
-      if (product.second.isProductCorrectColor)
+      // +2pts if correct pose AND correct type
+      if (product.second.isProductCorrectPose && product.second.isProductCorrectPose)
       {
-        product.second.productSuccess++;
+        product.second.productSuccess = 2;
+        // +1pt if correct pose AND correct type AND correct color
+        if (product.second.isProductCorrectColor)
+        {
+          product.second.productSuccess++;
+        }
       }
     }
-  }
 
-  unsigned nbOfSuccessfulProducts{0};
-  // scoring for all products bonus
-  for (auto &product : mapOfBriefcaseProducts)
-  {
-    // +2pts if correct pose AND correct type
-    if (product.second.productSuccess == 3)
+    unsigned nbOfSuccessfulProducts{0};
+    // scoring for all products bonus
+    for (auto &product : mapOfBriefcaseProducts)
     {
-      nbOfSuccessfulProducts++;
+      // +2pts if correct pose AND correct type
+      if (product.second.productSuccess == 3)
+      {
+        nbOfSuccessfulProducts++;
+      }
     }
-  }
 
-  if (nbOfSuccessfulProducts == desired_shipment.products.size())
-    scorer.allProductsBonus = 4 * nbOfSuccessfulProducts;
-  }  // end processing each part
+    if (nbOfSuccessfulProducts == desired_shipment.products.size())
+      scorer.allProductsBonus = 4 * nbOfSuccessfulProducts;
+  } // end processing each part
 
   if (!scorer.hasMissingProduct)
   {

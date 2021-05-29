@@ -1,0 +1,67 @@
+
+options:
+  insert_models_over_bins: false
+  insert_models_over_stations: true
+  belt_population_cycles: 0
+  gazebo_state_logging: true
+  enable_robot_camera: true
+time_limit: 500
+
+#location of each agv and products on agvs when the simulation starts
+agv_infos:
+  agv1:
+    location: as2
+    products:
+      part_0:
+        type: assembly_battery_blue
+        pose:
+          xyz: [0.0, -0.15, 0]
+          rpy: [0, 0, 0]
+      part_1:
+        type: assembly_pump_blue
+        pose:
+          xyz: [0.0, 0.15, 0]
+          rpy: [0, 0, 0]
+  agv2:
+    location: ks2
+  agv3:
+    location: as3
+    products:
+      part_0:
+        type: assembly_battery_blue
+        pose:
+          xyz: [0.0, 0.0, 0]
+          rpy: [0, 0, 'pi/3']
+  agv4:
+    location: ks4  
+
+orders:
+  order_0:
+    priority: 1
+    kitting_robot_health: 1 
+    assembly_robot_health: 1
+    announcement_condition: time
+    announcement_condition_value: 0.0
+    assembly:
+      shipment_count: 2
+      stations: [as2, as3]
+      products:
+        part_0:
+          type: assembly_battery_blue
+          pose:
+            xyz: [-0.032465, 0.174845, 0.15]
+            rpy: [0, 0, 0]
+        part_1:
+          type: assembly_pump_blue
+          pose:
+            xyz: [0.032085, -0.152835, 0.25]
+            rpy: [0, 0, 0]
+
+models_over_stations:
+  as3:
+    models:
+      assembly_pump_blue:
+        xyz: [0.032085, -0.152835, 0.25]
+        rpy: [0, 0, 0]
+
+

@@ -427,7 +427,7 @@ expand_snippet('rgbd_camera.sdf.template')
       <rate_modifier_topic>/ariac/population/rate_modifier</rate_modifier_topic>
       <control_topic>/ariac/population/control</control_topic>
       <state_topic>/ariac/population/state</state_topic>
-      <start_index>0</start_index>
+      <start_index>@(start_index)</start_index>
       <prefix_object_names>false</prefix_object_names>
       <loop_forever>@("true" if belt_models_loop else "false")</loop_forever>
       <frame>conveyor_belt::conveyor_belt_fixed</frame>

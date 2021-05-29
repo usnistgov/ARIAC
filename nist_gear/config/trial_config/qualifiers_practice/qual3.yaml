@@ -1,9 +1,10 @@
-#Number of orders: 1
+#Number of orders: 2
 #Tasks: kitting and assembly
 #Number of shipments for kitting: 2
+#Number of shipments for assembly: 1
 #Insufficiently many products: No
 #Part re-orientation: No
-#In-process order update: No
+#In-process order update: yes
 #Dropped products: No
 #In-process order interruption: Yes
 #Faulty products: Yes
@@ -14,10 +15,10 @@
 
 options:
   insert_models_over_bins: true
-  insert_models_over_shelves: true
+  insert_models_over_stations: false
   belt_population_cycles: 0
   gazebo_state_logging: true
-time_limit: -1
+time_limit: 500
 
 #location of each agv and products on agvs when the simulation starts
 agv_infos:

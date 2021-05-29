@@ -668,11 +668,11 @@ void VacuumGripperPlugin::OnUpdate()
               }
               updatedDropProducts.drop_products.push_back(msgDropProduct);
             }
-            // while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1)
-            // {
-            //   gzdbg << "wait for a connection to publisher"
-            //         << "\n";
-            // }
+            while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1)
+            {
+              gzdbg << "wait for a connection to publisher"
+                    << "\n";
+            }
             this->dataPtr->drop_object_publisher.publish(updatedDropProducts);
             break;
           }

@@ -26,7 +26,7 @@
           $(arg gui_args)
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
-          -f $(find nist_gear)/config/trial_config/finals_practice/finals_practice3.yaml
+          -f $(find nist_gear)/config/trial_config/finals_practice/finals_practice2.yaml
           $(find nist_gear)/config/user_config/sample_user_config.yaml
           " required="true" output="screen" />
 

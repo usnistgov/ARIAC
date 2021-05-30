@@ -91,11 +91,11 @@ Score breakdown:
   - This trial is part of Scenario 2 and consists of 2 orders.
   - `agv1` and `agv2` are loaded with products and are located at station `as2`.
   - `agv4` is loaded with products and is located at station `as4`.
-  - `order_0` consists of adding products in the ventilator located at station `as2`. Competitors should use products from `agv1` and `agv2` to do assembly. Each AGV has an extra product just in case the robot drops a product during assembly. If for some reasons the robot drops all products located on the AGVs, competitors can still find those products in `bin1` and `bin2`. Note that `assembly_pump_green` must be flipped for this order.
+  - `order_0` consists of adding products in the ventilator located at station `as2`. Competitors should use products from `agv1` and `agv2` to do assembly. Each AGV has an extra product just in case the robot drops a product during assembly. If for some reasons the robot drops all products located on the AGVs, competitors can still find those products in `bin1` and `bin2`. 
   - `order_1` is a high-priority order (priority = 3). This order will be announced as soon as one product is placed in the ventilator at `as2` (during `order_0`). As soon as `order_1` is announced, competitors must postpone `order_0` and prioritize `order_1`. Once `order_1` is shipped, competitors should resume `order_0`.
     - To complete `order_1`, competitors should use one of the products located on `agv4`. One extra pump is provided on the AGV in case the robot drops the first pump. Extra pumps can be found in `bin3`.
     - The conveyor belt is not used in this trial.
-    - Agility challenges present in this trial are: ***part re-orientation*** and ***in-process order change***.
+    - Agility challenges present in this trial are: ***in-process order change***.
     - The script [finals_practice2.sh](../../nist_gear/script/finals_practice2.sh) can be used to visualize the expected results and scores for this trial.
       - Run it with `rosrun nist_gear final_practice2.sh`
     - The expected final score for this trial is depicted below.
@@ -162,8 +162,8 @@ Score breakdown:
   - `order_0` is specific to kitting. The order consists of 2 shipments which must be built on `agv1` and `agv2` and delivered to `as2`. The kitting robot will be disabled as soon as 1 product is placed in the kit tray of `agv2`. Competitors are required to use the gantry to finish the kit(s).
     - Products to build the kits are found in bins and on the belt.
   - `order_1` is a not a high-priority order (priority = 1). This order will be announced as soon as soon as `agv2` is shipped to `as2`.
-    - To complete `order_1`, competitors should use the products located on `agv1` and `agv2`. 
-    - Agility challenges present in this trial are: ***part re-orientation*** and ***faulty products***.
+    - To complete `order_1`, competitors should use the products located on `agv1` and `agv2`.
+    - Agility challenges present in this trial are: ***faulty products***.
     - The script [finals_practice3.sh](../../nist_gear/script/finals_practice3.sh) can be used to visualize the expected results and scores for this trial.
       - Run it with `rosrun nist_gear final_practice3.sh`
     - The expected final score for this trial is depicted below.

@@ -1,6 +1,11 @@
 Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 -------------------------------------------------
+## Released 2021, May 30
+
+- Updated finals_practice2.yaml and finals_practice3.yaml so no product is required to be flipped during assembly. This is to conform to what was written in the wiki.
+- Fixed issues with regulator products not visually showing up in the environment.
+- Edited kitting.launch to prevent issues with MoveIt!
 
 ## Released 2021, May 28
 

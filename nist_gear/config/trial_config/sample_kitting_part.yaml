@@ -51,7 +51,47 @@ orders:
             rpy: [0, 0, 0]
           
 models_over_bins:
+  bin1:
+    models:
+      assembly_regulator_red:
+        xyz_start: [0.2, 0.2, 0.0]
+        xyz_end: [0.4, 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 2
+        num_models_y: 1
+  bin2:
+    models:
+      assembly_regulator_green:
+        xyz_start: [0.2, 0.2, 0.0]
+        xyz_end: [0.4, 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 2
+        num_models_y: 1
   bin3:
+    models:
+      assembly_regulator_blue:
+        xyz_start: [0.2, 0.2, 0.0]
+        xyz_end: [0.4, 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 2
+        num_models_y: 1
+  bin4:
+    models:
+      assembly_sensor_red:
+        xyz_start: [0.2, 0.2, 0.0]
+        xyz_end: [0.4, 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 2
+        num_models_y: 1
+  bin5:
+    models:
+      assembly_sensor_green:
+        xyz_start: [0.2, 0.2, 0.0]
+        xyz_end: [0.4, 0.4, 0.0]
+        rpy: [0, 0, 0]
+        num_models_x: 2
+        num_models_y: 1
+  bin6:
     models:
       assembly_sensor_blue:
         xyz_start: [0.2, 0.2, 0.0]
@@ -59,13 +99,6 @@ models_over_bins:
         rpy: [0, 0, 0]
         num_models_x: 2
         num_models_y: 1
-
-belt_models:
-  assembly_sensor_blue:
-    10.0:
-      pose:
-        xyz: [0.0, 4.3, 0.92]
-        rpy: [0, 0, 'pi/2']
 
 # sensor_blackout:
 #   product_count: 2 #sensor blackout triggered after second product is placed

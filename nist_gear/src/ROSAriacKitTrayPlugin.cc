@@ -127,7 +127,7 @@ void KitTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     lockUnlockModelsServiceName, &KitTrayPlugin::HandleLockModelsRequest, this);
 
   // cache tray pose
-  this->tray_pose = this->model->WorldPose();
+ 
 }
 
 void KitTrayPlugin::OnAGV1Location(std_msgs::String::ConstPtr _msg)
@@ -568,6 +568,14 @@ bool KitTrayPlugin::HandleGetContentService(
 
 void KitTrayPlugin::PublishTFTransform(const common::Time sim_time)
 {
+  // gzdbg << "PublishTFTransform: " << this->agv1CurrentStation
+  // << ", " << this->agv2CurrentStation
+  // << ", " <<this->agv3CurrentStation
+  // << ", " <<this->agv4CurrentStation
+  // << ", " << "\n";
+
+  // gzdbg << "AGV: " << this->tf_frame_name << "\n";
+  this->tray_pose = this->model->WorldPose();
   ignition::math::Pose3d objectPose = this->tray_pose;
   geometry_msgs::TransformStamped tfStamped;
   tfStamped.header.stamp = ros::Time(sim_time.sec, sim_time.nsec);
@@ -576,10 +584,21 @@ void KitTrayPlugin::PublishTFTransform(const common::Time sim_time)
   tfStamped.transform.translation.x = objectPose.Pos().X();
   tfStamped.transform.translation.y = objectPose.Pos().Y();
   tfStamped.transform.translation.z = objectPose.Pos().Z();
+  // gzdbg << "Translation: "
+  // << ", " << tfStamped.transform.translation.x
+  // << ", " << tfStamped.transform.translation.y
+  // << ", " << tfStamped.transform.translation.z
+  // << "\n";
   tfStamped.transform.rotation.x = objectPose.Rot().X();
   tfStamped.transform.rotation.y = objectPose.Rot().Y();
   tfStamped.transform.rotation.z = objectPose.Rot().Z();
   tfStamped.transform.rotation.w = objectPose.Rot().W();
+  // gzdbg << "Orientation: "
+  // << ", " << tfStamped.transform.rotation.x
+  // << ", " << tfStamped.transform.rotation.y
+  // << ", " << tfStamped.transform.rotation.z
+  // << ", " << tfStamped.transform.rotation.w
+  // << "\n";
 
   tf_broadcaster.sendTransform(tfStamped);
 }

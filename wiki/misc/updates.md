@@ -1,6 +1,12 @@
 Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 -------------------------------------------------
+
+## Released 2021, May 31
+
+- This new update addresses issue [#112](https://github.com/usnistgov/ARIAC/issues/112).
+- Docker images to be used for the finals will be released once issue [#109](https://github.com/usnistgov/ARIAC/issues/109) is fixed.
+
 ## Released 2021, May 30
 
 - Updated finals_practice2.yaml and finals_practice3.yaml so no product is required to be flipped during assembly. This is to conform to what was written in the wiki.

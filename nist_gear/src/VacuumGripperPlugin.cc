@@ -831,7 +831,6 @@ bool VacuumGripperPlugin::CheckModelContact()
   if (this->dataPtr->posCount > this->dataPtr->attachSteps &&
       !this->dataPtr->attached)
   {
-
     if (!this->GetContactNormal())
     {
       return false;

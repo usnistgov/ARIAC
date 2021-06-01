@@ -791,7 +791,23 @@ void VacuumGripperPlugin::HandleAttach()
   }
   auto found = std::find(std::begin(this->dataPtr->dropped_objects),
                          std::end(this->dataPtr->dropped_objects), this->dataPtr->attachedObjType);
-  bool alreadyDropped = found != std::end(this->dataPtr->dropped_objects);
+
+  bool alreadyDropped = false;
+
+  if (!this->dataPtr->object_to_drop_from_topic.empty())
+  {
+    for (const auto &product : this->dataPtr->object_to_drop_from_topic)
+    {
+
+      if (product.type == this->dataPtr->attachedObjType &&
+          product.status)
+      {
+        alreadyDropped = true;
+      }
+    }
+  }
+
+  // bool alreadyDropped = found != std::end(this->dataPtr->dropped_objects);
   if (!alreadyDropped)
   {
     this->dataPtr->dropPending = true;

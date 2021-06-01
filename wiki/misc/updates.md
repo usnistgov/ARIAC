@@ -2,9 +2,16 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
+
+## Released 2021, June 1
+
+- New code release which mainly addresses issue [#109](https://github.com/usnistgov/ARIAC/issues/109).
+- I will create and push the Docker images for the finales after I get confirmation that this new release fixes [#109](https://github.com/usnistgov/ARIAC/issues/109).
+
 ## ARIAC Question, June 1
 
 - I saw a question earlier in one of the tickets but I cannot find it anymore, so I will post it here. The question was about "How long to wait to know if parts will show up on the belt?". The answer is 20-25 simulation seconds after the start_competition service is called. If after 25 simulation seconds your cameras do not detect parts on the belt then the belt is not used in the trial.
+
 
 ## Released 2021, May 31
 

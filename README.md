@@ -15,6 +15,10 @@
 ```diff
 - NOTE: Always use the master branch to retrieve the latest updates.
 ```
+
+```diff
+- NOTE: Always review the Updates section when new code is pushed.
+```
 <!---<img src="wiki/figures/ariac2020_3.jpg" alt="alt text" width="600" class="center">-->
 
 ## Important Dates

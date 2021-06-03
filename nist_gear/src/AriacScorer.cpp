@@ -462,7 +462,7 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
   for (size_t a = 0; a < detected_non_faulty_products.size(); ++a)
   {
     auto &actual_product = detected_non_faulty_products[a];
-    gzdbg << "detected product: " << actual_product.type << "\n";
+    //gzdbg << "detected product: " << actual_product.type << "\n";
     // if the name contains :: then clean the name
     auto pos = actual_product.type.rfind(':');
     if (pos != std::string::npos)
@@ -605,10 +605,10 @@ ariac::KittingShipmentScore AriacScorer::GetKittingShipmentScore(
       for (size_t d = 0; d < desired_indexes.size(); ++d)
       {
         const auto desired_product = desired_shipment.products[desired_indexes[d]];
-        gzdbg << "desired product: " << desired_product.type << "\n";
+        //gzdbg << "desired product: " << desired_product.type << "\n";
         for (const auto &wrong_color_product : wrong_color_products)
         {
-          gzdbg << "wrong color product: " << wrong_color_product.type << "\n";
+          //gzdbg << "wrong color product: " << wrong_color_product.type << "\n";
 
           // check if desired and actual products are of the same type (regardless of color)
           auto desired_product_type = desired_product.type;

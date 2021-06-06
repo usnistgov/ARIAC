@@ -20,7 +20,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ## Important Dates
 
-- By June 4th, competitors must submit their scripts for evaluation. An extension is possible (no more than a week) as long as the NIST team agrees.
+- By June 7th (mindnight EST), competitors must submit their scripts for evaluation. An extension is possible (no more than a week) as long as the NIST team agrees.
 - 7-11 June 2021 - Competitors submission will be evaluated and the results will be posted on June 11th. If an extension is provided, this evaluation week will be pushed back.
 
 ## Evaluation

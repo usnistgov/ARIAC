@@ -2,6 +2,14 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
+## Released 2021, June 6
+
+- New docker images have been pushed and are based on the master branch.
+- Docker scripts have been updated and pushed to https://github.com/usnistgov/ariac-docker.git. Retrieve them as described [here](https://github.com/usnistgov/ARIAC/blob/master/wiki/documentation/automated_evaluation.md#getting-the-code).
+- The instructions to retrieve the new images and test your code are the same ones provided for the qualifiers. They can be found [here](https://github.com/usnistgov/ARIAC/blob/master/wiki/documentation/automated_evaluation.md).
+- Please test your code with the images and upload your files (`build_team_system.bash`, `run_team_system.bash`, and `team_config.yaml`) on Google drive in your personal workspace.
+  - We highly suggest that you create a new folder in your Google Drive workspace (e.g., nist_team/nist_team_finals) and place these 3 files in this new folder.
+- If possible, upload those files by Monday midnight EST. Since the release of the images was delayed, we can give you until Wednesday (06/09, midnight EST) to upload your files.
 
 ## Released 2021, June 1
 

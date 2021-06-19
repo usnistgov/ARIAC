@@ -311,6 +311,20 @@ ariac::GameScore AriacScorer::GetGameScore(int penalty)
           }
         }
       }
+      // Figure out the time taken to complete an order
+      if (order_score.isAssemblyComplete())
+      {
+        // The latest submitted shipment time is the order completion time
+        gazebo::common::Time end = start_time;
+        for (auto &sspair : order_score.assembly_shipment_scores)
+        {
+          if (sspair.second.submit_time > end)
+          {
+            end = sspair.second.submit_time;
+          }
+        }
+        order_score.time_taken = (end - start_time).Double();
+      }
     }
     game_score.order_scores_map[order_id] = order_score;
   }

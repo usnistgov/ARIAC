@@ -1,7 +1,5 @@
 # Wiki | Home
 
-## Workshop Test
-- [Video 1](https://drive.google.com/file/d/1CYxC0ryV94NJABu29BzBecVHbIjxCF8e/view?usp=sharing)
 
 ## Welcome to ARIAC 2021.
 

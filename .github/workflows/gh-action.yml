@@ -7,10 +7,11 @@ jobs:
     strategy:
       matrix:
         env:
+          - {ROS_DISTRO: melodic, UPSTREAM_WORKSPACE: 2022.repos}
           - {ROS_DISTRO: melodic, UPSTREAM_WORKSPACE: 2021.repos}
           - {ROS_DISTRO: melodic, UPSTREAM_WORKSPACE: 2020.repos}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - uses: 'ros-industrial/industrial_ci@master'
         env: ${{matrix.env}}

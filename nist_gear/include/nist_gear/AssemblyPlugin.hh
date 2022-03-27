@@ -47,9 +47,6 @@ namespace gazebo
     /// \brief Attach an object to the assembly.
     private: void HandleAttach();
 
-    /// \brief Send periodic updates with the completed assembly info
-    private: virtual void Publish() const;
-
     /// \internal
     /// \brief Pointer to private data.
     private: std::unique_ptr<AssemblyPluginPrivate> dataPtr;

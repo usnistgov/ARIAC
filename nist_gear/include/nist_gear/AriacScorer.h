@@ -31,6 +31,7 @@
 
 #include <nist_gear/ARIAC.hh>
 #include <nist_gear/DetectedKittingShipment.h>
+#include <nist_gear/ExpectedKittingShipment.h>
 #include <nist_gear/DetectedAssemblyShipment.h>
 #include <nist_gear/Order.h>
 #include <nist_gear/SubmitShipment.h>
@@ -122,8 +123,7 @@ public:
 public:
   void NotifyKittingShipmentReceived(gazebo::common::Time time,
                                      ariac::KittingShipmentType_t type,
-                                     const nist_gear::DetectedKittingShipment &actualShipment,
-                                     std::string actual_station);
+                                     const nist_gear::DetectedKittingShipment &actualShipment);
 
 public:
   void NotifyAssemblyShipmentReceived(gazebo::common::Time time,
@@ -145,9 +145,9 @@ public:
   /// \return The score for the game.
 public:
   ariac::KittingShipmentScore GetKittingShipmentScore(
-      gazebo::common::Time submit_time,
-      const nist_gear::KittingShipment &desired,
-      const nist_gear::DetectedKittingShipment &actual, std::string station);
+    gazebo::common::Time submit_time,
+    const nist_gear::ExpectedKittingShipment& expected_shipment,
+    const nist_gear::DetectedKittingShipment& detected_shipment);
 
 public:
   ariac::AssemblyShipmentScore GetAssemblyShipmentScore(

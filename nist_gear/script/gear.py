@@ -33,8 +33,10 @@ import yaml
 rospack = rospkg.RosPack()
 world_dir = os.path.join(rospack.get_path('nist_gear'), 'worlds')
 launch_dir = os.path.join(rospack.get_path('nist_gear'), 'launch')
-gantry_dir = os.path.join(rospack.get_path('nist_gear'), 'robots/gantry/gantry_description/urdf')
-kitting_dir = os.path.join(rospack.get_path('nist_gear'), 'robots/kitting/urdf/')
+gantry_dir = os.path.join(rospack.get_path('nist_gear'),
+                          'robots/gantry/gantry_description/urdf')
+kitting_dir = os.path.join(rospack.get_path('nist_gear'),
+                           'robots/kitting/urdf/')
 template_files = [
     os.path.join(world_dir, 'ariac.world.template'),
     os.path.join(launch_dir, 'gear.launch.template'),
@@ -43,6 +45,24 @@ template_files = [
 ]
 
 arm_template_file = os.path.join(kitting_dir, 'kitting.urdf.xacro.template')
+
+
+# new addition to ariac2022
+tray_table_config = {
+    'table_2': {'tray_type': 'kit_tray_model1',
+                'quantity': 0,
+                'tray1_pose': [-5.630637, 5.847469, 1.023896, 0, 0, -1.5707],
+                'tray2_pose': [-5.630637, 6.292814, 1.023896, 0, 0, -1.5707],
+                'tray3_pose': [-5.630637, 6.738159, 1.023896, 0, 0, -1.5707],
+                },
+    'table_1': {'tray_type': 'kit_tray_model2',
+                'quantity': 0,
+                'tray1_pose': [-6.593265, 5.847469, 1.023896, 0, 0, -1.5707],
+                'tray2_pose': [-6.593265, 6.292814, 1.023896, 0, 0, -1.5707],
+                'tray3_pose': [-6.593265, 6.738159, 1.023896, 0, 0, -1.5707],
+                },
+}
+
 
 arm_configs = {
     'kitting': {
@@ -77,6 +97,10 @@ possible_products = [
     'assembly_sensor_red',
     'assembly_sensor_green',
     'assembly_sensor_blue',
+    'movable_tray_dark_wood',
+    'movable_tray_light_wood',
+    'movable_tray_metal_rusty',
+    'movable_tray_metal_shiny',
 ]
 sensor_configs = {
     'break_beam': None,
@@ -241,6 +265,11 @@ default_bin_origins = {
     'bin8': [-2.651690, -3.379920, 0],
 }
 
+default_tray_table_origins = {
+    'tray_table1': [-6.56777, 6.265981, -0.451543],
+    'tray_table2': [-5.61518, 6.265981, -0.451543]
+}
+
 
 # Dictionary
 default_station_origins = {
@@ -256,18 +285,29 @@ brief_case_offset_y = 0.095839
 brief_case_offset_z = station_height
 
 default_briefcase_origins = {
-    'briefcase1': [default_station_origins['as1'][0] + brief_case_offset_x, default_station_origins['as1'][1] + brief_case_offset_y, brief_case_offset_z],
-    'briefcase2': [default_station_origins['as2'][0] + brief_case_offset_x, default_station_origins['as2'][1] + brief_case_offset_y, brief_case_offset_z],
-    'briefcase3': [default_station_origins['as3'][0] + brief_case_offset_x, default_station_origins['as3'][1] + brief_case_offset_y, brief_case_offset_z],
-    'briefcase4': [default_station_origins['as4'][0] + brief_case_offset_x, default_station_origins['as4'][1] + brief_case_offset_y, brief_case_offset_z],
+    'briefcase1': [default_station_origins['as1'][0] +
+                   brief_case_offset_x, default_station_origins['as1'][1] +
+                   brief_case_offset_y, brief_case_offset_z],
+    'briefcase2': [default_station_origins['as2'][0] +
+                   brief_case_offset_x, default_station_origins['as2'][1] +
+                   brief_case_offset_y, brief_case_offset_z],
+    'briefcase3': [default_station_origins['as3'][0] +
+                   brief_case_offset_x, default_station_origins['as3'][1] +
+                   brief_case_offset_y, brief_case_offset_z],
+    'briefcase4': [default_station_origins['as4'][0] +
+                   brief_case_offset_x, default_station_origins['as4'][1] +
+                   brief_case_offset_y, brief_case_offset_z],
 }
 
 configurable_options = {
     'insert_models_over_bins': False,
     'insert_models_over_stations': False,
-    'enable_robot_camera': False,
+    'enable_gantry_bin_camera': False,
+    'enable_gantry_tray_camera': False,
     'disable_shadows': False,
     'belt_population_cycles': 0,
+    'current_gripper_type': 'gripper_tray',
+    'movable_trays_needed': False,
     'gazebo_state_logging': False,
     'spawn_extra_models': False,
     'unthrottled_physics_update': False,
@@ -296,24 +336,29 @@ def update_dict(tree, key, value):
 
 def initialize_model_id_mappings(random_seed=None):
     global global_model_count, model_id_mappings
-    global_model_count = {}  # global count of how many times a model type has been created
+    # global count of how many times a model type has been created
+    global_model_count = {}
 
     randomize = False
     if random_seed is not None:
         randomize = True
         random.seed(random_seed)
 
-    # Initialize the mapping between model index and ID that will exist for each model type
+    # Initialize the mapping between model index and ID that
+    # will exist for each model type
     model_id_mappings = {}
 
     # Initialize the list of random IDs that will be used in the mappings
     # The IDs will be unique across different model types
-    max_model_id = max_count_per_model * len(possible_products)  # can be larger for more spread
+
+    # can be larger for more spread
+    max_model_id = max_count_per_model * len(possible_products)
     random_ids = random.sample(range(0, max_model_id), max_model_id)
     for model_type in possible_products:
         if not randomize:
             # Just use ordinary mapping
-            model_id_mappings[model_type] = list(range(1, max_count_per_model + 1))
+            model_id_mappings[model_type] = list(
+                range(1, max_count_per_model + 1))
         else:
             # Use random IDs for the mapping
             model_id_mappings[model_type] = random_ids[:max_count_per_model]
@@ -376,7 +421,8 @@ def prepare_arguments(parser):
         'configuration (contents will be concatenated)')
 
 
-eval_local_vars = {n: getattr(math, n) for n in dir(math) if not n.startswith('__')}
+eval_local_vars = {n: getattr(math, n)
+                   for n in dir(math) if not n.startswith('__')}
 
 
 def expand_to_float(val):
@@ -431,13 +477,14 @@ class PoseInfo:
 
 
 class DropRegionInfo:
-    def __init__(self, name, drop_region_min, drop_region_max, destination, frame, model_type):
+    def __init__(self, name, drop_region_min, drop_region_max, destination, frame, model_type, robot_type):
         self.name = name
         self.min = [str(f) for f in drop_region_min]
         self.max = [str(f) for f in drop_region_max]
         self.destination = destination
         self.frame = frame
         self.type = model_type
+        self.robot_type = robot_type
 
 
 def get_field_with_default(data_dict, entry, default_value):
@@ -481,7 +528,8 @@ def create_pose_info(pose_dict, offset=None):
     rpy = get_field_with_default(pose_dict, 'rpy', [0, 0, 0])
     for key in pose_dict:
         if key not in ['xyz', 'rpy']:
-            print("Warning: ignoring unknown entry in 'pose': " + key, file=sys.stderr)
+            print("Warning: ignoring unknown entry in 'pose': " +
+                  key, file=sys.stderr)
     if offset is not None:
         xyz = [sum(i) for i in zip(xyz, offset)]
     return PoseInfo(xyz, rpy)
@@ -519,23 +567,11 @@ def create_sensor_infos(sensors_dict, allow_protected_sensors=False, offset=None
     return sensor_infos
 
 
-def create_model_info(model_name, model_data):
-    model_type = get_required_field(model_name, model_data, 'type')
-    model_type = replace_type_aliases(model_type)
-    pose_dict = get_required_field(model_name, model_data, 'pose')
-    reference_frame = get_field_with_default(model_data, 'reference_frame', '')
-    for key in model_data:
-        if key not in ['type', 'pose', 'reference_frame']:
-            print("Warning: ignoring unknown entry in '{0}': {1}"
-                  .format(model_name, key), file=sys.stderr)
-    pose_info = create_pose_info(pose_dict)
-    return ModelInfo(model_type, pose_info, reference_frame)
-
-
 def create_models_to_spawn_infos(models_to_spawn_dict):
     models_to_spawn_infos = {}
     for reference_frame, reference_frame_data in models_to_spawn_dict.items():
-        models = get_required_field(reference_frame, reference_frame_data, 'models')
+        models = get_required_field(
+            reference_frame, reference_frame_data, 'models')
         for model_name, model_to_spawn_data in models.items():
             model_to_spawn_data['reference_frame'] = reference_frame
             model_info = create_model_info(model_name, model_to_spawn_data)
@@ -563,7 +599,8 @@ def create_agv_info(agv_yaml_dict):
                 agv_info[agv_id]['location'] = location
             else:
                 print('=' * 80)
-                print("Error: " + agv_name_yaml + " can not be assigned the station: " + location, file=sys.stderr)
+                print("Error: " + agv_name_yaml +
+                      " can not be assigned the station: " + location, file=sys.stderr)
                 print('=' * 80)
     return agv_info
 
@@ -610,14 +647,106 @@ def create_models_over_bins_infos(models_over_bins_dict):
                         offset_xyz[1] + xyz_start[1] + idx_y * step_size[1],
                         offset_xyz[2] + xyz_start[2] + model_x_offset * math.tan(bin_angle)]
                     model_to_spawn_data['pose'] = {'xyz': xyz, 'rpy': rpy}
-                    model_info = create_model_info(model_type, model_to_spawn_data)
+                    model_info = create_model_info(
+                        model_type, model_to_spawn_data)
                     # assign each model a unique name because gazebo can't do this
                     # if the models all spawn at the same time
                     scoped_model_name = bin_name + '|' + \
-                        model_info.type + '_' + str(get_next_model_id(model_type))
+                        model_info.type + '_' + \
+                        str(get_next_model_id(model_type))
                     model_info.bin = bin_name
                     models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
+
+
+def create_tray_table_info(table_info_yaml):
+    """
+    Spawn trays over tray tables
+
+    Args:
+        table_info_yaml_dict (dict): Dictionary created from a YAML file
+    """
+
+    # table_info_yaml = {
+    #     'table_1': {
+    #         'quantity': 2,
+    #         'tray_model': 'movable_tray_metal_shiny'
+    #         },
+    #     'table_2': {
+    #         'quantity': 1,
+    #         'tray_model': 'movable_tray_metal_rusty'
+    #         }
+    # }
+
+#   tray_table_config = {
+#     'table_1': {'tray_type': 'kit_tray_model1',
+#                 'quantity': 0,
+#                 'tray1_pose': [-5.630637, 5.847469, 1.023896, 0, 0, -1.5707],
+#                 'tray2_pose': [-5.630637, 6.292814, 1.023896, 0, 0, -1.5707],
+#                 'tray3_pose': [-5.630637, 6.738159, 1.023896, 0, 0, -1.5707],
+#                 },
+#     'table_2': {'tray_type': 'kit_tray_model2',
+#                 'quantity': 0,
+#                 'tray1_pose': [-6.593265, 5.847469, 1.023896, 0, 0, -1.5707],
+#                 'tray2_pose': [-6.593265, 6.292814, 1.023896, 0, 0, -1.5707],
+#                 'tray3_pose': [-6.593265, 6.738159, 1.023896, 0, 0, -1.5707],
+#                 },
+#     }
+
+    # pprint.pprint(table_info_yaml)
+    models_to_spawn = {}
+
+    for key in tray_table_config.keys():  # table_1 table_2
+        if key in table_info_yaml:
+            tray_table_config[key]['tray_type'] = table_info_yaml[key]['tray_model']
+            tray_table_config[key]['quantity'] = table_info_yaml[key]['quantity']
+            # remove some entries from tray_table_config based on the quantity field
+            # if quantity = 1 then keep only tray1_pose
+            # if quantity = 2 then keep only tray1_pose and tray2_pose
+            # if quantity = 3 then keep all poses
+            if tray_table_config[key]['quantity'] == 0:
+                tray_table_config[key].pop('tray1_pose')
+                tray_table_config[key].pop('tray2_pose')
+                tray_table_config[key].pop('tray3_pose')
+            elif tray_table_config[key]['quantity'] == 1:
+                tray_table_config[key].pop('tray2_pose')
+                tray_table_config[key].pop('tray3_pose')
+            elif tray_table_config[key]['quantity'] == 2:
+                tray_table_config[key].pop('tray3_pose')
+        else:
+            tray_table_config.pop(key)
+
+    # now that tray_table_config is updated with data from table_info_yaml
+    # we can build the pose for spawning the trays
+    for key in tray_table_config.keys():  # table_1 table_2
+        if tray_table_config[key]['quantity'] > 0:
+            model_to_spawn = {}
+            counter = 1
+            model_to_spawn['type'] = tray_table_config[key]['tray_type']
+            model_to_spawn['reference_frame'] = 'world'
+            for k, v in tray_table_config[key].items():
+                if k in ['tray1_pose', 'tray2_pose', 'tray3_pose']:
+                    # print('K', k)
+                    x = v[0]
+                    y = v[1]
+                    z = v[2]
+                    r = v[3]
+                    p = v[4]
+                    yaw = v[5]
+                    model_to_spawn['pose'] = {
+                        'xyz': [x, y, z],
+                        'rpy': [r, p, yaw]
+                    }
+                    # print(model_to_spawn)
+                    model_info = create_model_info(
+                        'kit_tray', model_to_spawn)
+                    scoped_model_name = model_to_spawn['type'] + '_' + \
+                        str(counter)
+                    model_info.kit_tray = scoped_model_name
+                    models_to_spawn[scoped_model_name] = model_info
+                    counter += 1
+
+    return models_to_spawn
 
 
 def create_briefcase_over_stations_infos(models_over_stations_dict):
@@ -632,15 +761,17 @@ def create_briefcase_over_stations_infos(models_over_stations_dict):
         # make sure the station name is expected
         if station_name in default_station_origins:
             offset_xyz = [
-                 default_station_origins[station_name][0] + xyz[0],
-                 default_station_origins[station_name][1] + xyz[1],
-                 xyz[2]]
+                default_station_origins[station_name][0] + xyz[0],
+                default_station_origins[station_name][1] + xyz[1],
+                xyz[2]]
 
             model_to_spawn_data['pose'] = {'xyz': offset_xyz, 'rpy': rpy}
-            model_info = create_model_info('assembly_briefcase', model_to_spawn_data)
+            model_info = create_model_info(
+                'assembly_briefcase', model_to_spawn_data)
             # assign each model a unique name because gazebo can't do this
             # if the models all spawn at the same time
-            scoped_model_name = station_name + '|assembly_briefcase' + station_name.replace('station', '')
+            scoped_model_name = station_name + '|assembly_briefcase' + \
+                station_name.replace('station', '')
             model_info.briefcase = station_name
             models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
@@ -666,9 +797,11 @@ def create_models_over_stations_infos(models_over_stations_dict):
 
             if station_name in default_station_origins:
                 offset_xyz = [
-                    default_briefcase_origins['briefcase'+station_id][0] + xyz[0],
-                    default_briefcase_origins['briefcase'+station_id][1] + xyz[1],
-                    default_briefcase_origins['briefcase'+station_id][2] + xyz[2]]
+                    default_briefcase_origins['briefcase' +
+                                              station_id][0] + xyz[0],
+                    default_briefcase_origins['briefcase' +
+                                              station_id][1] + xyz[1],
+                    default_briefcase_origins['briefcase' + station_id][2] + xyz[2]]
                 # print("********", offset_xyz)
                 # spawn_briefcase_over_stations_infos(station_name, default_station_origins[station_name])
 
@@ -677,10 +810,35 @@ def create_models_over_stations_infos(models_over_stations_dict):
             # assign each model a unique name because gazebo can't do this
             # if the models all spawn at the same time
             scoped_model_name = station_name + '|assembly_briefcase' + str(station_id) + '|' + \
-                    model_info.type + '_' + str(get_next_model_id(model_type))
+                model_info.type + '_' + str(get_next_model_id(model_type))
             model_info.station = station_name
             models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
+
+
+def create_models_over_tray_tables_infos(tray_table_yaml_dict):
+    """
+    Create movable tray models on tray_table1 and tray_table2
+
+    Args:
+        tray_table_yaml_dict (dict): Dictionary retrieved from the YAML config file
+    """
+
+    # table_tray_infos:
+    #     table_1:
+    #         tray_model: movable_tray_metal_shiny
+    #         quantity: 1
+    #     table_2:
+    #         tray_model: movable_tray_dark_wood
+    #         quantity: 1
+    tray_table_dict = {}
+    
+
+    for table_name, table_content in tray_table_yaml_dict.items():
+        # print(table_name, table_content)
+        tray_table_dict[table_name] = table_content['tray_model']
+    
+    return tray_table_dict
 
 
 def create_models_over_agvs_infos(agv_yaml_dict):
@@ -699,7 +857,8 @@ def create_models_over_agvs_infos(agv_yaml_dict):
                 agv_info[agv_id] = PoseInfo(station_xyz, station_rpy)
             else:
                 print('=' * 80)
-                print("Error: " + agv_name_yaml + " can not be assigned the station: " + location, file=sys.stderr)
+                print("Error: " + agv_name_yaml +
+                      " can not be assigned the station: " + location, file=sys.stderr)
                 print('=' * 80)
             # spawn parts on the agv
             if 'products' in agv_info_dict_yaml:
@@ -717,7 +876,7 @@ def create_models_over_agvs_infos(agv_yaml_dict):
                     # tray_y = 0.15
                     # tray_z = 0.75
 
-                    tray_x_in_world = station_xyz[0]+0.15
+                    tray_x_in_world = station_xyz[0] + 0.15
                     tray_y_in_world = station_xyz[1]
                     tray_z_in_world = 0.75
                     # xyz = [station_xyz[0] + tray_y + part_pose_type['pose']['xyz'][1],
@@ -725,19 +884,22 @@ def create_models_over_agvs_infos(agv_yaml_dict):
                     # station_xyz[2] + tray_z + 0.3]
 
                     xyz = [tray_x_in_world + part_pose_type['pose']['xyz'][1],
-                    tray_y_in_world - part_pose_type['pose']['xyz'][0],
-                    tray_z_in_world + 0.1]
+                           tray_y_in_world - part_pose_type['pose']['xyz'][0],
+                           tray_z_in_world + 0.1]
 
-                    rpy = [part_pose_type['pose']['rpy'][0], part_pose_type['pose']['rpy'][1], (part_pose_type['pose']['rpy'][2])-1.571]
+                    rpy = [part_pose_type['pose']['rpy'][0], part_pose_type['pose']
+                           ['rpy'][1], (part_pose_type['pose']['rpy'][2]) - 1.571]
 
                     model_to_spawn_data['type'] = model_type
                     model_to_spawn_data['reference_frame'] = 'world'
                     model_to_spawn_data['pose'] = {'xyz': xyz, 'rpy': rpy}
-                    model_info = create_model_info(model_type, model_to_spawn_data)
+                    model_info = create_model_info(
+                        model_type, model_to_spawn_data)
                     # assign each model a unique name because gazebo can't do this
                     # # if the models all spawn at the same time
                     scoped_model_name = agv_name_yaml + '|tray_' + agv_id + "|" + \
-                    model_info.type + '_' + str(get_next_model_id(model_type))
+                        model_info.type + '_' + \
+                        str(get_next_model_id(model_type))
                     model_info.agv = agv_name_yaml
                     models_to_spawn_infos[scoped_model_name] = model_info
     return models_to_spawn_infos
@@ -760,8 +922,9 @@ def create_belt_model_infos(belt_models_dict, models_over_bins):
             if obj_type not in belt_model_infos:
                 belt_model_infos[obj_type] = {}
             belt_model_dict['type'] = obj_type
-            belt_model_infos[obj_type][spawn_time] = create_model_info('belt_model', belt_model_dict)
-            belt_model_infos[obj_type]['start_index'] = count+1
+            belt_model_infos[obj_type][spawn_time] = create_model_info(
+                'belt_model', belt_model_dict)
+            belt_model_infos[obj_type]['start_index'] = count + 1
     # print(belt_model_infos)
     return belt_model_infos
 
@@ -772,20 +935,28 @@ def create_drops_info(drops_dict):
     drop_regions_dict = get_required_field('drops', drops_dict, 'drop_regions')
     for drop_name, drop_region_dict in drop_regions_dict.items():
         frame = get_field_with_default(drop_region_dict, 'frame', 'world')
-        drop_region_min = get_required_field('drop_region', drop_region_dict, 'min')
+        drop_region_min = get_required_field(
+            'drop_region', drop_region_dict, 'min')
         drop_region_min_xyz = get_required_field('min', drop_region_min, 'xyz')
-        drop_region_max = get_required_field('drop_region', drop_region_dict, 'max')
+        drop_region_max = get_required_field(
+            'drop_region', drop_region_dict, 'max')
         drop_region_max_xyz = get_required_field('max', drop_region_max, 'xyz')
-        destination_info = get_required_field('drop_region', drop_region_dict, 'destination')
+        destination_info = get_required_field(
+            'drop_region', drop_region_dict, 'destination')
         # print(drop_name)
         # print(destination_info)
         destination = create_pose_info(destination_info)
-        product_type = get_required_field('drop_region', drop_region_dict, 'product_type_to_drop')
+        robot_type = get_required_field(
+            'drop_region', drop_region_dict, 'robot_type')
+        # print(robot_type)
+        # sys.exit(1)
+        product_type = get_required_field(
+            'drop_region', drop_region_dict, 'product_type_to_drop')
         product_type = replace_type_aliases(product_type)
         drop_region_infos.append(
             DropRegionInfo(
                 drop_name, drop_region_min_xyz, drop_region_max_xyz,
-                destination, frame, product_type))
+                destination, frame, product_type, robot_type))
     drops_info['drop_regions'] = drop_region_infos
     return drops_info
 
@@ -802,7 +973,11 @@ orders:
     announcement_condition: time
     announcement_condition_value: 0.0
     kitting:
-
+        movable_tray:
+            type: movable_tray_metal_shiny
+            pose:
+            xyz: [0.0, 0.0, 0]
+            rpy: [0, 0, 'pi/2']
       shipment_count: 1
       agvs: [agv1]
       destinations: [station4]
@@ -845,7 +1020,8 @@ orders:
     order_priority = order_dict.get('priority', 1)
     kitting_robot_health = order_dict.get('kitting_robot_health', 1)
     assembly_robot_health = order_dict.get('assembly_robot_health', 1)
-    announcement_condition = get_required_field(name, order_dict, 'announcement_condition')
+    announcement_condition = get_required_field(
+        name, order_dict, 'announcement_condition')
     announcement_condition_value = get_required_field(
         name, order_dict, 'announcement_condition_value')
 
@@ -860,9 +1036,32 @@ orders:
     if 'kitting' in order_dict:
         kitting_dict = order_dict['kitting']
         kitting_flag = True
-        shipment_count = get_field_with_default(kitting_dict, 'shipment_count', 1)
-        agvs = get_field_with_default(kitting_dict, 'agvs', ["any"] * shipment_count)
+        shipment_count = get_field_with_default(
+            kitting_dict, 'shipment_count', 1)
+        agvs = get_field_with_default(
+            kitting_dict, 'agvs', ["any"] * shipment_count)
         stations = get_required_field(name, kitting_dict, 'destinations')
+        tray_models = get_required_field(name, kitting_dict, 'trays')
+
+        # movable_trays
+        # ^^^^^^^^^^^^^
+        # movable_trays:
+        #     tray_0:
+        #         type: movable_tray_dark_wood
+        #         pose:
+        #             xyz: [0.0, 0.0, 0]
+        #             rpy: [0, 0, 'pi/2']
+        # tray_model_dict = get_required_field(
+        #     name, kitting_dict, 'movable_trays')
+        # # print("########### tray_model_dict", tray_model_dict)
+        # tray_models = []
+        # for movable_tray_name, movable_tray_dict in tray_model_dict.items():
+        #     # print("########### movable_tray_name", movable_tray_name)
+        #     # print("########### movable_tray_dict", movable_tray_dict)
+        #     tray_models.append(create_model_info(
+        #         movable_tray_name, movable_tray_dict))
+        # print("##############", tray_models)
+
         products_dict = get_required_field(name, kitting_dict, 'products')
         products = []
         for product_name, product_dict in products_dict.items():
@@ -872,11 +1071,13 @@ orders:
         returned_dict['kitting_agvs'] = agvs
         returned_dict['kitting_agv_stations'] = stations
         returned_dict['kitting_products'] = products
+        returned_dict['kitting_trays'] = tray_models
 
     if 'assembly' in order_dict:
         assembly_flag = True
         assembly_dict = order_dict['assembly']
-        shipment_count = get_field_with_default(assembly_dict, 'shipment_count', 1)
+        shipment_count = get_field_with_default(
+            assembly_dict, 'shipment_count', 1)
         stations = get_required_field(name, assembly_dict, 'stations')
         products_dict = get_required_field(name, assembly_dict, 'products')
         products = []
@@ -902,17 +1103,43 @@ orders:
     return returned_dict
 
 
+# def create_movable_tray_info(tray_name, tray_data):
+#     tray_type = get_required_field(tray_name, tray_data, 'type')
+#     pose_dict = get_required_field(tray_name, tray_data, 'pose')
+#     reference_frame = get_field_with_default(tray_data, 'reference_frame', '')
+#     for key in tray_data:
+#         if key not in ['type', 'pose', 'reference_frame']:
+#             print("Warning: ignoring unknown entry in '{0}': {1}"
+#                   .format(tray_name, key), file=sys.stderr)
+#     pose_info = create_pose_info(pose_dict)
+
+
+def create_model_info(model_name, model_data):
+    model_type = get_required_field(model_name, model_data, 'type')
+    model_type = replace_type_aliases(model_type)
+    pose_dict = get_required_field(model_name, model_data, 'pose')
+    reference_frame = get_field_with_default(model_data, 'reference_frame', '')
+    for key in model_data:
+        if key not in ['type', 'pose', 'reference_frame']:
+            print("Warning: ignoring unknown entry in '{0}': {1}"
+                  .format(model_name, key), file=sys.stderr)
+    pose_info = create_pose_info(pose_dict)
+    return ModelInfo(model_type, pose_info, reference_frame)
+
+
 def create_order_infos(orders_dict):
     order_infos = {}
     for order_name, order_dict in orders_dict.items():
         order_infos[order_name] = create_order_info(order_name, order_dict)
+        # pprint.pprint(order_infos)
     return order_infos
 
 
 def create_faulty_products_info(faulty_products_dict):
     faulty_product_infos = {}
     for product_name in faulty_products_dict:
-        faulty_product_infos[product_name] = product_name  # no other info for now
+        # no other info for now
+        faulty_product_infos[product_name] = product_name
     return faulty_product_infos
 
 
@@ -924,6 +1151,13 @@ def create_bin_infos():
     return bin_infos
 
 
+def create_tray_table_infos():
+    tray_table_infos = {}
+    for table_name, xyz in default_tray_table_origins.items():
+        tray_table_infos[table_name] = PoseInfo(xyz, [0, 0, 0])
+    return tray_table_infos
+
+
 def create_station_infos():
     station_infos = {}
     for station_name, xyz in default_station_origins.items():
@@ -931,7 +1165,7 @@ def create_station_infos():
     return station_infos
 
 
-def create_material_location_info(belt_models, models_over_bins, models_over_agvs):
+def create_material_location_info(belt_models, models_over_bins, models_over_agvs, movable_tray_models):
     material_locations = {}
 
     # Specify in which agv the different products can be found
@@ -963,13 +1197,21 @@ def create_material_location_info(belt_models, models_over_bins, models_over_agv
     #             material_locations[product.type] = {'belt'}
 
     # Specify in which bin the different bin products can be found
-    for product_name, product in models_over_bins.items():
+    for _, product in models_over_bins.items():
         # print("bin product name: ", product_name)
         # print("bin product type: ", product.type)
         if product.type in material_locations:
             material_locations[product.type].update([product.bin])
         else:
             material_locations[product.type] = {product.bin}
+
+    # print(movable_tray_models)
+    if movable_tray_models:
+        for table_name, tray_model in movable_tray_models.items():
+            if tray_model in material_locations:
+                material_locations[tray_model].update(table_name)
+            else:
+                material_locations[tray_model] = {table_name}
 
     return material_locations
 
@@ -981,19 +1223,22 @@ def create_options_info(options_dict):
     return options
 
 
-def prepare_template_data(config_dict, args):
+def prepare_template_data(config_dict, args, trial_yaml_file):
+    
+    models_over_tray_tables = {}
     template_data = {
+        'trial_yaml_file': trial_yaml_file,
         'arms': [create_arm_info(name, conf) for name, conf in arm_configs.items()],
         'robot_camera': {},
         'sensors': create_sensor_infos(default_sensors, allow_protected_sensors=True),
         'agv_infos': {},
         'models_to_insert': {},
         'models_to_spawn': {},
-        # 'belt_models': create_belt_model_infos(default_belt_models),
         'belt_models': {},
         'faulty_products': {},
         'drops': {},
         'orders': {},
+        'table_tray_infos': {},
         'options': {'insert_agvs': True},
         'time_limit': default_time_limit,
         'bin_height': bin_height,
@@ -1001,6 +1246,7 @@ def prepare_template_data(config_dict, args):
         'world_dir': world_dir,
         'joint_limited_ur10': config_dict.pop('joint_limited_ur10', False),
         'sensor_blackout': {},
+        'aisle_layout': {},
     }
     # Process the options first as they may affect the processing of the rest
     options_dict = get_field_with_default(config_dict, 'options', {})
@@ -1009,6 +1255,7 @@ def prepare_template_data(config_dict, args):
         template_data['options']['gazebo_state_logging'] = args.state_logging
     if args.visualize_sensor_views:
         template_data['options']['visualize_sensor_views'] = True
+    
 
     models_over_bins = {}
     models_over_belt = {}
@@ -1027,6 +1274,10 @@ def prepare_template_data(config_dict, args):
             template_data['belt_models'].update(models_over_belt)
 
     # print(models_over_belt)
+    # handle error if config does not include camera enable/disable
+    if 'gantry_tray_camera' not in config_dict or 'gantry_bin_camera' not in config_dict:
+        print("Error: Sensor config does not specify state for the gantry cameras.")
+        sys.exit(1)
 
     for key, value in config_dict.items():
         if key == 'sensors':
@@ -1034,14 +1285,17 @@ def prepare_template_data(config_dict, args):
                 create_sensor_infos(value))
         elif key == 'agv_infos':
             template_data['agv_infos'].update(create_agv_info(value))
-            # print(template_data['agv_infos'])
             models_over_agvs = create_models_over_agvs_infos(value)
             template_data['models_to_insert'].update(models_over_agvs)
+        elif key == 'table_tray_infos':
+            kit_tray_models_over_tables = create_tray_table_info(value)
+            template_data['models_to_insert'].update(
+                kit_tray_models_over_tables)
+            models_over_tray_tables = create_models_over_tray_tables_infos(
+                value)
         elif key == 'models_over_stations':
             models_over_stations = create_models_over_stations_infos(value)
             template_data['models_to_insert'].update(models_over_stations)
-            # briefcase_over_stations = create_briefcase_over_stations_infos(value)
-            # template_data['models_to_insert'].update(briefcase_over_stations)
         elif key == 'briefcase_over_stations':
             pass
         elif key == 'belt_models':
@@ -1055,7 +1309,8 @@ def prepare_template_data(config_dict, args):
             template_data['drops'].update(create_drops_info(value))
             # print(template_data['drops'])
         elif key == 'faulty_products':
-            template_data['faulty_products'].update(create_faulty_products_info(value))
+            template_data['faulty_products'].update(
+                create_faulty_products_info(value))
         elif key == 'orders':
             template_data['orders'].update(create_order_infos(value))
             # print(template_data['orders'])
@@ -1068,23 +1323,31 @@ def prepare_template_data(config_dict, args):
                 create_models_to_spawn_infos(value))
         elif key == 'time_limit':
             template_data['time_limit'] = value
-        elif key == 'robot_camera':
+        elif key == 'aisle_layout':
+            template_data['aisle_layout'].update(value)
+        elif key == 'gantry_tray_camera':
             if value['enable']:
-                template_data['options']['enable_robot_camera'] = True
+                template_data['options']['enable_gantry_tray_camera'] = True
             else:
-                template_data['options']['enable_robot_camera'] = False
-            # print(template_data['options']['enable_robot_camera'])
-        # elif key == 'use_robot_camera':
-        #     template_data['use_robot_camera'] = value
+                template_data['options']['enable_gantry_tray_camera'] = False
+        elif key == 'gantry_bin_camera':
+            if value['enable']:
+                template_data['options']['enable_gantry_bin_camera'] = True
+            else:
+                template_data['options']['enable_gantry_bin_camera'] = False
         else:
-            print("Error: unknown top level entry '{0}'".format(key), file=sys.stderr)
+            print("Error: unknown top level entry '{0}'".format(
+                key), file=sys.stderr)
             sys.exit(1)
     template_data['bins'] = create_bin_infos()
+    template_data['tray_tables'] = create_tray_table_infos()
     template_data['stations'] = create_station_infos()
+    
     template_data['material_locations'] = create_material_location_info(
         template_data['belt_models'] or {},
         models_over_bins,
         models_over_agvs,
+        models_over_tray_tables
     )
     template_data['possible_products'] = possible_products
     return template_data
@@ -1103,20 +1366,26 @@ def generate_files(template_data):
             data = f.read()
         files[arm_info.name + '.urdf.xacro'] = em.expand(data, template_data)
     return files
-    return files
 
 
 def main(sysargv=None):
+    trial_yaml_file = ""
     parser = argparse.ArgumentParser(
         description='Prepares and then executes a gazebo simulation based on configurations.')
+
     prepare_arguments(parser)
     args = parser.parse_args(sysargv)
+
     config_data = args.config or ''
+
     if args.file is not None:
+        # global trial_yaml_file
+        trial_yaml_file = args.file[0].rsplit('/', 1)[-1]
         for file in args.file:
             with open(file, 'r') as f:
                 comp_config_data = f.read()
                 config_data += comp_config_data
+
     dict_config = yaml.load(config_data) or {}
     expanded_dict_config = expand_yaml_substitutions(dict_config)
     if args.verbose:
@@ -1125,11 +1394,13 @@ def main(sysargv=None):
     random_seed = expanded_dict_config.pop('random_seed', None)
     initialize_model_id_mappings(random_seed)
 
-    template_data = prepare_template_data(expanded_dict_config, args)
+    template_data = prepare_template_data(
+        expanded_dict_config, args, trial_yaml_file)
     files = generate_files(template_data)
     if not args.dry_run and not os.path.isdir(args.output):
         if os.path.exists(args.output) and not os.path.isdir(args.output):
-            print('Error, given output directory exists but is not a directory.', file=sys.stderr)
+            print(
+                'Error, given output directory exists but is not a directory.', file=sys.stderr)
             sys.exit(1)
         print('creating directory: ' + args.output)
         os.makedirs(args.output)
@@ -1151,7 +1422,8 @@ def main(sysargv=None):
         'world_path:=' + os.path.join(args.output, 'ariac.world'),
         'gear_urdf_xacro:=' + os.path.join(args.output, 'gear.urdf.xacro'),
         'gantry_urdf_xacro:=' + os.path.join(args.output, 'gantry.urdf.xacro'),
-        'kitting_urdf_xacro:=' + os.path.join(args.output, 'kitting.urdf.xacro'),
+        'kitting_urdf_xacro:=' +
+        os.path.join(args.output, 'kitting.urdf.xacro'),
     ]
     if args.log_to_file:
         cmd.append('gazebo_ros_output:=log')

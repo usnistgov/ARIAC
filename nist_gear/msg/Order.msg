@@ -5,6 +5,6 @@
 string order_id
 
 # Collection of kitting shipments
-KittingShipment[] kitting_shipments
+ExpectedKittingShipment[] kitting_shipments
 # Collection of assembly shipments
 AssemblyShipment[] assembly_shipments

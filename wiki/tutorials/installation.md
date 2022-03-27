@@ -110,7 +110,7 @@ $ rosdep install --from-paths ./src --ignore-packages-from-source -y
 If not installed, make sure you install ros_control:
 
 ```bash
-$ sudo apt install ros-melodic-ros-control* ros-melodic-control* ros-melodic-gazebo-ros-control*
+$ sudo apt install "ros-melodic-ros-control*" "ros-melodic-control*" "ros-melodic-gazebo-ros-control*"
 ```
 
 ## Build GEAR
@@ -183,24 +183,6 @@ Long running integration tests are in `test_ariac`. -->
 
 See [Wiki | Tutorials | Interacting with GEAR](gear_interface.md) to build and use GEAR.
 
-<!-- After building all packages, the workspace must be sourced before building.
-Always source the workspace in a new terminal.
-Never source the workspace in a terminal where you run `catkin build`.
-
-
-To source the workspace:
-
-```
-source ~/ariac_ws/devel/setup.bash
-```
-
-Make sure it works by running the ARIAC sample environment.
-
-```
-roslaunch nist_gear sample_environment.launch
-```
-
-Note the very first launch may take a while because Gazebo downloads models from the model database the first time it runs. -->
 
 -------------------------------------------------
 Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)

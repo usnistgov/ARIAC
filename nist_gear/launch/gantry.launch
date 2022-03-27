@@ -5,7 +5,7 @@
 
     <!-- Load robot to param server -->
     <param name="robot_description"
-      command="$(find xacro)/xacro &#x002D;&#x002D;inorder '$(arg gantry_urdf_xacro)'
+      command="$(find xacro)/xacro  '$(arg gantry_urdf_xacro)'
       hardware_interface:=EffortJointInterface
       use_effort_interface:=true
       joint_limited:=$(arg limited)"/>
@@ -20,6 +20,22 @@
       gantry_controller
       gantry_arm_controller
     "/>
+
+  <!-- load static controllers-->
+  <node name="gantry_static_controller_spawner" 
+  pkg="controller_manager" 
+  type="spawner" 
+  respawn="false" 
+  output="screen" 
+  ns="/ariac/gantry" 
+  args="--namespace=/ariac/gantry --stopped 
+      static_shoulder_pan_joint_controller
+      static_shoulder_lift_joint_controller
+      static_elbow_joint_controller
+      static_wrist_1_controller
+      static_wrist_2_controller
+      static_wrist_3_controller
+    " />
 
     <!-- Load joint_states topic -->
     <rosparam command="load" file="$(find joint_state_controller)/joint_state_controller.yaml"/>

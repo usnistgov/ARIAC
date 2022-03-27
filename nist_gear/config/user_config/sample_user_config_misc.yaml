@@ -16,3 +16,19 @@ sensors:
     pose:
       xyz: [-0.346650, 2.664459, 0.934996]
       rpy: [0.000000, 0.000000, 3.141593]
+  rgbd_camera_station1:
+    type: rgbd_camera
+    pose:
+      xyz: [-7.262095, 2.963994, 2.285697]
+      rpy: [3.141593, 1.570792, 0.000000] 
+  depth_camera_bins1:
+    type: depth_camera
+    pose:
+      xyz: [-2.286283, -2.963994, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+      
+gantry_bin_camera:
+  enable: true
+    
+gantry_tray_camera:
+  enable: true

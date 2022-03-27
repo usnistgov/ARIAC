@@ -11,6 +11,7 @@ def expand_snippet(filename, data=locals()):
   <world name="world">
     <!-- Set the initial camera pose to be looking at the workspace. -->
     <gui fullscreen='0'>
+ 
       <camera name='user_camera'>
         <!-- pretty overview shot-->
         <pose frame=''>6.72633 4.82882 7.2056 0 0.485796 -2.71512</pose>
@@ -52,6 +53,78 @@ def expand_snippet(filename, data=locals()):
 @[    end if]@
 @[  end for]@
 @[end if]@
+    <light name='user_spot_light_0' type='spot'>
+      <pose frame=''>-12.409511 -2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+        <light name='user_spot_light_1' type='spot'>
+      <pose frame=''>-12.409511 2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+    <light name='user_spot_light_2' type='spot'>
+      <pose frame=''>-7.530130 -2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+    <light name='user_spot_light_3' type='spot'>
+      <pose frame=''>-7.530130 2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
       <!-- A global light source -->
       <light type="directional" name="sun">
         <cast_shadows>true</cast_shadows>
@@ -131,56 +204,56 @@ def expand_snippet(filename, data=locals()):
           <static>true</static>
           <uri>model://factory_shelf</uri>
         </include>
-        <pose frame=''>-2.36 -6.87 0.015890 0 0 -1.570048</pose>
+        <pose frame=''>-2.357211 -10.597721 0.015890 0 0 -1.570048</pose>
       </model>
       <model name="FactoryShelf2">
         <include>
           <static>true</static>
           <uri>model://factory_shelf</uri>
         </include>
-        <pose frame=''>-4.715 -6.238 0.015890 0 0 1.570048</pose>
+        <pose frame=''>-4.714521 -9.957084 0.015890 0 0 1.570048</pose>
       </model>
       <model name="FactoryShelf3">
         <include>
           <static>true</static>
           <uri>model://factory_shelf</uri>
         </include>
-        <pose frame=''>-7.0708 -6.238 0.015890 0 0 1.570048</pose>
+        <pose frame=''>-7.073606 -9.989021 0.015890 0 0 1.570048</pose>
       </model>
       <model name="FactoryShelf4">
         <include>
           <static>true</static>
           <uri>model://factory_shelf</uri>
         </include>
-        <pose frame=''>-9.4262 -6.238 0.015890 0 0 1.570048</pose>
+        <pose frame=''>-9.429011 -9.995264 0.015890 0 0 1.570048</pose>
       </model>
       <model name="FactoryShelf5">
         <include>
           <static>true</static>
           <uri>model://factory_shelf</uri>
         </include>
-        <pose frame=''>-11.89 -6.87 0.015890 0 0 -1.570048</pose>
+        <pose frame=''>-11.89 -10.748168   0.015890 0 0 -1.570048</pose>
       </model>
       <model name="FactoryShelf6">
         <include>
           <static>true</static>
           <uri>model://factory_shelf</uri>
         </include>
-        <pose frame=''>-14.137 -6.238 0.015890 0 0 1.570048</pose>
+        <pose frame=''>-14.137 -10.188283 0.015890 0 0 1.570048</pose>
       </model>
       <model name="Computer1">
         <include>
           <static>true</static>
           <uri>model://computer_2</uri>
         </include>
-        <pose frame=''>-0.5 6.6 0.0 0 0 0</pose>
+        <pose frame=''>1.885278 4.035417 0.0 0 0 1.557780</pose>
       </model>  
       <model name="Computer2">
         <include>
           <static>true</static>
           <uri>model://computer</uri>
         </include>
-        <pose frame=''>-1.2 6.6 0.0 0 0 0</pose>
+        <pose frame=''>1.691086 3.033527  0.0 0 0 0</pose>
       </model>
       <!-- <model name="BoxPallet2">
         <include>
@@ -232,6 +305,14 @@ def expand_snippet(filename, data=locals()):
         </include>
         <pose frame=''>-0.577 -4.719131 0 0 0 0</pose>
       </model>   
+
+      <model name="ConveyorCollector2">
+        <include>
+          <static>true</static>
+          <uri>model://trash_bin_blue</uri>
+        </include>
+        <pose frame=''>-0.577 4.719131 0 0 0 0</pose>
+      </model>  
 
       <model name="workcell_floor_2021">
         <include>
@@ -297,6 +378,15 @@ def expand_snippet(filename, data=locals()):
     </include>
 @[end for]@
 
+@[for table_name, table_pose in tray_tables.items()]@
+    <!-- Tray Tables -->
+    <include>
+      <name>@(table_name)</name>
+      <uri>model://kit_tray_table_ariac</uri>
+      <pose>@(' '.join(table_pose.xyz)) @(' '.join(table_pose.rpy))</pose>
+    </include>
+@[end for]@
+
 
 
 
@@ -358,11 +448,19 @@ expand_snippet('rgbd_camera.sdf.template')
       <!-- <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose> -->
     </include>
 
+    <include>
+    <name>deletion_wall_start</name>
+      <uri>model://deletion_wall</uri>
+      <pose>-0.573076 4.712520 0.07237 0 -1.5708 1.5708</pose>
+      <!-- <pose>-0.573076 -4.53 0.473 0 -1.5708 1.5708</pose> -->
+    </include>
+
     <!-- a wall to delete objects in the bin-->
     <include>
       <uri>model://bin_deletion_wall</uri>
             <pose>-2.188252 -0.014119 0 0 0 0</pose>
     </include>
+
 
 @{belt_models_loop = True}@
 @{belt_population_cycles = options['belt_population_cycles'] if belt_models_loop else 1}
@@ -403,22 +501,80 @@ expand_snippet('rgbd_camera.sdf.template')
     <!-- <pose>1.067526 -0.714548 0.0 0 0 0</pose> -->
   </include>
 
-      
-
-
-    <!-- Populate stations, agvs, and bins -->
+  <!-- Populate assembly stations, agvs, tray tables, and bins -->
   @[for model_name, model in models_to_insert.items()]@
+
+    @[if "movable_tray" in str(model_name)]@    <model name="@(str(model_name))">
+      <pose>@(' '.join(model.pose.xyz)) @(' '.join(model.pose.rpy))</pose>
       <include>
         <name>@(model_name)</name>
         <uri>model://@(model.type)_ariac</uri>
-        <pose>@(' '.join(model.pose.xyz)) @(' '.join(model.pose.rpy))</pose>
       </include>
+    <plugin name="movable_kit_tray_plugin" filename="libMovableKitTrayPlugin.so">
+      <contact_sensor_name>movable_tray_contact</contact_sensor_name>
+      <tf_frame_name>@(str(model_name))</tf_frame_name>
+      <lock_unlock_kt1_topic>
+            /ariac/kit_tray_1/lock_unlock_models
+          </lock_unlock_kt1_topic>
+      <lock_unlock_kt2_topic>
+            /ariac/kit_tray_2/lock_unlock_models
+          </lock_unlock_kt2_topic>
+      <lock_unlock_kt3_topic>
+            /ariac/kit_tray_3/lock_unlock_models
+            </lock_unlock_kt3_topic>
+      <lock_unlock_kt4_topic>
+            /ariac/kit_tray_4/lock_unlock_models
+            </lock_unlock_kt4_topic>
+      <model_name>@(str(model_name))</model_name>
+      <all_tray_contents_topic>/ariac/trays</all_tray_contents_topic>
+      <dwood1_tray_content_topic>/ariac/movable_tray_dark_wood_1/content</dwood1_tray_content_topic>
+      <dwood2_tray_content_topic>/ariac/movable_tray_dark_wood_2/content</dwood2_tray_content_topic>
+      <lwood1_tray_content_topic>/ariac/movable_tray_light_wood_1/content</lwood1_tray_content_topic>
+      <lwood2_tray_content_topic>/ariac/movable_tray_light_wood_2/content</lwood2_tray_content_topic>
+      <mrusty1_tray_content_topic>/ariac/movable_tray_metal_rusty_1/content</mrusty1_tray_content_topic>
+      <mrusty2_tray_content_topic>/ariac/movable_tray_metal_rusty_2/content</mrusty2_tray_content_topic>
+      <mshiny1_tray_content_topic>/ariac/movable_tray_metal_shiny_1/content</mshiny1_tray_content_topic>
+      <mshiny2_tray_content_topic>/ariac/movable_tray_metal_shiny_2/content</mshiny2_tray_content_topic>
+      <get_content_dwood_1>/ariac/movable_tray_dark_wood_1/get_content</get_content_dwood_1>
+      <get_content_dwood_2>/ariac/movable_tray_dark_wood_2/get_content</get_content_dwood_2>
+      <get_content_lwood_1>/ariac/movable_tray_light_wood_1/get_content</get_content_lwood_1>
+      <get_content_lwood_2>/ariac/movable_tray_light_wood_2/get_content</get_content_lwood_2>
+      <get_content_mrusty_1>/ariac/movable_tray_metal_rusty_1/get_content</get_content_mrusty_1>
+      <get_content_mrusty_2>/ariac/movable_tray_metal_rusty_2/get_content</get_content_mrusty_2>
+      <get_content_mshiny_1>/ariac/movable_tray_metal_shiny_1/get_content</get_content_mshiny_1>
+      <get_content_mshiny_2>/ariac/movable_tray_metal_shiny_2/get_content</get_content_mshiny_2>
+      <update_rate>20</update_rate>
+      <grippable_model_types>
+        <type>assembly_regulator_red</type>
+        <type>assembly_regulator_green</type>
+        <type>assembly_regulator_blue</type>
+        <type>assembly_sensor_red</type>
+        <type>assembly_sensor_green</type>
+        <type>assembly_sensor_blue</type>
+        <type>assembly_battery_red</type>
+        <type>assembly_battery_green</type>
+        <type>assembly_battery_blue</type>
+        <type>assembly_pump_red</type>
+        <type>assembly_pump_green</type>
+        <type>assembly_pump_blue</type>
+      </grippable_model_types>
+      <faulty_parts>
+        @[for part_name, part_info in faulty_products.items()]@
+        <name>@(part_name)</name>
+        @[end for]@
+      </faulty_parts>
+    </plugin>
+    </model>
+    @[end if]@
+
+  @[if "movable_tray" not in str(model_name)]@
+  <include>
+    <name>@(model_name)</name>
+    <uri>model://@(model.type)_ariac</uri>
+    <pose>@(' '.join(model.pose.xyz)) @(' '.join(model.pose.rpy))</pose>
+  </include>
+  @[end if]@
   @[end for]@
-
-
-  
-
-
 
 @[if belt_models]@
     <!-- Populate the conveyor belt -->
@@ -468,18 +624,51 @@ expand_snippet('rgbd_camera.sdf.template')
         <uri>model://warehouse_robot_ariac</uri>
       </include>
       <plugin name="agv_plugin" filename="libROSAGVPlugin.so">
-        <agv_location_topic_name>/ariac/agv@(str(agv_id))/station</agv_location_topic_name>
+      <move_time_ks_to_as_1_3>4.534315</move_time_ks_to_as_1_3>
+      <move_time_ks_to_as_2_4>9.534315</move_time_ks_to_as_2_4>
+      <move_time_as_to_as>5</move_time_as_to_as>
+      <agv_location_topic_name>/ariac/agv@(str(agv_id))/station</agv_location_topic_name>
+@[if agv_id == str(1)]@        
+        <lock_unlock_kt1_topic>/ariac/kit_tray_1/lock_unlock_models</lock_unlock_kt1_topic>
+@[end if]@
+@[if agv_id == str(2)]@        
+        <lock_unlock_kt2_topic>
+          /ariac/kit_tray_2/lock_unlock_models
+          </lock_unlock_kt2_topic>
+@[end if]@
+@[if agv_id == str(3)]@        
+        <lock_unlock_kt3_topic>
+          /ariac/kit_tray_3/lock_unlock_models
+          </lock_unlock_kt3_topic>
+@[end if]@
+@[if agv_id == str(4)]@
+        <lock_unlock_kt4_topic>
+          /ariac/kit_tray_4/lock_unlock_models
+          </lock_unlock_kt4_topic>
+@[end if]@
+
+
 @[if agv_id == str(1) or agv_id == str(2)]@
-        <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
-        <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>
+        <ks_to_as1_name>/ariac/agv@(agv_id)/ks_to_as1</ks_to_as1_name>
+        <ks_to_as2_name>/ariac/agv@(agv_id)/ks_to_as2</ks_to_as2_name>
+        <as1_to_as2_name>/ariac/agv@(agv_id)/as1_to_as2</as1_to_as2_name>
+        <as2_to_as1_name>/ariac/agv@(agv_id)/as2_to_as1</as2_to_as1_name>
+        <as1_to_ks_name>/ariac/agv@(agv_id)/as1_to_ks</as1_to_ks_name>
+        <as2_to_ks_name>/ariac/agv@(agv_id)/as2_to_ks</as2_to_ks_name>
 @[end if]@
 @[if agv_id == str(3) or agv_id == str(4)]@
-        <to_as3_name>/ariac/agv@(agv_id)/to_as3</to_as3_name>
-        <to_as4_name>/ariac/agv@(agv_id)/to_as4</to_as4_name>
+        <ks_to_as3_name>/ariac/agv@(agv_id)/ks_to_as3</ks_to_as3_name>
+        <ks_to_as4_name>/ariac/agv@(agv_id)/ks_to_as4</ks_to_as4_name>
+        <as3_to_as4_name>/ariac/agv@(agv_id)/as3_to_as4</as3_to_as4_name>
+        <as4_to_as3_name>/ariac/agv@(agv_id)/as4_to_as3</as4_to_as3_name>
+        <as3_to_ks_name>/ariac/agv@(agv_id)/as3_to_ks</as3_to_ks_name>
+        <as4_to_ks_name>/ariac/agv@(agv_id)/as4_to_ks</as4_to_ks_name>
 @[end if]@
         <agv_control_service_name>/ariac/agv@(str(agv_id))/animate</agv_control_service_name>
         <clear_tray_service_name>/ariac/kit_tray_@(str(agv_id))/clear_tray</clear_tray_service_name>
-        <lock_unlock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/lock_unlock_models</lock_unlock_tray_service_name>
+        <lock_unlock_gz_topic>
+          /ariac/kit_tray_@(str(agv_id))/lock_unlock_models
+        </lock_unlock_gz_topic>
         <index>@(str(agv_id))</index>
       </plugin>
       <!-- a tray for building kits -->
@@ -493,15 +682,18 @@ expand_snippet('rgbd_camera.sdf.template')
         <plugin name="kit_tray_plugin" filename="libROSAriacKitTrayPlugin.so">
           <contact_sensor_name>kit_tray_contact</contact_sensor_name>
           <tf_frame_name>kit_tray_@(str(agv_id))</tf_frame_name>
-          <clear_tray_service_name>/ariac/kit_tray_@(str(agv_id))/clear_tray</clear_tray_service_name>
-          <lock_unlock_models_service_name>/ariac/kit_tray_@(str(agv_id))/lock_unlock_models</lock_unlock_models_service_name>
           <get_content_service_name>/ariac/kit_tray_@(str(agv_id))/get_content</get_content_service_name>
+          <all_tray_contents_topic>/ariac/trays</all_tray_contents_topic>
+          <grippable_model_types>
+            <type>movable_tray_dark_wood</type>
+            <type>movable_tray_light_wood</type>
+            <type>movable_tray_metal_rusty</type>
+            <type>movable_tray_metal_shiny</type>
+          </grippable_model_types>
+          <lock_unlock_movable_tray_on_agv>
+            /ariac/kit_tray_@(str(agv_id))/lock_unlock_models
+          </lock_unlock_movable_tray_on_agv>
           <update_rate>20</update_rate>
-          <faulty_parts>
-@[for part_name, part_info in faulty_products.items()]@
-            <name>@(part_name)</name>
-@[end for]@
-          </faulty_parts>
         </plugin>
       </model>
       <!-- join the tray and agv -->
@@ -575,7 +767,19 @@ expand_snippet('rgbd_camera.sdf.template')
 
 
     <!-- The NIST-ARIAC task manager -->
-    <plugin filename="libROSAriacTaskManagerPlugin.so" name="task_manager">
+    <plugin filename="libTaskManagerPlugin.so" name="task_manager">
+
+      <config_yaml_file>@(trial_yaml_file)</config_yaml_file>
+      <gantry_gripper_type_topic>/ariac/gantry/arm/gripper/type</gantry_gripper_type_topic>
+      <kitting_gripper_type_topic>/ariac/kitting/arm/gripper/type</kitting_gripper_type_topic>
+      <gripper_change_service_name>/ariac/gantry/arm/gripper/change</gripper_change_service_name>
+      <gripper_tray_type>gripper_tray</gripper_tray_type>
+      <gripper_part_type>gripper_part</gripper_part_type>
+      <gripper_changing_station_lower_x>-4.25</gripper_changing_station_lower_x>
+      <gripper_changing_station_higher_x>-3.60</gripper_changing_station_higher_x>
+      <gripper_changing_station_lower_y>5.50</gripper_changing_station_lower_y>
+      <gripper_changing_station_higher_y>6.90</gripper_changing_station_higher_y>
+      <current_gripper_type>@(options['current_gripper_type'])</current_gripper_type>
       <robot_namespace>ariac</robot_namespace>
       <belt_population_cycles>@(options['belt_population_cycles'])</belt_population_cycles>
       <competition_time_limit>@(time_limit)</competition_time_limit>
@@ -585,39 +789,56 @@ expand_snippet('rgbd_camera.sdf.template')
       <population_activate_topic>/ariac/populate_belt</population_activate_topic>
       <conveyor_control_service>/ariac/conveyor/control</conveyor_control_service>
       <submit_tray_service_name>/ariac/submit_shipment</submit_tray_service_name>
+      
       <material_locations_service_name>/ariac/material_locations</material_locations_service_name>
       <kitting_shipment_content_topic_name>/ariac/trays</kitting_shipment_content_topic_name>
       <assembly_shipment_content_topic_name>/ariac/briefcases</assembly_shipment_content_topic_name>
       <orders_topic>/ariac/orders</orders_topic>
+      <get_content_dwood_1>/ariac/movable_tray_dark_wood_1/get_content</get_content_dwood_1>
+      <get_content_dwood_2>/ariac/movable_tray_dark_wood_2/get_content</get_content_dwood_2>
+      <get_content_lwood_1>/ariac/movable_tray_light_wood_1/get_content</get_content_lwood_1>
+      <get_content_lwood_2>/ariac/movable_tray_light_wood_2/get_content</get_content_lwood_2>
+      <get_content_mrusty_1>/ariac/movable_tray_metal_rusty_1/get_content</get_content_mrusty_1>
+      <get_content_mrusty_2>/ariac/movable_tray_metal_rusty_2/get_content</get_content_mrusty_2>
+      <get_content_mshiny_1>/ariac/movable_tray_metal_shiny_1/get_content</get_content_mshiny_1>
+      <get_content_mshiny_2>/ariac/movable_tray_metal_shiny_2/get_content</get_content_mshiny_2>
 @[for station_id in [1,2,3,4]]@
       <station index="@(station_id)">
-        <station_shipment_service_name>/ariac/as@(station_id)/submit_shipment</station_shipment_service_name>
+        <station_shipment_service_name>/ariac/as@(station_id)/submit_assembly_shipment</station_shipment_service_name>
         <get_content_service_name>/ariac/briefcase_@(station_id)/get_content</get_content_service_name>
       </station>
 @[end for]@
 @[for agv_id in [1,2,3,4]]@
       <agv index="@(agv_id)">
         <agv_control_service_name>/ariac/agv@(agv_id)</agv_control_service_name>
-        <agv_animate_service_name>/ariac/agv@(agv_id)/animate</agv_animate_service_name>
-        <agv_to_as_service_name>/ariac/agv@(agv_id)/submit_shipment</agv_to_as_service_name>
         <agv_location_topic>/ariac/agv@(str(agv_id))/station</agv_location_topic>
-    @[for agv, agv_values in agv_infos.items()]@
-    @[if str(agv) == str(agv_id)]@
-    @[for agv_key, agv_values_values in agv_values.items()]@
-    @[if str(agv_key) == 'location']@
-    <agv_start_location_name>@(str(agv_values_values))</agv_start_location_name>
-    @[end if]@
-    @[end for]@
-    @[end if]@
-    @[end for]@
+        <submit_kitting_shipment_name>/ariac/agv@(agv_id)/submit_kitting_shipment</submit_kitting_shipment_name>
+        <move_to_station_name>/ariac/agv@(agv_id)/move_to_station</move_to_station_name>
 @[if agv_id == 1 or agv_id == 2]@
-        <to_as1_name>/ariac/agv@(agv_id)/to_as1</to_as1_name>
-        <to_as2_name>/ariac/agv@(agv_id)/to_as2</to_as2_name>
+        <ks_to_as1_name>/ariac/agv@(agv_id)/ks_to_as1</ks_to_as1_name>
+        <ks_to_as2_name>/ariac/agv@(agv_id)/ks_to_as2</ks_to_as2_name>
+        <as1_to_as2_name>/ariac/agv@(agv_id)/as1_to_as2</as1_to_as2_name>
+        <as2_to_as1_name>/ariac/agv@(agv_id)/as2_to_as1</as2_to_as1_name>
+        <as1_to_ks_name>/ariac/agv@(agv_id)/as1_to_ks</as1_to_ks_name>
+        <as2_to_ks_name>/ariac/agv@(agv_id)/as2_to_ks</as2_to_ks_name>
 @[end if]@
 @[if agv_id == 3 or agv_id == 4]@
-        <to_as3_name>/ariac/agv@(agv_id)/to_as3</to_as3_name>
-        <to_as4_name>/ariac/agv@(agv_id)/to_as4</to_as4_name>
+        <ks_to_as3_name>/ariac/agv@(agv_id)/ks_to_as3</ks_to_as3_name>
+        <ks_to_as4_name>/ariac/agv@(agv_id)/ks_to_as4</ks_to_as4_name>
+        <as3_to_as4_name>/ariac/agv@(agv_id)/as3_to_as4</as3_to_as4_name>
+        <as4_to_as3_name>/ariac/agv@(agv_id)/as4_to_as3</as4_to_as3_name>
+        <as3_to_ks_name>/ariac/agv@(agv_id)/as3_to_ks</as3_to_ks_name>
+        <as4_to_ks_name>/ariac/agv@(agv_id)/as4_to_ks</as4_to_ks_name>
 @[end if]@
+@[for agv, agv_values in agv_infos.items()]@
+@[if str(agv) == str(agv_id)]@
+@[for agv_key, agv_values_values in agv_values.items()]@
+@[if str(agv_key) == 'location']@
+        <agv_start_location_name>@(str(agv_values_values))</agv_start_location_name>
+@[end if]@
+@[end for]@
+@[end if]@
+@[end for]@
         <get_content_service_name>/ariac/kit_tray_@(agv_id)/get_content</get_content_service_name>
       </agv>
 @[end for]@
@@ -640,13 +861,35 @@ expand_snippet('rgbd_camera.sdf.template')
 @[if order['announcement_condition'] == 'unwanted_products']@
         <interrupt_on_unwanted_products>@(order['announcement_condition_value'])</interrupt_on_unwanted_products>
 @[end if]@
-@[if order['announcement_condition'] == 'agv_station_reached']@
-        <interrupt_on_station_reached>@(order['announcement_condition_value'])</interrupt_on_station_reached>
+@[if order['announcement_condition'] == 'kitting_submission']@
+        <on_kitting_submission>
+          <agv>@(str(order['announcement_condition_value'][0]))</agv>
+          <station>@(str(order['announcement_condition_value'][1]))</station>
+        </on_kitting_submission>
+@[end if]@
+@[if order['announcement_condition'] == 'assembly_submission']@
+        <on_assembly_submission>
+          <station>@(str(order['announcement_condition_value'][0]))</station>
+        </on_assembly_submission>
 @[end if]@
 @[if order['disable_robot']]@ 
-        <robot_to_disable>@(str(order['disable_robot'][0]))</robot_to_disable>
-        <location_to_disable>@(str(order['disable_robot'][1]))</location_to_disable>
-        <part_quantity_to_disable>@(str(order['disable_robot'][2]))</part_quantity_to_disable>
+        <robot_to_disable>
+          <robot_type>@(str(order['disable_robot'][0]))</robot_type>
+@[if str(order['disable_robot'][1]) == 'agv1' ]@ 
+          <disable_condition>1</disable_condition>
+@[end if]@
+@[if str(order['disable_robot'][1]) == 'agv2' ]@          
+          <disable_condition>2</disable_condition>
+@[end if]@
+@[if str(order['disable_robot'][1]) == 'agv3' ]@          
+          <disable_condition>3</disable_condition>
+@[end if]@
+@[if str(order['disable_robot'][1]) == 'agv4' ]@          
+          <disable_condition>4</disable_condition>
+@[end if]@
+          <disable_value>@(str(order['disable_robot'][2]))</disable_value>
+        </robot_to_disable>
+        
 @[end if]@
 @[if order['kitting_flag'] == True]@            
 @[for shipment_index in range(order['kitting_shipment_count'])]
@@ -655,31 +898,31 @@ if '_update' in order_name:
     order_name = order_name.split('_update')[0]
 agv = order['kitting_agvs'][shipment_index]
 destination = order['kitting_agv_stations'][shipment_index]
-}@
-        <!--If kitting task is present in yaml file-->
-        <kitting_shipment>
-          <shipment_type>@(order_name)_kitting_shipment_@(shipment_index)</shipment_type>
-          <agv>@(agv)</agv>
-          <destination>@(destination)</destination>
+tray = order['kitting_trays'][shipment_index]
+}@        <kitting_shipment>
+            <shipment_type>@(order_name)_kitting_shipment_@(shipment_index)</shipment_type>        
+            <movable_tray>
+              <type>@(tray)</type>
+              <pose>0.0 0.0 0.0 0.0 0.0 0</pose>
+            </movable_tray>
+            <agv>@(agv)</agv>
+            <destination>@(destination)</destination>
 @[for product in order['kitting_products']]@
-          <product>
-            <type>@(product.type)</type>
-            <pose>@(' '.join(product.pose.xyz)) @(' '.join(product.pose.rpy))</pose>
-          </product>
+            <product>
+              <type>@(product.type)</type>
+              <pose>@(' '.join(product.pose.xyz)) @(' '.join(product.pose.rpy))</pose>
+            </product>
 @[end for]@
-        </kitting_shipment>
+          </kitting_shipment>
 @[end for]@
 @[end if]@
-
 @[if order['assembly_flag'] == True]@
 @[for task_index in range(order['assembly_shipment_count'])]
 @{
 if '_update' in order_name:
     order_name = order_name.split('_update')[0]
 station = order['assembly_stations'][task_index]
-}@
-        <!--If assembly task is present in yaml file-->
-        <assembly_shipment>
+}@      <assembly_shipment>
           <shipment_type>@(order_name)_assembly_shipment_@(task_index)</shipment_type>
           <station>@(station)</station>
 @[for product in order['assembly_products']]@
@@ -691,9 +934,6 @@ station = order['assembly_stations'][task_index]
         </assembly_shipment>
 @[end for]@
 @[end if]@
-
-
-
       </order>
 @[end for]@
       <material_locations>
@@ -799,63 +1039,55 @@ station = order['assembly_stations'][task_index]
       </link>
     </model>
 
-    
-
-
-
-    <!-- AGV path stop marks -->
-    <!-- <include>
-      <name>agv_path_stop_1</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-6.25 4.701303 0.011193 0 0 -1.570796</pose>
+    <include>
+      <name>gripper_changing_station</name>
+      <uri>model://kit_tray_table_ariac</uri>
+      <pose>-3.71 6.265981 -0.451543 0 0 0</pose>
     </include>
     
-    <include>
-      <name>agv_path_stop_2</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-11.245 4.701303 0.011193 0 0 -1.570796</pose>
-    </include>
-
 
     <include>
-      <name>agv_path_stop_4</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-6.25 1.308740 0.011193 0 0 -1.570796</pose>
+      <name>gripper_ariac_1</name>
+      <uri>model://gripper_ariac</uri>
+      <pose>-3.628620 6.556050 0.974964 0 0 0</pose>
     </include>
 
     <include>
-      <name>agv_path_stop_5</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-11.245 1.308740 0.011193 0 0 -1.570796</pose>
-    </include> -->
-
- 
-
-    <!-- <include>
-      <name>agv_path_stop_7</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-6.25 -1.308740 0.011193 0 0 -1.570796</pose>
+      <name>gripper_ariac_2</name>
+      <uri>model://gripper_ariac</uri>
+      <pose>-3.628620 6.180200 0.974964 0 0 0</pose>
     </include>
 
     <include>
-      <name>agv_path_stop_8</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-11.245 -1.308740 0.011193 0 0 -1.570796</pose>
-    </include> -->
-
-
-    <!-- <include>
-      <name>agv_path_stop_10</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-6.25 -4.701303 0.011193 0 0 -1.570796</pose>
+      <name>gripper_2_ariac_1</name>
+      <uri>model://gripper_2_ariac</uri>
+      <pose>-4.230166 5.909280 0.974964 -1.583961 0 0</pose>
+    </include>
+    <include>
+      <name>gripper_2_ariac_2</name>
+      <uri>model://gripper_2_ariac</uri>
+      <pose>-4.221912 6.472820 0.961722 -1.583961 0 0</pose>
     </include>
 
-    <include>
-      <name>agv_path_stop_11</name>
-      <uri>model://agv_path_stop</uri>
-      <pose>-11.245 -4.701303 0.011193 0 0 -1.570796</pose>
-    </include> -->
+    <!-- <plugin filename="libSunLightPlugin.so" name="sun_light">
+      <sun_change_topic></sun_change_topic>
+    </plugin> -->
 
+<!-- Dynamic obstacles -->
+@[for name, config in aisle_layout.items()]@
+    <model name="@(name)_ariac">
+      <pose>-11.318139 @(config['location']) -0.02 0 0 -1.572981</pose>
+      <include>
+        <name>@(name)</name>
+        <uri>model://person_ariac</uri>
+      </include>
+      <plugin name="person_by_station_plugin" filename="libROSPersonByStationPlugin.so">
+        <model_name>@(name)_ariac</model_name>
+        <wait_time>@(config['wait_time'])</wait_time>
+        <robotNamespace>/ariac</robotNamespace>
+      </plugin>
+    </model>
+@[end for]@
 
   </world>
 </sdf>

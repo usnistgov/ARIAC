@@ -86,6 +86,7 @@ void ROSVacuumGripperPlugin::Load(physics::ModelPtr _parent,
   if (_sdf->HasElement("state_topic"))
     stateTopic = _sdf->Get<std::string>("state_topic");
 
+  // gzdbg << "VacuumGripperPlugin::Load(_parent, _sdf)" << "\n";
   VacuumGripperPlugin::Load(_parent, _sdf);
 
   this->dataPtr->rosnode.reset(new ros::NodeHandle(robotNamespace));

@@ -21,7 +21,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 # Wiki | Documentation | Scoring
 
-- Scores will be made up of: 
+- Scores will be made up of:
   1. An automatically calculated component.
   2. A score based on judges.
 - The automatically calculated component for each trial is a combination of cost and performance metrics.
@@ -43,11 +43,12 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 ### Team System Cost (TC)
 
 - Cost of a competitor's system (sum of the cost of sensors used).
-  - $600 Camera mounted on the robot. **\*\*New this year\*\***
+  - $300 Gantry camera (RGBD) showing gantry tray.
+  - $600 Gantry camera (RGBD) showing the bins.
   - $500 for each logical camera used.
   - $300 for each RGBD camera used.
   - $200 for each depth camera used.
-  - $100 for each other sensor used.
+  - $100 for each other sensor used (breakbeam, proximity, etc).
   
 ### Baseline System Cost (BC)
 
@@ -78,6 +79,8 @@ A comparison of <img src="https://render.githubusercontent.com/render/math?math=
 
 #### Kitting
 
+Kitting shipments require movable trays. If the wrong movable tray is used and parts placed in the movable tray are perfect then points for correct pose are not awarded. Not using a movable tray will result in a 0 for the shipment.
+
 - <img src="https://render.githubusercontent.com/render/math?math=\text{For each product}\,i\,\text{in a shipment of}\, n\,\text{products,}\, SCS=(\sum_{i=1}^{n}PCT_{i}%2BPCC_{i}%2BPCP_{i}%2Bbonus)\times destination,\,\text{where:}">
   
   - <img src="https://render.githubusercontent.com/render/math?math=\text{Product correct type (}PCT_i\text{): 1pt if product}\, i\, \text{ is of the correct type and touching the tray.}"> 
@@ -104,37 +107,7 @@ A comparison of <img src="https://render.githubusercontent.com/render/math?math=
       - <img src="https://render.githubusercontent.com/render/math?math=\text{If a kitting shipment is built on the wrong AGV then}\,dest_{agv}=0\,\text{otherwise,}\,dest_{agv}=1">
       - <img src="https://render.githubusercontent.com/render/math?math=\text{If a kitting shipment is delivered to the wrong assembly station then}\,dest_{as}=0,\text{otherwise,}\,dest_{as}=1">
  
-- Test case: The instructions below will allow you to ship an AGV to an assembly station so you can visualize the score breakdown for a kitting shipment.
-  - [sample_kitting_scoring_test.yaml](../../nist_gear/config/trial_config/sample_kitting_scoring_test.yaml) consists of AGV2 ready to be delivered. Products located on this AGV match the products specified in the order.
-    - 1. Modify [sample_environment.launch](../../nist_gear/launch/sample_environment.launch) to include `sample_kitting_scoring_test.yaml`
-    - 2. `roslaunch nist_gear sample_environment.launch`
-    - 3. `rosservice call /ariac/start_competition`
-    - 4. `rosservice  call /ariac/agv2/submit_shipment "as1" "order_0_kitting_shipment_0"`
 
-```text
-Score breakdown:
-[game_score]
-...total game score: [10]
-...total process time: [3.501]
-...arms collision?: [0]
-   [order score]
-   ...order ID [order_0]
-   ...total order score: [10]
-   ...completion score: [10]
-   ...time taken: [3.499]
-   ...priority: [1]
-      [kitting score]
-      ...shipment type: [order_0_kitting_shipment_0]
-      ...completion score: [10]
-      ...complete: [false]
-      ...submitted: [true]
-      ...used correct agv: [true]
-      ...sent to correct station: [true]
-      ...product type presence score: [3]
-      ...product color presence score: [3]
-      ...product pose score: [3]
-      ...all products bonus: [1]
-```
 #### Assembly
 
 - <img src="https://render.githubusercontent.com/render/math?math=\text{For each product}\,i\,\text{in a shipment of} n \text{products},\, SCS=(\sum_{i=1}^{n}success_{i}%2Bcolor_{i}%2Bbonus)\times destination,\, \text{where:}">

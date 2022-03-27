@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
-       name="kitting">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="kitting">
+  <xacro:include filename="$(find nist_gear)/robots/ur10/ur_description/urdf/common.gazebo.xacro" />
+  <xacro:include filename="$(find nist_gear)/robots/ur10/ur_description/urdf/kitting.ur10.urdf.xacro" />
+  
+  
+  
 
-
-
- <xacro:include filename="$(find nist_gear)/robots/ur10/ur_description/urdf/common.gazebo.xacro" />
-
-  <xacro:include filename="$(find nist_gear)/robots/ur10/ur_description/urdf/kitting.ur10.urdf.macro.xacro" />
 
   <!-- arm -->
   <xacro:kitting_ur10_robot prefix="" />
@@ -45,6 +44,7 @@
                 <max>@(' '.join(drop_region.max))</max>
                 <destination>@(' '.join(drop_region.destination.xyz)) @(' '.join(drop_region.destination.rpy))</destination>
                 <type>@(drop_region.type)</type>
+                <robot_type>@(drop_region.robot_type)</robot_type>
     @[if drop_region.frame != "world"]@
                 <frame>@(drop_region.frame)</frame>
     @[end if]@

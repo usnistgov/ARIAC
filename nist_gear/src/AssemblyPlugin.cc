@@ -85,6 +85,10 @@ namespace gazebo
   public:
     int attachSteps;
 
+    /// \brief Dot product threshold for collision normals
+  public:
+    float alignmentThreshold;
+
     /// \brief Name of the model.
   public:
     std::string name;
@@ -167,6 +171,7 @@ void AssemblyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->minContactCount =
       contactCheck->Get<unsigned int>("min_contact_count");
   this->dataPtr->attachSteps = contactCheck->Get<int>("attach_steps");
+  this->dataPtr->alignmentThreshold= contactCheck->Get<float>("alignment_threshold");
   sdf::ElementPtr assemblySurfaceLinkElem = _sdf->GetElement("assembly_surface_link");
   this->dataPtr->assembly_surface_link =
       this->dataPtr->model->GetLink(assemblySurfaceLinkElem->Get<std::string>());
@@ -194,7 +199,7 @@ void AssemblyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       // Parse the model type, which is encoded in model names.
       std::string type = grippableModelTypeElem->Get<std::string>();
 
-      gzdbg << "New grippable model type: " << type << "\n";
+      // gzdbg << "New grippable model type: " << type << "\n";
       this->dataPtr->grippableModelTypes.push_back(type);
       grippableModelTypeElem = grippableModelTypeElem->GetNextElement("type");
     }
@@ -245,8 +250,6 @@ void AssemblyPlugin::Reset()
 /////////////////////////////////////////////////
 void AssemblyPlugin::OnUpdate()
 {
-  this->Publish();
-
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
 
   if (this->dataPtr->world->SimTime() -
@@ -347,7 +350,7 @@ void AssemblyPlugin::HandleAttach()
   auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
   auto name = modelPtr->GetName();
   std::string objectType = ariac::DetermineModelType(name);
-  gzdbg << "Product attached to gripper: " << objectType << " named " << name << std::endl;
+  gzdbg << "Product attached to assembly surface: " << objectType << " named " << name << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -356,11 +359,11 @@ bool AssemblyPlugin::CheckModelContact()
   bool modelInContact = false;
   if (this->dataPtr->contacts.size() > 0)
   {
-    gzdbg << "Number of collisions with surface: " << this->dataPtr->contacts.size() << std::endl;
+//    gzdbg << "Number of collisions with surface: " << this->dataPtr->contacts.size() << std::endl;
   }
   if (this->dataPtr->contacts.size() >= this->dataPtr->minContactCount)
   {
-    gzdbg << "More collisions than the minContactCount: " << this->dataPtr->minContactCount << std::endl;
+//    gzdbg << "More collisions than the minContactCount: " << this->dataPtr->minContactCount << std::endl;
     this->dataPtr->posCount++;
     this->dataPtr->zeroCount = 0;
   }
@@ -383,13 +386,13 @@ bool AssemblyPlugin::CheckModelContact()
       // Only attach whitelisted models
       auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
       auto modelName = modelPtr->GetName();
-      gzdbg << "Product in contact with gripper: " << modelName << std::endl;
+      gzdbg << "Product in contact with surface: " << modelName << std::endl;
       std::string modelType = ariac::DetermineModelType(modelName);
       auto it = std::find(this->dataPtr->grippableModelTypes.begin(), this->dataPtr->grippableModelTypes.end(), modelType);
       bool grippableModel = it != this->dataPtr->grippableModelTypes.end();
       if (!grippableModel)
       {
-        gzdbg << "Not a grippable type." << std::endl;
+        gzdbg << "Not a proper assembly type." << std::endl;
         return false;
       }
     }
@@ -400,16 +403,14 @@ bool AssemblyPlugin::CheckModelContact()
         gripperLinkPose.Rot().RotateVector(ignition::math::Vector3d(0, 0, 1));
     double alignment = gripperLinkNormal.Dot(this->dataPtr->modelContactNormal);
 
+    gzdbg << "Alignment is: " << alignment << std::endl;
+
     // Alignment of > 0.95 represents alignment angle of < acos(0.95) = ~18 degrees
-    if (alignment > 0.95)
+    // originally hard-coded, now parameterized
+    if (abs(alignment) > this->dataPtr->alignmentThreshold)
     {
       modelInContact = true;
     }
   }
   return modelInContact;
-}
-
-/////////////////////////////////////////////////
-void AssemblyPlugin::Publish() const
-{
 }

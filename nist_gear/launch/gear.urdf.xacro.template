@@ -16,7 +16,7 @@
     <origin xyz="@(' '.join(sensor.pose.xyz))" rpy="@(' '.join(sensor.pose.rpy))" />
   </joint>
 
-@[        if 'laser_profiler' == sensor.type ]@
+@[ if 'laser_profiler' == sensor.type ]@
   <!-- Frame from which laser scan data originates -->
   <link name="@(name)_laser_source_frame" />
   <joint name="@(name)_laser_source_joint" type="fixed">
@@ -24,7 +24,7 @@
     <child link="@(name)_laser_source_frame" />
     <origin xyz="0 0 0.06" rpy="0 0 0" />
   </joint>
-@[        end if ]@
+@[ end if ]@
 
 @[end for]@
 @[for name, pose in bins.items()]@
@@ -35,7 +35,17 @@
     <child link="@(name)_frame" />
     <origin xyz="@(' '.join([pose.xyz[0], pose.xyz[1], str(bin_height)]))" rpy="@(' '.join(pose.rpy))" />
   </joint>
-  @[end for]@
+@[end for]@
+
+<!-- publish tray table frames -->
+@[for name, pose in tray_tables.items()]@
+  <link name="@(name)_frame" />
+  <joint name="@(name)_joint" type="fixed">
+    <parent link="world" />
+    <child link="@(name)_frame" />
+    <origin xyz="@(' '.join([pose.xyz[0], pose.xyz[1], pose.xyz[2]]))" rpy="@(' '.join(pose.rpy))" />
+  </joint>
+@[end for]@
 
   <link name="belt_frame" />
   <joint name="belt_joint" type="fixed">

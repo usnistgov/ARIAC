@@ -40,8 +40,7 @@
 #include "nist_gear/VacuumGripperPlugin.hh"
 #include "nist_gear/ARIAC.hh"
 
-namespace gazebo
-{
+namespace gazebo {
   /// \internal
   /// \brief Private data for the VacuumGripperPlugin class
   struct VacuumGripperPluginPrivate
@@ -57,11 +56,11 @@ namespace gazebo
       /// \param[in] _obj Object to check for equality
       /// \return true if this == _obj
     public:
-      bool operator==(const DropObject &_obj) const
+      bool operator==(const DropObject& _obj) const
       {
         return this->type == _obj.type &&
-               this->dropRegion == _obj.dropRegion &&
-               this->destination == _obj.destination;
+          this->dropRegion == _obj.dropRegion &&
+          this->destination == _obj.destination;
         this->frame == _obj.frame;
       }
 
@@ -70,8 +69,8 @@ namespace gazebo
       /// \param[in] _obj object to output
       /// \return The output stream
     public:
-      friend std::ostream &operator<<(std::ostream &_out,
-                                      const DropObject &_obj)
+      friend std::ostream& operator<<(std::ostream& _out,
+        const DropObject& _obj)
       {
         _out << _obj.type << std::endl;
         _out << _obj.dropRegion << std::endl;
@@ -95,17 +94,27 @@ namespace gazebo
     public:
       physics::EntityPtr frame;
 
+    public:
+      std::string robot_type;
+
       /// \brief Getter for the type of object to drop
     public:
       std::string getType() const
       {
         return this->type;
       };
+
+    public:
+      std::string getRobotType() const
+      {
+        return this->robot_type;
+      };
     };
 
   public:
     ros::Publisher drop_object_publisher;
     ros::Subscriber drop_object_subscriber;
+    ros::Subscriber gantry_gripper_type_subscriber;
     /// \brief Collection of objects that have been dropped.
   public:
     std::vector<std::string> dropped_objects;
@@ -189,7 +198,7 @@ namespace gazebo
   public:
     transport::NodePtr node;
     // std::unique_ptr<ros::NodeHandle> rosnode;
-    ros::NodeHandle *rosnode;
+    ros::NodeHandle* rosnode;
 
     /// \brief Subscription to contact messages from the physics engine.
   public:
@@ -230,6 +239,8 @@ namespace gazebo
     /// \brief Normal of the contact with the model in collision.
   public:
     ignition::math::Vector3d modelContactNormal;
+  public:
+    std::string gantry_current_gripper;
   };
 }
 
@@ -240,7 +251,7 @@ GZ_REGISTER_MODEL_PLUGIN(VacuumGripperPlugin)
 
 /////////////////////////////////////////////////
 VacuumGripperPlugin::VacuumGripperPlugin()
-    : dataPtr(new VacuumGripperPluginPrivate)
+  : dataPtr(new VacuumGripperPluginPrivate)
 {
   this->dataPtr->attached = false;
   this->dataPtr->updateRate = common::Time(0, common::Time::SecToNano(0.1));
@@ -249,8 +260,7 @@ VacuumGripperPlugin::VacuumGripperPlugin()
 /////////////////////////////////////////////////
 VacuumGripperPlugin::~VacuumGripperPlugin()
 {
-  if (this->dataPtr->world && this->dataPtr->world->Running())
-  {
+  if (this->dataPtr->world && this->dataPtr->world->Running()) {
     auto mgr = this->dataPtr->world->Physics()->GetContactManager();
     mgr->RemoveFilter(this->Name());
   }
@@ -260,22 +270,23 @@ VacuumGripperPlugin::~VacuumGripperPlugin()
 /////////////////////////////////////////////////
 void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
+  
   this->dataPtr->model = _model;
   this->dataPtr->world = this->dataPtr->model->GetWorld();
 
   gzmsg << "VacuumGripper plugin loaded for: " << this->dataPtr->model->GetName() << " " << std::endl;
+  // gzdbg << "VacuumGripper plugin loaded for: " << this->dataPtr->model->GetName() << " " << std::endl;
 
   this->dataPtr->node = transport::NodePtr(new transport::Node());
   this->dataPtr->node->Init(this->dataPtr->world->Name());
   this->dataPtr->name = _sdf->Get<std::string>("name");
 
   std::string robotNamespace = "";
-  if (_sdf->HasElement("robot_namespace"))
-  {
+  if (_sdf->HasElement("robot_namespace")) {
     robotNamespace = _sdf->GetElement(
-                             "robot_namespace")
-                         ->Get<std::string>() +
-                     "/";
+      "robot_namespace")
+      ->Get<std::string>() +
+      "/";
   }
 
   // gzdbg << "Namespace -- " << robotNamespace << "\n";
@@ -285,94 +296,122 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // this->dataPtr->rosnode.reset(new ros::NodeHandle(robotNamespace+"/vacuumplugin"));
 
   this->dataPtr->drop_object_publisher =
-      this->dataPtr->rosnode->advertise<nist_gear::DropProducts>("/ariac/drop_products", 1000, false);
+    this->dataPtr->rosnode->advertise<nist_gear::DropProducts>("/ariac/drop_products", 1000, false);
 
   this->dataPtr->drop_object_subscriber =
-      this->dataPtr->rosnode->subscribe("/ariac/drop_products", 1000,
-                                        &VacuumGripperPlugin::OnDropObjectContent, this);
+    this->dataPtr->rosnode->subscribe("/ariac/drop_products", 1000,
+      &VacuumGripperPlugin::OnDropObjectContent, this);
+
+  this->dataPtr->gantry_gripper_type_subscriber =
+    this->dataPtr->rosnode->subscribe("/ariac/gantry/arm/gripper/type", 1000,
+      &VacuumGripperPlugin::OnGripperTypeCheck, this);
 
   // build a message of products to drop
   nist_gear::DropProducts msgDropProducts;
 
   // Create the joint that will attach the objects to the suction cup
   this->dataPtr->fixedJoint =
-      this->dataPtr->world->Physics()->CreateJoint(
-          "fixed", this->dataPtr->model);
+    this->dataPtr->world->Physics()->CreateJoint(
+      "fixed", this->dataPtr->model);
   this->dataPtr->fixedJoint->SetName(this->dataPtr->model->GetName() +
-                                     "__vacuum_gripper_fixed_joint__");
+    "__vacuum_gripper_fixed_joint__");
 
   // Read the SDF parameters
   sdf::ElementPtr graspCheck = _sdf->GetElement("grasp_check");
   this->dataPtr->minContactCount =
-      graspCheck->Get<unsigned int>("min_contact_count");
+    graspCheck->Get<unsigned int>("min_contact_count");
   this->dataPtr->attachSteps = graspCheck->Get<int>("attach_steps");
   this->dataPtr->detachSteps = graspCheck->Get<int>("detach_steps");
   sdf::ElementPtr suctionCupLinkElem = _sdf->GetElement("suction_cup_link");
   this->dataPtr->suction_cup_link =
-      this->dataPtr->model->GetLink(suctionCupLinkElem->Get<std::string>());
-  if (!this->dataPtr->suction_cup_link)
-  {
+    this->dataPtr->model->GetLink(suctionCupLinkElem->Get<std::string>());
+  if (!this->dataPtr->suction_cup_link) {
     gzerr << "Suction cup link [" << suctionCupLinkElem->Get<std::string>()
-          << "] not found!\n";
+      << "] not found!\n";
     return;
   }
 
-  this->dataPtr->onlyGrippableModels = false;
-  if (_sdf->HasElement("grippable_model_types"))
-  {
-    this->dataPtr->onlyGrippableModels = true;
-    this->dataPtr->grippableModelTypes.clear();
-    sdf::ElementPtr grippableModelTypesElem = _sdf->GetElement("grippable_model_types");
-    if (!grippableModelTypesElem->HasElement("type"))
-    {
-      gzerr << "Unable to find <type> elements in the <grippable_model_types> section\n";
-      return;
-    }
-    sdf::ElementPtr grippableModelTypeElem = grippableModelTypesElem->GetElement("type");
-    while (grippableModelTypeElem)
-    {
-      // Parse the model type, which is encoded in model names.
-      std::string type = grippableModelTypeElem->Get<std::string>();
+  // this is not properly loaded for some reasons
+  // hacking for now
+  
+  // this->dataPtr->onlyGrippableModels = false;
+  // if (_sdf->HasElement("grippable_model_types")) {
+  //   gzdbg << "grippable_model_types" << "\n";
+  //   this->dataPtr->onlyGrippableModels = true;
+  //   this->dataPtr->grippableModelTypes.clear();
+  //   sdf::ElementPtr grippableModelTypesElem = _sdf->GetElement("grippable_model_types");
+  //   if (!grippableModelTypesElem->HasElement("type")) {
+  //     gzerr << "Unable to find <type> elements in the <grippable_model_types> section\n";
+  //     return;
+  //   }
+  //   sdf::ElementPtr grippableModelTypeElem = grippableModelTypesElem->GetElement("type");
+  //   while (grippableModelTypeElem) {
+  //     // Parse the model type, which is encoded in model names.
+  //     std::string type = grippableModelTypeElem->Get<std::string>();
 
-      gzdbg << "New grippable model type: " << type << "\n";
-      this->dataPtr->grippableModelTypes.push_back(type);
-      grippableModelTypeElem = grippableModelTypeElem->GetNextElement("type");
-    }
-  }
+  //     gzdbg << "New grippable model type: " << type << "\n";
+  //     this->dataPtr->grippableModelTypes.push_back(type);
+  //     grippableModelTypeElem = grippableModelTypeElem->GetNextElement("type");
+  //   }
+  // }
 
-  if (_sdf->HasElement("drops"))
-  {
+  // hardcoding begins
+  this->dataPtr->onlyGrippableModels = true;
+  this->dataPtr->grippableModelTypes.clear();
+  this->dataPtr->grippableModelTypes.push_back("assembly_battery_red");
+  this->dataPtr->grippableModelTypes.push_back("assembly_battery_green");
+  this->dataPtr->grippableModelTypes.push_back("assembly_battery_blue");
+  this->dataPtr->grippableModelTypes.push_back("assembly_pump_red");
+  this->dataPtr->grippableModelTypes.push_back("assembly_pump_green");
+  this->dataPtr->grippableModelTypes.push_back("assembly_pump_blue");
+  this->dataPtr->grippableModelTypes.push_back("assembly_regulator_red");
+  this->dataPtr->grippableModelTypes.push_back("assembly_regulator_green");
+  this->dataPtr->grippableModelTypes.push_back("assembly_regulator_blue");
+  this->dataPtr->grippableModelTypes.push_back("assembly_sensor_red");
+  this->dataPtr->grippableModelTypes.push_back("assembly_sensor_green");
+  this->dataPtr->grippableModelTypes.push_back("assembly_sensor_blue");
+  this->dataPtr->grippableModelTypes.push_back("movable_tray_dark_wood");
+  this->dataPtr->grippableModelTypes.push_back("movable_tray_light_wood");
+  this->dataPtr->grippableModelTypes.push_back("movable_tray_metal_rusty");
+  this->dataPtr->grippableModelTypes.push_back("movable_tray_metal_shiny");
+  // hardcoding ends
+
+  if (_sdf->HasElement("drops")) {
     sdf::ElementPtr dropsElem = _sdf->GetElement("drops");
 
-    if (!dropsElem->HasElement("drop_regions"))
-    {
+    if (!dropsElem->HasElement("drop_regions")) {
       gzerr << "VacuumGripperPlugin: Unable to find <drop_regions> element in "
-            << "the <drops> section\n";
+        << "the <drops> section\n";
       return;
     }
 
     sdf::ElementPtr dropRegionsElem = dropsElem->GetElement("drop_regions");
     sdf::ElementPtr dropRegionElem = NULL;
-    if (dropRegionsElem->HasElement("drop_region"))
-    {
+    if (dropRegionsElem->HasElement("drop_region")) {
       dropRegionElem = dropRegionsElem->GetElement("drop_region");
     }
-    while (dropRegionElem)
-    {
-      if (!dropRegionElem->HasElement("min"))
-      {
+    while (dropRegionElem) {
+
+      std::string robotType{};
+      if (!dropRegionElem->HasElement("robot_type")) {
+        gzerr << "VacuumGripperPlugin: Unable to find <robot_type> in "
+          << "drop region\n";
+        return;
+      }
+      robotType = dropRegionElem->Get<std::string>("robot_type");
+
+      if (!dropRegionElem->HasElement("min")) {
         gzerr << "VacuumGripperPlugin: Unable to find <min> elements in "
-              << "the <drop_region> section\n";
+          << "the <drop_region> section\n";
         return;
       }
 
       sdf::ElementPtr minElem = dropRegionElem->GetElement("min");
       ignition::math::Vector3d min = dropRegionElem->Get<ignition::math::Vector3d>("min");
 
-      if (!dropRegionElem->HasElement("max"))
-      {
+      if (!dropRegionElem->HasElement("max")) {
         gzerr << "VacuumGripperPlugin: Unable to find <max> elements in "
-              << "the <drop_region> section\n";
+          << "the <drop_region> section\n";
         return;
       }
 
@@ -380,38 +419,33 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       ignition::math::Vector3d max = dropRegionElem->Get<ignition::math::Vector3d>("max");
 
       // Parse the destination.
-      if (!dropRegionElem->HasElement("destination"))
-      {
+      if (!dropRegionElem->HasElement("destination")) {
         gzerr << "VacuumGripperPlugin: Unable to find <destination> in "
-              << "drop region\n";
+          << "drop region\n";
         dropRegionElem = dropRegionElem->GetNextElement("drop_region");
         continue;
       }
       sdf::ElementPtr dstElement = dropRegionElem->GetElement("destination");
 
       // Parse the object type.
-      if (!dropRegionElem->HasElement("type"))
-      {
+      if (!dropRegionElem->HasElement("type")) {
         gzerr << "VacuumGripperPlugin: Unable to find <type> in object.\n";
         dropRegionElem = dropRegionElem->GetNextElement("drop_region");
         continue;
       }
-
+      
       // Parse the frame of the drop.
       physics::EntityPtr dropFrame = NULL;
       std::string dropFrameName{};
 
-      if (dropRegionElem->HasElement("frame"))
-      {
+      if (dropRegionElem->HasElement("frame")) {
         dropFrameName = dropRegionElem->Get<std::string>("frame");
         dropFrame = this->dataPtr->world->EntityByName(dropFrameName);
-        if (!dropFrame)
-        {
+        if (!dropFrame) {
           gzthrow(std::string("The frame '") + dropFrameName + "' does not exist");
         }
         if (!dropFrame->HasType(physics::Base::LINK) &&
-            !dropFrame->HasType(physics::Base::MODEL))
-        {
+          !dropFrame->HasType(physics::Base::MODEL)) {
           gzthrow("'frame' tag must list the name of a link or model");
         }
       }
@@ -419,6 +453,9 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       sdf::ElementPtr typeElement = dropRegionElem->GetElement("type");
       std::string type = typeElement->Get<std::string>();
 
+ 
+
+      
       ignition::math::Box dropRegion = ignition::math::Box(min, max);
       ignition::math::Pose3d destination = dstElement->Get<ignition::math::Pose3d>();
 
@@ -429,7 +466,7 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
       msgDropProducts.drop_products.push_back(msgDropProduct);
 
-      VacuumGripperPluginPrivate::DropObject dropObject{type, dropRegion, destination, dropFrame};
+      VacuumGripperPluginPrivate::DropObject dropObject{ type, dropRegion, destination, dropFrame, robotType };
       this->dataPtr->objects_to_drop.push_back(dropObject);
 
       dropRegionElem = dropRegionElem->GetNextElement("drop_region");
@@ -442,45 +479,47 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     //   gzdbg << "drop status: " << product.status << "\n";
     // }
 
-    while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1)
-    {
+    while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1) {
       gzdbg << "wait for a connection to publisher"
-            << "\n";
+        << "\n";
     }
     this->dataPtr->drop_object_publisher.publish(msgDropProducts);
   }
 
   // Find out the collision elements of the suction cup
-  for (auto j = 0u; j < this->dataPtr->suction_cup_link->GetChildCount(); ++j)
-  {
+  for (auto j = 0u; j < this->dataPtr->suction_cup_link->GetChildCount(); ++j) {
     physics::CollisionPtr collision =
-        this->dataPtr->suction_cup_link->GetCollision(j);
+      this->dataPtr->suction_cup_link->GetCollision(j);
     std::map<std::string, physics::CollisionPtr>::iterator collIter =
-        this->dataPtr->collisions.find(collision->GetScopedName());
+      this->dataPtr->collisions.find(collision->GetScopedName());
     if (collIter != this->dataPtr->collisions.end())
       continue;
 
     this->dataPtr->collisions[collision->GetScopedName()] = collision;
   }
 
-  if (!this->dataPtr->collisions.empty())
-  {
+  if (!this->dataPtr->collisions.empty()) {
     // Create a filter to receive collision information
     auto mgr = this->dataPtr->world->Physics()->GetContactManager();
     auto topic = mgr->CreateFilter(this->Name(), this->dataPtr->collisions);
-    if (!this->dataPtr->contactSub)
-    {
+    if (!this->dataPtr->contactSub) {
       this->dataPtr->contactSub = this->dataPtr->node->Subscribe(topic,
-                                                                 &VacuumGripperPlugin::OnContacts, this);
+        &VacuumGripperPlugin::OnContacts, this);
     }
   }
 
   this->Reset();
 
   this->dataPtr->connection = event::Events::ConnectWorldUpdateEnd(
-      boost::bind(&VacuumGripperPlugin::OnUpdate, this));
+    boost::bind(&VacuumGripperPlugin::OnUpdate, this));
 }
 
+void VacuumGripperPlugin::OnGripperTypeCheck(const std_msgs::String::ConstPtr& gripper_type_msg) {
+  auto msg = gripper_type_msg->data;
+  std::string gripper_type(msg.c_str());
+  this->dataPtr->gantry_current_gripper = gripper_type;
+  // gzdbg << this->dataPtr->gantry_current_gripper << std::endl;
+}
 /////////////////////////////////////////////////
 void VacuumGripperPlugin::OnDropObjectContent(nist_gear::DropProducts::ConstPtr msgDropProducts)
 {
@@ -488,8 +527,7 @@ void VacuumGripperPlugin::OnDropObjectContent(nist_gear::DropProducts::ConstPtr 
   auto msg = msgDropProducts->drop_products;
   this->dataPtr->object_to_drop_from_topic.clear();
 
-  for (const auto &product : msg)
-  {
+  for (const auto& product : msg) {
     nist_gear::DropProduct msgDropProduct;
     msgDropProduct.type = product.type;
     msgDropProduct.frame = product.frame;
@@ -549,58 +587,58 @@ void VacuumGripperPlugin::OnUpdate()
   this->Publish();
 
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
-  if (this->dataPtr->disableRequested)
-  {
+  if (this->dataPtr->disableRequested) {
     this->HandleDetach();
     this->dataPtr->enabled = false;
     this->dataPtr->disableRequested = false;
   }
 
   if (this->dataPtr->world->SimTime() -
-              this->dataPtr->prevUpdateTime <
-          this->dataPtr->updateRate ||
-      !this->dataPtr->enabled)
-  {
+    this->dataPtr->prevUpdateTime <
+    this->dataPtr->updateRate ||
+    !this->dataPtr->enabled) {
     return;
   }
 
   bool modelInContact = this->CheckModelContact();
-  if (modelInContact)
-  {
+  if (modelInContact) {
     this->HandleAttach();
   }
 
-  if (this->dataPtr->attached && this->dataPtr->dropPending)
-  {
-    for (const auto dropObject : this->dataPtr->objects_to_drop)
-    {
-      if (dropObject.type != this->dataPtr->attachedObjType)
-      {
+  if (this->dataPtr->attached && this->dataPtr->dropPending) {
+    for (const auto dropObject : this->dataPtr->objects_to_drop) {
+      if (dropObject.type != this->dataPtr->attachedObjType) {
         continue;
       }
+
+      
 
       // Check that dropAttachedModel is of attachedObjType
       auto name = this->dataPtr->dropAttachedModel->GetName();
       std::string objectType = ariac::DetermineModelType(name);
-      if (objectType != this->dataPtr->attachedObjType)
-      {
+      if (objectType != this->dataPtr->attachedObjType) {
         gzdbg << "dropAttachedModel and attachedObjType are different: " << objectType << " and "
-              << this->dataPtr->attachedObjType << std::endl;
+          << this->dataPtr->attachedObjType << std::endl;
         continue;
       }
 
-      if (objectType != this->dataPtr->attachedObjType)
-      {
+      if (objectType != this->dataPtr->attachedObjType) {
         gzdbg << "dropAttachedModel and attachedObjType are different: " << objectType << " and "
-              << this->dataPtr->attachedObjType << std::endl;
+          << this->dataPtr->attachedObjType << std::endl;
+        continue;
+      }
+
+      // check if the current arm is allowed to drop the object
+      gzerr << "Current Robot " << this->dataPtr->model->GetName() << std::endl;
+      gzerr << "Drop Robot " << dropObject.getRobotType() << std::endl;
+      if (this->dataPtr->model->GetName() != dropObject.getRobotType()) {
         continue;
       }
 
       auto objPose = this->dataPtr->dropAttachedModel->WorldPose();
       ignition::math::Pose3d dropFramePose;
       ignition::math::Matrix4d dropFrameTransMat;
-      if (dropObject.frame)
-      {
+      if (dropObject.frame) {
         // Transform the pose of the object from world frame to the specified frame.
         dropFramePose = dropObject.frame->WorldPose();
         dropFrameTransMat = ignition::math::Matrix4d(dropFramePose);
@@ -608,8 +646,7 @@ void VacuumGripperPlugin::OnUpdate()
         objPose = (dropFrameTransMat.Inverse() * objPoseWorld).Pose();
       }
 
-      if (!dropObject.dropRegion.Contains(objPose.Pos()))
-      {
+      if (!dropObject.dropRegion.Contains(objPose.Pos())) {
         continue;
       }
 
@@ -617,17 +654,14 @@ void VacuumGripperPlugin::OnUpdate()
       this->HandleDetach();
 
       auto objDest = dropObject.destination;
-      if (dropObject.frame)
-      {
+      if (dropObject.frame) {
         // Determine the destination in the world frame.
         ignition::math::Matrix4d objDestLocal(objDest);
         objDest = (dropFrameTransMat * objDestLocal).Pose();
       }
 
-      if (!this->dataPtr->object_to_drop_from_topic.empty())
-      {
-        for (const auto &product : this->dataPtr->object_to_drop_from_topic)
-        {
+      if (!this->dataPtr->object_to_drop_from_topic.empty()) {
+        for (const auto& product : this->dataPtr->object_to_drop_from_topic) {
           nist_gear::DropProduct msgDropProduct;
           msgDropProduct.type = product.type;
           msgDropProduct.frame = product.frame;
@@ -640,9 +674,8 @@ void VacuumGripperPlugin::OnUpdate()
           // gzdbg << "DROP: " << objectType << " " << dropObject.frame->GetName() << "\n";
 
           if (objectType == msgDropProduct.type &&
-              msgDropProduct.frame.find(dropObject.frame->GetName()) != std::string::npos && // e.g., kit_tray_3 is in agv3::kit_tray_3
-              !msgDropProduct.status)
-          {
+            msgDropProduct.frame.find(dropObject.frame->GetName()) != std::string::npos && // e.g., kit_tray_3 is in agv3::kit_tray_3
+            !msgDropProduct.status) {
             // Teleport it to the destination.
             this->dataPtr->dropAttachedModel->SetWorldPose(objDest);
             this->dataPtr->dropAttachedModel->SetLinearVel(ignition::math::Vector3d::Zero);
@@ -656,22 +689,19 @@ void VacuumGripperPlugin::OnUpdate()
 
             // update the message with status=true for the part that was just dropped
             nist_gear::DropProducts updatedDropProducts;
-            for (const auto &product : this->dataPtr->object_to_drop_from_topic)
-            {
+            for (const auto& product : this->dataPtr->object_to_drop_from_topic) {
               nist_gear::DropProduct msgDropProduct;
               msgDropProduct.type = product.type;
               msgDropProduct.frame = product.frame;
               if (msgDropProduct.type == objectType &&
-                  msgDropProduct.frame.find(dropObject.frame->GetName()) != std::string::npos)
-              {
+                msgDropProduct.frame.find(dropObject.frame->GetName()) != std::string::npos) {
                 msgDropProduct.status = true;
               }
               updatedDropProducts.drop_products.push_back(msgDropProduct);
             }
-            while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1)
-            {
+            while (this->dataPtr->drop_object_publisher.getNumSubscribers() < 1) {
               gzdbg << "wait for a connection to publisher"
-                    << "\n";
+                << "\n";
             }
             this->dataPtr->drop_object_publisher.publish(updatedDropProducts);
             break;
@@ -691,20 +721,18 @@ void VacuumGripperPlugin::OnUpdate()
 }
 
 /////////////////////////////////////////////////
-void VacuumGripperPlugin::OnContacts(ConstContactsPtr &_msg)
+void VacuumGripperPlugin::OnContacts(ConstContactsPtr& _msg)
 {
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
   this->dataPtr->contacts.clear();
-  for (int i = 0; i < _msg->contact_size(); ++i)
-  {
+  for (int i = 0; i < _msg->contact_size(); ++i) {
     CollisionPtr collision1 = boost::dynamic_pointer_cast<Collision>(
-        this->dataPtr->world->EntityByName(_msg->contact(i).collision1()));
+      this->dataPtr->world->EntityByName(_msg->contact(i).collision1()));
     CollisionPtr collision2 = boost::dynamic_pointer_cast<Collision>(
-        this->dataPtr->world->EntityByName(_msg->contact(i).collision2()));
+      this->dataPtr->world->EntityByName(_msg->contact(i).collision2()));
 
     if ((collision1 && !collision1->IsStatic()) &&
-        (collision2 && !collision2->IsStatic()))
-    {
+      (collision2 && !collision2->IsStatic())) {
       this->dataPtr->contacts.push_back(_msg->contact(i));
     }
   }
@@ -720,35 +748,31 @@ bool VacuumGripperPlugin::GetContactNormal()
   // This function is only called from the OnUpdate function so
   // the call to contacts.clear() is not going to happen in
   // parallel with the reads in the following code, no mutex needed.
-  for (unsigned int i = 0; i < this->dataPtr->contacts.size(); ++i)
-  {
+  for (unsigned int i = 0; i < this->dataPtr->contacts.size(); ++i) {
     std::string name1 = this->dataPtr->contacts[i].collision1();
     std::string name2 = this->dataPtr->contacts[i].collision2();
     gzdbg << "Collision between '" << name1 << "' and '" << name2 << "'\n";
 
     if (this->dataPtr->collisions.find(name1) ==
-        this->dataPtr->collisions.end())
-    {
+      this->dataPtr->collisions.end()) {
       // Model in contact is the second name
       this->dataPtr->modelCollision = boost::dynamic_pointer_cast<Collision>(
-          this->dataPtr->world->EntityByName(name1));
+        this->dataPtr->world->EntityByName(name1));
       this->dataPtr->modelContactNormal = -1 * msgs::ConvertIgn(this->dataPtr->contacts[i].normal(0));
       return true;
     }
 
     if (this->dataPtr->collisions.find(name2) ==
-        this->dataPtr->collisions.end())
-    {
+      this->dataPtr->collisions.end()) {
       // Model in contact is the first name -- frames are reversed
       this->dataPtr->modelCollision = boost::dynamic_pointer_cast<Collision>(
-          this->dataPtr->world->EntityByName(name2));
+        this->dataPtr->world->EntityByName(name2));
       this->dataPtr->modelContactNormal = msgs::ConvertIgn(this->dataPtr->contacts[i].normal(0));
       return true;
     }
   }
 
-  if (!collisionPtr)
-  {
+  if (!collisionPtr) {
     gzdbg << "The gripper was in collision with its own model.\n";
   }
 
@@ -758,19 +782,20 @@ bool VacuumGripperPlugin::GetContactNormal()
 /////////////////////////////////////////////////
 void VacuumGripperPlugin::HandleAttach()
 {
-  if (this->dataPtr->attached)
-  {
+  if (this->dataPtr->attached) {
     return;
   }
+
   this->dataPtr->attached = true;
 
   this->dataPtr->fixedJoint->Load(this->dataPtr->suction_cup_link,
-                                  this->dataPtr->modelCollision->GetLink(), ignition::math::Pose3d());
+    this->dataPtr->modelCollision->GetLink(), ignition::math::Pose3d());
   this->dataPtr->fixedJoint->Init();
 
   auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
   auto name = modelPtr->GetName();
   std::string objectType = ariac::DetermineModelType(name);
+
   gzdbg << "Product attached to gripper: " << objectType << " named " << name << std::endl;
 
   // Clear these by default, they'll get set if needed later this function
@@ -779,37 +804,32 @@ void VacuumGripperPlugin::HandleAttach()
 
   // Check if the object should drop.
   auto it = find_if(this->dataPtr->objects_to_drop.begin(), this->dataPtr->objects_to_drop.end(),
-                    [&objectType](const VacuumGripperPluginPrivate::DropObject &obj) {
-                      return obj.getType() == objectType;
-                    });
+    [&objectType](const VacuumGripperPluginPrivate::DropObject& obj) {
+      return obj.getType() == objectType;
+    });
   this->dataPtr->attachedObjType = objectType;
   bool objectToBeDropped = it != this->dataPtr->objects_to_drop.end();
 
-  if (!objectToBeDropped)
-  {
+  if (!objectToBeDropped) {
     return;
   }
-  auto found = std::find(std::begin(this->dataPtr->dropped_objects),
-                         std::end(this->dataPtr->dropped_objects), this->dataPtr->attachedObjType);
+  // auto found = std::find(std::begin(this->dataPtr->dropped_objects),
+  //   std::end(this->dataPtr->dropped_objects), this->dataPtr->attachedObjType);
 
   bool alreadyDropped = false;
 
-  if (!this->dataPtr->object_to_drop_from_topic.empty())
-  {
-    for (const auto &product : this->dataPtr->object_to_drop_from_topic)
-    {
+  if (!this->dataPtr->object_to_drop_from_topic.empty()) {
+    for (const auto& product : this->dataPtr->object_to_drop_from_topic) {
 
       if (product.type == this->dataPtr->attachedObjType &&
-          product.status)
-      {
+        product.status) {
         alreadyDropped = true;
       }
     }
   }
 
   // bool alreadyDropped = found != std::end(this->dataPtr->dropped_objects);
-  if (!alreadyDropped)
-  {
+  if (!alreadyDropped) {
     this->dataPtr->dropPending = true;
     this->dataPtr->dropAttachedModel = modelPtr;
     gzdbg << "Drop scheduled" << std::endl;
@@ -828,41 +848,56 @@ void VacuumGripperPlugin::HandleDetach()
 bool VacuumGripperPlugin::CheckModelContact()
 {
   bool modelInContact = false;
-  if (this->dataPtr->contacts.size() > 0)
-  {
+  if (this->dataPtr->contacts.size() > 0) {
     gzdbg << "Number of collisions with gripper: " << this->dataPtr->contacts.size() << std::endl;
   }
-  if (this->dataPtr->contacts.size() >= this->dataPtr->minContactCount)
-  {
+  if (this->dataPtr->contacts.size() >= this->dataPtr->minContactCount) {
     gzdbg << "More collisions than the minContactCount: " << this->dataPtr->minContactCount << std::endl;
     this->dataPtr->posCount++;
     this->dataPtr->zeroCount = 0;
   }
-  else
-  {
+  else {
     this->dataPtr->zeroCount++;
     this->dataPtr->posCount = std::max(0, this->dataPtr->posCount - 1);
   }
 
   if (this->dataPtr->posCount > this->dataPtr->attachSteps &&
-      !this->dataPtr->attached)
-  {
-    if (!this->GetContactNormal())
-    {
+    !this->dataPtr->attached) {
+    if (!this->GetContactNormal()) {
       return false;
     }
 
-    if (this->dataPtr->onlyGrippableModels)
-    {
+    
+    if (this->dataPtr->onlyGrippableModels) {
       // Only attach whitelisted models
       auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
       auto modelName = modelPtr->GetName();
       gzdbg << "Product in contact with gripper: " << modelName << std::endl;
       std::string modelType = ariac::DetermineModelType(modelName);
+
+      if (this->dataPtr->model->GetName() == "gantry") {
+        if (this->dataPtr->gantry_current_gripper == "gripper_tray") {
+          if (std::strstr(modelType.c_str(), "assembly")) {
+            ROS_ERROR_ONCE("Incorrect gripper to attach this part");
+            return false;
+          }
+        }
+      }
+
+      if (this->dataPtr->model->GetName() == "gantry") {
+        if (this->dataPtr->gantry_current_gripper == "gripper_part") {
+          if (std::strstr(modelType.c_str(), "movable")) {
+            ROS_ERROR_ONCE("Incorrect gripper to attach this movable tray");
+
+            return false;
+          }
+        }
+      }
+
+
       auto it = std::find(this->dataPtr->grippableModelTypes.begin(), this->dataPtr->grippableModelTypes.end(), modelType);
       bool grippableModel = it != this->dataPtr->grippableModelTypes.end();
-      if (!grippableModel)
-      {
+      if (!grippableModel) {
         gzdbg << "Not a grippable type." << std::endl;
         return false;
       }
@@ -871,12 +906,11 @@ bool VacuumGripperPlugin::CheckModelContact()
     // Only consider models with collision normals aligned with the normal of the gripper
     auto gripperLinkPose = this->dataPtr->suction_cup_link->WorldPose();
     ignition::math::Vector3d gripperLinkNormal =
-        gripperLinkPose.Rot().RotateVector(ignition::math::Vector3d(0, 0, 1));
+      gripperLinkPose.Rot().RotateVector(ignition::math::Vector3d(0, 0, 1));
     double alignment = gripperLinkNormal.Dot(this->dataPtr->modelContactNormal);
 
     // Alignment of > 0.95 represents alignment angle of < acos(0.95) = ~18 degrees
-    if (alignment > 0.95)
-    {
+    if (alignment > 0.95) {
       modelInContact = true;
     }
   }

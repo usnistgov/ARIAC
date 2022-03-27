@@ -6,6 +6,6 @@
 # false: the robot should not be used.
 
 # Status of the kitting robot (true=enabled, false=disabled)
-bool kitting_robot_enabled
+bool kitting_robot_health
 # Status of the assembly robot (true=enabled, false=disabled)
-bool assembly_robot_enabled
+bool assembly_robot_health

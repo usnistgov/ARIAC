@@ -33,7 +33,7 @@
 
   <!-- load the URDF excluding the robot arm model -->
   <param name="sensors_description"
-    command="$(find xacro)/xacro &#x002D;&#x002D;inorder '$(arg gear_urdf_xacro)'" />
+    command="$(find xacro)/xacro  '$(arg gear_urdf_xacro)'" />
 
   <!-- publish transforms of bins/sensors/rail-->
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="sensors_tf_publisher">

@@ -1,0 +1,4 @@
+# Get the name of the movable tray located on this kit_tray
+---
+# What was detected in the tray
+DetectedMovableTray movable_tray

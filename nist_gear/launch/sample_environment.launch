@@ -19,14 +19,13 @@
   <arg unless="$(arg load_moveit)" name="load_moveit_args" value="" />
   <arg if="$(arg load_moveit)" name="load_moveit_args" value="--load-moveit" />
 
-  <node name="ariac_sim" pkg="nist_gear" type="gear.py"
-        args="
+  <node name="ariac_sim" pkg="nist_gear" type="gear.py" args="--development-mode --visualize-sensor-views
           $(arg verbose_args)
           $(arg state_logging_args)
           $(arg gui_args)
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
-          -f $(find nist_gear)/config/trial_config/qualifiers_practice/qual1.yaml
+          -f $(find nist_gear)/config/trial_config/manufacturing_tasks/kitting_sample.yaml
           $(find nist_gear)/config/user_config/sample_user_config.yaml
           " required="true" output="screen" />
 
@@ -34,7 +33,7 @@
     <include file="$(find gantry_moveit_config)/launch/moveit_rviz.launch">
       <arg name="rviz_config" value="$(find gantry_moveit_config)/launch/moveit.rviz"/>
     </include>
-  </group> -->
+  </group>  -->
   <!-- <group ns='ariac/kitting'>
     <include file="$(find kitting_moveit_config)/launch/moveit_rviz.launch">
       <arg name="rviz_config" value="$(find kitting_moveit_config)/launch/moveit.rviz"/>

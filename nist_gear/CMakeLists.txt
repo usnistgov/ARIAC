@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(nist_gear)
 
-# This package was developed with gazebo7, but now uses gazebo8.
+# This package was developed with gazebo7, but now uses gazebo9.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
 if(NOT WIN32)
@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   geometry_msgs
   message_generation
+  controller_manager_msgs
 )
 
 find_package(gazebo REQUIRED)
@@ -27,30 +28,42 @@ find_package(gazebo REQUIRED)
 
 add_message_files(DIRECTORY msg
   FILES
-  RobotHealth.msg
-  ConveyorBeltState.msg
-  DetectedProduct.msg
-  KittingShipment.msg
+  AgvInOrder.msg
   AssemblyShipment.msg
-  Product.msg
-  DetectedKittingShipment.msg
+  AssemblyInOrder.msg
+  ConveyorBeltState.msg
   DetectedAssemblyShipment.msg
+  DetectedKittingShipment.msg
+  DetectedMovableTray.msg
+  DetectedProduct.msg
+  DropProduct.msg
+  DropProducts.msg
+  ExpectedKittingShipment.msg
+  KittingInOrder.msg
   LogicalCameraImage.msg
   Model.msg
-  DropProducts.msg
-  DropProduct.msg
+  MovableTray.msg
+  MovableTrayInOrder.msg
   Order.msg
   PopulationState.msg
+  Product.msg
+  ProductInOrder.msg
   Proximity.msg
+  PublishedMovableTray.msg
+  Orders.msg
+  RobotHealth.msg
   StorageUnit.msg
+  TrayContents.msg
   VacuumGripperState.msg
 )
 
 add_service_files(DIRECTORY srv
   FILES
   AGVControl.srv
-  AGVToAssemblyStation.srv
-  AGVToKittingStation.srv
+  ChangeGripper.srv
+  AgvGoFromASToAS.srv
+  AgvGoFromASToKS.srv
+  AgvGoFromKSToAS.srv
   DroneControl.srv
   DetectKittingShipment.srv
   DetectAssemblyShipment.srv
@@ -61,6 +74,10 @@ add_service_files(DIRECTORY srv
   SubmitShipment.srv
   SubmitTray.srv
   VacuumGripperControl.srv
+  LockUnlockMovableTrayOnAgv.srv
+  SubmitKittingShipment.srv
+  MoveToStation.srv
+  DetectMovableTray.srv
 )
 
 generate_messages(
@@ -106,7 +123,6 @@ install(TARGETS ${vacuum_gripper_plugin_name}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
-  
 
 # Create the libROSVacuumGripperPlugin.so library.
 set(ros_vacuum_gripper_plugin_name ROSVacuumGripperPlugin)
@@ -175,17 +191,17 @@ install(TARGETS ${side_contact_plugin_name}
   RUNTIME DESTINATION bin
 )
 
-# Create the libURDFContactPlugin.so library.
-# set(urdf_contact_plugin_name URDFContactPlugin)
-# add_library(${urdf_contact_plugin_name} src/URDFContactPlugin.cc)
-# target_link_libraries(${urdf_contact_plugin_name}
-#   ${GAZEBO_LIBRARIES}
-# )
-# install(TARGETS ${urdf_contact_plugin_name}
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib
-#   RUNTIME DESTINATION bin
-# )
+# Create the libModelContactPlugin.so library.
+set(model_contact_plugin_name ModelContactPlugin)
+add_library(${model_contact_plugin_name} src/ModelContactPlugin.cc)
+target_link_libraries(${model_contact_plugin_name}
+  ${GAZEBO_LIBRARIES}
+)
+install(TARGETS ${model_contact_plugin_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 # Create the libROSAGVPlugin.so library.
 set(ros_agv_plugin_name ROSAGVPlugin)
@@ -200,18 +216,18 @@ install(TARGETS ${ros_agv_plugin_name}
   RUNTIME DESTINATION bin
 )
 
-# Create the libROSPersonPlugin.so library.
-# set(ros_person_plugin_name ROSPersonPlugin)
-# add_library(${ros_person_plugin_name} src/ROSPersonPlugin.cc)
-# target_link_libraries(${ros_person_plugin_name} ${GAZEBO_LIBRARIES})
-# add_dependencies(${ros_person_plugin_name}
-#   ${${PROJECT_NAME}_EXPORTED_TARGETS}
-# )
-# install(TARGETS ${ros_person_plugin_name}
-#   ARCHIVE DESTINATION lib
-#   LIBRARY DESTINATION lib
-#   RUNTIME DESTINATION bin
-# )
+# Create the libROSPersonByStationPlugin.so library.
+set(ros_person_by_station_plugin_name ROSPersonByStationPlugin)
+add_library(${ros_person_by_station_plugin_name} src/ROSPersonByStationPlugin.cc)
+target_link_libraries(${ros_person_by_station_plugin_name} ${GAZEBO_LIBRARIES})
+add_dependencies(${ros_person_by_station_plugin_name}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
+install(TARGETS ${ros_person_by_station_plugin_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
 
 # Create the libConveyorBeltPlugin.so library.
 set(conveyor_belt_plugin_name ConveyorBeltPlugin)
@@ -315,20 +331,20 @@ install(TARGETS ${ros_population_plugin_name}
   RUNTIME DESTINATION bin
 )
 
-# Create the libAriacTaskManagerPlugin.so library.
-set(task_plugin_name ROSAriacTaskManagerPlugin)
-add_library(${task_plugin_name}
-  src/ROSAriacTaskManagerPlugin.cc
+# Create the libTaskManagerPlugin.so library.
+set(task_manager_plugin_name TaskManagerPlugin)
+add_library(${task_manager_plugin_name}
+  src/TaskManagerPlugin.cc
 )
-target_link_libraries(${task_plugin_name}
+target_link_libraries(${task_manager_plugin_name}
   ${GAZEBO_LIBRARIES}
   ${roscpp_LIBRARIES}
   AriacScorer
 )
-add_dependencies(${task_plugin_name}
+add_dependencies(${task_manager_plugin_name}
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
 )
-install(TARGETS ${task_plugin_name}
+install(TARGETS ${task_manager_plugin_name}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -397,13 +413,44 @@ install(TARGETS ${kit_tray_plugin_name}
   RUNTIME DESTINATION bin
 )
 
+
+# Create the libMovableTrayContactPlugin.so library.
+# set(movable_tray_contact_plugin_name MovableTrayContactPlugin)
+# add_library(${movable_tray_contact_plugin_name} src/MovableTrayContactPlugin.cc)
+# target_link_libraries(${movable_tray_contact_plugin_name}
+#   ${GAZEBO_LIBRARIES}
+# )
+# install(TARGETS ${movable_tray_contact_plugin_name}
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION bin
+# )
+
+# Create the libROSAriacMovableKitTrayPlugin.so library.
+set(movable_kit_tray_plugin_name MovableKitTrayPlugin)
+add_library(${movable_kit_tray_plugin_name} src/ROSMovableKitTrayPlugin.cc)
+target_link_libraries(${movable_kit_tray_plugin_name}
+  ${GAZEBO_LIBRARIES}
+  ${roscpp_LIBRARIES}
+  ${side_contact_plugin_name}
+)
+add_dependencies(${movable_kit_tray_plugin_name}
+  ${${PROJECT_NAME}_EXPORTED_TARGETS}
+)
+install(TARGETS ${movable_kit_tray_plugin_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+
 # Create the libROSAriacBriefcasePlugin.so library.
 set(briefcase_plugin_name ROSAriacBriefcasePlugin)
 add_library(${briefcase_plugin_name} src/ROSAriacBriefcasePlugin.cc)
 target_link_libraries(${briefcase_plugin_name}
   ${GAZEBO_LIBRARIES}
   ${roscpp_LIBRARIES}
-  ${side_contact_plugin_name}
+  ${model_contact_plugin_name}
 )
 add_dependencies(${briefcase_plugin_name}
   ${${PROJECT_NAME}_EXPORTED_TARGETS}
@@ -467,6 +514,24 @@ install(TARGETS ${target_name}
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
+
+# JUST A TEST
+# Create the libMyContactPlugin.so library.
+# set(my_contact_plugin_name MyContactPlugin)
+# add_library(${my_contact_plugin_name} src/MyContactPlugin.cc)
+# target_link_libraries(${my_contact_plugin_name}
+#   ${GAZEBO_LIBRARIES}
+#   ${roscpp_LIBRARIES}
+#   ${model_contact_plugin_name}
+# )
+# add_dependencies(${my_contact_plugin_name}
+#   ${${PROJECT_NAME}_EXPORTED_TARGETS}
+# )
+# install(TARGETS ${my_contact_plugin_name}
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION bin
+# )
 
 add_executable(tf2_relay src/tf2_relay.cpp)
 target_link_libraries(tf2_relay

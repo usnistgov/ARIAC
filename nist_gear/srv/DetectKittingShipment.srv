@@ -1,5 +1,7 @@
-# Detect shipment
-# Called to ask a tray to report what products were placed on it
+
+# Ask a movable tray to report what products were placed on it
+
+
 ---
-# What was detected in the tray
-DetectedKittingShipment shipment
+# What was detected in the shipment
+TrayContents shipment

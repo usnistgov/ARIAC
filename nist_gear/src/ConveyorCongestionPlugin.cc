@@ -62,9 +62,10 @@ class ConveyorCongestionPlugin : public WorldPlugin
     if (_sdf->HasElement("conveyor_control_topic"))
     {
       conveyorControlTopic = _sdf->Get<std::string>("conveyor_control_topic");
+      this->gzConveyorEnablePub =
+        this->gzNode->Advertise<msgs::GzString>(conveyorControlTopic);
     }
-    this->gzConveyorEnablePub =
-      this->gzNode->Advertise<msgs::GzString>(conveyorControlTopic);
+    
 
     std::string waitingBoxTopic = "~/waiting_shipping_box";
     if (_sdf->HasElement("waiting_box_topic"))

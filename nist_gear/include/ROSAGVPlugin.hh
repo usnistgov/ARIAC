@@ -22,70 +22,85 @@
 #include <sdf/sdf.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/Plugin.hh>
-#include "nist_gear/AGVToAssemblyStation.h" //--custom service
-#include "nist_gear/AGVToKittingStation.h"  //--custom service
+#include "nist_gear/AgvGoFromASToAS.h" //custom service
+#include "nist_gear/AgvGoFromASToKS.h"  //custom service
+#include "nist_gear/AgvGoFromKSToAS.h"  //custom service
 // ROS
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <std_srvs/Trigger.h>
 
-namespace gazebo
-{
+namespace gazebo {
   // Forward declare private data class
   class ROSAGVPluginPrivate;
 
-  /// \brief ROS implementation of the ConveyorBeltPlugin plugin
-  class ROSAGVPlugin : public ModelPlugin
-  {
-    /// \brief Constructor
-  public:
+  /**
+   * @brief ROS implementation of the ROSAGVPlugin plugin
+   *
+   */
+  class ROSAGVPlugin : public ModelPlugin {
+    public:
+    /**
+     * @brief Construct a new ROSAGVPlugin object
+     *
+     */
     ROSAGVPlugin();
-
-    /// \brief Destructor
-  public:
+    /**
+     * @brief Destroy the ROSAGVPlugin object
+     *
+     */
     virtual ~ROSAGVPlugin();
-
-    /// \brief Load the plugin.
-    /// \param[in] _parent Pointer to the parent model
-    /// \param[in] _sdf Pointer to the SDF element of the plugin.
-  public:
+    /**
+     * @brief Load the plugin
+     *
+     * @param _parent Pointer to the parent model
+     * @param _sdf Pointer to the SDF element of the plugin
+     */
     void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
-
     /**
      * @brief Provides the service for controlling a AGV
-     * 
+     *
+     * @param _req
+     * @param _res
+     * @return true
+     * @return false
      */
-  public:
-    bool OnCommand(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
+    bool OnCommand(std_srvs::Trigger::Request& _req, std_srvs::Trigger::Response& _res);
     /**
      * @brief Provides the service for tasking an AGV to go to an assembly station
-     * 
+     *
      */
-    // public: bool OnCommandToStation(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
-  public:
-    bool OnCommandAGVToAS1(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
-    bool OnCommandAGVToAS2(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
-    bool OnCommandAGVToAS3(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
-    bool OnCommandAGVToAS4(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
-    bool OnCommandAGVToAS5(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
-    bool OnCommandAGVToAS6(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
+     // public: bool OnCommandToStation(std_srvs::Trigger::Request &_req, std_srvs::Trigger::Response &_res);
+
     void OnAGVLocation(std_msgs::String::ConstPtr msg);
 
-  public:
-    bool OnCommandToAssemblyStation(nist_gear::AGVToAssemblyStation::Request &_req,
-                                    nist_gear::AGVToAssemblyStation::Response &_res);
+    void CreateAgv1FromAs1ToKs();
 
-  public:
-    bool OnCommandToKittingStation(nist_gear::AGVToKittingStation::Request &,
-                                   nist_gear::AGVToKittingStation::Response &_res);
+
+    bool ProcessKsToAs1ServiceCallback(std_srvs::Trigger::Request& req,std_srvs::Trigger::Response& res);
+    bool ProcessKsToAs2ServiceCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+    bool ProcessKsToAs3ServiceCallback(std_srvs::Trigger::Request& req,std_srvs::Trigger::Response& res);
+    bool ProcessKsToAs4ServiceCallback(std_srvs::Trigger::Request& req,std_srvs::Trigger::Response& res);
+
+    bool ProcessAs1ToAs2ServiceCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+    bool ProcessAs2ToAs1ServiceCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+    bool ProcessAs3ToAs4ServiceCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+    bool ProcessAs4ToAs3ServiceCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+
+    bool ProcessAs1ToKsServiceCallback(std_srvs::Trigger::Request& req,std_srvs::Trigger::Response& res);
+    bool ProcessAs2ToKsServiceCallback(std_srvs::Trigger::Request& req,std_srvs::Trigger::Response& res);
+    bool ProcessAs3ToKsServiceCallback(std_srvs::Trigger::Request& req,std_srvs::Trigger::Response& res);
+    bool ProcessAs4ToKsServiceCallback(std_srvs::Trigger::Request& req, std_srvs::Trigger::Response& res);
+
+
 
     /// \brief Called when world update events are received
     /// \param[in] _info Update information provided by the server.
-  protected:
-    virtual void OnUpdate(const common::UpdateInfo &_info);
+    protected:
+    virtual void OnUpdate(const common::UpdateInfo& _info);
 
     /// \brief Private data pointer.
-  private:
+    private:
     std::unique_ptr<ROSAGVPluginPrivate> dataPtr;
   };
 } // namespace gazebo

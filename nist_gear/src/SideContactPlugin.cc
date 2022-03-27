@@ -211,6 +211,7 @@ void SideContactPlugin::CalculateContactingModels()
   this->contactingModels.clear();
   for (auto link : this->contactingLinks)
   {
+    // gzdbg << "[CONTACTING LINK]: " << link->GetName() << std::endl;
     physics::ModelPtr model = link->GetModel();
     this->contactingModels.insert(model);
   }

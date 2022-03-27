@@ -26,7 +26,6 @@
 #include <ros/ros.h>
 #include <std_srvs/Trigger.h>
 #include <tf2_ros/transform_broadcaster.h>
-
 #include <gazebo/common/Plugin.hh>
 #include <gazebo/msgs/msgs.hh>
 #include <gazebo/physics/PhysicsTypes.hh>
@@ -36,123 +35,143 @@
 #include <nist_gear/ARIAC.hh>
 #include <nist_gear/DetectedKittingShipment.h>
 #include <nist_gear/DetectKittingShipment.h>
+#include <nist_gear/DetectMovableTray.h>
+
 #include "SideContactPlugin.hh"
 #include <std_msgs/String.h>
 
-namespace gazebo
-{
-  /// \brief A plugin for a contact sensor on a kit tray.
-  class GAZEBO_VISIBLE KitTrayPlugin : public SideContactPlugin
-  {
-    /// \brief Constructor.
-    public: KitTrayPlugin();
+namespace gazebo {
+      /// \brief A plugin for a contact sensor on a kit tray.
+      class GAZEBO_VISIBLE KitTrayPlugin : public SideContactPlugin
+      {
+            /// \brief Constructor.
+      public: KitTrayPlugin();
 
-    /// \brief Destructor.
-    public: virtual ~KitTrayPlugin();
+            /// \brief Destructor.
+      public: virtual ~KitTrayPlugin();
 
-    /// \brief Load the model plugin.
-    /// \param[in] _model Pointer to the model that loaded this plugin.
-    /// \param[in] _sdf SDF element that describes the plugin.
-    public: virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
+            /// \brief Load the model plugin.
+            /// \param[in] _model Pointer to the model that loaded this plugin.
+            /// \param[in] _sdf SDF element that describes the plugin.
+      public: virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
 
-    /// \brief Callback that receives the world update event
-    protected: void OnUpdate(const common::UpdateInfo &_info);
+            // struct fixedJoint {
+            //       std::string model1;
+            //       physics::ModelPtr m1;
+            //       std::string link1;
+            //       physics::LinkPtr l1;
+            //       std::string model2;
+            //       physics::ModelPtr m2;
+            //       std::string link2;
+            //       physics::LinkPtr l2;
+            //       physics::JointPtr joint;
+            // };
 
-    /// \brief Update the kit based on which models are in contact
-    protected: void ProcessContactingModels();
+            /// \brief Callback that receives the world update event
+      protected: void OnUpdate(const common::UpdateInfo& _info);
 
-    /// \brief Create a fixed joint to all contacting models
-    protected: virtual void LockContactingModels();
+               /// \brief Update the kit based on which models are in contact
+      protected: void ProcessContactingModels();
 
-    /// \brief Remove any fixed joints to contacting models
-    protected: virtual void UnlockContactingModels();
+               /// \brief Create a fixed joint to all contacting models
+      protected: virtual void LockContactingModels();
 
-    /// \brief Update the kit based on which models are in contact
-    public: std::string DetermineModelType(const std::string &modelName);
+               /// \brief Remove any fixed joints to contacting models
+      protected: virtual void UnlockContactingModels();
 
-    /// \brief Callback for when a new subscriber connects to the Kit ROS publisher
-    /// This will check that only the /gazebo node is subscribed during the competition
-    protected: void OnSubscriberConnect(const ros::SingleSubscriberPublisher& pub);
+               /// \brief Update the kit based on which models are in contact
+      public: std::string DetermineModelType(const std::string& modelName);
 
-    /// \brief Publish the Kit ROS message
-    protected: void PublishKitMsg();
+            /// \brief Callback for when a new subscriber connects to the Kit ROS publisher
+            /// This will check that only the /gazebo node is subscribed during the competition
+      protected: void OnSubscriberConnect(const ros::SingleSubscriberPublisher& pub);
 
-    /// \brief Service for locking the models to the tray and disabling updates
-    protected: void HandleLockModelsRequest(ConstGzStringPtr &_msg);
+               /// \brief Publish the Kit ROS message
+      protected: void PublishKitMsg();
 
-    /// \brief Service for clearing the tray
-    protected: bool HandleClearService(
-      ros::ServiceEvent<std_srvs::Trigger::Request, std_srvs::Trigger::Response>& event);
+               /// \brief Service for locking the models to the tray and disabling updates
+      protected: void HandleLockModelsRequest(ConstGzStringPtr& _msg);
 
-    /// \brief Service for geting the content of a tray
-    protected: bool HandleGetContentService(
-      ros::ServiceEvent<nist_gear::DetectKittingShipment::Request, nist_gear::DetectKittingShipment::Response> & event);
+               //          /// \brief Service for clearing the tray
+               // protected: bool HandleClearService(
+               //   ros::ServiceEvent<std_srvs::Trigger::Request, std_srvs::Trigger::Response>& event);
 
-    protected: void PublishTFTransform(const common::Time sim_time);
+               /**
+                * @brief Get the movable tray located on this kit tray
+                *
+                */
+      protected: bool HandleGetMovableTrayService(
+            ros::ServiceEvent<nist_gear::DetectMovableTray::Request,
+            nist_gear::DetectMovableTray::Response>& event);
 
-    /// \brief Kit which is currently on the tray
-    protected: ariac::Kit currentKit;
+      protected: void PublishTFTransform(const common::Time sim_time);
 
-    /// \brief ID of tray
-    protected: std::string trayID;
+               /// \brief Kit which is currently on the tray
+      protected: ariac::MovableTray current_movable_tray;
 
-     /// \brief ID of the station
-    protected: std::string station_name;
+               /// \brief ID of tray
+      protected: std::string tray_id;
 
-    /// \brief Fixed joints to lock contacting models
-    protected: std::vector<physics::JointPtr> fixedJoints;
+               /// \brief ID of the station
+      protected: std::string station_name;
 
-    /// \brief ROS node handle
-    protected: ros::NodeHandle *rosNode;
+               /// \brief Fixed joints to lock contacting models
+      protected: std::vector<physics::JointPtr> fixedJoints;
 
-    /// \brief Gazebo node for communication
-    protected: transport::NodePtr gzNode;
+               /// \brief ROS node handle
+      protected: ros::NodeHandle* rosNode;
 
-    /// \brief Publisher for the kit state
-    protected: ros::Publisher currentKitPub;
+               /// \brief Gazebo node for communication
+      protected: transport::NodePtr gzNode;
 
-    /// \brief Whether or not the Kit ROS topic is enabled
-    /// If unpermitted subscribers connect during the competition, publishing is disabled
-    protected: bool publishingEnabled;
+               /// \brief Publisher for the kit state
+      protected: ros::Publisher currentKitPub;
 
-    /// \brief Service that locks models to the tray
-    public: ros::ServiceServer lockModelsServer;
+               /// \brief Whether or not the Kit ROS topic is enabled
+               /// If unpermitted subscribers connect during the competition, publishing is disabled
+      protected: bool publishingEnabled;
 
-    /// \brief ROS service that clears the tray
-    public: ros::ServiceServer clearTrayServer;
+               /// \brief Service that locks models to the tray
+      public: ros::ServiceServer lockModelsServer;
 
-    /// \brief ROS service to get the contents of the tray
-    public: ros::ServiceServer trayContentsServer;
+            /// \brief ROS service that clears the tray
+      public: ros::ServiceServer clearTrayServer;
 
-    /// \brief Broadcaster for the tf frame of the tray
-    public: tf2_ros::TransformBroadcaster tf_broadcaster;
+            /// \brief ROS service to get the contents of the tray
+      public: ros::ServiceServer trayContentsServer;
 
-    /// \brief Name of the tf transform
-    public: std::string tf_frame_name;
+            /// \brief Broadcaster for the tf frame of the tray
+      public: tf2_ros::TransformBroadcaster tf_broadcaster;
 
-    /// \brief cache tray pose at start to work around bug where tray pose drops during AGV animation
-    public: ignition::math::Pose3d tray_pose;
+            /// \brief Name of the tf transform
+      public: std::string tf_frame_name;
 
-    /// \brief Parts to ignore (will be published as faulty in tray msgs)
-    /// The namespace of the part (e.g. bin7) is ignored.
-    /// e.g. if model_name1 is faulty, either bin7|model_name1 or bin6|model_name1 will be considered faulty
-    protected: std::vector<std::string> faultyPartNames;
+            /// \brief cache tray pose at start to work around bug where tray pose drops during AGV animation
+      public: ignition::math::Pose3d tray_pose;
 
-    /// \brief Gazebo subscriber to the lock models topic
-    protected: transport::SubscriberPtr lockModelsSub;
+            /// \brief Parts to ignore (will be published as faulty in tray msgs)
+            /// The namespace of the part (e.g. bin7) is ignored.
+            /// e.g. if model_name1 is faulty, either bin7|model_name1 or bin6|model_name1 will be considered faulty
+      protected: std::vector<std::string> faultyPartNames;
 
-    ros::Subscriber agv1LocationSubscriber;
-    ros::Subscriber agv2LocationSubscriber;
-    ros::Subscriber agv3LocationSubscriber;
-    ros::Subscriber agv4LocationSubscriber;
-    std::string agv1CurrentStation;
-    std::string agv2CurrentStation;
-    std::string agv3CurrentStation;
-    std::string agv4CurrentStation;
-    void OnAGV1Location(std_msgs::String::ConstPtr msg);
-    void OnAGV2Location(std_msgs::String::ConstPtr msg);
-    void OnAGV3Location(std_msgs::String::ConstPtr msg);
-    void OnAGV4Location(std_msgs::String::ConstPtr msg);
-  };
+               /// \brief Gazebo subscriber to the lock models topic
+      protected: transport::SubscriberPtr lock_movable_tray_on_agv_subscriber;
+
+               ros::Subscriber agv1LocationSubscriber;
+               ros::Subscriber agv2LocationSubscriber;
+               ros::Subscriber agv3LocationSubscriber;
+               ros::Subscriber agv4LocationSubscriber;
+               std::string agv1CurrentStation;
+               std::string agv2CurrentStation;
+               std::string agv3CurrentStation;
+               std::string agv4CurrentStation;
+               void OnAGV1Location(std_msgs::String::ConstPtr msg);
+               void OnAGV2Location(std_msgs::String::ConstPtr msg);
+               void OnAGV3Location(std_msgs::String::ConstPtr msg);
+               void OnAGV4Location(std_msgs::String::ConstPtr msg);
+               /// \brief List of parts that a movable tray should care about.
+                 ///Anything not in this list will not be reported by the plugin.
+            public:std::vector<std::string> grippable_model_types;
+      };
 }
 #endif

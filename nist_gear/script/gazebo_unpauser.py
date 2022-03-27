@@ -30,9 +30,9 @@ if __name__ == '__main__':
     rospy.wait_for_service('/gazebo/unpause_physics')
     # TODO(sloretz) check if all arm models spawned before unpausing
     rospy.logwarn("HACK sleeping before unpausing model")
-    time.sleep(3)
+    time.sleep(10)
     try:
-      unpause_physics = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
-      unpause_physics()
+        unpause_physics = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
+        unpause_physics()
     except rospy.ServiceException as e:
         rospy.logerr("Unpause physics service call failed: %s", e)

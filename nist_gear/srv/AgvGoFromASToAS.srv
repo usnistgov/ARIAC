@@ -1,0 +1,7 @@
+# Move an AGV from an assembly station to another assembly station
+# No scoring is applied to the shipment
+
+---
+bool success
+string message
+

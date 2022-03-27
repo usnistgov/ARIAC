@@ -1,0 +1,30 @@
+sensors:
+  as1_kit_tray:
+    type: logical_camera
+    pose:
+      xyz: [-5.5, 4.7, 1.5]
+      rpy: [3.141593, 1.570792, 0.000000]
+  
+  as2_kit_tray:
+    type: logical_camera
+    pose:
+      xyz: [-10.5, 1.4, 1.5]
+      rpy: [3.141593, 1.570792, 0.000000]
+  
+  as3_kit_tray:
+    type: logical_camera
+    pose:
+      xyz: [-5.5, -1.4, 1.5]
+      rpy: [3.141593, 1.570792, 0.000000]
+  
+  as4_kit_tray:
+    type: logical_camera
+    pose:
+      xyz: [-10.5, -4.7, 1.5]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+gantry_bin_camera:
+  enable: true
+    
+gantry_tray_camera:
+  enable: true

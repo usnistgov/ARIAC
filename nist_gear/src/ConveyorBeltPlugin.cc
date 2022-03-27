@@ -39,6 +39,10 @@ ConveyorBeltPlugin::~ConveyorBeltPlugin()
 /////////////////////////////////////////////////
 void ConveyorBeltPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
+  // Initialize Gazebo transport
+  this->gzNode = transport::NodePtr(new transport::Node());
+  this->gzNode->Init();
+  
   // Read the power of the belt.
   if (_sdf->HasElement("power"))
     this->beltPower = _sdf->Get<double>("power");
@@ -76,17 +80,17 @@ void ConveyorBeltPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   // Set the point where the link will be moved to its starting pose.
   this->limit = this->joint->UpperLimit(0) - 0.6;
 
-  // Initialize Gazebo transport
-  this->gzNode = transport::NodePtr(new transport::Node());
-  this->gzNode->Init();
+ 
 
   // Publisher for modifying the rate at which the belt is populated.
   // TODO(dhood): this should not be in this class.
   std::string populationRateModifierTopic = "population_rate_modifier";
-  if (_sdf->HasElement("population_rate_modifier_topic"))
+  if (_sdf->HasElement("population_rate_modifier_topic")) {
     populationRateModifierTopic = _sdf->Get<std::string>("population_rate_modifier_topic");
-  this->populationRateModifierPub =
-    this->gzNode->Advertise<msgs::GzString>(populationRateModifierTopic);
+    this->populationRateModifierPub =
+      this->gzNode->Advertise<msgs::GzString>(populationRateModifierTopic);
+  }
+    
 
   // Subscriber for the belt's activation topic.
   if (_sdf->HasElement("enable_topic"))

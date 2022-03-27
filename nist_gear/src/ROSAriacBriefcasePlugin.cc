@@ -26,7 +26,7 @@ using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(BriefcasePlugin)
 
 /////////////////////////////////////////////////
-BriefcasePlugin::BriefcasePlugin() : SideContactPlugin()
+BriefcasePlugin::BriefcasePlugin() : ModelContactPlugin()
 {
   // gzdbg << "BriefcasePlugin Plugin\n";
 }
@@ -35,14 +35,13 @@ BriefcasePlugin::BriefcasePlugin() : SideContactPlugin()
 BriefcasePlugin::~BriefcasePlugin()
 {
   this->updateConnection.reset();
-  this->parentSensor.reset();
   this->world.reset();
 }
 
 /////////////////////////////////////////////////
 void BriefcasePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 {
-  SideContactPlugin::Load(_model, _sdf);
+  ModelContactPlugin::Load(_model, _sdf);
 
   if (_sdf->HasElement("faulty_parts"))
   {
@@ -67,7 +66,7 @@ void BriefcasePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   else
     gzdbg << "BriefcasePlugin running at the default update rate\n";
 
-  this->briefcase_id = this->parentLink->GetScopedName();
+  this->briefcase_id = this->model->GetScopedName();
 
   // Make sure the ROS node for Gazebo has already been initialized
   if (!ros::isInitialized())
@@ -87,14 +86,6 @@ void BriefcasePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   if (_sdf->HasElement("tf_frame_name"))
     this->tf_frame_name = _sdf->Get<std::string>("tf_frame_name");
 
-  // ROS service for clearing the tray
-  //@todo: Remove in ARIAC2021
-  std::string clearServiceName = "clear";
-  if (_sdf->HasElement("clear_briefcase_service_name"))
-    clearServiceName = _sdf->Get<std::string>("clear_briefcase_service_name");
-  this->clear_briefcase_server =
-    this->node_handle->advertiseService(clearServiceName, &BriefcasePlugin::HandleClearService, this);
-
   // ROS service for getting the content of the tray
   std::string contentServiceName = "get_content";
   if (_sdf->HasElement("get_content_service_name"))
@@ -106,13 +97,6 @@ void BriefcasePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->gz_node = transport::NodePtr(new transport::Node());
   this->gz_node->Init();
 
-  // Gazebo subscription for the lock trays topic
-  std::string lockModelsServiceName = "lock_models";
-  if (_sdf->HasElement("lock_models_service_name"))
-    lockModelsServiceName = _sdf->Get<std::string>("lock_models_service_name");
-  this->lock_models_sub = this->gz_node->Subscribe(
-    lockModelsServiceName, &BriefcasePlugin::HandleLockModelsRequest, this);
-
   // cache tray pose
   this->briefcase_pose = this->model->WorldPose();
 }
@@ -120,13 +104,6 @@ void BriefcasePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 /////////////////////////////////////////////////
 void BriefcasePlugin::OnUpdate(const common::UpdateInfo & _info)
 {
-  // If we're using a custom update rate value we have to check if it's time to
-  // update the plugin or not.
-  if (!this->TimeToExecute())
-  {
-    return;
-  }
-
   if (!this->newMsg)
   {
     return;
@@ -135,7 +112,7 @@ void BriefcasePlugin::OnUpdate(const common::UpdateInfo & _info)
   std::set<physics::ModelPtr> prevContactingModels(this->contactingModels);
   this->CalculateContactingModels();
   if (prevContactingModels.size() != this->contactingModels.size()) {
-    ROS_DEBUG_STREAM(this->parentLink->GetScopedName() << ": number of contacting models: "
+    ROS_DEBUG_STREAM(this->model->GetScopedName() << ": number of contacting models: "
       << this->contactingModels.size());
   }
 
@@ -148,7 +125,7 @@ void BriefcasePlugin::OnUpdate(const common::UpdateInfo & _info)
   for (auto model : removedContactingModels)
   {
     if (model) {
-      gzdbg << "removed contact " << model->GetName() << std::endl;
+      //gzdbg << "removed contact " << model->GetName() << std::endl;
       model->SetAutoDisable(true);
     }
   }
@@ -173,7 +150,7 @@ void BriefcasePlugin::ProcessContactingModels()
     this->contactingModels.insert(link->GetParentModel());
   }
   this->current_assembly.objects.clear();
-  auto trayPose = this->parentLink->WorldPose();
+  auto trayPose = this->model->WorldPose();
   for (auto model : this->contactingModels) {
     if (model) {
       model->SetAutoDisable(false);
@@ -243,96 +220,6 @@ void BriefcasePlugin::PublishAssemblyMsg()
     assembly_msg.products.push_back(msgObj);
   }
   this->assembly_state_publisher.publish(assembly_msg);
-}
-
-/////////////////////////////////////////////////
-void BriefcasePlugin::UnlockContactingModels()
-{
-  boost::mutex::scoped_lock lock(this->mutex);
-  physics::JointPtr fixed_joint;
-  for (auto fixed_joint : this->fixed_joints)
-  {
-    fixed_joint->Detach();
-  }
-  this->fixed_joints.clear();
-}
-
-/////////////////////////////////////////////////
-void BriefcasePlugin::LockContactingModels()
-{
-  boost::mutex::scoped_lock lock(this->mutex);
-  physics::JointPtr fixedJoint;
-  gzdbg << "Number of models in contact with the tray: " << this->contactingModels.size() << std::endl;
-  for (auto model : this->contactingModels)
-  {
-  // Create the joint that will attach the models
-  fixedJoint = this->world->Physics()->CreateJoint(
-        "fixed", this->model);
-  auto jointName = this->model->GetName() + "_" + model->GetName() + "__joint__";
-  gzdbg << "Creating fixed joint: " << jointName << std::endl;
-  fixedJoint->SetName(jointName);
-
-  model->SetGravityMode(false);
-
-  // Lift the part slightly because it will fall through the tray if the tray is animated
-  model->SetWorldPose(model->WorldPose() + ignition::math::Pose3d(0,0,0.01,0,0,0));
-
-  auto modelName = model->GetName();
-  auto linkName = modelName + "::link";
-  auto link = model->GetLink(linkName);
-  if (link == NULL)
-  {
-    // If the model was inserted into the world using the "population" SDF tag,
-    // the link will have an additional namespace of the model type.
-    linkName = modelName + "::" + ariac::DetermineModelType(modelName) + "::link";
-    link = model->GetLink(linkName);
-    if (link == NULL)
-    {
-      gzwarn << "Couldn't find link to make joint with: " << linkName;
-      continue;
-    }
-  }
-  link->SetGravityMode(false);
-  fixedJoint->Load(link, this->parentLink, ignition::math::Pose3d());
-  fixedJoint->Attach(this->parentLink, link);
-  fixedJoint->Init();
-  this->fixed_joints.push_back(fixedJoint);
-  model->SetAutoDisable(true);
-  }
-}
-
-/////////////////////////////////////////////////
-void BriefcasePlugin::HandleLockModelsRequest(ConstGzStringPtr &_msg)
-{
-  gzdbg << this->briefcase_id << ": Handle clear tray service called.\n";
-  (void)_msg;
-  this->LockContactingModels();
-}
-
-/////////////////////////////////////////////////
-bool BriefcasePlugin::HandleClearService(
-  ros::ServiceEvent<std_srvs::Trigger::Request, std_srvs::Trigger::Response>& event)
-{
-  std_srvs::Trigger::Response& res = event.getResponse();
-
-  const std::string& callerName = event.getCallerName();
-  gzdbg << this->briefcase_id << ": Handle clear briefcase service called by: " << callerName << std::endl;
-
-  // During the competition, this environment variable will be set.
-  auto compRunning = std::getenv("ARIAC_COMPETITION");
-  if (compRunning && callerName.compare("/gazebo") != 0)
-  {
-    std::string errStr = "Competition is running so this service is not enabled.";
-    gzerr << errStr << std::endl;
-    ROS_ERROR_STREAM(errStr);
-    res.success = false;
-    return true;
-  }
-
-  this->UnlockContactingModels();
-  this->ClearContactingModels();
-  res.success = true;
-  return true;
 }
 
 /////////////////////////////////////////////////

@@ -1,0 +1,16 @@
+material movable_tray_metal_rusty_texture
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        // Relative to the location of the material script
+        texture ../textures/movable_tray_metal_rusty_texture.jpg
+        // Repeat the texture over the surface (4 per face)
+        //scale 0.25 0.25
+      }
+    }
+  }
+}

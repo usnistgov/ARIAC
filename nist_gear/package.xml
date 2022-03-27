@@ -32,7 +32,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>controller_manager_msgs</build_depend>
-<build_export_depend>controller_manager_msgs</build_export_depend>
+  <build_export_depend>controller_manager_msgs</build_export_depend>
 
   <depend>gazebo_plugins</depend>
   <depend>gazebo_ros</depend>
@@ -47,7 +47,6 @@
   <depend>rospack</depend>
 
   <build_depend>message_generation</build_depend>
-
 
   <exec_depend>controller_manager</exec_depend>
   <exec_depend>controller_manager_msgs</exec_depend>

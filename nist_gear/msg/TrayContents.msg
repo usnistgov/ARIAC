@@ -2,7 +2,9 @@
 # This structure contains the information of the current contents of a tray.
 
 # The ID of the tray
-string tray
+string kit_tray
 
-# Collection of objects
-DetectedProduct[] objects
+PublishedMovableTray movable_tray
+
+# Collection of parts in the movable_tray frame
+DetectedProduct[] products

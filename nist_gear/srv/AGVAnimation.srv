@@ -1,0 +1,6 @@
+# Move an AGV from a  station to another station
+# This service is only by the ROSAGVPlugin plugin
+
+---
+bool success
+string message

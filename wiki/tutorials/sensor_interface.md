@@ -4,7 +4,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 - [Wiki | Tutorials | Sensor Interface](#wiki--tutorials--sensor-interface)
 - [Prerequisites](#prerequisites)
-- [Cameras and Sensors in ARIAC 2021](#cameras-and-sensors-in-ariac-2021)
+- [Cameras and Sensors in ARIAC 2022](#cameras-and-sensors-in-ariac-2022)
   - [Break Beam Sensor](#break-beam-sensor)
     - [Reading Data](#reading-data)
     - [Adding Sensor](#adding-sensor)
@@ -24,7 +24,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
     - [Reading Data](#reading-data-5)
     - [Adding Camera](#adding-camera-2)
   - [Quality Control Sensor](#quality-control-sensor)
-  - [Camera Mounted on the Robot](#camera-mounted-on-the-robot)
+  - [Cameras Mounted on the Gantry Robot](#cameras-mounted-on-the-gantry-robot)
 
 # Wiki | Tutorials | Sensor Interface
 
@@ -34,11 +34,11 @@ The purpose of this tutorial is to introduce you to the sensors available to you
 
 You should have already completed the [GEAR interface tutorial](gear_interface.md).
 
-# Cameras and Sensors in ARIAC 2021
+# Cameras and Sensors in ARIAC 2022
 
 As described in the competition specifications, there are sensors available for you to place in the environment. How you can select which sensors to use is covered in the [competition configuration specifications](../documentation/competition_specifications.md).
 
-To start with, launch ARIAC with a sample workcell environment configuration that contains an arm and some sensors in various locations:
+To start with, launch ARIAC with a sample workcell environment configuration that contains some sensors in various locations:
 
 ```bash
 roslaunch nist_gear sample_environment.launch
@@ -183,7 +183,7 @@ rostopic echo /ariac/depth_camera_1/depth/image_raw --noarr
 
 - This is a simulated time-of-flight depth camera such as the Swissranger SR4000.
 - The output of the sensor is [sensor_msgs/Pointcloud](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud.html) and [sensor_msgs/Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html).
-- **Cost**: $500
+- **Cost**: $300
 
 ### Reading Data
 
@@ -282,31 +282,23 @@ $ rostopic echo /ariac/quality_control_sensor_3
 $ rostopic echo /ariac/quality_control_sensor_4
 ```
 
-## Camera Mounted on the Robot
+## Cameras Mounted on the Gantry Robot
 
-- **Cost**: $600
+- **Cost**: \$300 and \$600
 
-This depth camera is located on the torso tray and can be enabled (`enable: true`) or disabled (`enable: false`) using the following code snippet in the user configuration file (see [sample_user_config.yaml](../../nist_gear/config/user_config/sample_user_config.yaml)):
-
+Two depth cameras are located on the gantry robot. The pose of these cameras cannot be changed but competitors can enable or disable them. The following must be placed in the sensor configuration file:
 ```yaml
-robot_camera:
-  enable: true
+gantry_bin_camera:
+  enable: false
+    
+gantry_tray_camera:
+  enable: false
 ```
 
-Competitors can see the view from this camera in RViz.
+The `gantry_bin_camera` costs \$600 and can clearly see parts located in bins. The `gantry_tray_camera` costs \$300 and can see parts placed on the gantry tray. To see the view from each camera using RViz. Uncomment the following section in `sample_environment.launch` and start the simulation. In RViz, check the box next to `Image`.
 
-```bash
-$ roslaunch nist_gear sample_environment.launch
-$ rosrun rviz rviz
-```
 
-Then:
-
-- `File`->`Open Config`
-- Navigate to `ariac.rviz` located in `nist_gear/rviz`
-- Make sure the box for `Image` is checked.
-
-![ariac2021_gantry_camera](../figures/ariac2021_gantry_camera.png)
+![ariac2022_gantry_camera](../figures/2022/gantrycameras.png)
 
 -------------------------------------------------
 Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)

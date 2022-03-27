@@ -99,17 +99,23 @@ You should see that the robot move in Gazebo, and that this movement is reflecte
 
 ### Programmatically
 
-We have provided an example competitor that uses MoveIt's python interface to control the robot. It can be found at [ariac_example/script/moveit_example.py](https://github.com/usnistgov/ARIAC/blob/master/ariac_example/script/moveit_example.py). 
+We have provided test competitors that use MoveIt's python interface to control the robots. They can be found in the **test_competitor** package.  
 
-**NOTE**: This script is not updated for `sample-kitting.yaml` and may crash. We are working on it. You can still see how the MoveIt Commander is being used in Python.
 
-To run this example, launch ARIAC and MoveIt as before and then run:
+To see kitting in action:
 ```bash
-$ rosrun ariac_example moveit_example.py
+$ roslaunch test_competitor assembly.launch station:=as1
+$ rosrun test_competitor assembly_commander_node.py
 ```
 
-For additional information, please see the official [MoveIt tutorials](https://ros-planning.github.io/moveit_tutorials/),
-and [API](https://moveit.ros.org/documentation/source-code-api/).
+* To see assembly in action:
+
+```bash
+$ roslaunch test_competitor kitting.launch
+$ rosrun test_competitor kitting_commander_node.py
+```
+
+For additional information, please see the official [MoveIt tutorials](https://ros-planning.github.io/moveit_tutorials/), and [API](https://moveit.ros.org/documentation/source-code-api/).
 
 ### Troubleshooting
 

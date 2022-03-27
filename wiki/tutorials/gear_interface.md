@@ -14,15 +14,14 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
   - [Control the Robots](#control-the-robots)
     - [Control a Vacuum Gripper](#control-a-vacuum-gripper)
     - [Control Arm Joints](#control-arm-joints)
+      - [Use rqt GUI](#use-rqt-gui)
     - [MoveIt](#moveit)
   - [Visualize in RViz](#visualize-in-rviz)
-    - [View Tray Contents](#view-tray-contents)
-    - [Submit Trays without Delivery](#submit-trays-without-delivery)
   - [Query Locations of Products](#query-locations-of-products)
 
 # Wiki | Tutorials | Interacting with GEAR
 
-The purpose of this tutorial is to introduce you to the [competition interface](../documentation/competition_interface_documentation.md) that is used to interact with GEAR, the software used by teams participating in the Agile Robotics for Industrial Automation Competition (ARIAC).
+The purpose of this tutorial is to introduce you to the [API](../documentation/api.md) which is used to interact with GEAR, the software used by competitors participating in the Agile Robotics for Industrial Automation Competition (ARIAC).
 
 ## Start GEAR
 
@@ -83,15 +82,29 @@ order_id: "order_0"
 kitting_shipments: 
   - 
     shipment_type: "order_0_kitting_shipment_0"
-    agv_id: "agv2"
-    station_id: "as1"
+    agv: "agv2"
+    assembly_station: "as1"
+    movable_tray: 
+      movable_tray_type: "movable_tray_metal_shiny"
+      gripper: "gripper_tray"
+      pose: 
+        position: 
+          x: 0.0
+          y: 0.0
+          z: 0.0
+        orientation: 
+          x: 0.0
+          y: 0.0
+          z: 0.0
+          w: 1.0
     products: 
       - 
-        type: "assembly_battery_green"
+        type: "assembly_pump_red"
+        gripper: "gripper_part"
         pose: 
           position: 
-            x: 0.1
-            y: 0.1
+            x: -0.1
+            y: -0.1
             z: 0.0
           orientation: 
             x: 0.0
@@ -101,83 +114,41 @@ kitting_shipments:
 assembly_shipments: 
   - 
     shipment_type: "order_0_assembly_shipment_0"
-    station_id: "as4"
+    station_id: "as2"
     products: 
       - 
-        type: "assembly_battery_red"
+        type: "assembly_regulator_red"
+        gripper: "gripper_part"
         pose: 
           position: 
-            x: -0.032465
-            y: 0.174845
-            z: 0.15
+            x: -0.222
+            y: -0.164
+            z: 0.212
           orientation: 
-            x: 0.0
-            y: 0.0
-            z: 0.0
-            w: 1.0
+            x: -3.58054498549e-25
+            y: 0.707106781188
+            z: -3.58054498549e-25
+            w: 0.707106781185
+
+
 ```
 
 - ```order_id``` is the id for the order published. This id is unique. If a second order exists, it will be named either ```"order_1"``` or ```"order_0_update"```.
   - ```kitting_shipments``` describes all the shipments related to kitting. This example shows only one kitting shipment. 
     - ```shipment_type``` is a unique id for the current shipment. The type (```"order_0_kitting_shipment_0"```) is passed as an argument to submit a shipment.
-    - ```agv_id``` specifies which AGV should be used to build and submit this shipment.
-    - ```station_id``` specifies the station to send the shipment when it is completed.
-    - ```products``` informs on the type, color, and pose of each product that is needed for the shipment. In this example, the kitting shipment requires only one product. Note that the pose is relative to the tray of the agv.
+    - ```agv``` specifies which AGV should be used to build and submit this shipment.
+    - ```assembly_station``` specifies the station to send the shipment when it is completed.
+    - ```movable_tray``` provides information on the movable tray needed for this shipment
+      - ```movable_tray_type``` describes the model (or type) of the movable tray.
+      - ```gripper``` specifies which gripper type must be used to grasp this movable tray.
+      - ```pose``` describes the pose of the movable tray on the AGV, in this example, in the ```kit_tray_1``` frame.
+    - ```products``` informs on the type, color, and pose of each product that is needed for the shipment. In this example, the kitting shipment requires only one product. Note that the pose is relative to the movable tray.
   - ```assembly_shipments``` describes all the shipments related to assembly.
     - ```shipment_type``` is a unique id for the current shipment. The type (```"order_0_assembly_shipment_0"```) is passed as an argument to submit a shipment.
     - ```station_id``` specifies the assembly station where assembly must be performed. When assembly is required, competitors will either have to build and ship a kit to an assembly station (i.e., do kitting first) or the environment will start with the AGV and needed parts already at the assembly station.
     - ```products``` informs on the type, color, and pose of each product that is needed for the shipment. In this example, the assembly shipment requires only one product. Note that the pose is relative to the briefcase located at the assembly station.
 
-As mentioned previously, an order consists of at least one shipment where the shipment can be either `kitting` or `assembly`. Below are two examples of order consisting of one shipment each.
-
-- Only one assembly shipment:
-
-```bash
-order_id: "order_0"
-kitting_shipments: []
-assembly_shipments: 
-  - 
-    shipment_type: "order_0_assembly_shipment_0"
-    station_id: "as4"
-    products: 
-      - 
-        type: "assembly_battery_red"
-        pose: 
-          position: 
-            x: -0.032465
-            y: 0.174845
-            z: 0.15
-          orientation: 
-            x: 0.0
-            y: 0.0
-            z: 0.0
-            w: 1.0
-```
-
-- Only one kitting shipment:
-
-```bash
-order_id: "order_0"
-kitting_shipments: 
-  - 
-    shipment_type: "order_0_kitting_shipment_0"
-    agv_id: "agv2"
-    station_id: "as1"
-    products: 
-      - 
-        type: "assembly_battery_green"
-        pose: 
-          position: 
-            x: 0.1
-            y: 0.1
-            z: 0.0
-          orientation: 
-            x: 0.0
-            y: 0.0
-            z: 0.0
-            w: 1.0
-assembly_shipments: []
-```
+The example above shows an order with two shipments of different types. An order usually consists of one shipment where the shipment can be either `kitting` or `assembly`.
 
 ## Complete Orders
 
@@ -188,19 +159,19 @@ To complete an order, all the shipments in the order must be submitted.
 There are four AGVs carrying trays that kits can be assembled on. When a kit has been completed, the AGV must be commanded to deliver the kit so it can be scored. A kitting shipment submission will always take the AGV from a kitting station to an assembly station. The shipment will be scored as soon as it is submitted (even though the AGV has not physically reached the assembly station).
 
 - The service `/ariac/agv{N}/submit_shipment as{N} shipment_type` is used to submit kitting shipments where `N` is a value in the range [1,4] and `as` stands for assembly station.
-  - `agv{N}` is used to specify which AGV to submit. This should match the AGV specified in the kitting shipment in an order (see the field `agv_id: "agv2"` in the order above).
-  - `as{N}` is used to specify the assembly station where the kitting shipment must be delivered. This should match the station specified in the kitting shipment (see the field `station_id: "as1"` under `kitting_shipments` in the order above).
+  - `agv{N}` is used to specify which AGV to submit. This should match the AGV specified in the kitting shipment in an order (see the field `agv: "agv2"` in the order above).
+  - `as{N}` is used to specify the assembly station where the kitting shipment must be delivered. This should match the station specified in the kitting shipment (see the field `assembly_station: "as1"` under `kitting_shipments` in the order above).
 
-To submit the kitting shipment described in the order above, one needs to use the following service:
+To submit the kitting shipment described in the order above, one would call the submission service in a terminal as follows:
 
 ```bash
 $ rosservice call /ariac/agv2/submit_shipment "as1" "order_0_kitting_shipment_0"
 ```
 
-- **Once an AGV is submitted for an assembly station, competitors will not be able to move the AGV to another assembly station or back to the kitting station**. The trial configuration files are carefully designed so that multiple kitting shipments do not use the same AGV.
-- Once the service is called to submit a shipment a score will be computed for the shipment. If this is the last shipment in the current order then the score for the whole trial will be displayed on the screen.
+
 - Shipments built on the wrong AGV will receive a score of 0.
 - Shipments submitted to the wrong assembly station will receive a score of 0.
+- Non-use of a movable tray results in a score of 0.
 
 ### Submit Assembly Shipments
 
@@ -212,7 +183,7 @@ Assembly can be performed at four different assembly stations. When assembly has
 To submit the assembly shipment described in the order above, one needs to use the following service:
 
 ```bash
-$ rosservice call /ariac/as4/submit_shipment "order_0_assembly_shipment_0"
+$ rosservice call /ariac/as2/submit_shipment "order_0_assembly_shipment_0"
 ```
 
 ### Faulty Products
@@ -225,15 +196,18 @@ $ rosservice call /ariac/as4/submit_shipment "order_0_assembly_shipment_0"
   - QCSs report faulty parts only once they are in the tray of an AGV.
   - QCSs do not report any information about non-faulty parts.
 
-Below is a example of the outputs provided by a QCS (this command will not work during the qualifier or finals).
+We will test one quality control sensor with the use of [no_parts.yaml](../../nist_gear/config/trial_config/misc/no_parts.yaml). This configuration file will not spawn any part in the workcell but it describes two faulty parts: `assembly_pump_red_1` and `assembly_pump_red_2`.
 
-Start the ARIAC simulation environment with the command below.
-  
-  ```bash
-  $ roslaunch nist_gear sample_environment.launch
-  ```
+```yaml
+faulty_products:
+  - assembly_pump_red_1
+  - assembly_pump_red_2
+```
 
-An snippet of `sample_environment.launch` is given below, showing the use of the trial confiuration file `sample_test.yaml` ([sample_test.yaml](../../nist_gear/config/trial_config/sample_test.yaml)).
+ Note that this configuration file is only for demonstration purpose.
+
+
+Edit `sample_environment.launch` to use the trial configuration file `no_parts.yaml`. 
 
 ```xml
 <node name="ariac_sim" pkg="nist_gear" type="gear.py"
@@ -244,34 +218,29 @@ An snippet of `sample_environment.launch` is given below, showing the use of the
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
           --visualize-sensor-views
-          -f $(find nist_gear)/config/trial_config/sample_test.yaml
+          -f $(find nist_gear)/config/trial_config/misc/no_parts.yaml
           $(find nist_gear)/config/user_config/sample_user_config.yaml
           " required="true" output="screen" />
 ```
 
-At the very bottom of `sample_test.yaml`, the following lines describe faulty products:
+Start the ARIAC simulation environment with the command below.
+  
+  ```bash
+  $ roslaunch nist_gear sample_environment.launch
+  ```
 
-```yaml
-faulty_products:
-  - assembly_pump_blue_5
-```
 
-The command below spawns this faulty part in the tray located on agv3. ***Note***: This command is not available during qualifiers and finals. However, it is a very useful command to test and debug your application.
+The command below spawns these faulty part in the tray located on agv1. ***Note***: This command is not available during qualifiers and finals. However, it is a very useful command to test and debug your application.
 
 ```bash
-$ rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_blue_ariac/model.sdf -reference_frame agv3::kit_tray_3::kit_tray_3::tray -model assembly_pump_blue_5
+$ rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame agv1::kit_tray_1::kit_tray_1::tray -model assembly_pump_red_1
 ```
-
-<!-- <div style="text-align:center"><img src="../figures/quality_control_sensor.jpeg" alt="alt text" width="600" class="center"></div> -->
-
-![quality.png](../figures/quality_control_sensor.jpeg)
-
 Next, run the following command to see the quality control sensor's output.
 
 ***Note***: The id of the quality control sensors matches the id of the AGVs (`quality_control_sensor_1` is located above `agv1`, `quality_control_sensor_2` is located above `agv2`, etc).
 
 ```bash
-$ rostopic echo /ariac/quality_control_sensor_3
+$ rostopic echo /ariac/quality_control_sensor_1 -n 1
 ```
 
 You should get the following result.
@@ -282,28 +251,30 @@ models:
     type: "model"
     pose: 
       position: 
-        x: 0.695297813039
-        y: 0.109115222642
-        z: -0.37875728957
+        x: 0.698899746505
+        y: 0.128108284161
+        z: -0.378588626198
       orientation: 
-        x: 0.500680786833
-        y: 0.494623370661
-        z: -0.502106198448
-        w: -0.502549337252
+        x: 0.498971509407
+        y: 0.501280765773
+        z: -0.496468763759
+        w: -0.503253209903
 pose: 
   position: 
-    x: -2.393393
-    y: -1.325227
+    x: -2.393395
+    y: 4.702724
     z: 1.506952
   orientation: 
     x: -0.707106896726
     y: -1.22474483074e-07
     z: 0.707106665647
     w: -1.22474523098e-07
+---
+
 
 ```
 
-- The first part of the output (`models:`) shows that a faulty product has been detected and its pose is reported in the QCS frame. Reminder that this sensor does not report non-faulty products. Therefore, if `assembly_pump_blue_5` was not a faulty product, the result would have been.
+- The first part of the output (`models:`) shows that a faulty product has been detected and its pose is reported in the QCS frame. Reminder that this sensor does not report non-faulty products. Therefore, if `assembly_pump_red_1` was not a faulty product, the result would have been.
 
 ```bash {.line-numbers}
 models: []
@@ -324,8 +295,7 @@ pose:
 
 ## Control the Robots
 
-There are two robots in the simulation where each robot consists of one UR10 arm. The UR10 simulation and control code is provided by [ROS Industrial's universal_robot ROS packages](https://github.com/ros-industrial/universal_robot).
-The control parameters have been modified for use in the ARIAC simulation.
+There are two robots in the simulation where each robot consists of one UR10 arm. The UR10 simulation and control code is provided by [ROS Industrial's universal_robot ROS packages](https://github.com/ros-industrial/universal_robot). The control parameters have been modified for use in the ARIAC simulation.
 
 ### Control a Vacuum Gripper
 
@@ -334,8 +304,8 @@ Each arm has a simulated pneumatic gripper attached to the arm's end effector. C
 To enable the gripper suction for the kitting and the assembly robots through the command line, run:
 
 ```bash
-$ rosservice call /ariac/kitting/arm/gripper/control "enable: true"
-$ rosservice call /ariac/gantry/arm/gripper/control "enable: true"
+$ rosservice call /ariac/kitting/arm/gripper/control true
+$ rosservice call /ariac/gantry/arm/gripper/control true
 ```
 
 The gripper periodically publishes its internal state on the topic `/ariac/kitting/arm/gripper/state` for the kitting robot and on the topic `/ariac/gantry/arm/gripper/state` for the assembly robot.
@@ -361,8 +331,8 @@ attached: False
 The following commands disable the suction for each gripper and then display the state of each gripper.
 
 ```bash
-rosservice call /ariac/kitting/arm/gripper/control "enable: false"
-rosservice call /ariac/gantry/arm/gripper/control "enable: false"
+rosservice call /ariac/kitting/arm/gripper/control false
+rosservice call /ariac/gantry/arm/gripper/control false
 rostopic echo /ariac/kitting/arm/gripper/state -n 1
 rostopic echo /ariac/gantry/arm/gripper/state -n 1
 ```
@@ -378,85 +348,7 @@ Each robot has its own command topics for controlling the joints of the robots.
   
 All the topics use [trajectory_msgs/JointTrajectory](http://docs.ros.org/api/trajectory_msgs/html/msg/JointTrajectory.html) messages. The robots' controllers will try to match the commanded states. The robots are controlled by an instance of [ros_controllers/joint_trajectory_controller](http://wiki.ros.org/joint_trajectory_controller).
 
-<!-- ### Command Line
 
-Run this command to move `arm1` over a gasket part in the sample environment.
-
-```bash
-rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
-        ['linear_arm_actuator_joint',  'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'], \
-     points: [ \
-{time_from_start: {secs: 2}, \
-        positions: [0.15, 3.14,  -1.570,  2.14, 3.1, -1.59, 0.126]}, \
-{time_from_start: {secs: 4}, \
-        positions: [-0.35, 3.14,  -0.6,  2.3, 3.0, -1.59, 0.126]}, \
-{time_from_start: {secs: 6}, \
-        positions: [-0.35, 3.14,  -0.5,  2.3, 3.05, -1.59, 0.126]}, \
-]}" -1
-```
-
-You should see the arm move to the specified joint positions.
-To get the current joint positions of the arm, run:
-
-```bash
-rostopic echo /ariac/arm1/joint_states -n 1
-```
-
-The `/ariac/armN/joint_states` topic uses the [sensor_msgs/JointState](http://docs.ros.org/api/sensor_msgs/html/msg/JointState.html) message which contains joint positions, velocities, efforts, and the name of the joints.
-
-
-Now, enable the gripper on arm1.
-
-```bash
-rosservice call /ariac/arm1/gripper/control "enable: true"
-```
-
-The gripper state should now show it has attached to an object.
-
-```
-$ rostopic echo -n 1 /ariac/arm1/gripper/state
-enabled: True
-attached: True
----
-```
-
-Note, you could have enabled the gripper at the beginning.
-It will attach to the first product it contacts.
-
-
-Move the part over `AGV1`'s tray
-```
-rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
-        ['linear_arm_actuator_joint',  'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'], \
-     points: [ \
-{time_from_start: {secs: 2}, \
-        positions: [0.0, 3.14,  -1.570,  2.14, 3.27, -1.51, 0.0]}, \
-{time_from_start: {secs: 5}, \
-        positions: [1.0, 1.85,  0,  -0.38, 1.57, -1.51, 0.00]}, \
-{time_from_start: {secs: 7}, \
-        positions: [1.0, 1.507,  0,  -0.38, 0.38, -1.51, 0.00]}, \
-{time_from_start: {secs: 10}, \
-        positions: [1.18, 1.507,  0.38,  -0.38, 1.55, 1.75, 0.127]}, \
-]}" -1
-```
-
-Disable the gripper to drop the object
-
-```bash
-rosservice call /ariac/arm1/gripper/control "enable: false"
-```
-
-Return the arm to the starting position.
-
-```
-rostopic pub /ariac/arm1/arm/command trajectory_msgs/JointTrajectory    "{joint_names: \
-        ['linear_arm_actuator_joint',  'shoulder_pan_joint', 'shoulder_lift_joint', 'elbow_joint', 'wrist_1_joint', 'wrist_2_joint', 'wrist_3_joint'], \
-     points: [ \
-{time_from_start: {secs: 5}, \
-        positions: [0.0, 3.14,  -1.570,  2.14, 3.27, -1.51, 0.0]}, \
-]}" -1
-
-``` -->
 
 #### Use rqt GUI
 
@@ -542,67 +434,110 @@ You can start the conveyor belt with
 
 ```bash
 rosservice call /ariac/start_competition
-rosservice call /ariac/conveyor/control "power: 100"
+rosservice call /ariac/conveyor/control 100
 ```
 
 ### View Tray Contents
 
 The `/ariac/trays` topic can be used during development for seeing the pose of products in the shipping boxes in the same frame as that which will be used for shipment evaluation.
 
+Consider the scenario depicted in the figure.
+
+![View_tray_contents](../figures/2022/ariactrays.jpg)
+
+
+
 ```bash
 $ rostopic echo /ariac/trays
 
-destination_id: "agv1::kit_tray_1::kit_tray_1::tray"
-station_id: "as2"
+kit_tray: "agv1"
+movable_tray: 
+  movable_tray_name: "movable_tray_dark_wood_1"
+  movable_tray_type: "movable_tray_dark_wood"
+  movable_tray_pose: 
+    position: 
+      x: 0.0136439258976
+      y: 0.00861219998877
+      z: 0.0094993657257
+    orientation: 
+      x: 0.000832880502475
+      y: -2.8662820062e-06
+      z: -0.000282231056878
+      w: 0.999999613324
 products: 
   - 
-    type: "assembly_battery_blue"
+    type: "assembly_sensor_red"
     is_faulty: False
     pose: 
       position: 
-        x: 0.0998680454178
-        y: -0.0999434754929
-        z: 0.0310452302069
+        x: -0.100505335379
+        y: -0.100192745229
+        z: 0.037004043839
       orientation: 
-        x: -6.29101303068e-05
-        y: -0.00257869130765
-        z: -0.382786818952
-        w: 0.923833100527
+        x: 9.93642793666e-05
+        y: -5.82857209824e-05
+        z: -0.00414029407003
+        w: 0.99999142231
 ---
-destination_id: "agv3::kit_tray_3::kit_tray_3::tray"
-station_id: "ks3"
-products: []
----
-destination_id: "agv2::kit_tray_2::kit_tray_2::tray"
-station_id: "ks2"
+kit_tray: "agv2"
+movable_tray: 
+  movable_tray_name: "movable_tray_metal_shiny_1"
+  movable_tray_type: "movable_tray_metal_shiny"
+  movable_tray_pose: 
+    position: 
+      x: 0.00298124583741
+      y: 0.00208219470258
+      z: 0.00949914439999
+    orientation: 
+      x: 0.000560465387336
+      y: -0.000412018236565
+      z: -0.000882754345604
+      w: 0.999999368432
 products: 
   - 
-    type: "assembly_battery_green"
+    type: "assembly_pump_green"
     is_faulty: False
     pose: 
       position: 
-        x: 0.0999964155144
-        y: 0.0999923951628
-        z: 0.0316455152617
+        x: -0.10053936394
+        y: -0.100041544791
+        z: 0.0599978138424
       orientation: 
-        x: 2.37198620273e-05
-        y: -6.84107068383e-05
-        z: -3.81840554511e-05
-        w: 0.99999999665
----
-destination_id: "agv4::kit_tray_4::kit_tray_4::tray"
-station_id: "ks4"
-products: []
+        x: 2.72945005904e-06
+        y: 5.05155616675e-06
+        z: -0.00167028391356
+        w: 0.999998605058
 ---
 ```
 
-The above output does not show any information for kit trays 3 and 4. This is simply because there is no parts on these trays. You will also notice that `station_id` shows the location of the AGVs in the workcell where `ks` stands for kitting station and `as` stands for assembly station. The location of AGVs are retrieved and updated from the parameter server. Below is a list of the parameters for the location of AGVS:
+The above output does not show any information for kit trays 3 and 4. This is simply because there is no movable tray on these fixed kit trays. 
 
-- `/ariac/agv1_station`
-- `/ariac/agv2_station`
-- `/ariac/agv3_station`
-- `/ariac/agv4_station`
+To get the content of a specific fixed kit tray, competitors can use the service `/ariac/kit_tray_{N}/get_content`.
 
+```bash
+rosservice call /ariac/kit_tray_1/get_content
+
+movable_tray: 
+  agv_name: "agv1"
+  movable_tray_type: "movable_tray_dark_wood"
+  movable_tray_name: "movable_tray_dark_wood_1"
+  pose: 
+    position: 
+      x: -0.0426268244255
+      y: -0.0102098003887
+      z: 0.00949982083406
+    orientation: 
+      x: -3.37398814568e-07
+      y: -0.00124593125375
+      z: -0.00695335001223
+      w: 0.999975048978
+```
+
+
+### View Assembly Contents
+
+`/ariac/briefcases` and `/ariac/briefcase_{N}/get_content` can be used to get the content of all briefcases or a specific briefcase, respectively.
+<!-- 
 ### Submit Trays without Delivery
 
 The `/ariac/submit_shipment` service can be used during development for submitting kits for evaluation without them being ready for delivery.
@@ -617,7 +552,7 @@ inspection_result: 4.0
 
 - The first argument describes the scoped name of the tray in a specific AGV (`agv2` in this case).
 - The second argument is the shipment type (usually retrieved on the topic `/ariac/orders`)
-- The third argument is the assembly station where the AGV should be delivered. Even though the AGV is not moving during this service call, we still to pass the correct assembly station.
+- The third argument is the assembly station where the AGV should be delivered. Even though the AGV is not moving during this service call, we still to pass the correct assembly station. -->
 
 ## Query Locations of Products
 

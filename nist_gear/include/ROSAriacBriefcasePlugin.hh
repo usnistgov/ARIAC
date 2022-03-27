@@ -36,12 +36,12 @@
 #include <nist_gear/ARIAC.hh>
 #include <nist_gear/DetectAssemblyShipment.h>
 #include <nist_gear/DetectedAssemblyShipment.h>
-#include "SideContactPlugin.hh"
+#include "ModelContactPlugin.hh"
 
 namespace gazebo
 {
   /// \brief A plugin for a contact sensor on a briefcase.
-  class GAZEBO_VISIBLE BriefcasePlugin : public SideContactPlugin
+  class GAZEBO_VISIBLE BriefcasePlugin : public ModelContactPlugin
   {
     /// \brief Constructor.
     public: BriefcasePlugin();
@@ -60,12 +60,6 @@ namespace gazebo
     /// \brief Update the briefcase based on which models are in contact
     protected: void ProcessContactingModels();
 
-    /// \brief Create a fixed joint to all contacting models
-    protected: virtual void LockContactingModels();
-
-    /// \brief Remove any fixed joints to contacting models
-    protected: virtual void UnlockContactingModels();
-
     /// \brief Update the kit based on which models are in contact
     public: std::string DetermineModelType(const std::string &modelName);
 
@@ -75,13 +69,6 @@ namespace gazebo
 
     /// \brief Publish the Assembly ROS message
     protected: void PublishAssemblyMsg();
-
-    /// \brief Service for locking the models to the briefcase and disabling updates
-    protected: void HandleLockModelsRequest(ConstGzStringPtr &_msg);
-
-    /// \brief Service for clearing the briefcase
-    protected: bool HandleClearService(
-      ros::ServiceEvent<std_srvs::Trigger::Request, std_srvs::Trigger::Response>& event);
 
     /// \brief Service for geting the content of a briefcase
     protected: bool HandleGetContentService(

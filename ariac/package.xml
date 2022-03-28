@@ -9,8 +9,7 @@
 
 
   <exec_depend>nist_gear</exec_depend>
-  <exec_depend>test_ariac</exec_depend>
-  <exec_depend>ariac_example</exec_depend>
+  <exec_depend>test_competitor</exec_depend>
   <exec_depend>gantry_moveit_config</exec_depend>
   <exec_depend>kitting_moveit_config</exec_depend>
   <buildtool_depend>catkin</buildtool_depend>

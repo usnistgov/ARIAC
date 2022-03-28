@@ -295,7 +295,15 @@ gantry_tray_camera:
   enable: false
 ```
 
-The `gantry_bin_camera` costs \$600 and can clearly see parts located in bins. The `gantry_tray_camera` costs \$300 and can see parts placed on the gantry tray. To see the view from each camera using RViz. Uncomment the following section in `sample_environment.launch` and start the simulation. In RViz, check the box next to `Image`.
+The `gantry_bin_camera` costs \$600 and can clearly see parts located in bins. The `gantry_tray_camera` costs \$300 and can see parts placed on the gantry tray. To see the view from each camera using RViz, uncomment the following section in `sample_environment.launch` and start the simulation. In RViz, check the box next to `Image`.
+
+```yaml
+ <!-- <group ns='ariac/gantry'>
+    <include file="$(find gantry_moveit_config)/launch/moveit_rviz.launch">
+      <arg name="rviz_config" value="$(find gantry_moveit_config)/launch/moveit.rviz"/>
+    </include>
+  </group>  -->
+  ```
 
 
 ![ariac2022_gantry_camera](../figures/2022/gantrycameras.png)

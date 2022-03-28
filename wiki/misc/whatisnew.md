@@ -77,7 +77,7 @@ The faulty gripper challenge can now happen when picking up parts from bins. In 
   - `gripper_part` can only grasp parts (any part).
   - `gripper_tray` can only grasp movable trays (any movable tray).
   - The gripper plugin prevents `gripper_part` to be used on movable trays and `gripper_tray` to be used on parts.
-- To change gripper, competitors need to move the gantry over the gripper station and change gripper through a ROS service. You will not see anything fancy, just new data being published on a topic.
+- To change gripper, competitors need to move the gantry over the gripper changing station and change gripper through a ROS service. You will not see anything fancy, just new data being published on a topic.
 - At the beginning of a trial, one of these two grippers will be mounted on the robot. This is specified in the `options` field in a trial configuration file.
 
 ## ROS Services, Topics, and Messages

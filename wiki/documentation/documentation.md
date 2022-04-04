@@ -17,7 +17,7 @@ GEAR is the software used by teams participating in the Agile Robotics for Indus
 
 - [System Requirements](system_requirements.md): The system requirements for GEAR.
 
-- [Competition Interface](competition_interface_documentation.md): How competitors are to communicate with GEAR.
+- [ARIAC API](api.md): How competitors are to communicate with GEAR.
 
 - [ARIAC Update Policy](update_policy.md)
 

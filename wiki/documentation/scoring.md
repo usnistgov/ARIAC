@@ -2,32 +2,50 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 -------------------------------------------------
 
+# Wiki | Documentation | Scoring
+
+
 - [Wiki | Documentation | Scoring](#wiki--documentation--scoring)
+  - [Scoring System](#scoring-system)
   - [Stability](#stability)
   - [Cost metrics](#cost-metrics)
     - [Team System Cost (TC)](#team-system-cost-tc)
+  - [Performance Metrics](#performance-metrics)
     - [Baseline System Cost (BC)](#baseline-system-cost-bc)
-    - [Cost Factor (**CF)**](#cost-factor-cf)
-  - [Performance metrics](#performance-metrics)
+    - [Cost Factor (CF)](#cost-factor-cf)
     - [Shipment Completion Score (SCS)](#shipment-completion-score-scs)
       - [Kitting](#kitting)
+        - [Movable Tray](#movable-tray)
+        - [Products](#products)
       - [Assembly](#assembly)
     - [Order Completion Score (OCS)](#order-completion-score-ocs)
     - [Order Time (OT)](#order-time-ot)
     - [Average Time (AT)](#average-time-at)
-    - [Efficiency Factor (**EF**)](#efficiency-factor-ef)
-    - [Collision (collision)](#collision-collision)
-  - [Trial Score (**TS**)](#trial-score-ts)
+    - [Efficiency Factor (EF)](#efficiency-factor-ef)
+    - [Collision (CO)](#collision-co)
+  - [Trial Score (TS)](#trial-score-ts)
 
-# Wiki | Documentation | Scoring
 
-- Scores will be made up of:
-  1. An automatically calculated component.
-  2. A score based on judges.
-- The automatically calculated component for each trial is a combination of cost and performance metrics.
-- A team's final score will be calculated as the sum of scores for each of the competition trials.
-- See [challenge.gov](https://www.challenge.gov/challenge/ariac/) for details on the judges' scoring (scroll to Judging Criteria).
-- **Note** that only automated metrics will be used during the qualification rounds of the competition (no judges' scoring).
+
+## Scoring System
+
+```
+Final Score
+│
+└───Trial Scores + Human Judges
+    │   
+    └───Order Scores
+        │
+        └───Shipment Scores
+```
+
+Each competitor's system will be assessed on a set of trials during the qualifiers and the finals. The assessment results in a Final Score, which is a combination of cost and performance metrics after completing the qualifiers and the finals. The Final Score is  calculated as the sum of Trial Score for each of the competition trials. Each Trial Score consists of at least one Order Score and each Order Score consists of at least one Shipment Score.
+- In the qualifiers, the Final Scores will be calculated only using Trial Scores. Final Scores will be used to decide which teams move to the finals. 
+- In the finals, the Final Scores will be calculated using Trial Scores along with scores assigned by human judges. Judging criteria are as follows:
+  - **Average of Judge Scoring** (20 points): The judges will provide a total score of 20 points, broken down as follows:
+  - **Novelty/Innovativeness**: Approach taken develops new techniques to advance industry robot agility (Up to six points)
+  - **Ability for Industry to Implement**: Approach taken can reasonably be applied by industry to solve similar challenges. (Up to six points)
+  - **Alignment with the Spirit of the Competition**: Approach taken provides a practical and realistic approach that directly addresses the stated goals of the ARIAC Competition. (Up to eight points)
 
 ## Stability
 
@@ -49,23 +67,8 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
   - $300 for each RGBD camera used.
   - $200 for each depth camera used.
   - $100 for each other sensor used (breakbeam, proximity, etc).
-  
-### Baseline System Cost (BC)
 
-A constant cost amount, set by NIST.
-
-### Cost Factor (**CF)**
-
-A comparison of <img src="https://render.githubusercontent.com/render/math?math=BC"> to <img src="https://render.githubusercontent.com/render/math?math=TC">.
-   - Competitors that have the same <img src="https://render.githubusercontent.com/render/math?math=TC"> will have <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} = 1">
-   - Competitors with a <img src="https://render.githubusercontent.com/render/math?math=TC"> lower than <img src="https://render.githubusercontent.com/render/math?math=BC"> are rewarded by having  <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} > 1"> 
-   - Teams with a <img src="https://render.githubusercontent.com/render/math?math=TC"> higher than <img src="https://render.githubusercontent.com/render/math?math=BC"> are penalized by having  <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} < 1">
-   - <img src="https://render.githubusercontent.com/render/math?math=\mathbf{CF} = \frac{BC}{TC}\,\text{where}\,BC = 8200">
-   <!-- - **CF** = (BC / TC) where BC = 10000 -->
-
-   <!--* `CF = (BC / TC)` where `BC = 1700`-->
-
-## Performance metrics
+## Performance Metrics
 
 - Performance metrics cover both *completion* and *efficiency* and they are calculated for each trial separately.
   - *Completion* captures the quality of the shipments submitted.
@@ -74,115 +77,140 @@ A comparison of <img src="https://render.githubusercontent.com/render/math?math=
 - The following values are calculated for each order requested in a trial.
 - The values in **bold** will be used in the final score calculation for a trial.
 
+### Baseline System Cost (BC)
+
+The baseline system cost <!-- ${BC}$ --> <img style="transform: translateY(0.0em); background: white;" src="../svg/ariacBC.svg"> is a constant cost set by NIST. This cost is calculated by adding up the cost of each camera and sensor that can cover all possible scenarios in the given workcell. The result is computed for the worst case scenario, that is, no optimization of sensor placement was taken into account.
+
+<!-- $$
+BC=8200
+$$ --> 
+
+<div align="center"><img style="background: white;" src="../svg/ariacBliJQpBpgk.svg"></div>
+
+
+### Cost Factor (CF)
+
+The cost factor <!-- $\mathbf{CF}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacjTEdoN344a.svg"> is a comparison of <!-- ${BC}$ --> <img style="transform: translateY(0.0em); background: white;" src="../svg/ariacBC.svg"> to <!-- $TC$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacMI3yq333Fc.svg">  where  <!-- $\mathbf{CF}=\frac{BC}{TC}$ --> <img style="transform: translateY(0.5em); background: white;" src="../svg/ariacDBGo3u4gUC.svg">.
+
+- <!-- $\mathbf{CF}=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacO00ncNkX2I.svg">  if <!-- $BC=TC$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacAlsIdR9EfW.svg">.
+- Competitors with <!-- $TC<BC$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacoTlgEmy0IC.svg">  will be rewarded by having <!-- $\mathbf{CF}>1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacXkl4hRm888.svg">.
+- Competitors with <!-- $TC>BC$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariac7p9dLBzv9o.svg"> will be penalized by having <!-- $\mathbf{CF}<1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacf9hAzJprmG.svg">.
+  
 <!-- **Note** that products must be placed onto the base of the shipping box to count for scoring, not on top of other products. -->
 ### Shipment Completion Score (SCS)
 
 #### Kitting
 
-Kitting shipments require movable trays. If the wrong movable tray is used and parts placed in the movable tray are perfect then points for correct pose are not awarded. Not using a movable tray will result in a 0 for the shipment.
+The score of a kitting shipment depends heavily on the movable tray required in the shipment. There will always be at least one movable tray of the correct model for each kitting shipment. The pose tolerance for a movable tray is <!-- $\pm$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacQt9f9IAYJw.svg">2 cm for position and <!-- $\pm$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacQt9f9IAYJw.svg">0.1 rad for orientation.
 
-- <img src="https://render.githubusercontent.com/render/math?math=\text{For each product}\,i\,\text{in a shipment of}\, n\,\text{products,}\, SCS=(\sum_{i=1}^{n}PCT_{i}%2BPCC_{i}%2BPCP_{i}%2Bbonus)\times destination,\,\text{where:}">
-  
-  - <img src="https://render.githubusercontent.com/render/math?math=\text{Product correct type (}PCT_i\text{): 1pt if product}\, i\, \text{ is of the correct type and touching the tray.}"> 
-  
-    - *Example*: If the robot places `assembly_pump_blue` in the tray while `assembly_pump_red` was requested in the order, then 1pt is awarded since the type (`pump`) matches.
-  - <img src="https://render.githubusercontent.com/render/math?math=\text{Product correct color (}PCC_i\text{): 1pt if product}\,i\, \text{ has the correct color.}"> 
+##### Movable Tray
 
-    - **NOTE**: If the order requests `assembly_pump_blue` but `assembly_battery_blue` is placed in the tray by the robot, then no point is awarded. Even though these two products have the same color (`blue`), they are not of the same type (`pump` Vs. `battery`). ***The type of a product has a higher priority than the product's color in ARIAC***.
+Score for movable trays:
 
-  - <img src="https://render.githubusercontent.com/render/math?math=\text{Product correct pose (}PCP_i\text{): 1pt if product}\,i\,\text{is in the correct pose in the tray.}"> 
-  
-    - The location must be within 3 cm of the target and the orientation must be within 0.1 rad.
-  
-  - <img src="https://render.githubusercontent.com/render/math?math=\text{All products bonus (}bonus\text{): Points totaling the number of products}\, n\,\text{in the shipment}.">
-  
-    - <img src="https://render.githubusercontent.com/render/math?math=\text{For}\,n\,\text{products in the shipment,}\,bonus=n\, \text{iff the following is true for each product}\, i :"> 
-  
-      - <img src="https://render.githubusercontent.com/render/math?math=PCT_{i}=1\wedge PCC_{i}=1\wedge PCP_{i}=1\wedge\,\text{product}\,i\, \text{is not faulty}">.
-  
-  - <img src="https://render.githubusercontent.com/render/math?math=\text{Destination (}destination\text{): Wrong destinations will set the score for the shipment to 0.}">
+- If no movable tray is used for a kitting shipment when one movale tray is required then the score is 0 for the shipment.
+- If the correct movable tray is used but its pose in the static kit tray is incorrect then the bonus is NOT awarded.
+- If the wrong movable tray is used then points for correct product pose and bonus are not awarded.
 
-    - <img src="https://render.githubusercontent.com/render/math?math=\text{For kitting shipments, }\,destination=dest_{agv}\times dest_{as}">
-      
-      - <img src="https://render.githubusercontent.com/render/math?math=\text{If a kitting shipment is built on the wrong AGV then}\,dest_{agv}=0\,\text{otherwise,}\,dest_{agv}=1">
-      - <img src="https://render.githubusercontent.com/render/math?math=\text{If a kitting shipment is delivered to the wrong assembly station then}\,dest_{as}=0,\text{otherwise,}\,dest_{as}=1">
- 
+##### Products
+<!-- <img src="../figures/2022/scoring_kitting.jpg" alt="kitting scoring" width="750"/> -->
+
+Score for products are computed within a movable tray. For each non-faulty product <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> in a shipment of <!-- $n$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/n.svg"> products, the shipment completion score <!-- $SCS$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariacnGVSxcjWHY.svg"> is computed as follows:
+
+<!-- $$
+SCS=(\sum_{i=1}^{n} PCT_i + PCC_i + PCP_i + bonus) \times destination
+$$ --> 
+
+<div align="center"><img style="background: white;" src="../svg/ariacB6lM5lizZG.svg"></div>
+
+- <!-- $PCT_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/htC4NdyzHI.svg"> if the product <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> is of the correct type and is placed flat in the tray. <!-- $\mathrm{\mathbf{Example}}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/Pq2SLgEZFb.svg">: If <!-- $\textcolor{red}{\mathrm{assembly\_pump\_red}}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/bWCPfZ8dfS.svg"> is requested in the shipment but <!-- $\textcolor{blue}{\mathrm{assembly\_pump\_blue}}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/XNF5mfA2jN.svg"> was placed instead, then 1pt is awarded since the type <!-- $\mathrm{pump}$ --> (<img style="transform: translateY(0.1em); background: white;" src="../svg/1BUw1d3TO1.svg">) is correct.
+- <!-- $PCC_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/JtHvYdBPte.svg"> if the product <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> is of the correct type, of the correct color, and is placed flat in the tray. <!-- $\mathrm{\mathbf{Counter\,\,Example}}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/NWBV6fUb2w.svg"> :  If <!-- $\textcolor{red}{\mathrm{assembly\_pump\_red}}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/bWCPfZ8dfS.svg"> is requested in the shipment but <!-- $\textcolor{red}{\mathrm{assembly\_battery\_red}}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/quAq95LtzA.svg"> was placed instead, then NO point is awarded. Even though these two products are of the same color, they are not of the same type.
+- <!-- $PCP_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/EKmQs9tlVO.svg"> if the product <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> is placed in the correct pose, is of the correct color, is of the correct type, and is placed flat in the tray. The pose tolerance for a product within a movable tray is <!-- $\pm$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/pm.svg">3 cm for position and <!-- $\pm$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/pm.svg">0.1 rad for orientation.
+- <!-- $bonus = n$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/mrGl7VreJw.svg"> if for each non-faulty product <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> in a shipment of <!-- $n$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/n.svg"> products: <!-- $PCT_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/cAegedd79S.svg"> and <!-- $PCC_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/TsFR5r6mvq.svg"> and <!-- $PCP_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/bMwwRioyoT.svg">.
+- <!-- $destination = correct_{agv} \times correct_{station}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/FIyD8kCKE4.svg"> where: 
+  - <!-- $correct_{agv}=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/SZb6Pn3ZJj.svg"> if the shipment was built on the correct AGV, otherwise <!-- $correct_{agv}=0$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/9qnGVu1bea.svg">.
+  - <!-- $correct_{station}=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/Bg8DVV8wRX.svg"> if the shipment was submitted to the correct assembly station, otherwise <!-- $correct_{station}=0$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/727Q25geOl.svg">.
+
+
+
+
 
 #### Assembly
 
-- <img src="https://render.githubusercontent.com/render/math?math=\text{For each product}\,i\,\text{in a shipment of} n \text{products},\, SCS=(\sum_{i=1}^{n}success_{i}%2Bcolor_{i}%2Bbonus)\times destination,\, \text{where:}">
+<!-- <img src="../figures/2022/ariac_scoring_assembly.jpg" alt="assembly scoring" width="750"/> -->
 
-  - <img src="https://render.githubusercontent.com/render/math?math=success_{i}=2\text{pts for each product successfully assembled.}">
+For each non-faulty product <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> in an assembly shipment of <!-- $n$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/n.svg"> products, the shipment completion score <!-- $SCS$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ariac06PsHvWh4p.svg"> for assembly is computed as shown in the formula below where the pose tolerance for a product in a briefcase is <!-- $\pm$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/pm.svg">2 cm for position and <!-- $\pm$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/pm.svg">0.1 rad for orientation.
 
-    - These 2pts are awarded iff products: 
-      - 1. have the correct type (e.g., `assembly_battery`)
-      - 2. inserted in the correct pose
-      - 3. not faulty
+<!-- $$
+SCS=(\sum_{i=1}^{n} PCTP_i + PCC_i + bonus) \times destination
+$$ --> 
+<div align="center"><img style="background: white;" src="../svg/ariacBxzm8NRHph.svg"></div>
 
-    - **NOTE**: Partial points are not awarded in assembly (either 0pt or 2pts for each product).
-  
-  - <img src="https://render.githubusercontent.com/render/math?math=color_{i}=1\text{pt for each product}\, i\,\text{if}\,success_{i}=2\,\text{AND the color is correct.}">
-    
-    - There is an extra point available for each product if it is the correct color e.g., `assembly_battery_blue`. 
-    - **NOTE**: If the product is not of the correct type **AND** not in the correct pose **AND** not faulty then this extra point is not awarded, even if the product is of the correct color.
-  
-  - <img src="https://render.githubusercontent.com/render/math?math=bonus = 4\times n\,\text{for}\,n\,\text{products in the shipment iff}\, success_{i}=2\,\text{AND}\,color_{i}=1\,\text{for each product}\,i\,\text{in the shipment. Otherwise}\,bonus = 0.">
-  
-    - An all-products bonus is awarded to make a maximum of 4 times the number of products being inserted into the assembly (so for the ventilator briefcase design, the bonus would be a maximum of 16pts for a fully completed ventilator of 4 products).
-    - **NOTE**: The all-products bonus is not associated to individual products but for the whole shipment. To be awarded the bonus all the products in the shipment have to be of the correct type **AND** placed in the correct pose **AND** not be faulty **AND** have the correct color.
-   - <img src="https://render.githubusercontent.com/render/math?math=destination=0\,\text{if the briefcase was assembled  at the wrong assembly station, otherwise}\,destination=1.">
+
+- <!-- $PCTP_i=2$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ReAg07E1iH.svg"> if the product is of the correct type and has the correct pose. No partial point is awarded, it is either 0 or 2. <!-- $\mathrm{\mathbf{Example}}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/Pq2SLgEZFb.svg">: If <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> is of the correct type but the pose is not correct then <!-- $PCTP_i=0$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/CQC6ZPmBEN.svg"> for  <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg">.
+- <!-- $PCC_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/YfAdbdDhV0.svg"> for <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> if <!-- $PCTP_i=2$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/Sre06Q2WTD.svg"> and <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg"> has the correct color. 
+- <!-- $bonus$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/vQy079xQ4u.svg">: An all-products bonus is awarded to make a maximum of 4 times the number of products being inserted into the assembly (for the ventilator briefcase design, the bonus would be a maximum of 16 for a fully completed ventilator of 4 products).
+
+  - <!-- $bonus=4\times n$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/WpzDgowJfA.svg"> for <!-- $n$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/n.svg"> products in the shipment if for each product <!-- $i$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/i.svg">, <!-- $PCTP_i=2$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/dQ7K9NJ23d.svg"> and <!-- $PCC_i=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/VQEyCJNaTI.svg">. Otherwise, <!-- $bonus=0$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/KLgPFJy4Mt.svg">.
+  - <!-- $destination=0$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/iXi6WKs7Sq.svg"> if assembly was done at the wrong assembly station. Otherwise,  <!-- $destination=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/ImoP78PcxR.svg">.
 
 ### Order Completion Score (OCS)
 
-<img src="https://render.githubusercontent.com/render/math?math=OCS=\sum_{n=1}^{2} SCS_{n}">
+The order completion score <!-- $\mathbf{OCS}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/OCS.svg"> is the sum of the shipment completion score for each shipment <!-- $n$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/n.svg"> in the order. The formula for <!-- $\mathbf{OCS}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/OCS.svg"> is given by the following formula:
 
-The order completion score is the sum of the shipment completion score for each shipment  <img src="https://render.githubusercontent.com/render/math?math=n"> in the order.
+<!-- $$
+\mathbf{OCS}=\sum_{n=1}^{2} SCS_n
+$$ --> 
+
+<div align="center"><img style="background: white;" src="../svg/JHJjIa9rLu.svg"></div>
+
+For a trial with two orders, <!-- $\mathbf{OCS_1}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/eSyNex6WHo.svg"> and <!-- $\mathbf{OCS_2}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/3ToOSzN5Kg.svg"> are computed for the first and for the second order, respectively.
 
 ### Order Time (OT)
 
-The time taken to complete the order, measured from when the order was first requested. If there are 2 orders that need to be completed, then <img src="https://render.githubusercontent.com/render/math?math=OT_1"> and <img src="https://render.githubusercontent.com/render/math?math=OT_2"> will be computed.
+The order time <!-- $OT$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/woY5BOncyf.svg"> is the time taken to complete the order, measured from when the order was first announced. If there are 2 orders that need to be completed, then <!-- $OT_1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/iwiekrlbcB.svg"> and <!-- $OT_2$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/tHwipqmpzw.svg"> will be computed for the first order and for the second order, respectively. 
+
+
 
 ### Average Time (AT)
 
-<img src="https://render.githubusercontent.com/render/math?math=\text{Average time for all competitors to complete the order. If there are 2 orders that need to be completed then}\,AT_1\,\text{and}\,AT_2\,\text{will be computed}">
+The average time <!-- $AT$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/BVHzk2gTo9.svg"> is computed by averaging the time taken by each competitor to complete the order in a trial. If a trial consists of two orders, then <!-- $AT_1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/Mvr55mNCbL.svg"> and <!-- $AT_2$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/T8wNl81z3w.svg"> are computed for the first order and for the second order, respectively.
 
-<!-- Average time for all competitors to complete the order. If there are 2 orders that need to be completed then <img src="https://render.githubusercontent.com/render/math?math=AT_1"> and <img src="https://render.githubusercontent.com/render/math?math=AT_2"> will be computed. -->
 
-### Efficiency Factor (**EF**)
+### Efficiency Factor (EF)
 
-- <img src="https://render.githubusercontent.com/render/math?math=EF=\frac{AT}{OT}">
+The efficient factor <!-- $\mathbf{EF}$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/jnfL6f2q46.svg"> assesses how efficient was one competitor's system  compared to the combined systems of the other competitors in the completion of an order within a trial. The efficient factor for an order is computed as follows:
+<!-- $$
+\mathbf{EF}=\frac{AT}{OT}
+$$ --> 
 
-  - <img src="https://render.githubusercontent.com/render/math?math=\text{A comparison of a competitor's order time compared to all other competitors.}">
+<div align="center"><img style="background: white;" src="../svg/m5RW4XBTDm.svg"></div>
+If a trial consists of two orders, the efficiency factor for the first order and for the second order  are computed as shown below:
 
-  - <img src="https://render.githubusercontent.com/render/math?math=\text{If there are 2 orders that need to be completed then}\,EF_1=\frac{AT_1}{OT_1}\,\text{and}\,EF_2=\frac{AT_2}{OT_2}">
+<!-- $$
+\mathbf{EF_1}=\frac{AT_1}{OT_1}, \mathbf{EF_2}=\frac{AT_2}{OT_2}
+$$ --> 
 
-### Collision (collision)
+<div align="center"><img style="background: white;" src="../svg/bbyQOuXG86.svg"></div>
 
-- <img src="https://render.githubusercontent.com/render/math?math=collision=0\,\text{in the following cases:}">
-  
-  - The kitting and the assembly robots collide with each other.
-  - The arm on the assembly robot collides with the robot torso (including the torso tray).
-- <img src="https://render.githubusercontent.com/render/math?math=\text{Otherwise,}\,collision=1">
+### Collision (CO)
 
-## Trial Score (**TS**)
+A collision occurs when both robots collide with each other, when a robot collides with itself, or when a robot collides with a simulated human. If any collision occurs, <!-- $\mathbf{CO}=0$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/IOwhOz8w1m.svg">. In the case of no collision, <!-- $\mathbf{CO}=1$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/grxyoA2wUJ.svg">.
 
-- <img src="https://render.githubusercontent.com/render/math?math=\text{The final trial score}\,\mathbf{TS}\,\text{for a trial is calculated as follows:}">
-  
-  - <img src="https://render.githubusercontent.com/render/math?math=\let \mathbf{CS_j}, \mathbf{EF_j}\,\text{be the values for the}\,\mathbf{j^{th}}\,\text{order in a trial,}\, \mathbf{j=1,2}">
-  - <img src="https://render.githubusercontent.com/render/math?math=\let \mathbf{h=3}\,\text{as a high-priority factor that encourages quick response to the second (higher priority) order that is issued.}">
-  -  <img src="https://render.githubusercontent.com/render/math?math=penalty:\,\text{1pt for each part dropped on the floor (intentionally or not).}">
-  
-     -  <img src="https://render.githubusercontent.com/render/math?math=\text{Competitors should use the faulty part collector to discard faulty products.}">
 
-<img src="https://render.githubusercontent.com/render/math?math=\mathbf{TS} = (collision \times (\mathbf{CF} \times avg(\sum_{j=1}^{2}\mathbf{CS_j})%2B\mathbf{EF_1} \times \mathbf{CS_1}%2B\mathbf{EF_2}\times \mathbf{CS_2}\times \mathbf{h})) - penalty">
+## Trial Score (TS)
 
-<!-- ```
-TS = COL * (
-           CF * average(CS)
-           + EF1 * CS1
-           + EF2 * CS2 * h
-           )
-``` -->
+The score <!-- $TS$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/7GwlPn7NCP.svg"> for a given trial is computed as follows:
+
+<!-- $$
+TS=(CO\times (CF\times avg(\sum_{j=1}^{2} OCS_j)+EF_1\times OCS_1 + EF_2\times OCS_2\times h))-penalty
+$$ --> 
+
+<div align="center"><img style="background: white;" src="../svg/0o4jBv03yt.svg"></div>
+
+- The subscript <!-- $j$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/dLP56KffUY.svg"> refers to each order in a trial.
+- <!-- $h=3$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/SKTXcMIiyc.svg"> is a high-priority factor which encourages quick response to the second order (higher priority).
+- <!-- $penalty$ --> <img style="transform: translateY(0.1em); background: white;" src="../svg/pF9ZJsgsPj.svg"> is the sum of all parts dropped on the floor by the robots.
+
 
 -------------------------------------------------
 

@@ -693,6 +693,9 @@ expand_snippet('rgbd_camera.sdf.template')
           <lock_unlock_movable_tray_on_agv>
             /ariac/kit_tray_@(str(agv_id))/lock_unlock_models
           </lock_unlock_movable_tray_on_agv>
+          <lock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/lock</lock_tray_service_name>
+          <unlock_tray_service_name>/ariac/kit_tray_@(str(agv_id))/unlock</unlock_tray_service_name>
+          <tray_locked_status_param>/ariac/kit_tray_@(str(agv_id))/lock/status</tray_locked_status_param>
           <update_rate>20</update_rate>
         </plugin>
       </model>

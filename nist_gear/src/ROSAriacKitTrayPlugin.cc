@@ -86,10 +86,29 @@ void KitTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   std::string kit_tray_content_service_name = "get_content";
   if (_sdf->HasElement("get_content_service_name"))
     kit_tray_content_service_name = _sdf->Get<std::string>("get_content_service_name");
-  this->trayContentsServer =
+  this->tray_contents_server =
     this->rosNode->advertiseService(kit_tray_content_service_name, &KitTrayPlugin::HandleGetMovableTrayService, this);
 
- 
+  std::string lock_tray_service_name = "";
+  if (_sdf->HasElement("lock_tray_service_name"))
+    lock_tray_service_name = _sdf->Get<std::string>("lock_tray_service_name");
+  this->lock_tray_server =
+    this->rosNode->advertiseService(lock_tray_service_name, &KitTrayPlugin::HandleLockTrayService, this);
+
+  std::string unlock_tray_service_name = "";
+  if (_sdf->HasElement("unlock_tray_service_name"))
+    unlock_tray_service_name = _sdf->Get<std::string>("unlock_tray_service_name");
+  this->unlock_tray_server =
+    this->rosNode->advertiseService(unlock_tray_service_name, &KitTrayPlugin::HandleUnlockTrayService, this);
+
+  std::string tray_locked_status_param = "";
+  if (_sdf->HasElement("tray_locked_status_param")) {
+    tray_locked_status_param = _sdf->Get<std::string>("tray_locked_status_param");
+    this->kittray_lock_status_param = tray_locked_status_param;
+    // start all kit trays in an unlocked state
+    this->rosNode->setParam(tray_locked_status_param, "unlocked");
+  }
+
 
 
   // Gazebo subscription for the lock trays topic
@@ -124,18 +143,35 @@ void KitTrayPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
 }
 
-void KitTrayPlugin::HandleLockModelsRequest(ConstGzStringPtr& _msg){
+void KitTrayPlugin::HandleLockModelsRequest(ConstGzStringPtr& _msg) {
+
+  std::string kit_tray_locked_status;
+  this->rosNode->getParam(this->kittray_lock_status_param, kit_tray_locked_status);
+
+  
   if (_msg->data() == "lock") {
     std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    this->LockContactingModels();
+    if (kit_tray_locked_status == "unlocked") {
+      this->LockContactingModels();
+      this->rosNode->setParam(this->kittray_lock_status_param, "unlocked");
+    }
+
+
   }
   else if (_msg->data() == "unlock") {
     std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    this->UnlockContactingModels();
+    if (kit_tray_locked_status == "locked") {
+      this->UnlockContactingModels();
+
+      this->rosNode->setParam(this->kittray_lock_status_param, "locked");
+    }
   }
 }
 
-void KitTrayPlugin::LockContactingModels(){
+
+
+//////////////////////////////////////////////
+void KitTrayPlugin::LockContactingModels() {
   boost::mutex::scoped_lock lock(this->mutex);
   physics::JointPtr fixedJoint;
 
@@ -352,6 +388,44 @@ void KitTrayPlugin::ProcessContactingModels()
 //   this->currentKitPub.publish(detected_movable_tray_msg);
 // }
 
+bool KitTrayPlugin::HandleLockTrayService(
+  std_srvs::Trigger::Request&,
+  std_srvs::Trigger::Response& res) {
+  std::string kit_tray_locked_status;
+  this->rosNode->getParam(this->kittray_lock_status_param, kit_tray_locked_status);
+
+    if (kit_tray_locked_status == "unlocked") {
+      this->LockContactingModels();
+
+      this->rosNode->setParam(this->kittray_lock_status_param, "locked");
+      res.message = "Movable tray is now locked on the kit tray";
+    }
+    else {
+      res.message = "Movable tray is already locked on the kit tray";
+    }
+    return true;
+}
+
+bool KitTrayPlugin::HandleUnlockTrayService(
+  std_srvs::Trigger::Request&,
+  std_srvs::Trigger::Response& res) {
+  std::string kit_tray_locked_status;
+  this->rosNode->getParam(this->kittray_lock_status_param, kit_tray_locked_status);
+
+  if (kit_tray_locked_status == "locked") {
+    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    if (kit_tray_locked_status == "locked") {
+      this->UnlockContactingModels();
+
+      this->rosNode->setParam(this->kittray_lock_status_param, "unlocked");
+      res.message = "Movable tray is now unlocked on the kit tray";
+    }
+    else {
+      res.message = "Movable tray is already unlocked on the kit tray";
+    }
+  }
+  return true;
+}
 
 /////////////////////////////////////////////////
 bool KitTrayPlugin::HandleGetMovableTrayService(

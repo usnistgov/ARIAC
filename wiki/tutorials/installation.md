@@ -35,7 +35,7 @@ You should see 18.04 Bionic Beaver in that file.
 
 ### Install ROS and Gazebo
 
-- GEAR uses [ROS Melodic](http://www.ros.org/) and Gazebo 9.16.0 to simulate the environment
+- GEAR uses [ROS Melodic](http://www.ros.org/) and at least Gazebo 9.16.0 to simulate the environment.
   - Follow these instructions to install [ROS Melodic](http://wiki.ros.org/melodic/Installation/Ubuntu).
   
   - The default version of Gazebo (9.0) that comes with ROS Melodic will not work with the current version of GEAR. Gazebo 9.16.0 is recommended and can be installed with the following instructions.

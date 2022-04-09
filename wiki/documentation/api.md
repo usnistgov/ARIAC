@@ -6,7 +6,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
   - [Sensors](#sensors)
   - [TF frames](#tf-frames)
   - [Robot Status and Control](#robot-status-and-control)
-  - [Process management](#process-management)
+  - [Process Management](#process-management)
   - [Cheats](#cheats)
 
 # Wiki | Documentation |API
@@ -138,7 +138,7 @@ Topic and services that can be used to control the robot actuators are described
     - srv: [nist_gear/RobotHealth.msg](../../nist_gear/msg/RobotHealth.msg) 
 
 
-## Process management
+## Process Management
 
 The topics and services describe in this section should be used to interact with the GEAR interface.
 
@@ -173,7 +173,11 @@ The topics and services describe in this section should be used to interact with
   - service: `/ariac/agv{N}/move_to_station {station_name}`.
     - **Note**: To move an AGV to its kitting station, `{station_name}` is `ks`
     - srv: [nist_gear/srv/MoveToStation.srv](../../nist_gear/srv/MoveToStation.srv) 
-
+- Lock/unlock any movable tray located on an AGV (where `N` can take a value between 1 and 4).
+  - service to lock: `rosservice call /ariac/kit_tray_{N}/lock`
+    - Example: `rosservice call /ariac/kit_tray_1/lock` locks the movable tray located on AGV1.
+  - service to unlock: `rosservice call /ariac/kit_tray_{N}/unlock`
+    - Example: `rosservice call /ariac/kit_tray_1/unlock` unlocks the movable tray located on AGV1.
 
 ## Cheats
 

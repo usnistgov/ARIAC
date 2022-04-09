@@ -543,7 +543,6 @@ void MovableKitTrayPlugin::LockContactingModels()
             this->grippable_model_types.end(), model_type);
         bool grippable_model = it != this->grippable_model_types.end();
         if (grippable_model) {
-            // gzdbg << "[LockContactingModels] :: Number of models on tray: " << this->contactingModels.size() << "\n";
             trayPartJoint = this->world->Physics()->CreateJoint(
                 "fixed", this->model);
             auto jointName = this->model->GetName() + "_" + part->GetName() + "__joint__";
@@ -555,22 +554,15 @@ void MovableKitTrayPlugin::LockContactingModels()
             part->SetWorldPose(part->WorldPose() + ignition::math::Pose3d(0, 0, 0.0015, 0, 0, 0));
 
             auto modelName = part->GetName();
-            // gzdbg << "[MODEL NAME]: " << modelName << std::endl;
             auto linkName = modelName + "::link";
-            // gzdbg << "[LINK NAME]: " << linkName << std::endl;
             auto link = part->GetLink(linkName);
-            // gzdbg << "[LINK NAME]: " << link->GetName() << std::endl;
-
-            // gzdbg << "[LINK NAME PARENT]: " << link->GetParent() << std::endl;
-            // gzdbg << "[LINK NAME CHILD]: " << link->GetChildLink() << std::endl;
             if (link == NULL) {
                 // If the model was inserted into the world using the "population" SDF tag,
                 // the link will have an additional namespace of the model type.
                 auto linkName = modelName + "::" + model_type + "::link";
                 link = part->GetLink(linkName);
-                // gzdbg << "[LINK NAME2]: " << link->GetName() << std::endl;
                 if (link == NULL) {
-                    // gzwarn << "Couldn't find link to make joint with: " << linkName;
+                    gzwarn << "Couldn't find link to make joint with: " << linkName;
                     continue;
                 }
             }
@@ -592,7 +584,7 @@ void MovableKitTrayPlugin::UnlockContactingModels()
 
     for (auto trayPartJoint : this->trayPartJoints) {
         if (trayPartJoint->GetChild()->GetName().compare("link") == 0) {
-            // gzwarn << "[DETACHING]->" << fixedJoint->GetName() << std::endl;
+            gzwarn << "[DETACHING]->" << trayPartJoint->GetChild()->GetName() << std::endl;
             trayPartJoint->Detach();
         }
     }

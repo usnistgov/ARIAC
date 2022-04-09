@@ -79,6 +79,8 @@ namespace gazebo {
                /// \brief Remove any fixed joints to contacting models
       protected: virtual void UnlockContactingModels();
 
+      // protected: void LockUnlockMovableTray(std::string lock_unlock);
+
                /// \brief Update the kit based on which models are in contact
       public: std::string DetermineModelType(const std::string& modelName);
 
@@ -92,17 +94,19 @@ namespace gazebo {
                /// \brief Service for locking the models to the tray and disabling updates
       protected: void HandleLockModelsRequest(ConstGzStringPtr& _msg);
 
-               //          /// \brief Service for clearing the tray
-               // protected: bool HandleClearService(
-               //   ros::ServiceEvent<std_srvs::Trigger::Request, std_srvs::Trigger::Response>& event);
-
-               /**
-                * @brief Get the movable tray located on this kit tray
-                *
-                */
+      /**
+      * @brief Get the movable tray located on this kit tray
+      *
+      */
       protected: bool HandleGetMovableTrayService(
             ros::ServiceEvent<nist_gear::DetectMovableTray::Request,
             nist_gear::DetectMovableTray::Response>& event);
+
+      protected: bool HandleLockTrayService(std_srvs::Trigger::Request&,
+            std_srvs::Trigger::Response& res);
+               
+      protected: bool HandleUnlockTrayService(std_srvs::Trigger::Request&,
+            std_srvs::Trigger::Response& res);
 
       protected: void PublishTFTransform(const common::Time sim_time);
 
@@ -138,7 +142,11 @@ namespace gazebo {
       public: ros::ServiceServer clearTrayServer;
 
             /// \brief ROS service to get the contents of the tray
-      public: ros::ServiceServer trayContentsServer;
+      public: ros::ServiceServer tray_contents_server;
+      public: ros::ServiceServer lock_tray_server;
+      public: ros::ServiceServer unlock_tray_server;
+            // parameter for the status of the current kit tray (locked or unlocked)
+      private: std::string kittray_lock_status_param;
 
             /// \brief Broadcaster for the tf frame of the tray
       public: tf2_ros::TransformBroadcaster tf_broadcaster;
@@ -171,7 +179,7 @@ namespace gazebo {
                void OnAGV4Location(std_msgs::String::ConstPtr msg);
                /// \brief List of parts that a movable tray should care about.
                  ///Anything not in this list will not be reported by the plugin.
-            public:std::vector<std::string> grippable_model_types;
+      public:std::vector<std::string> grippable_model_types;
       };
 }
 #endif

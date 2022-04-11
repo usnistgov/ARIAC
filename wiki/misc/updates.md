@@ -1,6 +1,11 @@
 Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.md) | [Tutorials](../tutorials/tutorials.md) | [Qualifiers](../qualifiers/qualifier.md) | [Finals](../finals/finals.md)
 
 ---
+
+## Release 2022, April 11
+- Fixed AGVs x offset when shipped to assembly stations. 
+  - Ticket [#139](https://github.com/usnistgov/ARIAC/issues/139)
+
 ## Release 2022, April 9
 
 - Added a ROS service to lock/unlock a movable tray on an AGV. For instance, to lock/unlock a movable tray on AGV1, one can do:

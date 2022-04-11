@@ -40,11 +40,11 @@ table_tray_infos:
 # mandatory: location of agvs and products at start
 agv_infos:
   agv1:
-    location: ks1
+    location: as2
   agv2:
     location: ks2
   agv3:
-    location: ks3
+    location: as4
   agv4:
     location: ks4
 

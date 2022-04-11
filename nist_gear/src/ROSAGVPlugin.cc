@@ -438,11 +438,11 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     double current_x{};
     double current_y{};
     // length (in meter) between ks1-as1, ks2-as1, ks3-as3, ks4-as3
-    float length_ks_as_1_3{ 4 };
+    float length_ks_as_1_3{ 3.334315 };
     // length (in meter) between ks and as2 or as4
-    float length_ks_as_2_4{ 9 };
+    float length_ks_as_2_4{ 8.324589 };
     // length (in meter) between as1 and as2 and between as43 and as4
-    float length_as_as{ 5 };
+    float length_as_as{ 4.990274 };
 
     /*
     * ======================================
@@ -483,7 +483,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * AGV1: From AS1 to AS2
     * ======================================
     */
-    current_x = -6.265685;
+    current_x = -5.600000;
     current_y = 4.675404;
     this->dataPtr->agv1_from_as1_to_as2_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -500,7 +500,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * ======================================
     */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = 4.675404;
     this->dataPtr->agv1_from_as2_to_as1_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -517,7 +517,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * ======================================
       */
 
-    current_x = -6.265685;
+    current_x = -5.6;
     current_y = 4.675404;
     this->dataPtr->agv1_from_as1_to_ks1_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_1_3_to_ks / speed_factor, false));
@@ -534,7 +534,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * ======================================
       */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = 4.675404;
     this->dataPtr->agv1_from_as2_to_ks1_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_2_4_to_ks / speed_factor, false));
@@ -583,7 +583,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * AGV2: From AS1 to AS2
     * ======================================
     */
-    current_x = -6.265685;
+    current_x = -5.6;
     current_y = 1.367643;
     this->dataPtr->agv2_from_as1_to_as2_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -600,7 +600,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * ======================================
     */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = 1.367643;
     this->dataPtr->agv2_from_as2_to_as1_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -617,7 +617,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * =====================================
       */
 
-    current_x = -6.265685;
+    current_x = -5.6;
     current_y = 1.367643;
     this->dataPtr->agv2_from_as1_to_ks2_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_1_3_to_ks / speed_factor, false));
@@ -634,7 +634,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * ======================================
       */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = 1.367643;
     this->dataPtr->agv2_from_as2_to_ks2_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_2_4_to_ks / speed_factor, false));
@@ -683,7 +683,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * AGV3: From AS3 to AS4
     * ======================================
     */
-    current_x = -6.265685;
+    current_x = -5.6;
     current_y = -1.333917;
     this->dataPtr->agv3_from_as3_to_as4_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -700,7 +700,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * ======================================
     */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = -1.333917;
     this->dataPtr->agv3_from_as4_to_as3_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -717,7 +717,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * =====================================
       */
 
-    current_x = -6.265685;
+    current_x = -5.6;
     current_y = -1.333917;
     this->dataPtr->agv3_from_as3_to_ks3_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_1_3_to_ks / speed_factor, false));
@@ -734,7 +734,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * ======================================
       */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = -1.333917;
     this->dataPtr->agv3_from_as4_to_ks3_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_2_4_to_ks / speed_factor, false));
@@ -784,7 +784,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * AGV4: From AS3 to AS4
     * ======================================
     */
-    current_x = -6.265685;
+    current_x = -5.6;
     current_y = -4.696062;
     this->dataPtr->agv4_from_as3_to_as4_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -801,7 +801,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     * ======================================
     */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = -4.696062;
     this->dataPtr->agv4_from_as4_to_as3_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_to_as / speed_factor, false));
@@ -818,7 +818,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * =====================================
       */
 
-    current_x = -6.265685;
+    current_x = -5.6;
     current_y = -4.696062;
     this->dataPtr->agv4_from_as3_to_ks4_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_1_3_to_ks / speed_factor, false));
@@ -835,7 +835,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
       * ======================================
       */
 
-    current_x = -11.265685;
+    current_x = -10.590274;
     current_y = -4.696062;
     this->dataPtr->agv4_from_as4_to_ks4_animation_ptr.reset(
         new gazebo::common::PoseAnimation(this->dataPtr->agv_name, move_time_as_2_4_to_ks / speed_factor, false));

@@ -8,7 +8,8 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
     - [Automated Guided Vehicles (AGVs)](#automated-guided-vehicles-agvs)
     - [Conveyor Belt](#conveyor-belt)
     - [Faulty Part Collector](#faulty-part-collector)
-    - [Tables for Movable Trays](#tables-for-movable-trays)
+    - [Movable Trays](#movable-trays)
+      - [Situations](#situations)
     - [Gripper Changing Station](#gripper-changing-station)
     - [Product Bins](#product-bins)
     - [Parts](#parts)
@@ -102,9 +103,23 @@ When a trial starts, each AGV is located at one of the 3 possible locations `ks[
 | `as3` |        |        | x      | x      |
 | `as4` |        |        | x      | x      |
 
-To learn how AGV locations are specified for a trial, please take a look at the section on [YAML Configuration Files](configuration_files.md).
 
-The figures below shows where AGVs stop for each of the three locations. To learn how to submit kitting shipments with AGVs, please see [GEAR Interface](../tutorials/gear_interface.md).
+To specify the location of each AGV when the simulation starts, one can edit a configuration file as follows:
+
+
+
+```yaml
+agv_infos:
+  agv1:
+    location: as2
+  agv2:
+    location: ks2
+  agv3:
+    location: as4
+  agv4:
+    location: ks4
+```
+In this example, `agv1` is spawned at `as2`, `agv2` at `ks2`, `agv3` at `as4`, and `agv4` at `ks4`. This is also described on the [GEAR Interface](../tutorials/gear_interface.md) page.
 
 ![ariac2021_agvs_stations.png](../figures/ariac2021_agvs_stations.jpeg)
 
@@ -120,7 +135,7 @@ The figures below shows where AGVs stop for each of the three locations. To lear
 
 - The faulty part collector has a deletion wall which will remove products from the scene when they are dropped in the collector. Dropping a product on the floor will also remove the product from the scene but a penalty will be applied to the score. It is recommended to use the collector to discard parts from the workcell.
 
-### Tables for Movable Trays
+### Movable Trays
 
 The workcell has 2 tables for movable trays where each table can contain up to 3 movable trays. Movable trays on the same table will be of the same model. The differrent movable tray models are:
 
@@ -132,6 +147,11 @@ The workcell has 2 tables for movable trays where each table can contain up to 3
 ![ariac2022traytables1](../figures/2022/traytables1.jpg)
 
 ![ariac2022traytables2](../figures/2022/traytables2.jpg)
+
+#### Situations
+- Movable trays will never be already located on an AGV. Competitors will always need to pick up movable trays when there is a kitting shipment.
+- There will never be a situation where a movable tray, already on an AGV, needs to be replaced with a different movable tray.
+- In some trials, the simulation starts with parts placed directly on AGVs' static trays (no movable trays involved). Competitors will never be asked to place movable trays below those parts. However, once all the parts have been removed from the static tray, this AGV may be reused for kitting, which requires a movable tray.
 
 ### Gripper Changing Station
 

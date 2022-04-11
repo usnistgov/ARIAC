@@ -3,6 +3,9 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 ---
 
 ## Release 2022, April 11
+- Updated [wiki](../documentation/competition_specifications.md#movable-trays) to address questions posted in ticket [#133](https://github.com/usnistgov/ARIAC/issues/133).
+
+## Release 2022, April 11
 - Fixed AGVs x offset when shipped to assembly stations. 
   - Ticket [#139](https://github.com/usnistgov/ARIAC/issues/139)
 

@@ -156,11 +156,11 @@ To complete an order, all the shipments in the order must be submitted.
 
 ### Submit Kitting Shipments
 
-There are four AGVs carrying trays that kits can be assembled on. When a kit has been completed, the AGV must be commanded to deliver the kit so it can be scored. A kitting shipment submission will always take the AGV from a kitting station to an assembly station. The shipment will be scored as soon as it is submitted (even though the AGV has not physically reached the assembly station).
+Kitting must be done on the back of AGVs, after a movable tray is placed on the AGVs. When a kit has been completed, the AGV must be commanded to deliver the kit so it can be scored. A kitting shipment submission will always take the AGV from a kitting station to an assembly station. The shipment will be scored as soon as it is submitted (even though the AGV has not physically reached the assembly station).
 
 - The service `/ariac/agv{N}/submit_shipment as{N} shipment_type` is used to submit kitting shipments where `N` is a value in the range [1,4] and `as` stands for assembly station.
-  - `agv{N}` is used to specify which AGV to submit. This should match the AGV specified in the kitting shipment in an order (see the field `agv: "agv2"` in the order above).
-  - `as{N}` is used to specify the assembly station where the kitting shipment must be delivered. This should match the station specified in the kitting shipment (see the field `assembly_station: "as1"` under `kitting_shipments` in the order above).
+  - `agv{N}` is used to specify which AGV to submit. This should match the AGV specified in the kitting shipment in an order (see the field `agv: "agv2"` in the order above, line 5).
+  - `as{N}` is used to specify the assembly station where the kitting shipment must be delivered. This should match the station specified in the kitting shipment (see the field `assembly_station: "as1"` under `kitting_shipments` in the order above, line 6).
 
 To submit the kitting shipment described in the order above, one would call the submission service in a terminal as follows:
 

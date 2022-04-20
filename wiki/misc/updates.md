@@ -2,6 +2,10 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ---
 
+## Announcement 2022, April 20
+
+- Due to the extended time needed to fix some bugs, the smoke test week and the qualifiers round have been pushed back one week.
+
 ## Release 2022, April 11
 - Updated [wiki](../documentation/competition_specifications.md#movable-trays) to address questions posted in ticket [#133](https://github.com/usnistgov/ARIAC/issues/133).
 

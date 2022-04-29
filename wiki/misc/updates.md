@@ -2,9 +2,17 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ---
 
-## Announcement 2022, April 20
+## Release 2022, April 28
 
-- Due to the extended time needed to fix some bugs, the smoke test week and the qualifiers round have been pushed back one week.
+- Fixed issues with movable trays and parts falling of agv2, agv3, and agv4.
+- Added a new service to check parts connected to a briefcase. See the [API](../documentation/api.md#process-management)
+- Changed the service  `/ariac/kit_tray_X/get_content` to `/ariac/agvX/content`. Although the service `/ariac/kit_tray_X/get_content` is still advertised, do not use it. Now the movable tray and parts inside the movable tray are reported. See the [API](../documentation/api.md#cheats)
+- Changed the submission date for the evaluation scripts. The new date is now Monday, 05/02 @5pm to give competitors time to test the new updates. If the updates show more stable results we will release the Docker image and the instructions for the evaluation scripts for the qualifiers on Saturday, 30th.
+- **Information on the qualifiers**:
+  - The qualifiers will consist of trials where kitting and assembly will be required.
+  - The purpose of the qualifiers is to check that competitors made at least some efforts to do kitting and assembly.
+  - During the qualifiers, the challenges will only include: flipped part, faulty parts, and sensor blackout.
+  - We will address minor issues while you test the new updates.
 
 ## Release 2022, April 11
 - Updated [wiki](../documentation/competition_specifications.md#movable-trays) to address questions posted in ticket [#133](https://github.com/usnistgov/ARIAC/issues/133).

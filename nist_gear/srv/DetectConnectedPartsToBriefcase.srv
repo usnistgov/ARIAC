@@ -1,0 +1,5 @@
+
+# Called to ask a briefcase to report what products were placed in it
+---
+# Parts connected to the briefcase
+DetectedConnectedProducts connected_products

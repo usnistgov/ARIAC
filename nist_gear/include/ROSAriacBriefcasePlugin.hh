@@ -36,6 +36,7 @@
 #include <nist_gear/ARIAC.hh>
 #include <nist_gear/DetectAssemblyShipment.h>
 #include <nist_gear/DetectedAssemblyShipment.h>
+#include <nist_gear/DetectConnectedPartsToBriefcase.h>
 #include "ModelContactPlugin.hh"
 
 namespace gazebo
@@ -70,9 +71,14 @@ namespace gazebo
     /// \brief Publish the Assembly ROS message
     protected: void PublishAssemblyMsg();
 
-    /// \brief Service for geting the content of a briefcase
+    /// \brief Service for getting the content of a briefcase
     protected: bool HandleGetContentService(
       ros::ServiceEvent<nist_gear::DetectAssemblyShipment::Request, nist_gear::DetectAssemblyShipment::Response> & event);
+
+    /// \brief Service for getting parts connected to a briefcase
+    protected: bool HandleGetConnectedPartsService(
+      ros::ServiceEvent<nist_gear::DetectConnectedPartsToBriefcase::Request, nist_gear::DetectConnectedPartsToBriefcase::Response> & event);
+
 
     protected: void PublishTFTransform(const common::Time sim_time);
 
@@ -110,6 +116,9 @@ namespace gazebo
 
     /// \brief ROS service to get the contents of the briefcase
     public: ros::ServiceServer briefcase_contents_server;
+
+    /// \brief ROS service to get parts connected to the briefcase
+    public: ros::ServiceServer briefcase_connected_parts_server;
 
     /// \brief Broadcaster for the tf frame of the briefcase
     public: tf2_ros::TransformBroadcaster tf_broadcaster;

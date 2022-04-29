@@ -742,6 +742,7 @@ expand_snippet('rgbd_camera.sdf.template')
           <tf_frame_name>briefcase_@(str(station_id))</tf_frame_name>
           <clear_briefcase_service_name>/ariac/briefcase_@(str(station_id))/clear_briefcase</clear_briefcase_service_name>
           <get_content_service_name>/ariac/briefcase_@(str(station_id))/get_content</get_content_service_name>
+          <get_connected_part_service_name>/ariac/briefcase_@(str(station_id))/get_assembled_parts</get_connected_part_service_name>
           <update_rate>20</update_rate>
           <faulty_parts>
 @[for part_name, part_info in faulty_products.items()]@
@@ -791,7 +792,6 @@ expand_snippet('rgbd_camera.sdf.template')
       <person_control_service_name>/ariac/person/animate</person_control_service_name>
       <population_activate_topic>/ariac/populate_belt</population_activate_topic>
       <conveyor_control_service>/ariac/conveyor/control</conveyor_control_service>
-      <submit_tray_service_name>/ariac/submit_shipment</submit_tray_service_name>
       
       <material_locations_service_name>/ariac/material_locations</material_locations_service_name>
       <kitting_shipment_content_topic_name>/ariac/trays</kitting_shipment_content_topic_name>
@@ -816,6 +816,7 @@ expand_snippet('rgbd_camera.sdf.template')
         <agv_control_service_name>/ariac/agv@(agv_id)</agv_control_service_name>
         <agv_location_topic>/ariac/agv@(str(agv_id))/station</agv_location_topic>
         <submit_kitting_shipment_name>/ariac/agv@(agv_id)/submit_kitting_shipment</submit_kitting_shipment_name>
+        <get_kit_tray_content_name>/ariac/agv@(agv_id)/content</get_kit_tray_content_name>
         <move_to_station_name>/ariac/agv@(agv_id)/move_to_station</move_to_station_name>
 @[if agv_id == 1 or agv_id == 2]@
         <ks_to_as1_name>/ariac/agv@(agv_id)/ks_to_as1</ks_to_as1_name>

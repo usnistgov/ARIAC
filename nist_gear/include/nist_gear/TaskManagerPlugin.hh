@@ -42,6 +42,7 @@
 #include <nist_gear/RobotHealth.h>
 #include <nist_gear/ChangeGripper.h>
 #include <nist_gear/TrayContents.h>
+#include <nist_gear/DetectKitTrayContent.h>
 //ros
 #include <sdf/sdf.hh>
 #include <std_msgs/String.h>
@@ -187,6 +188,10 @@ namespace gazebo {
    */
     bool HandleKittingSubmission(nist_gear::SubmitKittingShipment::Request& req,
       nist_gear::SubmitKittingShipment::Response& res, int agv_id);
+
+    bool HandleGetKitTrayContent(nist_gear::DetectKitTrayContent::Request& req,
+      nist_gear::DetectKitTrayContent::Response& res, int agv_id);
+
     /**
       * @brief Process a call to move an AGV to a station without shipment
       *
@@ -234,6 +239,10 @@ namespace gazebo {
     bool HandleAssemblySubmission(
       nist_gear::AssemblyStationSubmitShipment::Request& req,
       nist_gear::AssemblyStationSubmitShipment::Response& res, int station_id);
+
+    // bool HandleDetectConnectedParts(
+    //   nist_gear::DetectConnectedPartsToBriefcase::Request& req,
+    //   nist_gear::DetectConnectedPartsToBriefcase::Response& res, int station_id);
 
     /**
      * @brief Get the Material Locations Service Callback object

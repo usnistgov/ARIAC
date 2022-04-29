@@ -55,6 +55,8 @@ add_message_files(DIRECTORY msg
   StorageUnit.msg
   TrayContents.msg
   VacuumGripperState.msg
+  DetectedConnectedProducts.msg
+  DetectedConnectedProduct.msg
 )
 
 add_service_files(DIRECTORY srv
@@ -78,6 +80,8 @@ add_service_files(DIRECTORY srv
   SubmitKittingShipment.srv
   MoveToStation.srv
   DetectMovableTray.srv
+  DetectConnectedPartsToBriefcase.srv
+  DetectKitTrayContent.srv
 )
 
 generate_messages(

@@ -21,6 +21,8 @@
 #include <nist_gear/DetectedAssemblyShipment.h>
 
 #include "ROSAriacBriefcasePlugin.hh"
+#include "nist_gear/DetectedConnectedProducts.h"
+#include "nist_gear/DetectedConnectedProduct.h"
 
 using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(BriefcasePlugin)
@@ -92,6 +94,14 @@ void BriefcasePlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     contentServiceName = _sdf->Get<std::string>("get_content_service_name");
   this->briefcase_contents_server =
     this->node_handle->advertiseService(contentServiceName, &BriefcasePlugin::HandleGetContentService, this);
+
+  std::string connectedPartsServiceName = "";
+  if (_sdf->HasElement("get_connected_part_service_name"))
+    connectedPartsServiceName = _sdf->Get<std::string>("get_connected_part_service_name");
+  this->briefcase_connected_parts_server =
+    this->node_handle->advertiseService(connectedPartsServiceName, &BriefcasePlugin::HandleGetConnectedPartsService, this);
+
+  
 
   // Initialize Gazebo transport
   this->gz_node = transport::NodePtr(new transport::Node());
@@ -220,6 +230,26 @@ void BriefcasePlugin::PublishAssemblyMsg()
     assembly_msg.products.push_back(msgObj);
   }
   this->assembly_state_publisher.publish(assembly_msg);
+}
+
+///////////////////////////////////////
+bool BriefcasePlugin::HandleGetConnectedPartsService(ros::ServiceEvent<nist_gear::DetectConnectedPartsToBriefcase::Request, 
+nist_gear::DetectConnectedPartsToBriefcase::Response> & event)
+{
+  auto & response = event.getResponse();
+  nist_gear::DetectedConnectedProducts connected_products_msg;
+  connected_products_msg.briefcase_id = this->briefcase_id;
+  for (const auto &obj : this->current_assembly.objects)
+  {
+    nist_gear::DetectedConnectedProduct msgObj;
+    msgObj.type = obj.productType;
+    msgObj.is_faulty = obj.isProductFaulty;
+    connected_products_msg.products.push_back(msgObj);
+  }
+
+  response.connected_products = connected_products_msg;
+  return true;
+  
 }
 
 /////////////////////////////////////////////////

@@ -391,19 +391,19 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     }
     else if (index == "2") {
         if (_sdf->HasElement("lock_unlock_kt2_topic"))
-            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt1_topic");
+            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt2_topic");
         this->dataPtr->lock_unlock_models_gz_pub =
             this->dataPtr->gzNode->Advertise<msgs::GzString>(lock_unlock_gz);
     }
     else if (index == "3") {
         if (_sdf->HasElement("lock_unlock_kt3_topic"))
-            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt1_topic");
+            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt3topic");
         this->dataPtr->lock_unlock_models_gz_pub =
             this->dataPtr->gzNode->Advertise<msgs::GzString>(lock_unlock_gz);
     }
     else if (index == "4") {
         if (_sdf->HasElement("lock_unlock_kt4_topic"))
-            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt1_topic");
+            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt4_topic");
         this->dataPtr->lock_unlock_models_gz_pub =
             this->dataPtr->gzNode->Advertise<msgs::GzString>(lock_unlock_gz);
     }
@@ -1017,7 +1017,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv1_from_as1_to_ks1_animation_ptr->GetTime() >=
             this->dataPtr->agv1_from_as1_to_ks1_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV1 reached KS1." << std::endl;
+            gzdbg << "agv1 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1026,7 +1026,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv1_from_as2_to_ks1_animation_ptr->GetTime() >=
             this->dataPtr->agv1_from_as2_to_ks1_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV1 reached KS1." << std::endl;
+            gzdbg << "agv1 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1035,7 +1035,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv2_from_as1_to_ks2_animation_ptr->GetTime() >=
             this->dataPtr->agv2_from_as1_to_ks2_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV2 reached KS2." << std::endl;
+            gzdbg << "agv2 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1044,7 +1044,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv2_from_as2_to_ks2_animation_ptr->GetTime() >=
             this->dataPtr->agv2_from_as2_to_ks2_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV2 reached KS2." << std::endl;
+            gzdbg << "agv2 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1053,7 +1053,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_as3_to_ks3_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_as3_to_ks3_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV3 reached KS3." << std::endl;
+            gzdbg << "agv3 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1062,7 +1062,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_as4_to_ks3_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_as4_to_ks3_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV3 reached KS3." << std::endl;
+            gzdbg << "agv3 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1071,7 +1071,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv4_from_as3_to_ks4_animation_ptr->GetTime() >=
             this->dataPtr->agv4_from_as3_to_ks4_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV4 reached KS4." << std::endl;
+            gzdbg << "agv4 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1080,7 +1080,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv4_from_as4_to_ks4_animation_ptr->GetTime() >=
             this->dataPtr->agv4_from_as4_to_ks4_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV4 reached KS4." << std::endl;
+            gzdbg << "agv4 docked to kitting station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_KS";
         }
     }
@@ -1127,7 +1127,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv1_from_ks1_to_as1_animation_ptr->GetTime() >=
             this->dataPtr->agv1_from_ks1_to_as1_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV1 reached AS1." << std::endl;
+            gzdbg << "agv1 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1136,7 +1136,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv1_from_as2_to_as1_animation_ptr->GetTime() >=
             this->dataPtr->agv1_from_as2_to_as1_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV1 reached AS1." << std::endl;
+            gzdbg << "agv14 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1145,7 +1145,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv2_from_ks2_to_as1_animation_ptr->GetTime() >=
             this->dataPtr->agv2_from_ks2_to_as1_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV2 reached AS1." << std::endl;
+            gzdbg << "agv2 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1154,7 +1154,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv2_from_as2_to_as1_animation_ptr->GetTime() >=
             this->dataPtr->agv2_from_as2_to_as1_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV2 reached AS1." << std::endl;
+            gzdbg << "agv2 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1201,7 +1201,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv1_from_ks1_to_as2_animation_ptr->GetTime() >=
             this->dataPtr->agv1_from_ks1_to_as2_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV1 reached AS2." << std::endl;
+            gzdbg << "agv1 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1210,7 +1210,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv1_from_as1_to_as2_animation_ptr->GetTime() >=
             this->dataPtr->agv1_from_as1_to_as2_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV1 reached AS2." << std::endl;
+            gzdbg << "agv1 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1219,7 +1219,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv2_from_ks2_to_as2_animation_ptr->GetTime() >=
             this->dataPtr->agv2_from_ks2_to_as2_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV2 reached AS2." << std::endl;
+            gzdbg << "agv2 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1228,7 +1228,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv2_from_as1_to_as2_animation_ptr->GetTime() >=
             this->dataPtr->agv2_from_as1_to_as2_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV2 reached AS2." << std::endl;
+            gzdbg << "agv2 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1275,7 +1275,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_ks3_to_as3_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_ks3_to_as3_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV3 reached AS3." << std::endl;
+            gzdbg << "agv3 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1284,7 +1284,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_as4_to_as3_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_as4_to_as3_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV3 reached AS3." << std::endl;
+            gzdbg << "agv3 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1293,7 +1293,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv4_from_ks4_to_as3_animation_ptr->GetTime() >=
             this->dataPtr->agv4_from_ks4_to_as3_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV4 reached AS3." << std::endl;
+            gzdbg << "agv4 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1302,7 +1302,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv4_from_as4_to_as3_animation_ptr->GetTime() >=
             this->dataPtr->agv4_from_as4_to_as3_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV4 reached AS3." << std::endl;
+            gzdbg << "agv4 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1348,7 +1348,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_ks3_to_as4_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_ks3_to_as4_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV3 reached AS4." << std::endl;
+            gzdbg << "agv3 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1357,7 +1357,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_as3_to_as4_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_as3_to_as4_animation_ptr->GetLength();
         if (animation_done) {
-            // gzdbg << "AGV3 reached AS4." << std::endl;
+            gzdbg << "agv3 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1366,7 +1366,8 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv4_from_ks4_to_as4_animation_ptr->GetTime() >=
             this->dataPtr->agv4_from_ks4_to_as4_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "AGV4 reached AS4." << std::endl;
+            // gzdbg << "AGV4 reached AS4." << std::endl;
+            gzdbg << "agv4 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1377,6 +1378,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         if (animation_done) {
             // gzdbg << "AGV4 reached AS4." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
+            gzdbg << "agv4 docked to assembly station." << std::endl;
         }
     }
 

@@ -178,11 +178,15 @@ The topics and services describe in this section should be used to interact with
     - Example: `rosservice call /ariac/kit_tray_1/lock` locks the movable tray located on AGV1.
   - service to unlock: `rosservice call /ariac/kit_tray_{N}/unlock`
     - Example: `rosservice call /ariac/kit_tray_1/unlock` unlocks the movable tray located on AGV1.
+- Get the parts connected (assembled)to a briefcase (where `N` can take a value between 1 and 4).
+  - service: `rosservice call /ariac/briefcase_{N}/get_assembled_parts`
+    - srv: [nist_gear/DetectConnectedPartsToBriefcase](../../nist_gear/srv/nist_gear/DetectConnectedPartsToBriefcase.srv)
 
 ## Cheats
 
 These are only provided for debugging/development purposes and their use is not permitted during the competition trials.
-
+- Get the content of an AGV.
+  - service: `ariac/agv{N}/content`
 - Get the current completion score in a trial.
   - topic: `/ariac/current_score`
 - Get the state of each kit being built on each movable tray.

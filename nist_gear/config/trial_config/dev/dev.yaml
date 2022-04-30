@@ -53,7 +53,7 @@ orders:
       shipment_count: 1
       trays: [movable_tray_dark_wood, movable_tray_metal_shiny]
       agvs: [agv1, agv2]
-      destinations: [as1, as3]
+      destinations: [as1, as1]
       products:
         part_0:
           type: assembly_pump_red

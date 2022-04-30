@@ -74,8 +74,7 @@
 #############
 rosservice call /ariac/start_competition
 rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_dark_wood_1::movable_tray_dark_wood_1::link -model assembly_pump_red_12
-# rosrun gazebo_ros spawn_model -sdf -x 0.1 -y 0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_dark_wood_1::movable_tray_dark_wood_1::link -model assembly_pump_red_13
-
+rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_metal_shiny_1::movable_tray_metal_shiny_1::link -model assembly_pump_red_13
 # sleep 5
 # rosservice call /ariac/kit_tray_1/lock
 # sleep 5
@@ -85,13 +84,19 @@ rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file 
 # sleep 6
 # rosservice call /ariac/agv4/move_to_station ks
 sleep 6
-rosservice call /ariac/kit_tray_1/lock
-rosservice call /ariac/kit_tray_1/unlock
+# rosservice call /ariac/kit_tray_1/lock
+# rosservice call /ariac/kit_tray_1/unlock
 rosservice call /ariac/agv1/move_to_station as1
-sleep 20
+sleep 15
+rosservice call /ariac/agv2/move_to_station as1
+sleep 15
 rosservice call /ariac/agv1/move_to_station ks
-sleep 20
+sleep 15
+rosservice call /ariac/agv2/move_to_station ks
+sleep 15
 rosservice call /ariac/agv1/submit_kitting_shipment "as1" "order_0_kitting_shipment_0" 
+sleep 15
+rosservice call /ariac/agv2/submit_kitting_shipment "as1" "order_0_kitting_shipment_1" 
 
 #############
 # kitting_sample.yaml

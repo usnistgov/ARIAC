@@ -50,7 +50,7 @@ orders:
     announcement_condition: time
     announcement_condition_value: 0.0
     kitting:
-      shipment_count: 1
+      shipment_count: 2
       trays: [movable_tray_dark_wood, movable_tray_metal_shiny]
       agvs: [agv1, agv2]
       destinations: [as1, as1]

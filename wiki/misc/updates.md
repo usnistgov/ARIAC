@@ -6,6 +6,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 - Added new fix for issues with movable trays.
 - Note: There is no need to use the service `/ariac/kit_tray_1/lock` before submitting a kit tray nor before the use of `/ariac/kit_tray_N/move_to_station`. Before submission or before moving to a station the movable tray and parts in the movable tray will be automatically locked.
+- Scripts and docker image will be released during the day.
 
 ## Release 2022, April 28
 

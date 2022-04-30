@@ -322,15 +322,24 @@ void MovableKitTrayPlugin::OnUpdate(const common::UpdateInfo& _info)
                       std::inserter(removedContactingModels, removedContactingModels.begin()));
   for (auto model : removedContactingModels)
   {
-    gzerr << "Removing contacting model: " << model->GetName() << std::endl;
-    if (model->GetName() != "tray_table1" and model->GetName() != "tray_table2")
+    // gzerr << "Removing contacting model: " << model->GetName() << std::endl;
+    if (model->GetName() != "tray_table1" and
+      model->GetName() != "tray_table2" and
+      model->GetName() != "bin1" and
+      model->GetName() != "bin2" and
+      model->GetName() != "bin3" and
+      model->GetName() != "bin4" and
+      model->GetName() != "bin5" and
+      model->GetName() != "bin6" and
+      model->GetName() != "bin7" and
+      model->GetName() != "bin8")
 
       // if (model->GetName().compare("agv1") != 0 &&
       //     model->GetName().compare("agv2") != 0 &&
       //     model->GetName().compare("agv3") != 0 &&
       //     model->GetName().compare("agv4") != 0) {
 
-      // gzdbg << "removed contact " << model->GetName() << std::endl;
+      gzdbg << "<<<<<<<< removed contact " << model->GetName() << std::endl;
 
       model->SetAutoDisable(true);
     // }
@@ -353,7 +362,7 @@ void MovableKitTrayPlugin::ProcessContactingModels()
   for (auto trayPartJoint : this->trayPartJoints)
   {
     auto link = trayPartJoint->GetChild();
-    // gzwarn << "[LINK NAME] -> " << link->GetName() << std::endl;
+    // gzerr << "<<<<<<<<< LINK: " << link->GetParentModel()->GetName() << std::endl;
     this->contactingLinks.insert(link);
     this->contactingModels.insert(link->GetParentModel());
   }
@@ -361,9 +370,19 @@ void MovableKitTrayPlugin::ProcessContactingModels()
 
   for (auto model : this->contactingModels)
   {
-    // gzerr << "GET NAME: " << model->GetName() << std::endl;
-    if (model->GetName().compare("tray_table1") != 0 && model->GetName().compare("tray_table2") != 0)
+    // gzerr << "CONTACTING MODEL NAME: " << model->GetName() << std::endl;
+    if (model->GetName() != "tray_table1" and
+      model->GetName() != "tray_table2" and
+      model->GetName() != "bin1" and
+      model->GetName() != "bin2" and
+      model->GetName() != "bin3" and
+      model->GetName() != "bin4" and
+      model->GetName() != "bin5" and
+      model->GetName() != "bin6" and
+      model->GetName() != "bin7" and
+      model->GetName() != "bin8")
     {
+      // gzerr << "GET NAME: " << model->GetName() << std::endl;
       model->SetAutoDisable(false);
     }
 
@@ -600,7 +619,7 @@ void MovableKitTrayPlugin::UnlockContactingModels()
   {
     if (trayPartJoint->GetChild()->GetName().compare("link") == 0)
     {
-      gzwarn << "[DETACHING]->" << trayPartJoint->GetChild()->GetName() << std::endl;
+      // gzwarn << "[DETACHING]->" << trayPartJoint->GetChild()->GetName() << std::endl;
       trayPartJoint->Detach();
     }
   }
@@ -613,7 +632,7 @@ void MovableKitTrayPlugin::UnlockContactingModels()
     auto model_name = model->GetName();
 
     auto model_type = ariac::DetermineModelType(model->GetName());
-    gzerr << "UNLOCK CONTACTING MODEL: " << model_name << std::endl;
+    // gzerr << "UNLOCK CONTACTING MODEL: " << model_name << std::endl;
 
     // make sure this model is an ariac part
     auto it = std::find(this->grippable_model_types.begin(), this->grippable_model_types.end(), model_type);

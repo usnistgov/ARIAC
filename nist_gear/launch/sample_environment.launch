@@ -25,7 +25,7 @@
           $(arg gui_args)
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
-          -f $(find nist_gear)/config/trial_config/manufacturing_tasks/kitting_sample.yaml
+          -f $(find nist_gear)/config/trial_config/dev/dev.yaml
           $(find nist_gear)/config/user_config/sample_user_config.yaml
           " required="true" output="screen" />
 

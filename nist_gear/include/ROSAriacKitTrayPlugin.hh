@@ -92,7 +92,7 @@ namespace gazebo {
       protected: void PublishKitMsg();
 
                /// \brief Service for locking the models to the tray and disabling updates
-      protected: void HandleLockModelsRequest(ConstGzStringPtr& _msg);
+      protected: void HandleLockUnlockModelsRequest(ConstGzStringPtr& _msg);
 
       /**
       * @brief Get the movable tray located on this kit tray
@@ -102,10 +102,10 @@ namespace gazebo {
             ros::ServiceEvent<nist_gear::DetectMovableTray::Request,
             nist_gear::DetectMovableTray::Response>& event);
 
-      protected: bool HandleLockTrayService(std_srvs::Trigger::Request&,
+      protected: bool HandleManualLockTrayService(std_srvs::Trigger::Request&,
             std_srvs::Trigger::Response& res);
                
-      protected: bool HandleUnlockTrayService(std_srvs::Trigger::Request&,
+      protected: bool HandleManualUnlockTrayService(std_srvs::Trigger::Request&,
             std_srvs::Trigger::Response& res);
 
       protected: void PublishTFTransform(const common::Time sim_time);
@@ -143,8 +143,8 @@ namespace gazebo {
 
             /// \brief ROS service to get the contents of the tray
       public: ros::ServiceServer tray_contents_server;
-      public: ros::ServiceServer lock_tray_server;
-      public: ros::ServiceServer unlock_tray_server;
+      public: ros::ServiceServer manual_lock_tray_server;
+      public: ros::ServiceServer manual_unlock_tray_server;
             // parameter for the status of the current kit tray (locked or unlocked)
       private: std::string kittray_lock_status_param;
 

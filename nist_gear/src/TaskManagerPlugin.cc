@@ -2565,123 +2565,6 @@ bool TaskManagerPlugin::EndCompetitionServiceCallback(std_srvs::Trigger::Request
   return true;
 }
 
-/////////////////////////////////////////////////
-// bool TaskManagerPlugin::InspectKittingShipmentServiceCallback(
-//   ros::ServiceEvent<nist_gear::SubmitShipment::Request,
-//   nist_gear::SubmitShipment::Response>& event)
-// {
-//   std::lock_guard<std::mutex> lock(this->data_ptr->mutex);
-//   const nist_gear::SubmitShipment::Request& req = event.getRequest();
-//   nist_gear::SubmitShipment::Response& res = event.getResponse();
-
-//   gzdbg << "[Service Call] Inspect Shipment\n";
-//   gzdbg << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
-//   const std::string& callerName = event.getCallerName();
-
-//   // gzdbg << "Submit shipment service called by: " << callerName << std::endl;
-
-//   if (this->data_ptr->competitionMode && callerName.compare("/gazebo") != 0) {
-//     std::string errStr = "Competition mode is enabled so this service is not enabled.";
-//     gzerr << errStr << std::endl;
-//     ROS_ERROR_STREAM(errStr);
-//     res.success = false;
-//     return true;
-//   }
-
-//   if (this->data_ptr->currentState != "go") {
-//     std::string errStr = "Competition is not running so shipments cannot be submitted.";
-//     gzerr << errStr << std::endl;
-//     ROS_ERROR_STREAM(errStr);
-//     return false;
-//   }
-
-//   // Figure out which AGV is being submitted
-//   int agv_id = 0;
-//   std::string destination_id(req.destination_id);
-//   if (destination_id.size() > 1) {
-//     // this is probably a tray name, reduce it to just the AGV id
-//     size_t kit_tray_pos = destination_id.find("kit_tray_");
-//     if (kit_tray_pos != std::string::npos) {
-//       size_t id_pos = kit_tray_pos + std::string("kit_tray_").size();
-//       if (destination_id.size() > id_pos) {
-//         // throw away all but 1 character
-//         destination_id = destination_id[id_pos];
-//       }
-//     }
-//   }
-
-//   std::string current_station{};
-
-//   if (1 == destination_id.size() && '1' == destination_id[0]) {
-//     agv_id = 1;
-//     current_station = this->data_ptr->agv1_current_station;
-//     // this->data_ptr->rosNode->getParam("/ariac/agv1_station", current_station);
-//   }
-//   else if (1 == destination_id.size() && '2' == destination_id[0]) {
-//     agv_id = 2;
-//     current_station = this->data_ptr->agv2_current_station;
-//     // this->data_ptr->rosNode->getParam("/ariac/agv2_station", current_station);
-//   }
-//   else if (1 == destination_id.size() && '3' == destination_id[0]) {
-//     agv_id = 3;
-//     current_station = this->data_ptr->agv3_current_station;
-//     // this->data_ptr->rosNode->getParam("/ariac/agv3_station", current_station);
-//   }
-//   else if (1 == destination_id.size() && '4' == destination_id[0]) {
-//     agv_id = 4;
-//     current_station = this->data_ptr->agv4_current_station;
-//     // this->data_ptr->rosNode->getParam("/ariac/agv4_station", current_station);
-//   }
-
-//   if (0 == agv_id) {
-//     ROS_ERROR_STREAM("[ARIAC TaskManager] Could not determine AGV from: " << req.destination_id);
-//     res.success = false;
-//     res.inspection_result = 0;
-//     return true;
-//   }
-
-//   // client to get the content of a tray
-
-//   if (this->data_ptr->kit_tray_content_client.end() == this->data_ptr->kit_tray_content_client.find(agv_id)) {
-//     ROS_ERROR_STREAM("[ARIAC TaskManager] no content client for agv " << agv_id);
-//     return false;
-//   }
-//   auto& getContentClient = this->data_ptr->kit_tray_content_client.at(agv_id);
-
-//   if (!getContentClient.exists()) {
-//     ROS_ERROR_STREAM("[ARIAC TaskManager] content service does not exist for " << agv_id);
-//     return false;
-//   }
-
-//   nist_gear::DetectKittingShipment shipment_content;
-//   if (!getContentClient.call(shipment_content)) {
-//     ROS_ERROR_STREAM("[ARIAC TaskManager] failed to get content" << agv_id);
-//     return false;
-//   }
-
-//   auto current_sime_time = this->data_ptr->world->SimTime();
-//   res.success = true;
-//   this->data_ptr->ariac_scorer.NotifyKittingShipmentReceived(current_sime_time,
-//     req.shipment_type,
-//     shipment_content.response.shipment,
-//     req.station_id);
-//   // SetAGVLocation(shipment_content.response.shipment.destination_id, req.station_id);
-
-//   // Figure out what the score of that shipment was
-//   res.inspection_result = 0;
-//   this->data_ptr->current_trial_score = this->data_ptr->ariac_scorer.GetGameScore(this->data_ptr->floorPenalty);
-//   for (auto& orderScorePair : this->data_ptr->current_trial_score.order_scores_map) {
-//     for (const auto& shipmentScorePair : orderScorePair.second.kitting_shipment_scores) {
-//       if (shipmentScorePair.first == req.shipment_type) {
-//         res.inspection_result = shipmentScorePair.second.total();
-//         break;
-//       }
-//     }
-//   }
-
-//   gzdbg << "Inspection result: " << res.inspection_result << std::endl;
-//   return true;
-// }
 
 /////////////////////////////////////////////////
 bool TaskManagerPlugin::GetMaterialLocationsServiceCallback(nist_gear::GetMaterialLocations::Request& req,
@@ -2923,10 +2806,6 @@ bool TaskManagerPlugin::HandleKittingSubmission(nist_gear::SubmitKittingShipment
 {
   std::lock_guard<std::mutex> lock(this->data_ptr->mutex);
 
-  gzdbg << "\n";
-  gzdbg << "[Service Call] Submit Kitting Shipment\n";
-  gzdbg << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n";
-  gzdbg << "\n";
 
   if (this->data_ptr->currentState != "go")
   {
@@ -2953,7 +2832,6 @@ bool TaskManagerPlugin::HandleKittingSubmission(nist_gear::SubmitKittingShipment
   }
 
   std::string movable_tray_name = "";
-
   movable_tray_name = agv_content.response.movable_tray.movable_tray_name;
 
   if (movable_tray_name == "")
@@ -2981,27 +2859,52 @@ bool TaskManagerPlugin::HandleKittingSubmission(nist_gear::SubmitKittingShipment
     return false;
   }
 
-  // Get service client to submit an AGV
+  // concatenate string and agv id
+  std::string agv_name = "agv";
+  agv_name = agv_name + std::to_string(agv_id);
+
+  std::string parameter = "/ariac/" + agv_name + "/current_station";
+  std::string current_station{};
+  if (this->data_ptr->rosNode->getParam(parameter, current_station))
+  {
+    gzdbg << "[Current Station] " << current_station << std::endl;
+  }
+
+
   this->data_ptr->submitted_kitting_shipment_station = req.assembly_station_name;
   this->data_ptr->submitted_shipment_agv = agv_id;
 
   // get the correct service client based on req.assembly_station_name
   ros::ServiceClient animate_client;
-  if (this->data_ptr->submitted_kitting_shipment_station.compare("as1") == 0)
+
+  // ks1 -> as1
+  // ks1 -> as2
+  // ks2 -> as1
+  // ks2 -> as2
+  if (current_station.compare("ks1") == 0 || current_station.compare("ks2") == 0)
   {
-    animate_client = this->data_ptr->ks_to_as1_AnimateClient.at(agv_id);
+    if (req.assembly_station_name.compare("as1") == 0)
+    {
+      animate_client = this->data_ptr->ks_to_as1_AnimateClient.at(agv_id);
+    }
+    else if (req.assembly_station_name.compare("as2") == 0)
+    {
+      animate_client = this->data_ptr->ks_to_as2_AnimateClient.at(agv_id);
+    }
   }
-  else if (this->data_ptr->submitted_kitting_shipment_station.compare("as2") == 0)
+  else if (current_station.compare("ks3") == 0 || current_station.compare("ks4") == 0)
   {
-    animate_client = this->data_ptr->ks_to_as2_AnimateClient.at(agv_id);
+    if (req.assembly_station_name.compare("as3") == 0)
+    {
+      animate_client = this->data_ptr->ks_to_as3_AnimateClient.at(agv_id);
+    }
+    else if (req.assembly_station_name.compare("as4") == 0)
+    {
+      animate_client = this->data_ptr->ks_to_as4_AnimateClient.at(agv_id);
+    }
   }
-  else if (this->data_ptr->submitted_kitting_shipment_station.compare("as3") == 0)
-  {
-    animate_client = this->data_ptr->ks_to_as3_AnimateClient.at(agv_id);
-  }
-  else if (this->data_ptr->submitted_kitting_shipment_station.compare("as4") == 0)
-  {
-    animate_client = this->data_ptr->ks_to_as4_AnimateClient.at(agv_id);
+  else {
+    ROS_ERROR_STREAM("AGV has to be at its kitting station to submit a shipment");
   }
 
   std_srvs::Trigger animate;
@@ -3009,6 +2912,17 @@ bool TaskManagerPlugin::HandleKittingSubmission(nist_gear::SubmitKittingShipment
   {
     ROS_ERROR_STREAM("[ARIAC TaskManager] failed to task agv" << agv_id << " to move");
     return false;
+  }
+
+  if (animate.response.success)
+  {
+    auto current_sim_time = this->data_ptr->world->SimTime();
+    res.success = true;
+  }
+  else
+  {
+    res.success = false;
+    res.message = animate.response.message;
   }
 
   // If AGV says it's moving, then notify scorer about shipment
@@ -3030,7 +2944,122 @@ bool TaskManagerPlugin::HandleKittingSubmission(nist_gear::SubmitKittingShipment
     res.success = false;
     res.message = animate.response.message;
   }
+
   return true;
+
+  // if (this->data_ptr->currentState != "go")
+  // {
+  //   std::string errStr = "Competition is not running so this service will not work.";
+  //   gzerr << errStr << std::endl;
+  //   ROS_ERROR_STREAM(errStr);
+  //   return false;
+  // }
+
+  // // First, get the movable tray located on this AGV
+  // auto& getKitTrayContentClient = this->data_ptr->kit_tray_content_client.at(agv_id);
+  // if (!getKitTrayContentClient.exists())
+  // {
+  //   ROS_ERROR_STREAM("[ARIAC TaskManager] Kit content service does not exist for agv" << agv_id);
+  //   return false;
+  // }
+
+  // // get the content inside this movable tray
+  // nist_gear::DetectMovableTray agv_content;
+  // if (!getKitTrayContentClient.call(agv_content))
+  // {
+  //   ROS_ERROR_STREAM("[ARIAC TaskManager] failed to find the movable tray for agv" << agv_id);
+  //   return false;
+  // }
+
+  // std::string movable_tray_name = "";
+  // movable_tray_name = agv_content.response.movable_tray.movable_tray_name;
+
+  // if (movable_tray_name == "")
+  // {
+  //   ROS_ERROR_STREAM("Trying to submit an AGV without a movable tray.");
+  //   return false;
+  // }
+
+  // // now that we have the name of the movable tray, call the service to
+  // // get the products on this movable tray
+  // auto movable_tray_content_service = "/ariac/" + movable_tray_name + "/get_content";
+  // auto get_movable_tray_content_client =
+  //     this->data_ptr->rosNode->serviceClient<nist_gear::DetectKittingShipment>(movable_tray_content_service);
+  // if (!get_movable_tray_content_client.exists())
+  // {
+  //   ROS_ERROR_STREAM("[ARIAC TaskManager] Service to get the content of a movable tray does not exist");
+  //   return false;
+  // }
+
+  // // get the parts located on the movable tray
+  // nist_gear::DetectKittingShipment movable_tray_content;
+  // if (!get_movable_tray_content_client.call(movable_tray_content))
+  // {
+  //   ROS_ERROR_STREAM("[ARIAC TaskManager] failed to get parts inside the movable tray" << agv_id);
+  //   return false;
+  // }
+
+  // // Get service client to submit an AGV
+  // this->data_ptr->submitted_kitting_shipment_station = req.assembly_station_name;
+  // this->data_ptr->submitted_shipment_agv = agv_id;
+
+  // // get the correct service client based on req.assembly_station_name
+  // // ros::ServiceClient animate_client;
+  // // if (this->data_ptr->submitted_kitting_shipment_station.compare("as1") == 0)
+  // // {
+  // //   animate_client = this->data_ptr->ks_to_as1_AnimateClient.at(agv_id);
+  // // }
+  // // else if (this->data_ptr->submitted_kitting_shipment_station.compare("as2") == 0)
+  // // {
+  // //   animate_client = this->data_ptr->ks_to_as2_AnimateClient.at(agv_id);
+  // // }
+  // // else if (this->data_ptr->submitted_kitting_shipment_station.compare("as3") == 0)
+  // // {
+  // //   animate_client = this->data_ptr->ks_to_as3_AnimateClient.at(agv_id);
+  // // }
+  // // else if (this->data_ptr->submitted_kitting_shipment_station.compare("as4") == 0)
+  // // {
+  // //   animate_client = this->data_ptr->ks_to_as4_AnimateClient.at(agv_id);
+  // // }
+  // std::string agv_id_str = std::to_string(agv_id);
+  // std::string service_name = "/ariac/agv" + agv_id_str + "/move_to_station";
+  // gzerr << "SERVICE NAME: " << service_name << "\n";
+  // ros::ServiceClient move_to_station_client = this->data_ptr->rosNode->serviceClient<nist_gear::MoveToStation>(service_name);
+
+  
+  
+  // nist_gear::MoveToStation srv;
+  // srv.request.station_name = this->data_ptr->submitted_kitting_shipment_station;
+
+  // gzerr << "REQUEST: " << srv.request.station_name << "\n";
+  // if (!move_to_station_client.call(srv))
+  // {
+  //   ROS_ERROR_STREAM("[ARIAC TaskManager] failed to task agv" << agv_id << " to move");
+  //   return false;
+  // }
+
+  // gzerr << "SERVICE CALLED" << "\n";
+
+  // // If AGV says it's moving, then notify scorer about shipment
+  // if (srv.response.success)
+  // {
+  //   auto current_sim_time = this->data_ptr->world->SimTime();
+  //   res.success = true;
+  //   // std::lock_guard<std::mutex> lock(this->data_ptr->mutex);
+  //   // gzerr << "Animate Success" << std::endl;
+  //   nist_gear::DetectedKittingShipment detected_shipment;
+  //   detected_shipment.shipment_type = req.shipment_type;
+  //   detected_shipment.assembly_station = req.assembly_station_name;
+  //   nist_gear::TrayContents tray_content;
+  //   detected_shipment.tray_content = movable_tray_content.response.shipment;
+  //   this->data_ptr->ariac_scorer.NotifyKittingShipmentReceived(current_sim_time, req.shipment_type, detected_shipment);
+  // }
+  // else
+  // {
+  //   res.success = false;
+  //   res.message = srv.response.message;
+  // }
+  // return true;
 }
 
 /////////////////////////////////////////////////

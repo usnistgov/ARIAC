@@ -299,12 +299,12 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
         this->dataPtr->agv_name + "::kit_tray_" + index + "::kit_tray_" + index + "::tray";
 
     // topics to store the current location of AGVs
-    if (_sdf->HasElement("agv_location_topic_name"))
-        agv_station_topic_name = _sdf->Get<std::string>("agv_location_topic_name");
-    else {
-        ROS_FATAL("Missing agv_location_topic_name in ariac.world.template ");
-        return;
-    }
+    // if (_sdf->HasElement("agv_location_topic_name"))
+    //     agv_station_topic_name = _sdf->Get<std::string>("agv_location_topic_name");
+    // else {
+    //     ROS_FATAL("Missing agv_location_topic_name in ariac.world.template ");
+    //     return;
+    // }
 
     if (_sdf->HasElement("agv_location_topic_name"))
         agv_station_topic_name = _sdf->Get<std::string>("agv_location_topic_name");
@@ -928,6 +928,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         }
         if (this->dataPtr->goto_as2_triggered) {
             this->dataPtr->current_state = "GOTO_AS2";
+            // gzerr << "TRIGGERED: " << this->dataPtr->current_state << "\n";
             this->dataPtr->goto_as_trigger_time = current_sim_time;
             this->dataPtr->goto_as2_triggered = false;
         }
@@ -1092,6 +1093,8 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
             // select animation based on the name of the station
             std::string current_station = this->dataPtr->current_station;
 
+            // gzerr << "CURRENT STATION: " << current_station << "\n";
+
             // AGV1
             if (this->dataPtr->agv_name == "agv1") {
                 if (current_station == "ks1") {
@@ -1127,7 +1130,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv1_from_ks1_to_as1_animation_ptr->GetTime() >=
             this->dataPtr->agv1_from_ks1_to_as1_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "agv1 docked to assembly station." << std::endl;
+            // gzdbg << "agv1 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1348,7 +1351,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_ks3_to_as4_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_ks3_to_as4_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "agv3 docked to assembly station." << std::endl;
+            // gzdbg << "agv3 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1357,7 +1360,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         bool animation_done = this->dataPtr->agv3_from_as3_to_as4_animation_ptr->GetTime() >=
             this->dataPtr->agv3_from_as3_to_as4_animation_ptr->GetLength();
         if (animation_done) {
-            gzdbg << "agv3 docked to assembly station." << std::endl;
+            // gzdbg << "agv3 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1367,7 +1370,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
             this->dataPtr->agv4_from_ks4_to_as4_animation_ptr->GetLength();
         if (animation_done) {
             // gzdbg << "AGV4 reached AS4." << std::endl;
-            gzdbg << "agv4 docked to assembly station." << std::endl;
+            // gzdbg << "agv4 docked to assembly station." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
         }
     }
@@ -1378,7 +1381,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
         if (animation_done) {
             // gzdbg << "AGV4 reached AS4." << std::endl;
             this->dataPtr->current_state = "DOCKED_TO_AS";
-            gzdbg << "agv4 docked to assembly station." << std::endl;
+            // gzdbg << "agv4 docked to assembly station." << std::endl;
         }
     }
 
@@ -1410,12 +1413,11 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
             gazebo::msgs::GzString unlock_msg;
             unlock_msg.set_data("unlock");
             this->dataPtr->lock_unlock_models_gz_pub->Publish(unlock_msg);
-
-            
         }
 
-        // wait for 2 s and then issue idle state for lock/unlock topic
-        
+        gazebo::msgs::GzString unlock_msg;
+        unlock_msg.set_data("unlock");
+        this->dataPtr->lock_unlock_models_gz_pub->Publish(unlock_msg);
 
         this->dataPtr->current_state = "READY_TO_DELIVER";
     }
@@ -1438,6 +1440,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
 
     std_msgs::String stateMsg;
     stateMsg.data = this->dataPtr->current_state;
+    // gzerr << "Publishing state: " << this->dataPtr->current_state << "\n";
     this->dataPtr->agv_state_publisher.publish(stateMsg);
 }
 
@@ -1793,6 +1796,8 @@ bool ROSAGVPlugin::ProcessAs2ToAs1ServiceCallback(
 
     std::string parameter = "/ariac/" + this->dataPtr->agv_name + "/current_station";
 
+    // gzerr << "Current station: " << this->dataPtr->ros_node->getParam(parameter, current_station) << "\n";
+
     if (this->dataPtr->ros_node->getParam(parameter, current_station)) {
         if (current_station == destination) {
             res.message = "[FAILURE triggering service][" + this->dataPtr->agv_name + " is already at station 'as1']";
@@ -1801,13 +1806,15 @@ bool ROSAGVPlugin::ProcessAs2ToAs1ServiceCallback(
             return true;
         }
 
+        // gzerr << "Current station: " << current_station << "\n";
+
         if (current_station != "as2") {
             res.message = "[FAILURE triggering service] [" + this->dataPtr->agv_name + " has to be at station 'as2' to call this service]";
             ROS_ERROR_STREAM(res.message);
             res.success = false;
             return true;
         }
-
+        // gzerr << "Current state: " << this->dataPtr->current_state << "\n";
         if (this->dataPtr->current_state != "READY_TO_DELIVER") {
             res.message = "[FAILURE triggering service] [Current state is not READY_TO_DELIVER]";
             ROS_ERROR_STREAM(res.message);

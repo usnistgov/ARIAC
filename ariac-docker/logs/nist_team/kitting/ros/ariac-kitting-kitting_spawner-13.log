@@ -1,0 +1,26 @@
+[rospy.client][INFO] 2022-05-01 19:24:24,137: init_node, name[/ariac/kitting/kitting_spawner], pid[306]
+[xmlrpc][INFO] 2022-05-01 19:24:24,138: XML-RPC server binding to 0.0.0.0:0
+[xmlrpc][INFO] 2022-05-01 19:24:24,138: Started XML-RPC server [http://172.18.0.22:33921/]
+[rospy.init][INFO] 2022-05-01 19:24:24,138: ROS Slave URI: [http://172.18.0.22:33921/]
+[rospy.impl.masterslave][INFO] 2022-05-01 19:24:24,138: _ready: http://172.18.0.22:33921/
+[xmlrpc][INFO] 2022-05-01 19:24:24,139: xml rpc node: starting XML-RPC server
+[rospy.registration][INFO] 2022-05-01 19:24:24,139: Registering with master node http://172.18.0.22:11311
+[rospy.init][INFO] 2022-05-01 19:24:24,238: registered with master
+[rospy.rosout][INFO] 2022-05-01 19:24:24,239: initializing /rosout core topic
+[rospy.rosout][INFO] 2022-05-01 19:24:24,240: connected to core topic /rosout
+[rospy.simtime][INFO] 2022-05-01 19:24:24,241: initializing /clock core topic
+[rospy.simtime][INFO] 2022-05-01 19:24:24,243: connected to core topic /clock
+[rosout][INFO] 2022-05-01 19:24:24,246: Loading model XML from ros parameter robot_description
+[rosout][INFO] 2022-05-01 19:24:24,256: Waiting for service /gazebo/spawn_urdf_model
+[rosout][INFO] 2022-05-01 19:24:24,258: Calling service /gazebo/spawn_urdf_model
+[rospy.internal][INFO] 2022-05-01 19:24:24,301: topic[/clock] adding connection to [http://172.18.0.22:42297/], count 0
+[rospy.internal][INFO] 2022-05-01 19:24:24,561: topic[/rosout] adding connection to [/rosout], count 0
+[rosout][INFO] 2022-05-01 19:24:26,800: Spawn status: SpawnModel: Successfully spawned entity
+[rosout][INFO] 2022-05-01 19:24:26,801: Waiting for service /gazebo/set_model_configuration
+[rosout][INFO] 2022-05-01 19:24:26,802: temporary hack to **fix** the -J joint position option (issue #93), sleeping for 1 second to avoid race condition.
+[rosout][INFO] 2022-05-01 19:24:27,804: Calling service /gazebo/set_model_configuration
+[rosout][INFO] 2022-05-01 19:24:27,807: Set model configuration status: SetModelConfiguration: success
+[rospy.core][INFO] 2022-05-01 19:24:27,807: signal_shutdown [atexit]
+[rospy.internal][INFO] 2022-05-01 19:24:27,809: topic[/rosout] removing connection to /rosout
+[rospy.internal][INFO] 2022-05-01 19:24:27,809: topic[/clock] removing connection to http://172.18.0.22:42297/
+[rospy.impl.masterslave][INFO] 2022-05-01 19:24:27,809: atexit

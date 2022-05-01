@@ -1,0 +1,30 @@
+[rospy.client][INFO] 2022-05-01 19:24:22,829: init_node, name[/ariac/gantry/gantry_controller_spawner], pid[221]
+[xmlrpc][INFO] 2022-05-01 19:24:22,829: XML-RPC server binding to 0.0.0.0:0
+[xmlrpc][INFO] 2022-05-01 19:24:22,830: Started XML-RPC server [http://172.18.0.22:33795/]
+[rospy.init][INFO] 2022-05-01 19:24:22,830: ROS Slave URI: [http://172.18.0.22:33795/]
+[rospy.impl.masterslave][INFO] 2022-05-01 19:24:22,830: _ready: http://172.18.0.22:33795/
+[rospy.registration][INFO] 2022-05-01 19:24:22,831: Registering with master node http://172.18.0.22:11311
+[xmlrpc][INFO] 2022-05-01 19:24:22,831: xml rpc node: starting XML-RPC server
+[rospy.init][INFO] 2022-05-01 19:24:22,930: registered with master
+[rospy.rosout][INFO] 2022-05-01 19:24:22,930: initializing /rosout core topic
+[rospy.rosout][INFO] 2022-05-01 19:24:22,932: connected to core topic /rosout
+[rospy.simtime][INFO] 2022-05-01 19:24:22,932: initializing /clock core topic
+[rospy.simtime][INFO] 2022-05-01 19:24:22,934: connected to core topic /clock
+[rosout][INFO] 2022-05-01 19:24:22,935: Controller Spawner: Waiting for service /ariac/gantry/controller_manager/load_controller
+[rospy.internal][INFO] 2022-05-01 19:24:23,205: topic[/rosout] adding connection to [/rosout], count 0
+[rospy.internal][INFO] 2022-05-01 19:24:24,160: topic[/clock] adding connection to [http://172.18.0.22:42297/], count 0
+[rosout][INFO] 2022-05-01 19:24:26,549: Controller Spawner: Waiting for service /ariac/gantry/controller_manager/switch_controller
+[rosout][INFO] 2022-05-01 19:24:26,551: Controller Spawner: Waiting for service /ariac/gantry/controller_manager/unload_controller
+[rosout][INFO] 2022-05-01 19:24:26,553: Loading controller: gantry_controller
+[rosout][INFO] 2022-05-01 19:24:26,608: Loading controller: gantry_arm_controller
+[rosout][INFO] 2022-05-01 19:24:26,690: Controller Spawner: Loaded controllers: gantry_controller, gantry_arm_controller
+[rosout][INFO] 2022-05-01 19:24:34,602: Started controllers: gantry_controller, gantry_arm_controller
+[rospy.internal][INFO] 2022-05-01 19:25:14,331: topic[/clock] removing connection to http://172.18.0.22:42297/
+[rospy.core][INFO] 2022-05-01 19:25:15,114: signal_shutdown [signal-2]
+[rosout][INFO] 2022-05-01 19:25:15,114: Shutting down spawner. Stopping and unloading controllers...
+[rosout][INFO] 2022-05-01 19:25:15,116: Stopping all controllers...
+[rospy.service][ERROR] 2022-05-01 19:25:15,120: [/ariac/gantry/controller_manager/switch_controller]: lookup service failed with message [no provider]
+[rosout][WARNING] 2022-05-01 19:25:15,120: Controller Spawner error while taking down controllers: service [/ariac/gantry/controller_manager/switch_controller] unavailable
+[rospy.internal][INFO] 2022-05-01 19:25:15,126: topic[/rosout] removing connection to /rosout
+[rospy.impl.masterslave][INFO] 2022-05-01 19:25:15,126: signal-2
+[rospy.core][INFO] 2022-05-01 19:25:15,242: signal_shutdown [atexit]

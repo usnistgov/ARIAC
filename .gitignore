@@ -36,6 +36,7 @@ ARIAC/nist_gear/log/
 ARIAC/test_competition/log/
 wiki/log/
 nist_gear/log/
+ariac-docker/log
 log/
 .pyc
 .pyo

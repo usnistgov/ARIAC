@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro"
+       name="gear" >
+
+  <!-- world link -->
+  <link name="world" />
+
+  <!-- sensor links and fixed joints -->
+
+  <!-- a logical_camera type sensor in the frame logical_camera_1_frame -->
+  <link name="logical_camera_1_frame" />
+  <joint name="logical_camera_1_joint" type="fixed">
+    <parent link="world" />
+    <child link="logical_camera_1_frame" />
+    <origin xyz="-6.092189 6.166299 2.05114" rpy="3.141593 1.570792 0.0" />
+  </joint>
+
+
+
+  <!-- a logical_camera type sensor in the frame logical_camera_4_frame -->
+  <link name="logical_camera_4_frame" />
+  <joint name="logical_camera_4_joint" type="fixed">
+    <parent link="world" />
+    <child link="logical_camera_4_frame" />
+    <origin xyz="-7.262095 2.963994 2.285697" rpy="3.141593 1.570792 0.0" />
+  </joint>
+
+
+
+  <!-- a logical_camera type sensor in the frame logical_camera_3_frame -->
+  <link name="logical_camera_3_frame" />
+  <joint name="logical_camera_3_joint" type="fixed">
+    <parent link="world" />
+    <child link="logical_camera_3_frame" />
+    <origin xyz="-2.286283 -2.963994 1.801095" rpy="3.141593 1.570792 0.0" />
+  </joint>
+
+
+
+  <!-- a logical_camera type sensor in the frame logical_camera_5_frame -->
+  <link name="logical_camera_5_frame" />
+  <joint name="logical_camera_5_joint" type="fixed">
+    <parent link="world" />
+    <child link="logical_camera_5_frame" />
+    <origin xyz="-12.26217 2.963994 2.285697" rpy="3.141593 1.570792 0.0" />
+  </joint>
+
+
+
+  <!-- a quality_control type sensor in the frame quality_control_sensor_3_frame -->
+  <link name="quality_control_sensor_3_frame" />
+  <joint name="quality_control_sensor_3_joint" type="fixed">
+    <parent link="world" />
+    <child link="quality_control_sensor_3_frame" />
+    <origin xyz="-2.393393 -1.325227 1.506952" rpy="-3.141593 1.570796 0" />
+  </joint>
+
+
+
+  <!-- a quality_control type sensor in the frame quality_control_sensor_2_frame -->
+  <link name="quality_control_sensor_2_frame" />
+  <joint name="quality_control_sensor_2_joint" type="fixed">
+    <parent link="world" />
+    <child link="quality_control_sensor_2_frame" />
+    <origin xyz="-2.393394 1.361367 1.506952" rpy="-3.141593 1.570796 0" />
+  </joint>
+
+
+
+  <!-- a quality_control type sensor in the frame quality_control_sensor_1_frame -->
+  <link name="quality_control_sensor_1_frame" />
+  <joint name="quality_control_sensor_1_joint" type="fixed">
+    <parent link="world" />
+    <child link="quality_control_sensor_1_frame" />
+    <origin xyz="-2.393395 4.702724 1.506952" rpy="-3.141593 1.570796 0" />
+  </joint>
+
+
+
+  <!-- a logical_camera type sensor in the frame logical_camera_7_frame -->
+  <link name="logical_camera_7_frame" />
+  <joint name="logical_camera_7_joint" type="fixed">
+    <parent link="world" />
+    <child link="logical_camera_7_frame" />
+    <origin xyz="-12.26217 -2.963994 2.285697" rpy="3.141593 1.570792 0.0" />
+  </joint>
+
+
+
+  <!-- a logical_camera type sensor in the frame logical_camera_6_frame -->
+  <link name="logical_camera_6_frame" />
+  <joint name="logical_camera_6_joint" type="fixed">
+    <parent link="world" />
+    <child link="logical_camera_6_frame" />
+    <origin xyz="-7.262095 -2.963994 2.285697" rpy="3.141593 1.570792 0.0" />
+  </joint>
+
+
+
+  <!-- a logical_camera type sensor in the frame logical_camera_2_frame -->
+  <link name="logical_camera_2_frame" />
+  <joint name="logical_camera_2_joint" type="fixed">
+    <parent link="world" />
+    <child link="logical_camera_2_frame" />
+    <origin xyz="-2.286283 2.963994 1.801095" rpy="3.141593 1.570792 0.0" />
+  </joint>
+
+
+
+  <!-- a quality_control type sensor in the frame quality_control_sensor_4_frame -->
+  <link name="quality_control_sensor_4_frame" />
+  <joint name="quality_control_sensor_4_joint" type="fixed">
+    <parent link="world" />
+    <child link="quality_control_sensor_4_frame" />
+    <origin xyz="-2.393395 -4.698129 1.506952" rpy="-3.141593 1.570796 0" />
+  </joint>
+
+
+  <!-- a bin in the frame bin8_frame -->
+  <link name="bin8_frame" />
+  <joint name="bin8_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin8_frame" />
+    <origin xyz="-2.65169 -3.37992 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+  <!-- a bin in the frame bin5_frame -->
+  <link name="bin5_frame" />
+  <joint name="bin5_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin5_frame" />
+    <origin xyz="-1.898993 -3.37992 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+  <!-- a bin in the frame bin4_frame -->
+  <link name="bin4_frame" />
+  <joint name="bin4_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin4_frame" />
+    <origin xyz="-2.65169 3.37992 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+  <!-- a bin in the frame bin7_frame -->
+  <link name="bin7_frame" />
+  <joint name="bin7_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin7_frame" />
+    <origin xyz="-2.65169 -2.565006 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+  <!-- a bin in the frame bin6_frame -->
+  <link name="bin6_frame" />
+  <joint name="bin6_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin6_frame" />
+    <origin xyz="-1.898993 -2.565006 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+  <!-- a bin in the frame bin1_frame -->
+  <link name="bin1_frame" />
+  <joint name="bin1_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin1_frame" />
+    <origin xyz="-1.898993 3.37992 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+  <!-- a bin in the frame bin3_frame -->
+  <link name="bin3_frame" />
+  <joint name="bin3_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin3_frame" />
+    <origin xyz="-2.65169 2.565006 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+  <!-- a bin in the frame bin2_frame -->
+  <link name="bin2_frame" />
+  <joint name="bin2_joint" type="fixed">
+    <parent link="world" />
+    <child link="bin2_frame" />
+    <origin xyz="-1.898993 2.565006 0.72" rpy="0 0.0 3.14159" />
+  </joint>
+
+<!-- publish tray table frames -->
+  <link name="tray_table1_frame" />
+  <joint name="tray_table1_joint" type="fixed">
+    <parent link="world" />
+    <child link="tray_table1_frame" />
+    <origin xyz="-6.56777 6.265981 -0.451543" rpy="0 0 0" />
+  </joint>
+  <link name="tray_table2_frame" />
+  <joint name="tray_table2_joint" type="fixed">
+    <parent link="world" />
+    <child link="tray_table2_frame" />
+    <origin xyz="-5.61518 6.265981 -0.451543" rpy="0 0 0" />
+  </joint>
+
+  <link name="belt_frame" />
+  <joint name="belt_joint" type="fixed">
+    <parent link="world" />
+    <child link="belt_frame" />
+    <origin xyz="1.24 0.15 0.91" rpy="0 0 0" />
+  </joint>
+
+</robot>

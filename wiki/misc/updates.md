@@ -4,6 +4,9 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ## Release 2022, May 1
 
+- A new folder was `ariac-docker` was added to the ARIAC package. It contains everything you need to get your package ready for the qualifiers.
+- See the [automated evaluation](../documentation/automated_evaluation.md) for more information.
+
 - Fixed ticket [#158](https://github.com/usnistgov/ARIAC/issues/158). Gripper change now works in both development and competition mode.
   - `roslaunch test_competitor gripper_test.launch` starts simulation and competition mode.
   - `rosrun test_competitor change_gripper_test.py` sends the gantry to the gripper station and a gripper change is successfully performed.

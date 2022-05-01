@@ -1,0 +1,34 @@
+[rospy.client][INFO] 2022-05-01 19:24:24,264: init_node, name[/ariac/kitting/kitting_stopped_controllers_spawner], pid[369]
+[xmlrpc][INFO] 2022-05-01 19:24:24,264: XML-RPC server binding to 0.0.0.0:0
+[xmlrpc][INFO] 2022-05-01 19:24:24,265: Started XML-RPC server [http://172.18.0.22:39099/]
+[rospy.init][INFO] 2022-05-01 19:24:24,265: ROS Slave URI: [http://172.18.0.22:39099/]
+[rospy.impl.masterslave][INFO] 2022-05-01 19:24:24,265: _ready: http://172.18.0.22:39099/
+[rospy.registration][INFO] 2022-05-01 19:24:24,265: Registering with master node http://172.18.0.22:11311
+[xmlrpc][INFO] 2022-05-01 19:24:24,266: xml rpc node: starting XML-RPC server
+[rospy.init][INFO] 2022-05-01 19:24:24,365: registered with master
+[rospy.rosout][INFO] 2022-05-01 19:24:24,365: initializing /rosout core topic
+[rospy.rosout][INFO] 2022-05-01 19:24:24,367: connected to core topic /rosout
+[rospy.simtime][INFO] 2022-05-01 19:24:24,367: initializing /clock core topic
+[rospy.simtime][INFO] 2022-05-01 19:24:24,369: connected to core topic /clock
+[rosout][INFO] 2022-05-01 19:24:24,371: Controller Spawner: Waiting for service /ariac/kitting/controller_manager/load_controller
+[rospy.internal][INFO] 2022-05-01 19:24:24,401: topic[/clock] adding connection to [http://172.18.0.22:42297/], count 0
+[rospy.internal][INFO] 2022-05-01 19:24:24,662: topic[/rosout] adding connection to [/rosout], count 0
+[rosout][INFO] 2022-05-01 19:24:27,081: Controller Spawner: Waiting for service /ariac/kitting/controller_manager/switch_controller
+[rosout][INFO] 2022-05-01 19:24:27,083: Controller Spawner: Waiting for service /ariac/kitting/controller_manager/unload_controller
+[rosout][INFO] 2022-05-01 19:24:27,084: Loading controller: static_linear_arm_actuator_controller
+[rosout][INFO] 2022-05-01 19:24:34,646: Loading controller: static_shoulder_pan_joint_controller
+[rosout][INFO] 2022-05-01 19:24:34,872: Loading controller: static_shoulder_lift_joint_controller
+[rosout][INFO] 2022-05-01 19:24:34,896: Loading controller: static_elbow_joint_controller
+[rosout][INFO] 2022-05-01 19:24:34,921: Loading controller: static_wrist_1_controller
+[rosout][INFO] 2022-05-01 19:24:34,945: Loading controller: static_wrist_2_controller
+[rosout][INFO] 2022-05-01 19:24:34,966: Loading controller: static_wrist_3_controller
+[rosout][INFO] 2022-05-01 19:24:34,986: Controller Spawner: Loaded controllers: static_linear_arm_actuator_controller, static_shoulder_pan_joint_controller, static_shoulder_lift_joint_controller, static_elbow_joint_controller, static_wrist_1_controller, static_wrist_2_controller, static_wrist_3_controller
+[rospy.internal][INFO] 2022-05-01 19:25:14,331: topic[/clock] removing connection to http://172.18.0.22:42297/
+[rospy.core][INFO] 2022-05-01 19:25:14,910: signal_shutdown [signal-2]
+[rosout][INFO] 2022-05-01 19:25:14,910: Shutting down spawner. Stopping and unloading controllers...
+[rosout][INFO] 2022-05-01 19:25:14,912: Stopping all controllers...
+[rospy.service][ERROR] 2022-05-01 19:25:14,915: [/ariac/kitting/controller_manager/switch_controller]: lookup service failed with message [no provider]
+[rosout][WARNING] 2022-05-01 19:25:14,915: Controller Spawner error while taking down controllers: service [/ariac/kitting/controller_manager/switch_controller] unavailable
+[rospy.internal][INFO] 2022-05-01 19:25:14,920: topic[/rosout] removing connection to /rosout
+[rospy.impl.masterslave][INFO] 2022-05-01 19:25:14,921: signal-2
+[rospy.core][INFO] 2022-05-01 19:25:15,024: signal_shutdown [atexit]

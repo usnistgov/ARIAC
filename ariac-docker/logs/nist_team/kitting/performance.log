@@ -1,0 +1,252 @@
+Gazebo multi-robot simulator, version 9.19.0
+Copyright (C) 2012 Open Source Robotics Foundation.
+Released under the Apache 2 License.
+http://gazebosim.org
+
+
+(1651447462 655924825) [Msg] Waiting for master.
+(1651447462 659996644) [Msg] Connected to gazebo master @ http://127.0.0.1:11345
+(1651447462 660025402) [Msg] Publicized address: 127.0.0.1
+(1651447462 660103973) [Err] [RenderEngine.cc:742] Can't open display: 
+(1651447462 660143285) [Wrn] [RenderEngine.cc:88] Unable to create X window. Rendering will be disabled
+(1651447462 660175359) [Wrn] [RenderEngine.cc:291] Cannot initialize render engine since render path type is NONE. Ignore this warning ifrendering has been turned off on purpose.
+(1651447463 760095053) [Msg] Loading world file [/tmp/ariac/ariac.world]
+(1651447464 38658088) [Wrn] [FuelModelDatabase.cc:248] URI not supported by Fuel [Map #61.jpg]
+(1651447464 38756635) [Wrn] [SystemPaths.cc:464] File or path does not exist [""] [Map #61.jpg]
+(1651447464 38960635) [Err] [Material.cc:96] Unable to find texture[Map #61.jpg] in path[/home/ariac/ariac_ws/src/ariac_ws/nist_gear/models/kit_tray_table_ariac/meshes]
+(1651447464 120580720) ODESliderJoint::SetAnchor not implemented.
+(1651447465 962830993) Init world[world]
+(1651447465 974119050) [Dbg] [TaskManagerPlugin.cc:424] ARIAC VERSION: v.03.22.2022
+(1651447465 974166708) [Dbg] [TaskManagerPlugin.cc:430] ARIAC COMPETITION MODE: 1
+(1651447466 2594481) [Dbg] [SideContactPlugin.cc:87] [workcell_floor_2021] Watching collisions on: workcell_floor_2021::worlcell_floor_2021::link::collision
+(1651447466 3292160) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/workcell_floor_2021/worlcell_floor_2021/link/object_disposal_contact
+(1651447466 3559901) [Dbg] [ObjectDisposalPlugin.cc:47] ObjectDisposalPlugin running at 5 Hz
+(1651447466 13476078) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: logical_camera_1_
+(1651447466 13807174) applying Gaussian noise model with mean 0, stddev 0.001, bias 0
+(1651447466 14159407) applying Gaussian noise model with mean 0, stddev 0.01, bias 0
+(1651447466 14463887) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/logical_camera_1/link/logical_camera/models
+(1651447466 15010411) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/logical_camera_1
+(1651447466 15652697) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: logical_camera_4_
+(1651447466 15690532) applying Gaussian noise model with mean 0, stddev 0.001, bias 0
+(1651447466 15714495) applying Gaussian noise model with mean 0, stddev 0.01, bias -0
+(1651447466 15754371) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/logical_camera_4/link/logical_camera/models
+(1651447466 16158733) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/logical_camera_4
+(1651447466 16232094) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: logical_camera_3_
+(1651447466 16343073) applying Gaussian noise model with mean 0, stddev 0.001, bias 0
+(1651447466 16379200) applying Gaussian noise model with mean 0, stddev 0.01, bias -0
+(1651447466 16433864) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/logical_camera_3/link/logical_camera/models
+(1651447466 16844591) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/logical_camera_3
+(1651447466 16999746) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: logical_camera_5_
+(1651447466 17057033) applying Gaussian noise model with mean 0, stddev 0.001, bias 0
+(1651447466 17101148) applying Gaussian noise model with mean 0, stddev 0.01, bias -0
+(1651447466 17186012) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/logical_camera_5/link/logical_camera/models
+(1651447466 17598190) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/logical_camera_5
+(1651447466 17696170) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: quality_control_sensor_3_
+(1651447466 17753140) applying Gaussian noise model with mean 0, stddev 0.001, bias -0
+(1651447466 17800645) applying Gaussian noise model with mean 0, stddev 0.01, bias 0
+(1651447466 17861318) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/quality_control_sensor_3/link/logical_camera/models
+(1651447466 18211784) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/quality_control_sensor_3
+(1651447466 18294077) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: quality_control_sensor_2_
+(1651447466 18338515) applying Gaussian noise model with mean 0, stddev 0.001, bias 0
+(1651447466 18376791) applying Gaussian noise model with mean 0, stddev 0.01, bias -0
+(1651447466 18427280) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/quality_control_sensor_2/link/logical_camera/models
+(1651447466 18785104) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/quality_control_sensor_2
+(1651447466 18854596) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: quality_control_sensor_1_
+(1651447466 18916928) applying Gaussian noise model with mean 0, stddev 0.001, bias -0
+(1651447466 18952701) applying Gaussian noise model with mean 0, stddev 0.01, bias 0
+(1651447466 19003913) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/quality_control_sensor_1/link/logical_camera/models
+(1651447466 19338653) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/quality_control_sensor_1
+(1651447466 19445157) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: logical_camera_7_
+(1651447466 19505330) applying Gaussian noise model with mean 0, stddev 0.001, bias 0
+(1651447466 19539878) applying Gaussian noise model with mean 0, stddev 0.01, bias 0
+(1651447466 19602645) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/logical_camera_7/link/logical_camera/models
+(1651447466 20008067) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/logical_camera_7
+(1651447466 20142770) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: logical_camera_6_
+(1651447466 20217657) applying Gaussian noise model with mean 0, stddev 0.001, bias -0
+(1651447466 20264096) applying Gaussian noise model with mean 0, stddev 0.01, bias 0
+(1651447466 20327412) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/logical_camera_6/link/logical_camera/models
+(1651447466 20743883) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/logical_camera_6
+(1651447466 20868510) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: logical_camera_2_
+(1651447466 20915545) applying Gaussian noise model with mean 0, stddev 0.001, bias -0
+(1651447466 20950295) applying Gaussian noise model with mean 0, stddev 0.01, bias -0
+(1651447466 21000815) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/logical_camera_2/link/logical_camera/models
+(1651447466 21338047) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/logical_camera_2
+(1651447466 21469230) [Dbg] [ROSLogicalCameraPlugin.cc:133] Using model frame prefix of: quality_control_sensor_4_
+(1651447466 21553430) applying Gaussian noise model with mean 0, stddev 0.001, bias 0
+(1651447466 21616465) applying Gaussian noise model with mean 0, stddev 0.01, bias -0
+(1651447466 21708672) [Dbg] [ROSLogicalCameraPlugin.cc:171] Subscribing to gazebo topic: ~/quality_control_sensor_4/link/logical_camera/models
+(1651447466 22290062) [Dbg] [ROSLogicalCameraPlugin.cc:174] Publishing to ROS topic: /ariac/quality_control_sensor_4
+(1651447466 22462321) [Dbg] [SideContactPlugin.cc:87] [deletion_wall] Watching collisions on: deletion_wall::sensing_link::collision
+(1651447466 22532742) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/deletion_wall/sensing_link/object_disposal_contact
+(1651447466 22619519) [Dbg] [ObjectDisposalPlugin.cc:47] ObjectDisposalPlugin running at 5 Hz
+(1651447466 22732521) [Dbg] [SideContactPlugin.cc:87] [deletion_wall_start] Watching collisions on: deletion_wall_start::sensing_link::collision
+(1651447466 22772777) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/deletion_wall_start/sensing_link/object_disposal_contact
+(1651447466 22836772) [Dbg] [ObjectDisposalPlugin.cc:47] ObjectDisposalPlugin running at 5 Hz
+(1651447466 22919501) [Dbg] [SideContactPlugin.cc:87] [bin_deletion_wall] Watching collisions on: bin_deletion_wall::sensing_link::collision
+(1651447466 22957788) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/bin_deletion_wall/sensing_link/object_disposal_contact
+(1651447466 23009534) [Dbg] [ObjectDisposalPlugin.cc:47] ObjectDisposalPlugin running at 5 Hz
+(1651447466 27855424) [Dbg] [ConveyorBeltPlugin.cc:51] Using belt power of: 0 %
+(1651447466 27874791) [Dbg] [ConveyorBeltPlugin.cc:57] Using joint name of: [belt_joint]
+(1651447466 27930526) [Dbg] [ConveyorBeltPlugin.cc:69] Using link name of: [conveyor_belt::conveyor_belt_moving::belt]
+(1651447466 34420870) [Dbg] [SideContactPlugin.cc:87] [movable_tray_dark_wood_1] Watching collisions on: movable_tray_dark_wood_1::movable_tray_dark_wood_1::link::tray_collision
+(1651447466 34474472) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/movable_tray_dark_wood_1/movable_tray_dark_wood_1/link/movable_tray_contact
+(1651447466 34611132) [Dbg] [ROSMovableKitTrayPlugin.cc:48] MovableKitTrayPlugin running at 20 Hz
+(1651447466 36547140) [Dbg] [SideContactPlugin.cc:87] [movable_tray_metal_shiny_1] Watching collisions on: movable_tray_metal_shiny_1::movable_tray_metal_shiny_1::link::tray_collision
+(1651447466 36579187) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/movable_tray_metal_shiny_1/movable_tray_metal_shiny_1/link/movable_tray_contact
+(1651447466 36645434) [Dbg] [ROSMovableKitTrayPlugin.cc:48] MovableKitTrayPlugin running at 20 Hz
+(1651447466 50738434) [Dbg] [SideContactPlugin.cc:87] [kit_tray_1] Watching collisions on: agv1::kit_tray_1::kit_tray_1::tray::tray_collision
+(1651447466 50803190) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/agv1/kit_tray_1/kit_tray_1/tray/kit_tray_contact
+(1651447466 50948079) [Dbg] [ROSAriacKitTrayPlugin.cc:61] KitTrayPlugin running at 20 Hz
+(1651447466 59731722) [Dbg] [SideContactPlugin.cc:87] [kit_tray_3] Watching collisions on: agv3::kit_tray_3::kit_tray_3::tray::tray_collision
+(1651447466 59762858) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/agv3/kit_tray_3/kit_tray_3/tray/kit_tray_contact
+(1651447466 59806722) [Dbg] [ROSAriacKitTrayPlugin.cc:61] KitTrayPlugin running at 20 Hz
+(1651447466 71292281) [Dbg] [SideContactPlugin.cc:87] [kit_tray_2] Watching collisions on: agv2::kit_tray_2::kit_tray_2::tray::tray_collision
+(1651447466 71333147) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/agv2/kit_tray_2/kit_tray_2/tray/kit_tray_contact
+(1651447466 71409763) [Dbg] [ROSAriacKitTrayPlugin.cc:61] KitTrayPlugin running at 20 Hz
+(1651447466 80683493) [Dbg] [SideContactPlugin.cc:87] [kit_tray_4] Watching collisions on: agv4::kit_tray_4::kit_tray_4::tray::tray_collision
+(1651447466 80727575) [Dbg] [SideContactPlugin.cc:113] Gazebo contact topic: /gazebo/world/agv4/kit_tray_4/kit_tray_4/tray/kit_tray_contact
+(1651447466 80803968) [Dbg] [ROSAriacKitTrayPlugin.cc:61] KitTrayPlugin running at 20 Hz
+(1651447466 91483807) [Msg] Assembly plugin loaded
+(1651447466 92273873) [Dbg] [AssemblyPlugin.cc:219] station1::briefcase_1::briefcase_1::assembly_surface_battery::battery_collision
+(1651447466 92824998) [Msg] Assembly plugin loaded
+(1651447466 92886418) [Dbg] [AssemblyPlugin.cc:219] station1::briefcase_1::briefcase_1::assembly_surface_pump::pump_collision
+(1651447466 93004527) [Msg] Assembly plugin loaded
+(1651447466 93078360) [Dbg] [AssemblyPlugin.cc:219] station1::briefcase_1::briefcase_1::assembly_surface_regulator::regulator_collision
+(1651447466 93183362) [Msg] Assembly plugin loaded
+(1651447466 93244728) [Dbg] [AssemblyPlugin.cc:219] station1::briefcase_1::briefcase_1::assembly_surface_sensor::sensor_collision
+(1651447466 99776513) [Dbg] [ModelContactPlugin.cc:82] station1::briefcase_1::briefcase_1::briefcase::briefcase_collision
+(1651447466 99895367) [Dbg] [ModelContactPlugin.cc:82] station1::briefcase_1::briefcase_1::assembly_surface_battery::battery_collision
+(1651447466 99928884) [Dbg] [ModelContactPlugin.cc:82] station1::briefcase_1::briefcase_1::assembly_surface_pump::pump_collision
+(1651447466 99943552) [Dbg] [ModelContactPlugin.cc:82] station1::briefcase_1::briefcase_1::assembly_surface_sensor::sensor_collision
+(1651447466 99957085) [Dbg] [ModelContactPlugin.cc:82] station1::briefcase_1::briefcase_1::assembly_surface_regulator::regulator_collision
+(1651447466 100531215) [Dbg] [ROSAriacBriefcasePlugin.cc:67] BriefcasePlugin running at 20 Hz
+(1651447466 100845079) [Wrn] [ROSAriacBriefcasePlugin.cc:193] station1::briefcase_1: New subscription from node: /gazebo
+(1651447466 103165631) [Msg] Assembly plugin loaded
+(1651447466 103273136) [Dbg] [AssemblyPlugin.cc:219] station2::briefcase_2::briefcase_2::assembly_surface_battery::battery_collision
+(1651447466 103413559) [Msg] Assembly plugin loaded
+(1651447466 103472946) [Dbg] [AssemblyPlugin.cc:219] station2::briefcase_2::briefcase_2::assembly_surface_pump::pump_collision
+(1651447466 103562211) [Msg] Assembly plugin loaded
+(1651447466 103617465) [Dbg] [AssemblyPlugin.cc:219] station2::briefcase_2::briefcase_2::assembly_surface_regulator::regulator_collision
+(1651447466 103701748) [Msg] Assembly plugin loaded
+(1651447466 103756761) [Dbg] [AssemblyPlugin.cc:219] station2::briefcase_2::briefcase_2::assembly_surface_sensor::sensor_collision
+(1651447466 103875557) [Dbg] [ModelContactPlugin.cc:82] station2::briefcase_2::briefcase_2::briefcase::briefcase_collision
+(1651447466 103895503) [Dbg] [ModelContactPlugin.cc:82] station2::briefcase_2::briefcase_2::assembly_surface_battery::battery_collision
+(1651447466 103909484) [Dbg] [ModelContactPlugin.cc:82] station2::briefcase_2::briefcase_2::assembly_surface_pump::pump_collision
+(1651447466 103923230) [Dbg] [ModelContactPlugin.cc:82] station2::briefcase_2::briefcase_2::assembly_surface_sensor::sensor_collision
+(1651447466 103936982) [Dbg] [ModelContactPlugin.cc:82] station2::briefcase_2::briefcase_2::assembly_surface_regulator::regulator_collision
+(1651447466 103996350) [Dbg] [ROSAriacBriefcasePlugin.cc:67] BriefcasePlugin running at 20 Hz
+(1651447466 104041640) [Wrn] [ROSAriacBriefcasePlugin.cc:193] station2::briefcase_2: New subscription from node: /gazebo
+(1651447466 104747978) [Msg] Assembly plugin loaded
+(1651447466 104815752) [Dbg] [AssemblyPlugin.cc:219] station3::briefcase_3::briefcase_3::assembly_surface_battery::battery_collision
+(1651447466 104919507) [Msg] Assembly plugin loaded
+(1651447466 104987139) [Dbg] [AssemblyPlugin.cc:219] station3::briefcase_3::briefcase_3::assembly_surface_pump::pump_collision
+(1651447466 105079757) [Msg] Assembly plugin loaded
+(1651447466 105145046) [Dbg] [AssemblyPlugin.cc:219] station3::briefcase_3::briefcase_3::assembly_surface_regulator::regulator_collision
+(1651447466 105261186) [Msg] Assembly plugin loaded
+(1651447466 105340421) [Dbg] [AssemblyPlugin.cc:219] station3::briefcase_3::briefcase_3::assembly_surface_sensor::sensor_collision
+(1651447466 105520299) [Dbg] [ModelContactPlugin.cc:82] station3::briefcase_3::briefcase_3::briefcase::briefcase_collision
+(1651447466 105538198) [Dbg] [ModelContactPlugin.cc:82] station3::briefcase_3::briefcase_3::assembly_surface_battery::battery_collision
+(1651447466 105552853) [Dbg] [ModelContactPlugin.cc:82] station3::briefcase_3::briefcase_3::assembly_surface_pump::pump_collision
+(1651447466 105567288) [Dbg] [ModelContactPlugin.cc:82] station3::briefcase_3::briefcase_3::assembly_surface_sensor::sensor_collision
+(1651447466 105581533) [Dbg] [ModelContactPlugin.cc:82] station3::briefcase_3::briefcase_3::assembly_surface_regulator::regulator_collision
+(1651447466 105637486) [Dbg] [ROSAriacBriefcasePlugin.cc:67] BriefcasePlugin running at 20 Hz
+(1651447466 105684241) [Wrn] [ROSAriacBriefcasePlugin.cc:193] station3::briefcase_3: New subscription from node: /gazebo
+(1651447466 106280509) [Msg] Assembly plugin loaded
+(1651447466 106332249) [Dbg] [AssemblyPlugin.cc:219] station4::briefcase_4::briefcase_4::assembly_surface_battery::battery_collision
+(1651447466 106429373) [Msg] Assembly plugin loaded
+(1651447466 106473473) [Dbg] [AssemblyPlugin.cc:219] station4::briefcase_4::briefcase_4::assembly_surface_pump::pump_collision
+(1651447466 106545635) [Msg] Assembly plugin loaded
+(1651447466 106592520) [Dbg] [AssemblyPlugin.cc:219] station4::briefcase_4::briefcase_4::assembly_surface_regulator::regulator_collision
+(1651447466 106663138) [Msg] Assembly plugin loaded
+(1651447466 106711462) [Dbg] [AssemblyPlugin.cc:219] station4::briefcase_4::briefcase_4::assembly_surface_sensor::sensor_collision
+(1651447466 106861383) [Dbg] [ModelContactPlugin.cc:82] station4::briefcase_4::briefcase_4::briefcase::briefcase_collision
+(1651447466 106877968) [Dbg] [ModelContactPlugin.cc:82] station4::briefcase_4::briefcase_4::assembly_surface_battery::battery_collision
+(1651447466 106892391) [Dbg] [ModelContactPlugin.cc:82] station4::briefcase_4::briefcase_4::assembly_surface_pump::pump_collision
+(1651447466 106906435) [Dbg] [ModelContactPlugin.cc:82] station4::briefcase_4::briefcase_4::assembly_surface_sensor::sensor_collision
+(1651447466 106920531) [Dbg] [ModelContactPlugin.cc:82] station4::briefcase_4::briefcase_4::assembly_surface_regulator::regulator_collision
+(1651447466 106978614) [Dbg] [ROSAriacBriefcasePlugin.cc:67] BriefcasePlugin running at 20 Hz
+(1651447466 107017914) [Wrn] [ROSAriacBriefcasePlugin.cc:193] station4::briefcase_4: New subscription from node: /gazebo
+(1651447466 363622500) ODESliderJoint::SetAnchor not implemented.
+(1651447466 363651110) ODESliderJoint::SetAnchor not implemented.
+(1651447466 369595616) [Msg] VacuumGripper plugin loaded for: gantry 
+(1651447466 804263932) ODESliderJoint::SetAnchor not implemented.
+(1651447466 909967852) [Msg] VacuumGripper plugin loaded for: kitting 
+(1651447467 183776896) ODESliderJoint::Anchor not implemented.
+(1651447467 183822765) ODESliderJoint::Anchor not implemented.
+(1651447467 807026929) ODESliderJoint::Anchor not implemented.
+(1651447476 176626686) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 1
+(1651447477 546835431) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 2
+(1651447478 938358711) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 3
+(1651447480 366994282) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 4
+(1651447481 777408451) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 5
+(1651447483 203187256) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 6
+(1651447484 723450603) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 7
+(1651447486 261606249) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 8
+(1651447487 681372613) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 9
+(1651447489 111931008) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 10
+(1651447490 355730292) [Dbg] [TaskManagerPlugin.cc:2494] 
+(1651447490 355775563) [Dbg] [TaskManagerPlugin.cc:2495] [Service Call] Start Competition
+(1651447490 355809357) [Dbg] [TaskManagerPlugin.cc:2496] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(1651447490 355842415) [Dbg] [TaskManagerPlugin.cc:2497] 
+(1651447490 360625340) [Dbg] [TaskManagerPlugin.cc:3275] 
+------------------------
+    Announcing Order
+------------------------
+-Order ID: order_0
+-Priority: [1;33mREGULAR[0m
+-Configuration File: kitting.yaml
+------------------------
+-Kitting Shipment: x1
+  -Shipment #1
+    -Tray Model: movable_tray_metal_shiny
+    -AGV: agv1
+    -Assembly Station: as1
+    -Products:
+      assembly_pump_red[(-0.1,-0.1,0),(0,-0,0)]
+
+-Assembly Shipment: x0
+------------------------
+
+(1651447490 573469476) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 11
+(1651447492 49816969) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 12
+(1651447493 512872190) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 13
+(1651447494 937379185) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 14
+(1651447496 469944632) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 15
+(1651447497 918381412) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 16
+(1651447499 342580312) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 17
+(1651447500 781349365) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 18
+(1651447500 869494206) [Dbg] [TaskManagerPlugin.cc:2517] 
+(1651447500 869551573) [Dbg] [TaskManagerPlugin.cc:2518] [Service Call] Gripper Change
+(1651447500 869568152) [Dbg] [TaskManagerPlugin.cc:2519] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(1651447500 869584102) [Dbg] [TaskManagerPlugin.cc:2520] 
+(1651447502 317451843) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 19
+(1651447503 802456135) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 20
+(1651447505 287823544) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 21
+(1651447506 731198154) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 22
+(1651447508 175161989) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 23
+(1651447509 667823777) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 24
+(1651447511 156136973) [Dbg] [TaskManagerPlugin.cc:1754] Sim time: 25
+(1651447512 227982736) [Dbg] [TaskManagerPlugin.cc:2579] 
+(1651447512 228000735) [Dbg] [TaskManagerPlugin.cc:2580] Handle end service called
+(1651447512 228013108) [Dbg] [TaskManagerPlugin.cc:2581] [Service Call] End Competition
+(1651447512 228024968) [Dbg] [TaskManagerPlugin.cc:2582] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(1651447512 228036999) [Dbg] [TaskManagerPlugin.cc:2583] 
+(1651447512 228773909) [Dbg] [TaskManagerPlugin.cc:1907] 
+------------------------
+    Final Score: 0
+    Configuration File: kitting.yaml
+------------------------
+...total process time: [14.852]
+...arms collision?: [0]
+...dropped part penalty: [0]
+------------------------
+   Order Score
+------------------------
+   ...order ID [order_0]
+   ...total order score: [0]
+   ...completion score: [0]
+   ...time taken: [0]
+   ...priority: [1]
+
+
+(1651447514 229162028) [Msg] Requesting that Gazebo shut down

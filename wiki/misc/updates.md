@@ -2,6 +2,11 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ---
 
+## Release 2022, May 1
+
+- Fixed ticket [#158](https://github.com/usnistgov/ARIAC/issues/158). Gripper change now works in both development and competition mode.
+  - `roslaunch test_competitor gripper_test.launch` starts simulation and competition mode.
+  - `rosrun test_competitor change_gripper_test.py` sends the gantry to the gripper station and a gripper change is successfully performed.
 ## Release 2022, April 30
 
 - Added new fix for issues with movable trays.

@@ -1,0 +1,2 @@
+float64 gantry_world_x
+float64 gantry_world_y

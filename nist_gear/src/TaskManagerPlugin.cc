@@ -114,6 +114,8 @@ public:
   ros::Publisher orderPub;
   /*!< Subscription for tray content */
   ros::Subscriber kittingShipmentContentSubscriber;
+
+  ros::Subscriber gantryPositionSubscriber;
   /*!< Subscription for briefcase content */
   ros::Subscriber assemblyShipmentContentSubscriber;
   /*!< Subscriber to retrieve the health status of both robots */
@@ -272,6 +274,8 @@ public:
   double gripper_changing_station_higher_x;
   double gripper_changing_station_higher_y;
   std::string current_gripper_type;
+  double gantry_world_x;
+  double gantry_world_y;
   // std::string gripper_param;
 
   /**
@@ -1397,8 +1401,14 @@ void TaskManagerPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
 
   // subscriber for tray content
   this->data_ptr->kittingShipmentContentSubscriber =
-      this->data_ptr->rosNode->subscribe(kittingContentTopic, 1000, &TaskManagerPlugin::OnKittingShipmentContent, this);
+    this->data_ptr->rosNode->subscribe(kittingContentTopic, 1000, &TaskManagerPlugin::OnKittingShipmentContent, this);
 
+  this->data_ptr->gantryPositionSubscriber =
+    this->data_ptr->rosNode->subscribe("/ariac/gantry/world_position", 1000, &TaskManagerPlugin::OnGantryPosition, this);
+
+
+
+  
   // subscriber for briefcase content
   this->data_ptr->assemblyShipmentContentSubscriber = this->data_ptr->rosNode->subscribe(
       assemblyContentTopic, 1000, &TaskManagerPlugin::OnAssemblyShipmentContent, this);
@@ -1949,6 +1959,15 @@ int GetAgvID(std::string agv_name)
   auto agv_id = agv_name.back();
   return int(agv_id);
 }
+
+
+///////////////////////////////////////////////////////
+void TaskManagerPlugin::OnGantryPosition(nist_gear::GantryPosition::ConstPtr gantry_position) {
+  this->data_ptr->gantry_world_x = gantry_position->gantry_world_x;
+  this->data_ptr->gantry_world_y = gantry_position->gantry_world_y;
+}
+
+
 
 /////////////////////////////////////////////////
 std::vector<std::string> TaskManagerPlugin::GetStaticControllers(std::string robot_name)
@@ -2510,27 +2529,32 @@ bool TaskManagerPlugin::GripperChangeServiceCallback(nist_gear::ChangeGripper::R
     return true;
   }
 
+  // auto gantry_position_msg =
+    // ros::topic::waitForMessage<nist_gear::GantryPosition>("/ariac/gantry/world_position");
+
   // check the robot pose first to make sure it is above
   // the gripper changing station
-  gazebo_msgs::GetLinkState linkState;
-  std::string linkName = (std::string) "gantry::torso_base";
-  std::string referenceFrame = (std::string) "world";
+  // gazebo_msgs::GetLinkState linkState;
+  // std::string linkName = (std::string) "gantry::torso_base";
+  // std::string referenceFrame = (std::string) "world";
 
-  ros::ServiceClient client =
-      this->data_ptr->rosNode->serviceClient<gazebo_msgs::GetLinkState>("/gazebo/get_link_state");
-  linkState.request.link_name = linkName;
-  linkState.request.reference_frame = referenceFrame;
-  client.call(linkState);
+  // ros::ServiceClient client =
+  //     this->data_ptr->rosNode->serviceClient<gazebo_msgs::GetLinkState>("/gazebo/get_link_state");
+  // linkState.request.link_name = linkName;
+  // linkState.request.reference_frame = referenceFrame;
+  // client.call(linkState);
 
-  geometry_msgs::Point pp = linkState.response.link_state.pose.position;
-  // ROS_INFO_STREAM("robot position: " << pp.x << "," << pp.y);
+  // auto gantry_world_x = gantry_position_msg->gantry_world_x;
+  // auto gantry_world_y = gantry_position_msg->gantry_world_y;
+  // geometry_msgs::Point pp = linkState.response.link_state.pose.position;
+  // gzerr << "robot position: " << pp.x << "," << pp.y << "\n";
 
-  if ((this->data_ptr->gripper_changing_station_lower_x <= pp.x) &&
-      (pp.x <= this->data_ptr->gripper_changing_station_higher_x) &&
-      (pp.y <= this->data_ptr->gripper_changing_station_higher_y) &&
-      (this->data_ptr->gripper_changing_station_lower_y <= pp.y))
+  if ((this->data_ptr->gripper_changing_station_lower_x <= this->data_ptr->gantry_world_x) &&
+      (this->data_ptr->gantry_world_x <= this->data_ptr->gripper_changing_station_higher_x) &&
+      (this->data_ptr->gantry_world_y <= this->data_ptr->gripper_changing_station_higher_y) &&
+      (this->data_ptr->gripper_changing_station_lower_y <= this->data_ptr->gantry_world_y))
   {
-    gzdbg << "Gantry is at gripper changing station.\n";
+    ROS_INFO_STREAM("Gantry is at gripper changing station.");
   }
   else
   {
@@ -2544,7 +2568,7 @@ bool TaskManagerPlugin::GripperChangeServiceCallback(nist_gear::ChangeGripper::R
   gripper_msg.data = req.gripper_type;
   this->data_ptr->gantry_gripper_type_publisher.publish(gripper_msg);
   res.success = true;
-  res.message = "Gripper on gantry: " + req.gripper_type;
+  res.message = "New gripper attached to gantry: " + req.gripper_type;
   return true;
 }
 

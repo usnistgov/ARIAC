@@ -32,6 +32,10 @@
 *.app
 .vscode/
 ARIAC/log/
+ARIAC/nist_gear/log/
+ARIAC/test_competition/log/
 wiki/log/
 nist_gear/log/
 log/
+.pyc
+.pyo

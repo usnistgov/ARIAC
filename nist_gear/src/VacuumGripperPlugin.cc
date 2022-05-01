@@ -39,6 +39,7 @@
 #include <gazebo/transport/Subscriber.hh>
 #include "nist_gear/VacuumGripperPlugin.hh"
 #include "nist_gear/ARIAC.hh"
+#include <nist_gear/GantryPosition.h>
 
 namespace gazebo {
   /// \internal
@@ -112,8 +113,9 @@ namespace gazebo {
     };
 
   public:
-    ros::Publisher drop_object_publisher;
-    ros::Subscriber drop_object_subscriber;
+  ros::Publisher drop_object_publisher;
+  ros::Publisher gantryPositionPublisher;
+  ros::Subscriber drop_object_subscriber;
     ros::Subscriber gantry_gripper_type_subscriber;
     /// \brief Collection of objects that have been dropped.
   public:
@@ -295,6 +297,11 @@ void VacuumGripperPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->rosnode = new ros::NodeHandle(this->dataPtr->model->GetName() + "/vacuumplugin");
   // this->dataPtr->rosnode.reset(new ros::NodeHandle(robotNamespace+"/vacuumplugin"));
 
+  // publisher for the position of the gantry robot
+  this->dataPtr->gantryPositionPublisher =
+    this->dataPtr->rosnode->advertise<nist_gear::GantryPosition>("/ariac/gantry/world_position", 1000, false);
+
+  
   this->dataPtr->drop_object_publisher =
     this->dataPtr->rosnode->advertise<nist_gear::DropProducts>("/ariac/drop_products", 1000, false);
 
@@ -587,6 +594,13 @@ void VacuumGripperPlugin::OnUpdate()
   this->Publish();
 
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+
+  // gzerr << "Current Robot " << this->dataPtr->model->GetName() << std::endl;
+  if (this->dataPtr->model->GetName() == "gantry") {
+    // publish its pose
+    PublishGantryPose(this->dataPtr->model);
+  }
+  
   if (this->dataPtr->disableRequested) {
     this->HandleDetach();
     this->dataPtr->enabled = false;
@@ -629,8 +643,8 @@ void VacuumGripperPlugin::OnUpdate()
       }
 
       // check if the current arm is allowed to drop the object
-      gzerr << "Current Robot " << this->dataPtr->model->GetName() << std::endl;
-      gzerr << "Drop Robot " << dropObject.getRobotType() << std::endl;
+      // gzerr << "Current Robot " << this->dataPtr->model->GetName() << std::endl;
+      // gzerr << "Drop Robot " << dropObject.getRobotType() << std::endl;
       if (this->dataPtr->model->GetName() != dropObject.getRobotType()) {
         continue;
       }
@@ -844,10 +858,29 @@ void VacuumGripperPlugin::HandleDetach()
   this->dataPtr->fixedJoint->Detach();
 }
 
+
+///////////////////////////////////////////////
+void VacuumGripperPlugin::PublishGantryPose(gazebo::physics::ModelPtr &gantry_model) {
+
+  // auto base_pose = gantry_model->GetLink("torso_base")->WorldPose();
+  // gzerr << base_pose.Pos().X() << "\n";
+
+  ignition::math::Pose3d gantry_pose = gantry_model->GetLink("torso_base")->WorldPose();
+  auto gantry_world_x = gantry_pose.Pos().X();
+  auto gantry_world_y = gantry_pose.Pos().Y();
+
+  nist_gear::GantryPosition gantry_position;
+  gantry_position.gantry_world_x = gantry_world_x;
+  gantry_position.gantry_world_y = gantry_world_y;
+
+  this->dataPtr->gantryPositionPublisher.publish(gantry_position);
+}
 /////////////////////////////////////////////////
 bool VacuumGripperPlugin::CheckModelContact()
 {
   bool modelInContact = false;
+
+  
   if (this->dataPtr->contacts.size() > 0) {
     gzdbg << "Number of collisions with gripper: " << this->dataPtr->contacts.size() << std::endl;
   }
@@ -885,6 +918,7 @@ bool VacuumGripperPlugin::CheckModelContact()
       }
 
       if (this->dataPtr->model->GetName() == "gantry") {
+        //publish gantry pose
         if (this->dataPtr->gantry_current_gripper == "gripper_part") {
           if (std::strstr(modelType.c_str(), "movable")) {
             ROS_ERROR_ONCE("Incorrect gripper to attach this movable tray");

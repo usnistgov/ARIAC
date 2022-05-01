@@ -89,10 +89,13 @@ namespace gazebo
 
     /// \brief Detach an object from the gripper.
     private: void HandleDetach();
+    /// \brief Publish the pose of the gantry on a ROS topic
+    private: void PublishGantryPose(gazebo::physics::ModelPtr &gantry_model);
 
     /// \brief Overwrite this method for sending periodic updates with the
     /// gripper state.
     private: virtual void Publish() const;
+    // private: ros::Publisher gantryPositionPublisher;
 
     /// \internal
     /// \brief Pointer to private data.

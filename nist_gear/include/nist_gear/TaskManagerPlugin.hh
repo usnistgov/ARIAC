@@ -43,6 +43,7 @@
 #include <nist_gear/ChangeGripper.h>
 #include <nist_gear/TrayContents.h>
 #include <nist_gear/DetectKitTrayContent.h>
+#include <nist_gear/GantryPosition.h>
 //ros
 #include <sdf/sdf.hh>
 #include <std_msgs/String.h>
@@ -276,6 +277,8 @@ namespace gazebo {
      * @param shipment
      */
     void OnKittingShipmentContent(nist_gear::TrayContents::ConstPtr shipment);
+
+    void OnGantryPosition(nist_gear::GantryPosition::ConstPtr gantry_position);
 
     /**
      * @brief

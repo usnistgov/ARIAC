@@ -57,6 +57,7 @@ add_message_files(DIRECTORY msg
   VacuumGripperState.msg
   DetectedConnectedProducts.msg
   DetectedConnectedProduct.msg
+  GantryPosition.msg
 )
 
 add_service_files(DIRECTORY srv

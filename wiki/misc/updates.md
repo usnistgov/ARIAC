@@ -2,6 +2,9 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ---
 
+## Release 2022, May 2
+
+- We have considered some of your requests and we are extending the submission deadline to 5/7 at 5 PM EST.
 ## Release 2022, May 1
 
 - A new folder was `ariac-docker` was added to the ARIAC package. It contains everything you need to get your package ready for the qualifiers.

@@ -26,6 +26,10 @@
 *.a
 *.lib
 
+# Compiled python
+*.pyc
+*.pyo
+
 # Executables
 *.exe
 *.out

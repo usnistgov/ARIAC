@@ -15,6 +15,7 @@ if __name__ == "__main__":
 
     competitor = Competitor()
     commander = AssemblyCommander()
+    rospy.on_shutdown(commander.shutdown)
 
     competitor.start_competition()
 
@@ -27,7 +28,7 @@ if __name__ == "__main__":
         rospy.loginfo("Number of shipment to complete: {0}".format(
             len(order.assembly_shipments)))
         for assembly_shipment in order.assembly_shipments:
-            
+
             parts = competitor.process_assembly_shipment(assembly_shipment)
 
             briefcase = 'briefcase_' + assembly_shipment.station_id[-1]
@@ -62,7 +63,7 @@ if __name__ == "__main__":
                     commander.move_arm_to_home_position()
                     rospy.logerr("Dropping part..")
                     commander.gripper_off()
-                    
+
             rospy.loginfo("Shipment Completed")
             commander.move_arm_to_home_position()
 

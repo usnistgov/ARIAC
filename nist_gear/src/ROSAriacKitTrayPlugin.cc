@@ -152,8 +152,8 @@ void KitTrayPlugin::HandleLockUnlockModelsRequest(ConstGzStringPtr& _msg)
   // gzerr << "<<<<< status " << kit_tray_locked_status << "\n";
   if (_msg->data() == "lock")
   {
-    gzerr << "<<<<< status " << kit_tray_locked_status << "\n";
-    gzerr << "<<<<< message " << _msg->data() << "\n";
+    // gzerr << "<<<<< status " << kit_tray_locked_status << "\n";
+    // gzerr << "<<<<< message " << _msg->data() << "\n";
     // std::this_thread::sleep_for(std::chrono::milliseconds(150));
     if (kit_tray_locked_status == "locked")
     {
@@ -169,8 +169,8 @@ void KitTrayPlugin::HandleLockUnlockModelsRequest(ConstGzStringPtr& _msg)
   }
   else if (_msg->data() == "unlock")
   {
-    gzerr << "<<<<< status " << kit_tray_locked_status << "\n";
-    gzerr << "<<<<< message " << _msg->data() << "\n";
+    // gzerr << "<<<<< status " << kit_tray_locked_status << "\n";
+    // gzerr << "<<<<< message " << _msg->data() << "\n";
     // std::this_thread::sleep_for(std::chrono::milliseconds(150));
     if (kit_tray_locked_status == "locked")
     {

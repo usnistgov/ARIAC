@@ -20,6 +20,7 @@
 
 #include "SideContactPlugin.hh"
 #include <ignition/math/Vector3.hh>
+#include <ros/ros.h>
 
 using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(SideContactPlugin)
@@ -32,6 +33,7 @@ SideContactPlugin::SideContactPlugin() : ModelPlugin()
 /////////////////////////////////////////////////
 SideContactPlugin::~SideContactPlugin()
 {
+  // ROS_ERROR_STREAM("~SideContactPlugin");
   this->updateConnection.reset();
   this->parentSensor.reset();
   this->world.reset();

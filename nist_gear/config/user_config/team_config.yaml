@@ -1,0 +1,79 @@
+sensors:
+
+  logical_camera_1:
+    type: logical_camera
+    pose:
+      xyz: [-6.092189, 6.166299, 2.051140]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_2:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, 2.963994, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_3:
+    type: logical_camera
+    pose:
+      xyz: [-2.286283, -2.963994, 1.801095]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_4:
+    type: logical_camera
+    pose:
+      xyz: [-10.6, 4.68, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_5:
+    type: logical_camera
+    pose:
+      xyz: [-10.6, 1.368, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_6:
+    type: logical_camera
+    pose:
+      xyz: [-10.6, -1.334, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_7:
+    type: logical_camera
+    pose:
+      xyz: [-10.6, -4.696, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_8:
+    type: logical_camera
+    pose:
+      xyz: [-5.6, 4.675, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_9:
+    type: logical_camera
+    pose:
+      xyz: [-5.6, 1.3676, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_10:
+    type: logical_camera
+    pose:
+      xyz: [-5.6, -1.334, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  logical_camera_11:
+    type: logical_camera
+    pose:
+      xyz: [-5.6, -4.696, 1.8]
+      rpy: [3.141593, 1.570792, 0.000000]
+
+  breakbeam_0:
+    type: break_beam
+    pose:
+      xyz: [-0.57, 5.0, 0.89]
+      rpy: [0, 0, -1.557900]
+
+gantry_bin_camera:
+  enable: false
+
+gantry_tray_camera:
+  enable: false

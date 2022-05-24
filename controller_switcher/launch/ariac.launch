@@ -1,0 +1,8 @@
+<launch>
+  <node name="ariac_sim" pkg="nist_gear" type="gear.py"
+        args="
+          -f $(find controller_pausing)/config/basic_kitting.yaml
+          $(find controller_pausing)/config/sensors.yaml"
+        required="true" 
+        output="screen" />
+</launch>

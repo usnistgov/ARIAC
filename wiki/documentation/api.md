@@ -135,7 +135,7 @@ Topic and services that can be used to control the robot actuators are described
     - srv: [nist_gear/ChangeGripper.srv](../../nist_gear/srv/ChangeGripper.srv) 
 - Change the health status of both robots.
   - topic: `echo /ariac/robot_health `
-    - srv: [nist_gear/RobotHealth.msg](../../nist_gear/msg/RobotHealth.msg) 
+    - msg: [nist_gear/RobotHealth.msg](../../nist_gear/msg/RobotHealth.msg) 
 
 
 ## Process Management

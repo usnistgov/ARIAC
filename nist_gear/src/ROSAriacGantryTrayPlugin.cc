@@ -31,6 +31,7 @@ GantryTrayPlugin::GantryTrayPlugin() : SideContactPlugin()
 /////////////////////////////////////////////////
 GantryTrayPlugin::~GantryTrayPlugin()
 {
+  // ROS_ERROR_STREAM("~GantryTrayPlugin");
   this->updateConnection.reset();
   this->parentSensor.reset();
   this->world.reset();

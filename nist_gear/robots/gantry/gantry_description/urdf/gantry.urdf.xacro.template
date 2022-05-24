@@ -316,9 +316,6 @@
           <far>5</far>
         </clip>
         <activation_topic>/ariac/sensor_enable</activation_topic>
-        <!-- <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
-            <activation_topic>/ariac/sensor_enable</activation_topic>
-          </plugin> -->
       </camera>
       <plugin name="rgbd_camera" filename="libgazebo_ros_openni_kinect.so">
         <baseline>0.2</baseline>
@@ -365,9 +362,6 @@
           <far>5</far>
         </clip>
         <activation_topic>/ariac/sensor_enable</activation_topic>
-        <!-- <plugin name="sensor_blackout_plugin" filename="libSensorBlackoutPlugin.so" >
-            <activation_topic>/ariac/sensor_enable</activation_topic>
-          </plugin> -->
       </camera>
       <plugin name="rgbd_camera" filename="libgazebo_ros_openni_kinect.so">
         <baseline>0.2</baseline>
@@ -438,56 +432,6 @@
     </actuator>
   </transmission>
 
-      <!-- Defining the contact sensor for torso_tray -->
-  <!-- <gazebo reference="torso_tray">
-  <material>Gazebo/GreyTransparent</material>
-    <sensor name="gantry_tray_contact" type="contact">
-      <update_rate>1000.0</update_rate>
-      <always_on>1</always_on>
-      <plugin name="gantry_tray_plugin" filename="libROSAriacGantryTrayPlugin.so">
-      <contact>
-          <collision>torso_tray_collision</collision>
-      </contact>
-      <lock_models_service_name>/ariac/gantry_tray/lock_models</lock_models_service_name>
-      <unlock_models_service_name>/ariac/gantry_tray/unlock_models</unlock_models_service_name>
-      <contact_sensor_name>gantry_tray_contact</contact_sensor_name>
-      <update_rate>20</update_rate>
-      <alwaysOn>true</alwaysOn>
-      <clear_tray_service_name>/ariac/gantry_tray/clear_tray</clear_tray_service_name>
-      <frameName>gantry_contact_frame</frameName>  
-      </plugin>
-    </sensor>
-  </gazebo> -->
-
-
-  <!-- <gazebo>
-      <plugin name="gantry_tray_plugin" filename="libROSAriacGantryTrayPlugin.so">
-      <lock_models_service_name>/ariac/gantry_tray/lock_models</lock_models_service_name>
-      <unlock_models_service_name>/ariac/gantry_tray/unlock_models</unlock_models_service_name>
-      <contact_sensor_name>gantry_tray_contact</contact_sensor_name>
-      <update_rate>20</update_rate>
-      <alwaysOn>true</alwaysOn>
-      <clear_tray_service_name>/ariac/gantry_tray/clear_tray</clear_tray_service_name>
-      <frameName>gantry_contact_frame</frameName>  
-      </plugin>
-  </gazebo> 
-  -->
-
-
-  <!-- Defining the contact sensor for torso_tray -->
-    <!--
-  <gazebo reference="torso_tray">
-    <sensor name="gantry_tray_contact" type="contact">
-      <contact>
-        <collision>torso_tray_collision</collision>
-      </contact>
-      <update_rate>1000.0</update_rate>
-      <always_on>1</always_on>
-      <plugin name="gantry_tray_plugin" filename="libROSAriacGantryTrayPlugin.so"/>
-    </sensor>
-    <material>Gazebo/GreyTransparent</material>
-  </gazebo> 
-  -->
 
   <gazebo>
     <static>false</static>

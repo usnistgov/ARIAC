@@ -48,7 +48,7 @@ namespace gazebo
     public: virtual void Load(physics::ModelPtr _model, sdf::ElementPtr _sdf);
 
     /// \brief Callback that recieves the contact sensor's messages.
-    protected: virtual void OnContactsReceived(ConstContactsPtr& _msg);
+    protected: void OnContactsReceived(ConstContactsPtr& _msg);
 
     /// \brief Called when world update events are received
     /// \param[in] _info Update information provided by the server.

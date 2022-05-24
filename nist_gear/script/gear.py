@@ -266,8 +266,8 @@ default_bin_origins = {
 }
 
 default_tray_table_origins = {
-    'tray_table1': [-6.56777, 6.265981, -0.451543],
-    'tray_table2': [-5.61518, 6.265981, -0.451543]
+    'tray_table1': [-6.56777, 6.265981, 0],
+    'tray_table2': [-5.61518, 6.265981, 0]
 }
 
 
@@ -1154,7 +1154,7 @@ def create_bin_infos():
 def create_tray_table_infos():
     tray_table_infos = {}
     for table_name, xyz in default_tray_table_origins.items():
-        tray_table_infos[table_name] = PoseInfo(xyz, [0, 0, 0])
+        tray_table_infos[table_name] = PoseInfo(xyz, [0, 0, 1.57])
     return tray_table_infos
 
 

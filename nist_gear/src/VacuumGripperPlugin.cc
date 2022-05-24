@@ -262,6 +262,7 @@ VacuumGripperPlugin::VacuumGripperPlugin()
 /////////////////////////////////////////////////
 VacuumGripperPlugin::~VacuumGripperPlugin()
 {
+  // ROS_ERROR_STREAM("~VacuumGripperPlugin");
   if (this->dataPtr->world && this->dataPtr->world->Running()) {
     auto mgr = this->dataPtr->world->Physics()->GetContactManager();
     mgr->RemoveFilter(this->Name());
@@ -765,7 +766,7 @@ bool VacuumGripperPlugin::GetContactNormal()
   for (unsigned int i = 0; i < this->dataPtr->contacts.size(); ++i) {
     std::string name1 = this->dataPtr->contacts[i].collision1();
     std::string name2 = this->dataPtr->contacts[i].collision2();
-    gzdbg << "Collision between '" << name1 << "' and '" << name2 << "'\n";
+    // gzdbg << "Collision between '" << name1 << "' and '" << name2 << "'\n";
 
     if (this->dataPtr->collisions.find(name1) ==
       this->dataPtr->collisions.end()) {

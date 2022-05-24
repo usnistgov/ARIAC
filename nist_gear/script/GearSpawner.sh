@@ -69,36 +69,47 @@
 
 # rosservice call /ariac/agv1/submit_kitting_shipment "as1" "order_0_kitting_shipment_0"
 
+
+#############
+# dev/hpo_kitting_assembly.yaml
+#############
+# rosservice call /ariac/start_competition
+# sleep 6
+# rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_metal_shiny_1::movable_tray_metal_shiny_1::link -model assembly_pump_red_12
+# sleep 10
+# rosrun gazebo_ros spawn_model -sdf -x -0.030 -y 0.180 -z 0.098 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_battery_green_ariac/model.sdf -reference_frame station3::briefcase_3::briefcase_3::briefcase -model assembly_battery_green_10
+# sleep 6
+# rosrun gazebo_ros spawn_model -sdf -x 0.032 -y -0.153 -z 0.079 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_green_ariac/model.sdf -reference_frame station3::briefcase_3::briefcase_3::briefcase -model assembly_pump_green_10
+# sleep 6
+# rosservice call /ariac/as3/submit_assembly_shipment order_1_assembly_shipment_0
+# sleep 6
+# rosrun gazebo_ros spawn_model -sdf -x 0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 1.57 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_metal_shiny_1::movable_tray_metal_shiny_1::link -model assembly_pump_red_13
+# sleep 6
+# rosservice call /ariac/agv1/submit_kitting_shipment as1 order_0_kitting_shipment_0
+
+
+#############
+# agility_challenges/robot_breakdown_sample.yaml
+#############
+rosservice call /ariac/start_competition
+sleep 5
+rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_light_wood_1::movable_tray_light_wood_1::link -model assembly_pump_red_12
+sleep 15
+rosservice call /ariac/agv1/submit_kitting_shipment as2 order_0_kitting_shipment_0
+
 #############
 # testing /ariac/kit_tray_x/lock
 #############
-rosservice call /ariac/start_competition
-rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_dark_wood_1::movable_tray_dark_wood_1::link -model assembly_pump_red_12
-# rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_metal_shiny_1::movable_tray_metal_shiny_1::link -model assembly_pump_red_13
-# sleep 5
-# rosservice call /ariac/kit_tray_1/lock
-# sleep 5
-# rosservice call /ariac/agv4/move_to_station as4
-# sleep 12
-# rosservice call /ariac/agv4/move_to_station as3
+# rosservice call /ariac/start_competition
+# rosrun gazebo_ros spawn_model -sdf -x -0.1 -y -0.1 -z 0.05 -R 0 -P 0 -Y 0 -file `rospack find nist_gear`/models/assembly_pump_red_ariac/model.sdf -reference_frame movable_tray_dark_wood_1::movable_tray_dark_wood_1::link -model assembly_pump_red_12
 # sleep 6
-# rosservice call /ariac/agv4/move_to_station ks
-sleep 6
-# rosservice call /ariac/kit_tray_1/lock
-# rosservice call /ariac/kit_tray_1/unlock
-rosservice call /ariac/agv1/move_to_station as1
-sleep 15
-rosservice call /ariac/agv1/move_to_station as2
-sleep 15
-# rosservice call /ariac/agv2/move_to_station as1
+# rosservice call /ariac/agv1/move_to_station as1
 # sleep 15
-rosservice call /ariac/agv1/move_to_station ks
-sleep 15
-# rosservice call /ariac/agv2/move_to_station ks
+# rosservice call /ariac/agv1/move_to_station as2
 # sleep 15
-rosservice call /ariac/agv1/submit_kitting_shipment "as1" "order_0_kitting_shipment_0" 
+# rosservice call /ariac/agv1/move_to_station ks
 # sleep 15
-# rosservice call /ariac/agv2/submit_kitting_shipment "as1" "order_0_kitting_shipment_1" 
+# rosservice call /ariac/agv1/submit_kitting_shipment "as1" "order_0_kitting_shipment_0" 
 
 #############
 # kitting_sample.yaml

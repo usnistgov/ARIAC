@@ -54,6 +54,7 @@ ROSVacuumGripperPlugin::ROSVacuumGripperPlugin()
 /////////////////////////////////////////////////
 ROSVacuumGripperPlugin::~ROSVacuumGripperPlugin()
 {
+  // ROS_ERROR_STREAM("~ROSVacuumGripperPlugin");
   this->dataPtr->rosnode->shutdown();
 }
 

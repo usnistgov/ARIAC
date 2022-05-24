@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_generation
   controller_manager_msgs
+  controller_switcher
 )
 
 find_package(gazebo REQUIRED)
@@ -58,6 +59,7 @@ add_message_files(DIRECTORY msg
   DetectedConnectedProducts.msg
   DetectedConnectedProduct.msg
   GantryPosition.msg
+  AttachedAssemblyProduct.msg
 )
 
 add_service_files(DIRECTORY srv
@@ -128,6 +130,22 @@ install(TARGETS ${vacuum_gripper_plugin_name}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)
+
+# Create the libRobotControllerlugin.so library.
+# set(robot_controller_plugin_name RobotControllerSwitcherPlugin)
+# add_library(${robot_controller_plugin_name} src/RobotControllerSwitcherPlugin.cc)
+# target_link_libraries(${robot_controller_plugin_name}
+#   ${GAZEBO_LIBRARIES}
+#   ${roscpp_LIBRARIES}
+#   ${sensor_msgs_LIBRARIES}
+# )
+# add_dependencies(${robot_controller_plugin_name}
+#   ${${PROJECT_NAME}_EXPORTED_TARGETS}
+# )
+# install(TARGETS ${robot_controller_plugin_name}
+#   ARCHIVE DESTINATION lib
+#   LIBRARY DESTINATION lib
+#   RUNTIME DESTINATION bin)
 
 # Create the libROSVacuumGripperPlugin.so library.
 set(ros_vacuum_gripper_plugin_name ROSVacuumGripperPlugin)

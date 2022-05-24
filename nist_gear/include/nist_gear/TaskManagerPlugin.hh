@@ -287,9 +287,9 @@ namespace gazebo {
      */
     void OnAssemblyShipmentContent(nist_gear::DetectedAssemblyShipment::ConstPtr shipment);
 
-    std::vector<std::string> GetStaticControllers(std::string robot_name);
-    bool StopRobot(std::string robot_name);
-    void StartRobot(std::vector<std::string> static_controllers, std::string robot_name);
+    void GetStaticControllers();
+    void StartRobot(std::string robot_name);
+    void StopRobot(std::string robot_name);
   protected:
     /// \brief Update the plugin
     void OnUpdate();

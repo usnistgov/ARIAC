@@ -104,4 +104,6 @@ initial_pose_string = \
 
   <node name="gazebo_unpauser" pkg="nist_gear" type="gazebo_unpauser.py" output="screen"/>
 
+  <node name="controller_switcher" pkg="controller_switcher" type="controller_switcher" output="screen" />
+
 </launch>

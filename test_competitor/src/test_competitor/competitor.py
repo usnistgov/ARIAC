@@ -6,7 +6,6 @@ from nist_gear.msg import Orders
 from test_competitor.assembly_commander import AssemblyPart
 from nist_gear.srv import AssemblyStationSubmitShipment
 from nist_gear.srv import SubmitKittingShipment
-from nist_gear.srv import AssemblyStationSubmitShipmentRequest
 
 
 class Competitor:
@@ -78,6 +77,8 @@ class Competitor:
     def submit_assembly_shipment(self, station_id, shipment_type):
         # rospy.logerr("Submitting shipment")
         srv = '/ariac/' + station_id + '/submit_assembly_shipment'
+        rospy.loginfo("Submitting shipment {} at station {}".format(
+            shipment_type, station_id))
         rospy.wait_for_service(srv)
         try:
             submit_shipment = rospy.ServiceProxy(

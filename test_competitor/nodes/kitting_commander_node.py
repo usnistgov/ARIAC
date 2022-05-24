@@ -660,7 +660,7 @@ def main():
     # Start the competition
     competitor.start_competition()
 
-    # Wait for order to be recieved
+    # Wait for order to be received
     r = rospy.Rate(10)
     while not competitor.received_order:
         r.sleep()
@@ -760,9 +760,10 @@ def main():
                     product_init,
                     product_goal)
 
-        competitor.submit_kitting_shipment(active_agv,
-                                           assembly_station,
-                                           shipment_type)
+        if order.kitting_shipments:
+            competitor.submit_kitting_shipment(active_agv,
+                                               assembly_station,
+                                               shipment_type)
         # The following is not needed, ariac will end automatically
         # competitor.stop_competition()
 

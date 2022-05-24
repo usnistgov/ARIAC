@@ -48,21 +48,24 @@ namespace ariac {
     friend std::ostream& operator<<(std::ostream& _out,
       const KittingShipmentScore& _obj)
     {
+      std::string false_result = "\033[1;31mfalse\033[0m";
+      std::string true_result  = "\033[1;31mtrue\033[0m";
       // _out << "kitting_shipment_score" << std::endl;
       // _out << "...shipment type: [" << _obj.kittingShipmentType << "]" << std::endl;
       _out << "      ...completion score: [" << _obj.total() << "]" << std::endl;
-      _out << "      ...complete: [" << (_obj.is_kitting_shipment_complete ? "true" : "false") << "]" << std::endl;
-      _out << "      ...submitted: [" << (_obj.is_kitting_shipment_submitted ? "true" : "false") << "]" << std::endl;
-      _out << "      ...used correct agv: [" << (_obj.has_correct_agv ? "true" : "false") << "]" << std::endl;
-      _out << "      ...used correct movable tray type: [" << (_obj.has_correct_movable_tray_type ? "true" : "false") << "]" << std::endl;
-      _out << "      ...has correct movable tray pose: [" << (_obj.has_correct_movable_tray_pose ? "true" : "false") << "]" << std::endl;
-      _out << "            ...has correct position: [" << (_obj.has_correct_movable_tray_position ? "true" : "false") << "]" << std::endl;
-      _out << "            ...has correct orientation: [" << (_obj.has_correct_movable_tray_orientation ? "true" : "false") << "]" << std::endl;
-      _out << "      ...sent to correct station: [" << (_obj.has_correct_station ? "true" : "false") << "]" << std::endl;
-      _out << "      ...product type presence score: [" << _obj.product_only_type_presence << "]" << std::endl;
-      _out << "      ...product color presence score: [" << _obj.product_only_type_and_color_presence << "]" << std::endl;
-      _out << "      ...product pose score: [" << _obj.product_pose << "]" << std::endl;
-      _out << "      ...all products bonus: [" << _obj.all_products_bonus << "]" << std::endl;
+      _out << "      ...complete? [" << (_obj.is_kitting_shipment_complete ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...submitted? [" << (_obj.is_kitting_shipment_submitted ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...correct agv? [" << (_obj.has_correct_agv ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...correct assembly station? [" << (_obj.has_correct_station ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...correct movable tray type? [" << (_obj.has_correct_movable_tray_type ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...correct movable tray pose? [" << (_obj.has_correct_movable_tray_pose ? "true" : false_result) << "]" << std::endl;
+      _out << "            ...correct position? [" << (_obj.has_correct_movable_tray_position ? "true" : false_result) << "]" << std::endl;
+      _out << "            ...correct orientation? [" << (_obj.has_correct_movable_tray_orientation ? "true" : false_result) << "]" << std::endl;
+      
+      _out << "      ...products with correct type (CT): [" << _obj.product_only_type_presence << "]" << std::endl;
+      _out << "      ...products with correct color (CC): [" << _obj.product_only_type_and_color_presence << "]" << std::endl;
+      _out << "      ...products with correct pose (CP): [" << _obj.product_pose << "]" << std::endl;
+      _out << "      ...bonus: [" << _obj.all_products_bonus << "]" << std::endl;
       // _out << "</kitting_shipment_score>" << std::endl;
       return _out;
     }
@@ -155,20 +158,25 @@ namespace ariac {
     friend std::ostream& operator<<(std::ostream& _out,
       const AssemblyShipmentScore& _obj)
     {
+      std::string false_result = "\033[1;31mfalse\033[0m";
+      std::string true_result  = "\033[1;31mtrue\033[0m";
       _out << "      ...completion score: [" << _obj.total() << "]" << std::endl;
-      _out << "         +2pts x (nb of products with CT & CP): [" << 2 * _obj.computeNbCorrectPoseAndType() << "]" << std::endl;
-      _out << "           +1pt x (nb of products with CC): [" << _obj.computeNbCorrectColor() << "]" << std::endl;
-      _out << "             +bonus: 4pts x (nb of products with CT & CP & CC) = [" << _obj.allProductsBonus << "]" << std::endl;
-      _out << "      ...complete: [" << (_obj.isShipmentComplete ? "true" : "false") << "]" << std::endl;
-      _out << "      ...shipped: [" << (_obj.isShipmentSubmitted ? "true" : "false") << "]" << std::endl;
+      _out << "         +2 x (nb of products with CT & CP): [" << 2 * _obj.computeNbCorrectPoseAndType() << "]" << std::endl;
+      _out << "         +1 x (nb of products with CC & CT & CP): [" << _obj.computeNbCorrectColor() << "]" << std::endl;
+      _out << "         +bonus (0 or " << 4 * _obj.desiredNumberOfProducts << "): [" << _obj.allProductsBonus << "]" << std::endl;
+      _out << "      ------------------------" << std::endl;
+      _out << "      ...complete? [" << (_obj.isShipmentComplete ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...shipped? [" << (_obj.isShipmentSubmitted ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...correct assembly station? [" << (_obj.isCorrectStation ? "true" : false_result) << "]" << std::endl;
+      _out << "      ...faulty products? [" << (_obj.hasFaultyProduct ? true_result : "false") << "]" << std::endl;
+      _out << "      ...missing products? [" << (_obj.hasMissingProduct ? true_result : "false") << "]" << std::endl;
+      _out << "      ...unwanted products? [" << (_obj.hasUnwantedProduct ? true_result : "false") << "]" << std::endl;
+      _out << "      ------------------------" << std::endl;
       _out << "      ...number of products shipped: [" << (_obj.numberOfProductsInShipment) << "]" << std::endl;
-      _out << "      ...has faulty products: [" << (_obj.hasFaultyProduct ? "true" : "false") << "]" << std::endl;
-      _out << "      ...has missing products: [" << (_obj.hasMissingProduct ? "true" : "false") << "]" << std::endl;
-      _out << "      ...has unwanted products: [" << (_obj.hasUnwantedProduct ? "true" : "false") << "]" << std::endl;
-      _out << "      ...number of products shipped with correct type (CT): [" << _obj.numberOfProductsWithCorrectType << "]" << std::endl;
-      _out << "      ...number of products shipped with correct pose (CP): [" << _obj.numberOfProductsWithCorrectPose << "]" << std::endl;
-      _out << "      ...number of products shipped with correct color (CC): [" << _obj.numberOfProductsWithCorrectColor << "]" << std::endl;
-      _out << "      ...correct assembly station: [" << (_obj.isCorrectStation ? "true" : "false") << "]" << std::endl;
+      _out << "      ...products with correct type (CT): [" << _obj.numberOfProductsWithCorrectType << "]" << std::endl;
+      _out << "      ...products with correct color (CC): [" << _obj.numberOfProductsWithCorrectColor << "]" << std::endl;
+      _out << "      ...products with correct pose (CP): [" << _obj.numberOfProductsWithCorrectPose << "]" << std::endl;
+     
       return _out;
     }
 
@@ -176,6 +184,7 @@ namespace ariac {
     AssemblyShipmentType_t assemblyShipmentType;
     std::map<std::string, BriefcaseProduct> briefcaseProducts{};
     std::string assemblyStation;
+    int desiredNumberOfProducts = 0;
     int allProductsBonus = 0;
     int success = 0;
     int numberOfProductsWithCorrectColor = 0;
@@ -200,6 +209,7 @@ namespace ariac {
       return total + allProductsBonus;
     }
 
+    ////////////////////////////////////////////////
     int computeNbCorrectPoseAndType() const {
       int result{};
       for (const auto& x : briefcaseProducts) {
@@ -211,6 +221,7 @@ namespace ariac {
       return result;
     }
 
+    ////////////////////////////////////////////////
     int computeNbCorrectColor() const
     {
       int result{};
@@ -241,30 +252,37 @@ namespace ariac {
     friend std::ostream& operator<<(std::ostream& _out,
       const OrderScore& _obj)
     {
+      std::string order_id = "\033[1;32m"+_obj.order_id+"\033[0m";
       _out << "------------------------" << std::endl;
-      _out << "   Order Score" << std::endl;
+      _out << "  " << order_id<< std::endl;
+      // _out << "   Order Score" << std::endl;
       _out << "------------------------" << std::endl;
-      _out << "   ...order ID [" << _obj.order_id << "]" << std::endl;
-      _out << "   ...total order score: [" << _obj.computeKittingTotal() + _obj.computeAssemblyTotal() << "]" << std::endl;
+      // _out << "   ...order ID [" << _obj.order_id << "]" << std::endl;
+      // _out << "   ...total order score = "<< _obj.computeAssemblyCompletionScore() + _obj.computeKittingCompletionScore() <<" x "<< (_obj.priority)<< ": [" << _obj.computeKittingTotal() + _obj.computeAssemblyTotal() << "]" << std::endl;
+      _out << "   ...total order score = completion score x priority: [" << _obj.computeKittingTotal() + _obj.computeAssemblyTotal() << "]" << std::endl;
+      
       _out << "   ...completion score: [" << _obj.computeAssemblyCompletionScore() + _obj.computeKittingCompletionScore() << "]" << std::endl;
-      _out << "   ...time taken: [" << _obj.time_taken << "]" << std::endl;
       _out << "   ...priority: [" << (_obj.priority) << "]\n";
+      _out << "   ...time taken: [" << _obj.time_taken << "]" << std::endl;
       if (_obj.kitting_shipment_scores.size() > 0) {
         for (const auto& item : _obj.kitting_shipment_scores) {
+          std::string kitting_id = "\033[1;32m"+item.first+"\033[0m";
           _out << "------------------------" << std::endl;
-          _out << "      Kitting Score" << std::endl;
+          // _out << "      Kitting Score" << std::endl;
+          _out << "    " << kitting_id << std::endl;
           _out << "------------------------" << std::endl;
-          _out << "      ...shipment type: [" << item.first << "]" << std::endl;
+          // _out << "      ...shipment type: [" << item.first << "]" << std::endl;
           // _out << item.first<< std::endl;
           _out << item.second << std::endl;
         }
       }
       if (_obj.assembly_shipment_scores.size() > 0) {
         for (const auto& item : _obj.assembly_shipment_scores) {
+          std::string assembly_id = "\033[1;32m"+item.first+"\033[0m";
           _out << "------------------------" << std::endl;
-          _out << "      Assembly Score" << std::endl;
+          _out << "    " << assembly_id << std::endl;
           _out << "------------------------" << std::endl;
-          _out << "      ...shipment type: [" << item.first << "]" << std::endl;
+          // _out << "      ...shipment type: [" << item.first << "]" << std::endl;
           _out << item.second << std::endl;
         }
       }
@@ -948,10 +966,10 @@ namespace ariac {
     ariac::RobotDisableCondition robot_disable_condition;
     //--halth status of the kitting robot
     public:
-    unsigned int kitting_robot_health;
+    std::string kitting_robot_health;
     //--health status of the assembly robot
     public:
-    unsigned int assembly_robot_health;
+    std::string assembly_robot_health;
     std::string config_yaml_file;
   };
   //-- end class Order

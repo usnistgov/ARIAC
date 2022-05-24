@@ -382,7 +382,7 @@ def expand_snippet(filename, data=locals()):
     <!-- Tray Tables -->
     <include>
       <name>@(table_name)</name>
-      <uri>model://kit_tray_table_ariac</uri>
+      <uri>model://table</uri>
       <pose>@(' '.join(table_pose.xyz)) @(' '.join(table_pose.rpy))</pose>
     </include>
 @[end for]@
@@ -764,11 +764,9 @@ expand_snippet('rgbd_camera.sdf.template')
     </model>
 @[end for]@
 
-
-
-
-
-
+<!--
+    <plugin filename="libRobotControllerSwitcherPlugin.so" name="robot_controller_switch"></plugin>
+-->
 
     <!-- The NIST-ARIAC task manager -->
     <plugin filename="libTaskManagerPlugin.so" name="task_manager">
@@ -1045,8 +1043,8 @@ station = order['assembly_stations'][task_index]
 
     <include>
       <name>gripper_changing_station</name>
-      <uri>model://kit_tray_table_ariac</uri>
-      <pose>-3.71 6.265981 -0.451543 0 0 0</pose>
+      <uri>model://table</uri>
+      <pose>-3.71 6.265981 0 0 0 1.57</pose>
     </include>
     
 

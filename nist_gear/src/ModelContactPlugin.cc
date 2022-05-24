@@ -17,7 +17,7 @@
 
 #include <boost/algorithm/string/replace.hpp>
 #include <string>
-
+#include <ros/ros.h>
 #include "ModelContactPlugin.hh"
 #include <ignition/math/Vector3.hh>
 
@@ -32,6 +32,7 @@ ModelContactPlugin::ModelContactPlugin() : ModelPlugin()
 /////////////////////////////////////////////////
 ModelContactPlugin::~ModelContactPlugin()
 {
+  // ROS_ERROR_STREAM("~ModelContactPlugin");
   this->updateConnection.reset();
   this->world.reset();
 }
@@ -107,6 +108,7 @@ void ModelContactPlugin::OnContactsReceived(ConstContactsPtr& _msg)
   boost::mutex::scoped_lock lock(this->mutex);
   this->newestContactsMsg = *_msg;
   this->newMsg = true;
+  // gzerr << _msg->GetTypeName() << "\n";
 }
 
 /////////////////////////////////////////////////

@@ -90,6 +90,10 @@ class AssemblyCommander:
         self.agv4_location_sub = rospy.Subscriber(
             'ariac/agv4/station', String, callback=self.agv4_callback)
 
+    def shutdown(self):
+        del self.torso_move_group
+        del self.arm_move_group
+        
     def get_pose_on_kit_tray(self, station_id, part):
         """Use logical camera to determine information about the part. Return part pose in world coordinates. 
         Returns None if the specified part is not on the desired kit_tray"""

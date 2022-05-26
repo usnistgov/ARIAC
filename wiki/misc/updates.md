@@ -4,7 +4,31 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ## Release 2022, May 25
 
-- **Note**: Make sure you do a clean rebuild of the software after a pull (`catkin clean -y && catkin build`). Also note the status of an active and inactive robot published on `/ariac/robot_health` is 'active' and 'inactive', respectively.
+- **Note**: Make sure you do a clean rebuild of the software after a pull (`catkin clean -y && catkin build`). 
+- **Note**:  The status of an active and inactive robot published on `/ariac/robot_health` is 'active' and 'inactive', respectively. This used to be `True` or `False`.
+- More information on what to expect in the finals:
+  - Kitting:
+    - The finals will consist of some scenarios where only kitting is required.
+    - You need to make sure you can do kitting with both robots as the robot breakdown challenge will be part of some of the scenarios.
+    - There will be high-priority orders where order_0 is kitting and order_1 is kitting.
+    - Some scenarios require you do two shipments (two different AGVs).
+    - All the other challenges will be present at least once.
+      - Just a suggestion: Maybe it is better to flip a part on an empty agv than in an empty bin. The quality control sensor will tell you if the part is faulty before you start flipping it.
+      - It is expected your robots keep working during sensor blackout. The goal is to minimize downtime. Also, human judges will score your performance based on videos we send them. You will get a lower score if they see your robots were idle during sensor blackout.
+    - You need to make sure both robots can grasp parts from the conveyor belt (in case one of the two robots breaks down). See [complex_sample.yaml](../../nist_gear/config/trial_config/misc/complex_sample.yaml) for an example on how to spawn parts on the conveyor belt. Parts on the conveyor belt are all of the same type and color and are spawned in the middle of the belt. You should expect between 10 and 15 parts showing up on the belt.
+  - Assembly:
+    - The finals consist of some scenarios where only assembly is required.
+    - There will be high-priority orders where order_0 is assembly and order_1 is kitting or assembly.
+    - You can also have 2 shipments for assembly, which need to be performed at two different assembly stations.
+    - The yaw of the pump and the battery inside the briefcase is either 0 or pi (do not assume the yaw is always 0).
+    - The pose of the regular and the sensor will always be the same.
+  - Kitting and Assembly:
+    - Some scenarios in the finals consist of both kitting and assembly.
+    - We can have situations where assembly is announced after you submit the AGV and assembly will need to be performed at the assembly station where the AGV was sent.
+    - We can have scenarios with high-priority orders:
+      - order_0 is assembly and order_1 is kitting.
+      - order_0 is kitting and order_1 is assembly.
+    - Remember we can have humans located at `as2` and `as4`. Can the gantry perform assembly at these stations with humans around?
 ## Release 2022, May 24
 
 ### Qualifiers Results

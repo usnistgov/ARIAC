@@ -2,6 +2,9 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ---
 
+## Release 2022, May 25
+
+- **Note**: Make sure you do a clean rebuild of the software after a pull (`catkin clean -y && catkin build`). Also note the status of an active and inactive robot published on `/ariac/robot_health` is 'active' and 'inactive', respectively.
 ## Release 2022, May 24
 
 ### Qualifiers Results

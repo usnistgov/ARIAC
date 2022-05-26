@@ -785,7 +785,7 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
     gazebo::common::Time submit_time, const nist_gear::AssemblyShipment& desired_shipment,
     const nist_gear::DetectedAssemblyShipment& actual_shipment, std::string station)
 {
-  gzerr << "Assembly shipment score" << std::endl;
+  // gzerr << "Assembly shipment score" << std::endl;
   ariac::AssemblyShipmentScore scorer;
 
   scorer.assemblyStation = station;   // assembly station this shipment was sent for
@@ -795,6 +795,8 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
   scorer.isCorrectStation = false;
   scorer.numberOfProductsInShipment = actual_shipment.products.size();
   scorer.desiredNumberOfProducts = desired_shipment.products.size();
+
+  std::string ACTUAL_PRODUCT_TYPE;
 
   std::map<std::string, ariac::BriefcaseProduct> mapOfBriefcaseProducts;
 
@@ -994,25 +996,36 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
         const auto& desired_product = desired_shipment.products[desired_indexes[d]];
         const auto& actual_product = detected_non_faulty_products[actual_indexes[actual_index_index]];
         briefcase_actual_product = actual_product.type;
-        // ROS_WARN_STREAM("desired_product: "<< desired_product.type);
-        // ROS_WARN_STREAM("actual_product: "<< actual_product.type);
+        // ROS_WARN_STREAM("desired_product: " << desired_product.type);
+
+        //---------------------------------
+        std::size_t pos = actual_product.type.find("assembly_");  // position of "assembly_" in actual_product_name
+        std::string tmp = actual_product.type.substr(9);          // get from "assembly_" to the end
+        // gzerr << "tmp: " << tmp << std::endl;
+        pos = tmp.find("_");
+        std::string ACTUALPRODUCTTYPE = tmp.substr(0, pos);
+        //--------------------------------
+
+        // ROS_WARN_STREAM("actual_product: " << ACTUALPRODUCTTYPE);
 
         // Add points for each product in the correct pose
         const double translation_target = 0.02;  // 2 cm
-        const double orientation_target = 0.1;   // 0.1 rad
+        const double orientation_target = 0.2;   // 0.1 rad
         // get translation distance
         ignition::math::Vector3d posnDiff(desired_product.pose.position.x - actual_product.pose.position.x,
                                           desired_product.pose.position.y - actual_product.pose.position.y, 0);
-        // ROS_WARN_STREAM("desired_product.pose: " <<
+        // ROS_WARN_STREAM("Position -- desired_product.pose: " <<
         // desired_product.pose.position.x << ", " << desired_product.pose.position.y);
-        // ROS_WARN_STREAM("actual_product.pose: " <<
+        // ROS_WARN_STREAM("Position -- actual_product.pose: " <<
         // actual_product.pose.position.x << ", " << actual_product.pose.position.y);
 
         const double distance = posnDiff.Length();
+        // ROS_WARN_STREAM("Position -- distance: " << distance);
 
         if (distance > translation_target)
         {
           // Skipping product because translation error is too big
+          // ROS_WARN_STREAM("p -- SKIPPING PRODUCT ");
           continue;
         }
 
@@ -1030,20 +1043,81 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
         // TODO(zeid): this value can probably be derived using relationships between
         // euler angles and quaternions.
         const double quaternionDiffThresh = 0.05;
+
+        // ROS_WARN_STREAM("Orientation -- desired_product: " <<
+        // desired_product.pose.positoriention.x << ", " << desired_product.pose.position.y);
+        // ROS_WARN_STREAM("Orientation -- actual_product: " <<
+        // actual_product.pose.position.x << ", " << actual_product.pose.position.y);
+
+        auto diff_orientation = std::abs(orientationDiff) < (1.0 - quaternionDiffThresh);
+        // ROS_WARN_STREAM("orientationDiff: " << std::abs(orientationDiff));
+        // ROS_WARN_STREAM("1.0 - quaternionDiffThresh: " << 1.0 - quaternionDiffThresh);
+
         if (std::abs(orientationDiff) < (1.0 - quaternionDiffThresh))
         {
+          // ROS_WARN_STREAM("o -- SKIPPING PRODUCT ");
           // Skipping product because it is not in the correct orientation (roughly)
           continue;
         }
 
-        // Filter the yaw based on a threshold set in radians (more user-friendly).
-        // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
-        double angleDiff = objOrientation.Yaw() - orderOrientation.Yaw();
-        if ((std::abs(angleDiff) < orientation_target) ||
-            (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
-        {
-          permutation_pose_score += 1.0;
-        }
+        permutation_pose_score += 1.0;
+
+        // double angleDiff;
+        // // For sensors and regulators, check the roll only.
+        // if (ACTUALPRODUCTTYPE == "sensor" || ACTUALPRODUCTTYPE == "regulator")
+        // {
+        //   ROS_WARN_STREAM("----------------------------");
+        //   // Filter the yaw based on a threshold set in radians (more user-friendly).
+        //   // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
+        //   ROS_WARN_STREAM("current roll -- " << objOrientation.Roll());
+        //   ROS_WARN_STREAM("expected roll -- " << orderOrientation.Roll());
+        //   ROS_WARN_STREAM("-----------");
+        //   angleDiff = objOrientation.Roll() - orderOrientation.Roll();
+        //   ROS_WARN_STREAM("angleDiff -- " << angleDiff);
+        //   ROS_WARN_STREAM("angleDiff - 2PI -- " << std::abs(std::abs(angleDiff) - 2 * M_PI));
+        //   ROS_WARN_STREAM("orientation_target -- " << orientation_target);
+        //   // ROS_WARN_STREAM("-----------");
+
+        //   if ((std::abs(angleDiff) < orientation_target) ||
+        //       (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
+        //   {
+        //     permutation_pose_score += 1.0;
+        //     ROS_WARN_STREAM("GOOD ROLL");
+        //     ROS_WARN_STREAM("----------------------------");
+        //   }
+        //   else
+        //   {
+        //     ROS_WARN_STREAM("BAD ROLL");
+        //     ROS_WARN_STREAM("----------------------------");
+        //   }
+        // }
+        // else if (ACTUALPRODUCTTYPE == "battery" || ACTUALPRODUCTTYPE == "pump")
+        // {
+        //   ROS_WARN_STREAM("----------------------------");
+        // // Filter the yaw based on a threshold set in radians (more user-friendly).
+        // // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
+        // ROS_WARN_STREAM("current yaw -- " << objOrientation.Yaw());
+        // ROS_WARN_STREAM("expected yaw -- " << orderOrientation.Yaw());
+        // ROS_WARN_STREAM("-----------");
+        // angleDiff = objOrientation.Yaw() - orderOrientation.Yaw();
+        // ROS_WARN_STREAM("angleDiff -- " << angleDiff);
+        // ROS_WARN_STREAM("angleDiff - 2PI -- " << std::abs(std::abs(angleDiff) - 2 * M_PI));
+        // ROS_WARN_STREAM("orientation_target -- " << orientation_target);
+        // // ROS_WARN_STREAM("-----------");
+
+        // if ((std::abs(angleDiff) < orientation_target) ||
+        //     (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
+        // {
+        //   permutation_pose_score += 1.0;
+        //   ROS_WARN_STREAM("GOOD Yaw");
+        //   ROS_WARN_STREAM("----------------------------");
+        // }
+        // else
+        // {
+        //   ROS_WARN_STREAM("BAD Yaw");
+        //   ROS_WARN_STREAM("----------------------------");
+        // }
+        // }
       }
 
       if (permutation_pose_score > contributing_pose_score)

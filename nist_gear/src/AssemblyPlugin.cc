@@ -494,14 +494,6 @@ void AssemblyPlugin::HandleAttach()
   auto name = modelPtr->GetName();
   std::string objectType = ariac::DetermineModelType(name);
 
-  
-  // ariac::BriefcaseProduct object;
-
-  
-
-  // Determine the object type
-  // object.productType = objectType;
-  // object.isProductFaulty = false;
   // Determine the pose of the object in the frame of the tray
   ignition::math::Pose3d objectPose = modelPtr->WorldPose();
   ignition::math::Matrix4d transMat(this->dataPtr->briefcase_pose);
@@ -523,6 +515,15 @@ void AssemblyPlugin::HandleAttach()
   this->dataPtr->attached_product.product_pose.orientation.z = productPose.Rot().Z();
   this->dataPtr->attached_product.product_pose.orientation.w = productPose.Rot().W();
 
+  // gzdbg << "Part: " << this->dataPtr->attached_product.product_name << std::endl;
+  // gzdbg << "Part Pose" << std::endl;
+  // gzdbg << "pos_x" << this->dataPtr->attached_product.product_pose.position.x << std::endl;
+  // gzdbg << "pos_y" << this->dataPtr->attached_product.product_pose.position.y << std::endl;
+  // gzdbg << "pos_z" << this->dataPtr->attached_product.product_pose.position.z << std::endl;
+  // gzdbg << "rot_x" << this->dataPtr->attached_product.product_pose.orientation.x << std::endl;
+  // gzdbg << "rot_y" << this->dataPtr->attached_product.product_pose.orientation.y << std::endl;
+  // gzdbg << "rot_z" << this->dataPtr->attached_product.product_pose.orientation.z << std::endl;
+  // gzdbg << "rot_w" << this->dataPtr->attached_product.product_pose.orientation.w << std::endl;
   // gzdbg << "--- " << this->dataPtr->model->GetName() << std::endl;
   // gzdbg << "--- " << this->dataPtr->name << std::endl;
   //Product attached to assembly surface: assembly_regulator_red named agv1|tray_1|assembly_regulator_red_1

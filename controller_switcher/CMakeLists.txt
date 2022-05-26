@@ -7,7 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   nist_gear
 )
 
-catkin_package()
+catkin_package(DEPENDS nist_gear)
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 

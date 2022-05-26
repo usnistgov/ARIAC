@@ -9,10 +9,13 @@
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>controller_manager_msgs</build_depend>
   <build_depend>roscpp</build_depend>
+  <build_depend>nist_gear</build_depend>
   <build_export_depend>controller_manager_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>nist_gear</build_export_depend>
   <exec_depend>controller_manager_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
+  <exec_depend>nist_gear</exec_depend>
   <export>
   </export>
 </package>

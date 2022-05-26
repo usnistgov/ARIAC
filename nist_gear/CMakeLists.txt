@@ -18,7 +18,6 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   message_generation
   controller_manager_msgs
-  controller_switcher
 )
 
 find_package(gazebo REQUIRED)

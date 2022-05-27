@@ -42,7 +42,7 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ### Getting Ready for the Finals
 - From now on, competitors should focus on getting ready for the finals using the current version of the github repo.
-- Competitors must submit the auto evaluation file by **06/02 @5pm EST**.
+- Competitors must submit the auto evaluation file by **06/03 @5pm EST**.
 - The docker image which will be used to evaluate the competitors' system during the final will be uploaded on https://hub.docker.com tomorrow and will be based on the current repository.
 - Getting ready means to test your system with all the agility challenges.
 - For high-priority orders, can your system handle the following scenarios?

@@ -17,7 +17,7 @@
 - 4/25-5/07 - **Qualifiers Round**. During this week, competitors will practice with configuration files already provided on Github to get their systems ready for the competition. Competitors submission files must be uploaded on Google Drive by 5/07, 5 pm EST.
 - 5/2-5/6 - **Evaluation**. During this week, developers will evaluate competitors' systems on unseen configuration files.
 - 5/16-5/20 - **Finals Smoke Test**. During the smoke test week, developers will mainly test competitors' code in docker to ensure everything works as expected. This step is necessary if a new Docker image was realeased after the qualifiers.
-- 5/23-5/27 - **Finals Round**. During this week, competitors will practice with configuration files already provided on Github to get their systems ready for the competition. Competitors submission files must be uploaded on Google Drive by 06/02, 5 pm EST.
+- 5/23-5/27 - **Finals Round**. During this week, competitors will practice with configuration files already provided on Github to get their systems ready for the competition. Competitors submission files must be uploaded on Google Drive by 06/03, 5 pm EST.
 - 5/31-6/3 - **Evaluation**. During this week, developers will evaluate competitors' systems on unseen configuration files.
 - 6/21 - **Results**. Results will be announced via email to each competitor that participated in the finals. Log files generated during the evaluation week will be uploaded on Google Drive. Trials used in the finals will be uploaded on Github.
 

@@ -93,8 +93,9 @@ void AriacScorer::NotifyKittingShipmentReceived(gazebo::common::Time time, ariac
   submitted_shipment_info.shipment =
       nist_gear::DetectedKittingShipment::ConstPtr(new nist_gear::DetectedKittingShipment(shipment));
 
-  // boost::mutex::scoped_lock mutexLock(this->mutex);
+  boost::mutex::scoped_lock mutexLock(this->mutex);
   this->received_kitting_shipments_vec.push_back(submitted_shipment_info);
+  // gzdbg << "<<<<< END NotifyKittingShipmentReceived\n";
 }
 
 void AriacScorer::NotifyAssemblyShipmentReceived(gazebo::common::Time time, ariac::AssemblyShipmentType_t type,
@@ -256,6 +257,7 @@ ariac::GameScore AriacScorer::GetGameScore(int penalty)
     ////////////////////////////////////
     if (!this->received_assembly_shipments_vec.empty())
     {
+      // gzerr << "Assembly" << std::endl;
       // instantiate shipment_score for expected shipments (from ariac.world)
       for (const auto& expected_assembly_shipment : order->assembly_shipments)
       {

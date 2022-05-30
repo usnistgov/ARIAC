@@ -270,12 +270,12 @@ void MovableKitTrayPlugin::LockUnlockServiceCallback(ConstGzStringPtr& _msg)
 {
   if (_msg->data() == "lock")
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(150));
     this->LockContactingModels();
   }
   else if (_msg->data() == "unlock")
   {
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(150));
     this->UnlockContactingModels();
   }
 }
@@ -339,7 +339,7 @@ void MovableKitTrayPlugin::OnUpdate(const common::UpdateInfo& _info)
       //     model->GetName().compare("agv3") != 0 &&
       //     model->GetName().compare("agv4") != 0) {
 
-      gzdbg << "<<<<<<<< removed contact " << model->GetName() << std::endl;
+      // gzdbg << "<<<<<<<< removed contact " << model->GetName() << std::endl;
 
       model->SetAutoDisable(true);
     // }
@@ -563,10 +563,11 @@ void MovableKitTrayPlugin::PublishKitMsg()
 void MovableKitTrayPlugin::LockContactingModels()
 {
   boost::mutex::scoped_lock lock(this->mutex);
-  physics::JointPtr trayPartJoint;
+  
 
   for (auto part : this->contactingModels)
   {
+    physics::JointPtr trayPartJoint;
     auto model_name = part->GetName();
     auto model_type = ariac::DetermineModelType(part->GetName());
 
@@ -577,7 +578,7 @@ void MovableKitTrayPlugin::LockContactingModels()
     {
       trayPartJoint = this->world->Physics()->CreateJoint("fixed", this->model);
       auto jointName = this->model->GetName() + "_" + part->GetName() + "__joint__";
-      gzdbg << "Creating fixed joint: " << jointName << std::endl;
+      gzerr << "Creating fixed joint: " << jointName << std::endl;
       trayPartJoint->SetName(jointName);
 
       part->SetGravityMode(false);
@@ -619,7 +620,7 @@ void MovableKitTrayPlugin::UnlockContactingModels()
   {
     if (trayPartJoint->GetChild()->GetName().compare("link") == 0)
     {
-      // gzwarn << "[DETACHING]->" << trayPartJoint->GetChild()->GetName() << std::endl;
+      gzwarn << "[DETACHING]->" << trayPartJoint->GetChild()->GetName() << std::endl;
       trayPartJoint->Detach();
     }
   }
@@ -632,6 +633,7 @@ void MovableKitTrayPlugin::UnlockContactingModels()
     auto model_name = model->GetName();
 
     auto model_type = ariac::DetermineModelType(model->GetName());
+    gzwarn << "Model type: " << model_type << std::endl;
     // gzerr << "UNLOCK CONTACTING MODEL: " << model_name << std::endl;
 
     // make sure this model is an ariac part
@@ -639,6 +641,7 @@ void MovableKitTrayPlugin::UnlockContactingModels()
     bool grippable_model = it != this->grippable_model_types.end();
     if (grippable_model)
     {
+      gzwarn << "GAVITY ON" << std::endl;
       model->SetGravityMode(true);
       model->SetAutoDisable(true);
     }

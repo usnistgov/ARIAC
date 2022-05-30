@@ -425,7 +425,7 @@ TaskManagerPlugin::~TaskManagerPlugin()
  */
 void TaskManagerPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
 {
-  gzdbg << "ARIAC VERSION: v.05.24.2022\n";
+  gzdbg << "ARIAC VERSION: v.05.30.2022\n";
 
   // ROS_WARN_STREAM("[TaskManagerPlugin::Load]");
 
@@ -1052,10 +1052,12 @@ void TaskManagerPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
     {
       sdf::ElementPtr kitting_robot_healthElem = orderElem->GetElement("kitting_robot_health");
       auto tmp = kitting_robot_healthElem->Get<unsigned int>();
-      if (tmp == 0) {
+      if (tmp == 0)
+      {
         kitting_robot_health = "inactive";
       }
-      else if (tmp == 1){
+      else if (tmp == 1)
+      {
         kitting_robot_health = "active";
       }
     }
@@ -1065,10 +1067,12 @@ void TaskManagerPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
       sdf::ElementPtr assembly_robot_healthElem = orderElem->GetElement("assembly_robot_health");
       // assembly_robot_health = assembly_robot_healthElem->Get<int>();
       auto tmp = assembly_robot_healthElem->Get<unsigned int>();
-      if (tmp == 0) {
+      if (tmp == 0)
+      {
         assembly_robot_health = "inactive";
       }
-      else if (tmp == 1){
+      else if (tmp == 1)
+      {
         assembly_robot_health = "active";
       }
     }
@@ -1398,7 +1402,7 @@ void TaskManagerPlugin::Load(physics::WorldPtr world, sdf::ElementPtr sdf)
 
   // Publisher for announcing the health of the robots
   this->data_ptr->robot_health_pub =
-      this->data_ptr->rosNode->advertise<nist_gear::RobotHealth>(robotHealthTopic, 1000, true); // latched=true
+      this->data_ptr->rosNode->advertise<nist_gear::RobotHealth>(robotHealthTopic, 1000, true);  // latched=true
 
   // Publisher for storing each model to drop on each agv
   this->data_ptr->drop_object_publisher =
@@ -1731,9 +1735,12 @@ void TaskManagerPlugin::OnAGV4Location(std_msgs::String::ConstPtr _msg)
   // std::lock_guard<std::mutex> lock(this->data_ptr->mutex);
   this->data_ptr->agv4_current_station = _msg->data;
 }
+
+
 /////////////////////////////////////////////////
 void TaskManagerPlugin::OnUpdate()
 {
+  // gzerr << "onupdate" << std::endl;
   std::lock_guard<std::mutex> lock(this->data_ptr->mutex);
   auto current_sime_time = this->data_ptr->world->SimTime();
 
@@ -1741,7 +1748,7 @@ void TaskManagerPlugin::OnUpdate()
   {
     std_msgs::Bool msg_as;
     msg_as.data = true;
-
+    // gzwarn << "Publishing station for agv" << std::endl;
     this->data_ptr->as2StatusPublisher.publish(msg_as);
   }
 
@@ -1785,32 +1792,36 @@ void TaskManagerPlugin::OnUpdate()
     // start the conveyor belt
     if (this->data_ptr->isBeltNeeded)
     {
+      // gzwarn << "Enabling belt" << std::endl;
       this->EnableConveyorBeltControl();
       this->PopulateConveyorBelt();
     }
   }
-  else if (this->data_ptr->currentState == "go")
+
+  /////////////////////////////////////////
+  // GO
+  if (this->data_ptr->currentState == "go")
   {
+    // gzwarn << "GO" << std::endl;
     // Update the order manager.
     this->ProcessOrdersToAnnounce(current_sime_time);
+    
+    // gzwarn << "Done processing order" << std::endl;
     // Check if we need to disable any robot
     // NOTE: This function must be placed exactly after ProcessOrdersToAnnounce
     this->ProcessRobotStatus();
-    // ROS_INFO_STREAM(this->data_ptr->kitting_robot_health);
-    // if (this->data_ptr->kitting_robot_health == 0)
-    // {
-    //   StopRobot("kitting");
-    // }
-    // if (this->data_ptr->assembly_robot_health==0)
-    // {
-    //   StopRobot("gantry");
-    // }
+    // gzwarn << "Done processing robot status" << std::endl;
+
     // Update the sensors if appropriate.
     this->ProcessSensorBlackout();
+    // gzwarn << "Done processing sensor blackout" << std::endl;
 
     // Update the score.
     // TODO(sloretz) only publish this when an event that could change the score happens
-    auto gameScore = this->data_ptr->ariac_scorer.GetGameScore(this->data_ptr->floorPenalty);
+    ariac::GameScore gameScore = this->data_ptr->ariac_scorer.GetGameScore(this->data_ptr->floorPenalty);
+    // gzwarn << "Done getting game score" << std::endl;
+    // gzmsg << "gameScore.total(): " << gameScore.total() << std::endl;
+    // gzmsg << "current_trial_score.total(): " << this->data_ptr->current_trial_score.total() << std::endl;
 
     if (gameScore.total() != this->data_ptr->current_trial_score.total())
     {
@@ -1820,11 +1831,15 @@ void TaskManagerPlugin::OnUpdate()
       gzdbg << logMessage.str() << std::endl;
       this->data_ptr->current_trial_score = gameScore;
     }
+    
+    
 
     if (!this->data_ptr->ordersInProgress.empty())
     {
+      // gzwarn << "-- Order in progress" << std::endl;
       this->data_ptr->ordersInProgress.top().time_taken += elapsedTime;
       auto orderID = this->data_ptr->ordersInProgress.top().order_id;
+      // gzwarn << "Order: " << orderID << std::endl;
       // TODO: timing should probably be managed by the scorer but we want to use sim time
       this->data_ptr->timeSpentOnCurrentOrder = this->data_ptr->ordersInProgress.top().time_taken;
 
@@ -1834,9 +1849,12 @@ void TaskManagerPlugin::OnUpdate()
       // if the order has kitting shipments, check if all kits have been submitted
       if (has_kitting_shipments && !has_assembly_shipments)
       {
+        // gzerr << "kitting only" << std::endl;
         bool all_kitting_shipments_submitted = gameScore.order_scores_map.at(orderID).isKittingComplete();
+        // gzerr << "checked kitting submission" << std::endl;
         if (all_kitting_shipments_submitted)
         {
+          // gzerr << "kitting complete" << std::endl;
           if (this->data_ptr->gameStartTime != common::Time())
           {
             this->data_ptr->current_trial_score.total_process_time =
@@ -1850,8 +1868,9 @@ void TaskManagerPlugin::OnUpdate()
           this->StopCurrentOrder();
         }
       }
-      else if (!has_kitting_shipments && has_assembly_shipments)
+      if (!has_kitting_shipments && has_assembly_shipments)
       {
+        // gzerr << "assembly only" << std::endl;
         // gzdbg << "Only Assembly\n";
         bool all_assembly_shipments_submitted = gameScore.order_scores_map.at(orderID).isAssemblyComplete();
         if (all_assembly_shipments_submitted)
@@ -1863,12 +1882,20 @@ void TaskManagerPlugin::OnUpdate()
           this->StopCurrentOrder();
         }
       }
-      else if (has_kitting_shipments && has_assembly_shipments)
+      if (has_kitting_shipments && has_assembly_shipments)
       {
-        // gzdbg << "Assembly and Kitting\n";
+        // gzerr << "Assembly and Kitting" << std::endl;
         bool all_kitting_shipments_submitted = gameScore.order_scores_map.at(orderID).isKittingComplete();
-        bool all_assembly_shipments_submitted = gameScore.order_scores_map.at(orderID).isAssemblyComplete();
+        // if (all_kitting_shipments_submitted)
+        // {
+        //   gzerr << "All kitting shipments submitted" << std::endl;
+        // }
 
+        bool all_assembly_shipments_submitted = gameScore.order_scores_map.at(orderID).isAssemblyComplete();
+        // if (all_assembly_shipments_submitted)
+        // {
+        //   gzerr << "All assembly shipments submitted" << std::endl;
+        // }
         // if (all_kitting_shipments_submitted)
         // {
         //   std::ostringstream logMessageKitting;
@@ -1888,19 +1915,24 @@ void TaskManagerPlugin::OnUpdate()
           this->StopCurrentOrder();
         }
       }
-      else
-      {
+      // else
+      // {
         // Check if the time limit for the current order has been exceeded.
-        if (this->data_ptr->timeSpentOnCurrentOrder > this->data_ptr->ordersInProgress.top().allowed_time)
-        {
-          std::ostringstream logMessage;
-          logMessage << "Order timed out: " << orderID;
-          ROS_INFO_STREAM(logMessage.str().c_str());
-          gzdbg << logMessage.str() << std::endl;
-          this->StopCurrentOrder();
-        }
-      }
+      // allowedTime
+      // gzerr << "Time spent on current order: " << this->data_ptr->timeSpentOnCurrentOrder << std::endl;
+      // gzerr << "Allowed time: " << this->data_ptr->ordersInProgress.top().allowed_time << std::endl;
+      // if (this->data_ptr->timeSpentOnCurrentOrder > this->data_ptr->ordersInProgress.top().allowed_time)
+      //   {
+      //     std::ostringstream logMessage;
+      //     logMessage << "Order timed out: " << orderID;
+      //     ROS_INFO_STREAM(logMessage.str().c_str());
+      //     gzdbg << logMessage.str() << std::endl;
+      //     this->StopCurrentOrder();
+      //   }
+      // }
     }
+
+    // gzwarn << "2" << std::endl;
 
     if (this->data_ptr->ordersInProgress.empty() && this->data_ptr->orders_to_announce.empty())
     {
@@ -1908,8 +1940,11 @@ void TaskManagerPlugin::OnUpdate()
       this->data_ptr->currentState = "end_game";
     }
   }
-  else if (this->data_ptr->currentState == "end_game")
+
+  if (this->data_ptr->currentState == "end_game")
   {
+    // gzwarn << "END" << std::endl;
+    // gzdbg << "END" << std::endl;
     // todo(zeid): Apply this-dataPtr->floorPenalty to GameScore calculation
     this->data_ptr->current_trial_score = this->data_ptr->ariac_scorer.GetGameScore(this->data_ptr->floorPenalty);
     if (this->data_ptr->gameStartTime != common::Time())
@@ -1939,8 +1974,12 @@ void TaskManagerPlugin::OnUpdate()
       is_first = false;
     }
     ROS_INFO_STREAM(sstr.str().c_str());
+  }
 
+  if (this->data_ptr->currentState == "done") {
+    // gzwarn << "status DONE" << std::endl;
     auto v = std::getenv("ARIAC_EXIT_ON_COMPLETION");
+    
     if (v)
     {
       // Gazebo will accumulate a number of state loggings before writing them to file.
@@ -2980,6 +3019,7 @@ bool TaskManagerPlugin::HandleKittingSubmission(nist_gear::SubmitKittingShipment
     detected_shipment.assembly_station = req.assembly_station_name;
     nist_gear::TrayContents tray_content;
     detected_shipment.tray_content = movable_tray_content.response.shipment;
+    // gzdbg << "NOTIFY KITTING SHIPMENT" << std::endl;
     this->data_ptr->ariac_scorer.NotifyKittingShipmentReceived(current_sim_time, req.shipment_type, detected_shipment);
   }
   else
@@ -3288,7 +3328,7 @@ void TaskManagerPlugin::OnRobotHealthContent(nist_gear::RobotHealth msg)
   std::lock_guard<std::mutex> lock(this->data_ptr->mutex);
   this->data_ptr->kitting_robot_health = msg.kitting_robot_health;
   this->data_ptr->assembly_robot_health = msg.assembly_robot_health;
-  gzerr << msg.kitting_robot_health << std::endl;
+  // gzerr << msg.kitting_robot_health << std::endl;
 }
 
 /////////////////////////////////////////////////

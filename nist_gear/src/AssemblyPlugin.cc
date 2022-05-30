@@ -100,8 +100,6 @@ public:
 public:
   std::string name;
 
-
-
   /// \brief Node for communication.
 public:
   transport::NodePtr gz_node;
@@ -178,7 +176,6 @@ void AssemblyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->briefcase_pose = this->dataPtr->model->WorldPose();
   this->dataPtr->briefcase_name = this->dataPtr->model->GetName();
 
-
   this->dataPtr->gz_node = transport::NodePtr(new transport::Node());
   this->dataPtr->gz_node->Init(this->dataPtr->world->Name());
   this->dataPtr->name = _sdf->Get<std::string>("name");
@@ -196,12 +193,11 @@ void AssemblyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->ros_node = new ros::NodeHandle("");
   // this->dataPtr->assembly_state_publisher = this->dataPtr->ros_node->advertise<nist_gear::DetectedAssemblyShipment>(
   //   "/ariac/briefcases", 1000, boost::bind(&AssemblyPlugin::OnSubscriberConnect, this, _1));
-  
+
   this->dataPtr->assembly_part_publisher = this->dataPtr->ros_node->advertise<nist_gear::AttachedAssemblyProduct>(
-      "/ariac/"+this->dataPtr->briefcase_name+"/"+this->dataPtr->name, 1000);
+      "/ariac/" + this->dataPtr->briefcase_name + "/" + this->dataPtr->name, 1000);
   this->dataPtr->is_publishing_enabled = true;
 
-  
   // auto connectedPartsServiceName = "/ariac/" + this->dataPtr->briefcase_name + "/get_assembled_parts";
   // this->dataPtr->briefcase_connected_parts_server = this->dataPtr->ros_node->advertiseService(
   //   connectedPartsServiceName, &AssemblyPlugin::HandleGetConnectedPartsService, this);
@@ -211,10 +207,9 @@ void AssemblyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   //     this->dataPtr->ros_node->advertiseService(contentServiceName, &AssemblyPlugin::HandleGetContentService, this);
   // end: added by zeid
 
-
-
-  // Create the joint that will attach the objects to the assembly
+  // // Create the joint that will attach the objects to the assembly
   this->dataPtr->fixedJoint = this->dataPtr->world->Physics()->CreateJoint("fixed", this->dataPtr->model);
+
   this->dataPtr->fixedJoint->SetName(this->dataPtr->model->GetName() + "__assembly_fixed_joint__" +
                                      this->dataPtr->name);
 
@@ -265,7 +260,7 @@ void AssemblyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       continue;
 
     this->dataPtr->collisions[collision->GetScopedName()] = collision;
-    gzdbg << collision->GetScopedName() << std::endl;
+    gzdbg << "Collision: " << collision->GetScopedName() << std::endl;
   }
 
   if (!this->dataPtr->collisions.empty())
@@ -285,7 +280,6 @@ void AssemblyPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->dataPtr->connection = event::Events::ConnectWorldUpdateEnd(boost::bind(&AssemblyPlugin::OnUpdate, this));
 }
 
-
 /////////////////////////////////////////////////
 void AssemblyPlugin::OnSubscriberConnect(const ros::SingleSubscriberPublisher& pub)
 {
@@ -304,7 +298,6 @@ void AssemblyPlugin::OnSubscriberConnect(const ros::SingleSubscriberPublisher& p
   }
 }
 
-
 /////////////////////////////////////////////////
 void AssemblyPlugin::Reset()
 {
@@ -319,6 +312,7 @@ void AssemblyPlugin::OnUpdate()
 {
   std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
 
+  // gzdbg << "[AssemblyPlugin::OnUpdate()]" << std::endl;
   if (this->dataPtr->world->SimTime() - this->dataPtr->prevUpdateTime < this->dataPtr->updateRate)
   {
     return;
@@ -327,15 +321,21 @@ void AssemblyPlugin::OnUpdate()
   bool modelInContact = this->CheckModelContact();
   if (modelInContact)
   {
+    // gzerr << "model in contact" << std::endl;
+    // gzdbg << "[AssemblyPlugin::OnUpdate()] - 1-1" << std::endl;
     this->HandleAttach();
+    // gzdbg << "[AssemblyPlugin::OnUpdate()] - 1-2" << std::endl;
   }
 
   if (this->dataPtr->is_publishing_enabled)
   {
+    // gzdbg << "[AssemblyPlugin::OnUpdate()] - 2-1" << std::endl;
     this->PublishAssemblyMsg();
+    // gzdbg << "[AssemblyPlugin::OnUpdate()] - 2-2" << std::endl;
   }
 
   this->dataPtr->prevUpdateTime = this->dataPtr->world->SimTime();
+  // gzdbg << "[AssemblyPlugin::OnUpdate()] - 3" << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -347,10 +347,9 @@ void AssemblyPlugin::PublishAssemblyMsg()
   attachedAssemblyProduct.product_name = this->dataPtr->attached_product.product_name;
   attachedAssemblyProduct.product_type = this->dataPtr->attached_product.product_type;
   attachedAssemblyProduct.product_pose = this->dataPtr->attached_product.product_pose;
-  
+
   this->dataPtr->assembly_part_publisher.publish(attachedAssemblyProduct);
 }
-
 
 ///////////////////////////////////////
 // This service reports part types connected to the briefcase and not their pose
@@ -375,7 +374,8 @@ void AssemblyPlugin::PublishAssemblyMsg()
 
 /////////////////////////////////////////////////
 // bool AssemblyPlugin::HandleGetContentService(
-//     ros::ServiceEvent<nist_gear::DetectAssemblyShipment::Request, nist_gear::DetectAssemblyShipment::Response>& event)
+//     ros::ServiceEvent<nist_gear::DetectAssemblyShipment::Request, nist_gear::DetectAssemblyShipment::Response>&
+//     event)
 // {
 //   const std::string& callerName = event.getCallerName();
 //   // gzdbg << this->briefcase_id << ": Handle get content service called by: " << callerName << std::endl;
@@ -482,17 +482,33 @@ void AssemblyPlugin::HandleAttach()
 {
   if (this->dataPtr->attached)
   {
+    gzerr << "already attached" << std::endl;
     return;
   }
   this->dataPtr->attached = true;
 
+  // gzerr << "this->dataPtr->assembly_surface_link: " << this->dataPtr->assembly_surface_link->GetName() << std::endl;
+  // gzerr << "this->dataPtr->modelCollision->GetLink(): " << this->dataPtr->modelCollision->GetLink()->GetName()
+        // << std::endl;
+
+  // Create the joint that will attach the objects to the assembly
+  // this->dataPtr->fixedJoint = this->dataPtr->world->Physics()->CreateJoint("fixed", this->dataPtr->model);
+  // this->dataPtr->fixedJoint->SetName(this->dataPtr->model->GetName() + "__assembly_fixed_joint__" +
+  //                                    this->dataPtr->name);
+  // gzerr << "Created joint: " << this->dataPtr->model->GetName() + "__assembly_fixed_joint__" + this->dataPtr->name
+  //       << std::endl;
   this->dataPtr->fixedJoint->Load(this->dataPtr->assembly_surface_link, this->dataPtr->modelCollision->GetLink(),
                                   ignition::math::Pose3d());
+  // gzerr << "Loaded" << std::endl;
   this->dataPtr->fixedJoint->Init();
+  // gzerr << "Init" << std::endl;
 
   auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
   auto name = modelPtr->GetName();
+
+  // gzerr << "name: " << name << std::endl;
   std::string objectType = ariac::DetermineModelType(name);
+  // gzerr << "object type: " << objectType << std::endl;
 
   // Determine the pose of the object in the frame of the tray
   ignition::math::Pose3d objectPose = modelPtr->WorldPose();
@@ -501,12 +517,11 @@ void AssemblyPlugin::HandleAttach()
   auto productPose = (transMat.Inverse() * objectPoseMat).Pose();
   productPose.Rot().Normalize();
 
-
   std::size_t last_occurrence = name.find_last_of("_");
   std::string part_id = name.substr(last_occurrence);
-  
+  // gzerr << "part ID: " << part_id << std::endl;
   this->dataPtr->attached_product.product_type = objectType;
-  this->dataPtr->attached_product.product_name = objectType+part_id;
+  this->dataPtr->attached_product.product_name = objectType + part_id;
   this->dataPtr->attached_product.product_pose.position.x = productPose.Pos().X();
   this->dataPtr->attached_product.product_pose.position.y = productPose.Pos().Y();
   this->dataPtr->attached_product.product_pose.position.z = productPose.Pos().Z();
@@ -526,8 +541,9 @@ void AssemblyPlugin::HandleAttach()
   // gzdbg << "rot_w" << this->dataPtr->attached_product.product_pose.orientation.w << std::endl;
   // gzdbg << "--- " << this->dataPtr->model->GetName() << std::endl;
   // gzdbg << "--- " << this->dataPtr->name << std::endl;
-  //Product attached to assembly surface: assembly_regulator_red named agv1|tray_1|assembly_regulator_red_1
-  gzdbg << "Product attached to assembly surface: " << objectType << " named " << this->dataPtr->attached_product.product_name << std::endl;
+  // Product attached to assembly surface: assembly_regulator_red named agv1|tray_1|assembly_regulator_red_1
+  gzdbg << "Product attached to assembly surface: " << objectType << " named "
+        << this->dataPtr->attached_product.product_name << std::endl;
 }
 
 /////////////////////////////////////////////////
@@ -585,6 +601,7 @@ bool AssemblyPlugin::CheckModelContact()
     // originally hard-coded, now parameterized
     if (abs(alignment) > this->dataPtr->alignmentThreshold)
     {
+      // gzdbg << "modelInContact" << std::endl;
       modelInContact = true;
     }
   }

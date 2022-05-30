@@ -25,9 +25,9 @@
           $(arg gui_args)
           $(arg load_moveit_args)
           $(arg fill_demo_shipment_args)
-          -f $(find nist_gear)/config/trial_config/dev/dev.yaml
-          $(find nist_gear)/config/user_config/team_config.yaml
-          " required="true" output="screen" />
+          -f $(find nist_gear)/config/trial_config/finals/practice/two_regular_orders.yaml
+          $(find nist_gear)/config/user_config/test_config.yaml
+          " required="true" output="screen"/>
 
   <!-- <group ns='ariac/gantry'>
     <include file="$(find gantry_moveit_config)/launch/moveit_rviz.launch">

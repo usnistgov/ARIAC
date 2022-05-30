@@ -2,9 +2,17 @@ Wiki | [Home](../../README.md) | [Documentation](../documentation/documentation.
 
 ---
 
+## Release 2022, May 30
+- **Note**: Make sure you do a clean rebuild of the software after a pull (`catkin clean -y && catkin build`)
+- The segmentation fault that is reported in multiple tickets on github has been fixed. It is quite a bit long to explain the root cause of the issue but the way we fixed it was to not unlock the movable tray after it reaches the assembly station. When you submit an AGV to an assembly station, one of the Gazebo plugins locks the movable tray on the kit tray (slightly lifts the movable tray and attach it to the kit tray) and unlocks the movable tray when the AGV reaches the assembly station. The unlock mechanism triggered the segmentation fault. Since the movable tray is not unlocked anymore, you may need to adjust the z offset of the gantry arm for assembly.
+  - Also, if you are using the ROS service to lock/unlock a movable tray on the kit tray, you can still lock the movable tray but do not use the service to unlock the movable tray.
+- We have created a `finals` folder in the `trial_config`. It contains only one file for you to practice for the finals.
+- Due to the time it take me to fix the segmentation fault issue, I am extending the submission deadline to 06/05.
+- Today I will generate and push the docker image corresponding to the current version so you can practice the autoevaluation. I will replace the previous docker image on dockerhub (used for the qualifiers) with a new image.
+- It may take a few hours for the image to be generated and uploaded.
 ## Release 2022, May 25
 
-- **Note**: Make sure you do a clean rebuild of the software after a pull (`catkin clean -y && catkin build`). 
+- **Note**: Make sure you do a clean rebuild of the software after a pull (`catkin clean -y && catkin build`)
 - **Note**:  The status of an active and inactive robot published on `/ariac/robot_health` is 'active' and 'inactive', respectively. This used to be `True` or `False`.
 - More information on what to expect in the finals:
   - Kitting:

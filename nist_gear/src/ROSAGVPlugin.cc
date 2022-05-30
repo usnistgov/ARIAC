@@ -259,7 +259,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     this->dataPtr->goto_as4_triggered = false;
 
 
-    std::string go_to_assembly_station_service{ "to_assembly_station" };
+    // std::string go_to_assembly_station_service{ "to_assembly_station" };
     // time the AGV takes to move from ks to as1 or to as3
     double move_time_ks_to_as_1_3{};
     // time the AGV takes to move from ks to as2 or to as4
@@ -397,7 +397,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
     }
     else if (index == "3") {
         if (_sdf->HasElement("lock_unlock_kt3_topic"))
-            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt3topic");
+            lock_unlock_gz = _sdf->Get<std::string>("lock_unlock_kt3_topic");
         this->dataPtr->lock_unlock_models_gz_pub =
             this->dataPtr->gzNode->Advertise<msgs::GzString>(lock_unlock_gz);
     }
@@ -417,8 +417,8 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
 
 
 
-    if (_sdf->HasElement("agv_to_as_service_name"))
-        go_to_assembly_station_service = _sdf->Get<std::string>("agv_to_as_service_name");
+    // if (_sdf->HasElement("agv_to_as_service_name"))
+    //     go_to_assembly_station_service = _sdf->Get<std::string>("agv_to_as_service_name");
 
     
 
@@ -909,7 +909,7 @@ void ROSAGVPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
 
 void ROSAGVPlugin::OnAGVLocation(std_msgs::String::ConstPtr _msg)
 {
-    // std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
+    std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
     this->dataPtr->current_station = _msg->data;
 }
 
@@ -917,6 +917,7 @@ void ROSAGVPlugin::OnAGVLocation(std_msgs::String::ConstPtr _msg)
 /////////////////////////////////////////////////
 void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
 {
+    // std::lock_guard<std::mutex> lock(this->dataPtr->mutex);
     auto current_sim_time = _info.simTime;
     if (this->dataPtr->current_state == "READY_TO_DELIVER") {
 
@@ -925,6 +926,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
             this->dataPtr->current_state = "GOTO_AS1";
             this->dataPtr->goto_as_trigger_time = current_sim_time;
             this->dataPtr->goto_as1_triggered = false;
+            // gzerr << "GOTO_AS1" << std::endl;
         }
         if (this->dataPtr->goto_as2_triggered) {
             this->dataPtr->current_state = "GOTO_AS2";
@@ -1118,7 +1120,7 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
             }
 
             // AGV2
-            if (this->dataPtr->agv_name == "agv2") {
+            else if (this->dataPtr->agv_name == "agv2") {
                 if (current_station == "ks2") {
                     this->dataPtr->agv2_from_ks2_to_as1_animation_ptr->SetTime(0);
                     this->dataPtr->model->SetAnimation(this->dataPtr->agv2_from_ks2_to_as1_animation_ptr);
@@ -1424,9 +1426,9 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
             std_msgs::Bool as_msg;
             as_msg.data = true;
             this->dataPtr->as2StatusPublisher.publish(as_msg);
-            gazebo::msgs::GzString unlock_msg;
-            unlock_msg.set_data("unlock");
-            this->dataPtr->lock_unlock_models_gz_pub->Publish(unlock_msg);
+            // gazebo::msgs::GzString unlock_msg;
+            // unlock_msg.set_data("unlock");
+            // this->dataPtr->lock_unlock_models_gz_pub->Publish(unlock_msg);
         }
 
         //publish whether or not this assembly station has an agv
@@ -1435,9 +1437,9 @@ void ROSAGVPlugin::OnUpdate(const common::UpdateInfo& _info)
             std_msgs::Bool as_msg;
             as_msg.data = true;
             this->dataPtr->as4StatusPublisher.publish(as_msg);
-            gazebo::msgs::GzString unlock_msg;
-            unlock_msg.set_data("unlock");
-            this->dataPtr->lock_unlock_models_gz_pub->Publish(unlock_msg);
+            // gazebo::msgs::GzString unlock_msg;
+            // unlock_msg.set_data("unlock");
+            // this->dataPtr->lock_unlock_models_gz_pub->Publish(unlock_msg);
         }
 
         gazebo::msgs::GzString unlock_msg;

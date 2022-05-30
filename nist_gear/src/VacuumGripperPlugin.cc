@@ -526,7 +526,7 @@ void VacuumGripperPlugin::OnGripperTypeCheck(const std_msgs::String::ConstPtr& g
   auto msg = gripper_type_msg->data;
   std::string gripper_type(msg.c_str());
   this->dataPtr->gantry_current_gripper = gripper_type;
-  // gzdbg << this->dataPtr->gantry_current_gripper << std::endl;
+  gzdbg << "OnGripperTypeCheck: " << this->dataPtr->gantry_current_gripper << std::endl;
 }
 /////////////////////////////////////////////////
 void VacuumGripperPlugin::OnDropObjectContent(nist_gear::DropProducts::ConstPtr msgDropProducts)
@@ -800,12 +800,22 @@ void VacuumGripperPlugin::HandleAttach()
   if (this->dataPtr->attached) {
     return;
   }
+  // this->dataPtr->fixedJoint =
+  //   this->dataPtr->world->Physics()->CreateJoint(
+  //     "fixed", this->dataPtr->model);
+  // this->dataPtr->fixedJoint->SetName(this->dataPtr->model->GetName() +
+  //   "__vacuum_gripper_fixed_joint__");
+
+  // gzerr << "Created gripper joint: " << this->dataPtr->model->GetName() +
+  //   "__vacuum_gripper_fixed_joint__" << std::endl;
 
   this->dataPtr->attached = true;
 
   this->dataPtr->fixedJoint->Load(this->dataPtr->suction_cup_link,
     this->dataPtr->modelCollision->GetLink(), ignition::math::Pose3d());
+  // gzerr << "Loaded" << std::endl;
   this->dataPtr->fixedJoint->Init();
+  // gzerr << "Init" << std::endl;
 
   auto modelPtr = this->dataPtr->modelCollision->GetLink()->GetModel();
   auto name = modelPtr->GetName();
@@ -908,9 +918,13 @@ bool VacuumGripperPlugin::CheckModelContact()
       auto modelName = modelPtr->GetName();
       gzdbg << "Product in contact with gripper: " << modelName << std::endl;
       std::string modelType = ariac::DetermineModelType(modelName);
+      // gzwarn << "Model: " << modelType << std::endl;
 
       if (this->dataPtr->model->GetName() == "gantry") {
+        // gzwarn << "Robot Model: " << this->dataPtr->model->GetName() << std::endl;
+        // gzwarn << "Gripper Model: " << this->dataPtr->gantry_current_gripper << std::endl;
         if (this->dataPtr->gantry_current_gripper == "gripper_tray") {
+          // gzwarn << "Gripper Model: " << this->dataPtr->gantry_current_gripper << std::endl;
           if (std::strstr(modelType.c_str(), "assembly")) {
             ROS_ERROR_ONCE("Incorrect gripper to attach this part");
             return false;

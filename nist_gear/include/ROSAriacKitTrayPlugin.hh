@@ -120,7 +120,8 @@ namespace gazebo {
       protected: std::string station_name;
 
                /// \brief Fixed joints to lock contacting models
-      protected: std::vector<physics::JointPtr> fixedJoints;
+            protected: std::vector<physics::JointPtr> fixedJoints;
+            // public: physics::JointPtr;
 
                /// \brief ROS node handle
       protected: ros::NodeHandle* rosNode;

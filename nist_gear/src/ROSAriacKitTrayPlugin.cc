@@ -155,41 +155,41 @@ void KitTrayPlugin::HandleLockUnlockModelsRequest(ConstGzStringPtr& _msg)
     // gzerr << "<<<<< status " << kit_tray_locked_status << "\n";
     // gzerr << "<<<<< message " << _msg->data() << "\n";
     // std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    if (kit_tray_locked_status == "locked")
-    {
-      // std::this_thread::sleep_for(std::chrono::milliseconds(150));
-      this->UnlockContactingModels();
-      this->LockContactingModels();
-    }
-    else if (kit_tray_locked_status == "unlocked")
+    // if (kit_tray_locked_status == "locked")
+    // {
+    //   // std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    //   if (kit_tray_locked_status == "unlocked")
+    //     this->LockContactingModels();
+    //   //   this->UnlockContactingModels();
+    //   // this->LockContactingModels();
+    // }
+    if (kit_tray_locked_status == "unlocked")
     {
       this->LockContactingModels();
     }
     this->rosNode->setParam(this->kittray_lock_status_param, "locked");
+
   }
-  else if (_msg->data() == "unlock")
-  {
-    // gzerr << "<<<<< status " << kit_tray_locked_status << "\n";
-    // gzerr << "<<<<< message " << _msg->data() << "\n";
-    // std::this_thread::sleep_for(std::chrono::milliseconds(150));
-    if (kit_tray_locked_status == "locked")
-    {
-      // std::this_thread::sleep_for(std::chrono::milliseconds(150));
-      this->UnlockContactingModels();
-      // this->UnlockContactingModels();
-      this->rosNode->setParam(this->kittray_lock_status_param, "unlocked");
-    }
-  }
+  // else if (_msg->data() == "unlock")
+  // {
+  //   if (kit_tray_locked_status == "locked")
+  //   {
+  //     // std::this_thread::sleep_for(std::chrono::milliseconds(150));
+  //     this->UnlockContactingModels();
+  //   }
+  //   this->rosNode->setParam(this->kittray_lock_status_param, "unlocked");
+  // }
 }
 
 //////////////////////////////////////////////
 void KitTrayPlugin::LockContactingModels()
 {
   boost::mutex::scoped_lock lock(this->mutex);
-  physics::JointPtr fixedJoint;
+  
 
   for (auto movable_tray : this->contactingModels)
   {
+    physics::JointPtr fixedJoint;
     auto model_name = movable_tray->GetName();
     auto model_type = ariac::DetermineModelType(movable_tray->GetName());
 
@@ -233,7 +233,7 @@ void KitTrayPlugin::LockContactingModels()
 
       link->SetGravityMode(false);
       fixedJoint->SetModel(this->model);
-      fixedJoint->Attach(link, this->parentLink);
+      // fixedJoint->Attach(link, this->parentLink);
       fixedJoint->Load(this->parentLink, link, ignition::math::Pose3d());
       fixedJoint->Init();
       this->fixedJoints.push_back(fixedJoint);
@@ -246,18 +246,21 @@ void KitTrayPlugin::LockContactingModels()
 void KitTrayPlugin::UnlockContactingModels()
 {
   boost::mutex::scoped_lock lock(this->mutex);
-  physics::JointPtr fixedJoint;
+  // physics::JointPtr fixedJoint;
 
-  for (auto fixedJoint : this->fixedJoints)
+  for (auto joint : this->fixedJoints)
   {
-    fixedJoint->Detach();
+    // gzdbg << "JOINT: " << joint->GetModel()->GetLink()->GetName() << std::endl;
+    joint->Detach();
   }
   this->fixedJoints.clear();
   for (auto model : this->contactingModels)
   {
     model->SetGravityMode(true);
     model->SetAutoDisable(false);
+    // gzdbg << "unlocking " << model->GetName() << std::endl;
   }
+  // gzdbg << "Parts on AGV unlocked" << std::endl;
 }
 
 void KitTrayPlugin::OnAGV1Location(std_msgs::String::ConstPtr _msg)
@@ -425,14 +428,14 @@ bool KitTrayPlugin::HandleManualLockTrayService(std_srvs::Trigger::Request&, std
     res.message = "Movable tray is now locked on the kit tray";
     res.success = true;
   }
-  else if (kit_tray_locked_status == "locked")
-  {
-    this->UnlockContactingModels();
-    this->LockContactingModels();
-    this->rosNode->setParam(this->kittray_lock_status_param, "locked");
-    res.message = "Movable tray is now locked on the kit tray";
-    res.success = true;
-  }
+  // else if (kit_tray_locked_status == "locked")
+  // {
+  //   this->UnlockContactingModels();
+  //   this->LockContactingModels();
+  //   this->rosNode->setParam(this->kittray_lock_status_param, "locked");
+  //   res.message = "Movable tray is now locked on the kit tray";
+  //   res.success = true;
+  // }
 
   return true;
 }
@@ -440,23 +443,23 @@ bool KitTrayPlugin::HandleManualLockTrayService(std_srvs::Trigger::Request&, std
 // ros service call
 bool KitTrayPlugin::HandleManualUnlockTrayService(std_srvs::Trigger::Request&, std_srvs::Trigger::Response& res)
 {
-  std::string kit_tray_locked_status;
-  this->rosNode->getParam(this->kittray_lock_status_param, kit_tray_locked_status);
+  // std::string kit_tray_locked_status;
+  // this->rosNode->getParam(this->kittray_lock_status_param, kit_tray_locked_status);
 
-  std::this_thread::sleep_for(std::chrono::milliseconds(150));
-  if (kit_tray_locked_status == "locked")
-  {
-    this->UnlockContactingModels();
+  // std::this_thread::sleep_for(std::chrono::milliseconds(150));
+  // if (kit_tray_locked_status == "locked")
+  // {
+  //   this->UnlockContactingModels();
 
-    this->rosNode->setParam(this->kittray_lock_status_param, "unlocked");
-    res.message = "Movable tray is now unlocked on the kit tray";
-    res.success = true;
-  }
-  else
-  {
-    res.message = "Movable tray is already unlocked on the kit tray";
-    res.success = false;
-  }
+  //   this->rosNode->setParam(this->kittray_lock_status_param, "unlocked");
+  //   res.message = "Movable tray is now unlocked on the kit tray";
+  //   res.success = true;
+  // }
+  // else
+  // {
+  //   res.message = "Movable tray is already unlocked on the kit tray";
+  //   res.success = false;
+  // }
 
   return true;
 }

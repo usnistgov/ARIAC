@@ -209,7 +209,7 @@ RUN git clone \
 
  RUN git clone \
     https://github.com/usnistgov/ARIAC.git  /tmp/ariac_ws \
-    -b ariac2022
+    -b finals_version
  RUN /bin/bash -c "cp -rf /tmp/gazebo_ws /home/ariac/ariac_ws/src"
  RUN /bin/bash -c "cp -rf /tmp/ariac_ws /home/ariac/ariac_ws/src"
 

@@ -152,9 +152,6 @@ namespace ariac {
     /// \return The output stream
     public:
 
-
-
-
     friend std::ostream& operator<<(std::ostream& _out,
       const AssemblyShipmentScore& _obj)
     {

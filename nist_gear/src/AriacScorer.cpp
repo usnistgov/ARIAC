@@ -867,12 +867,12 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
     std::string tmp = desired_product_type.substr(9);  // get from "assembly_" to the end
     auto pos = tmp.find("_");
     desired_product_type = tmp.substr(0, pos);
-    gzerr << "desired product type: " << desired_product_type << std::endl;
+    // gzerr << "desired product type: " << desired_product_type << std::endl;
 
 
     std::size_t found = desired_product_name.find_last_of("_");
     auto desired_product_color = desired_product_name.substr(found + 1);
-    gzerr << "desired product color: " << desired_product_color << std::endl;
+    // gzerr << "desired product color: " << desired_product_color << std::endl;
 
     for (size_t a = 0; a < tmp_non_faulty_products.size(); ++a)
     {
@@ -885,17 +885,17 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
       // if (pos != std::string::npos) {
       //   actual_product_name.erase(0, pos + 1);
       // }
-      gzerr << "actual product name: " << actual_product_name << std::endl;
+      // gzerr << "actual product name: " << actual_product_name << std::endl;
       std::size_t last_underscore_occurrence = actual_product_name.find_last_of("_");
       std::string actual_product_color = actual_product_name.substr(last_underscore_occurrence + 1);
-      gzerr << "actual product color: " << actual_product_color << std::endl;  // assembly_pump_blue
+      // gzerr << "actual product color: " << actual_product_color << std::endl;  // assembly_pump_blue
 
       std::size_t pos = actual_product_name.find("assembly_");  // position of "assembly_" in actual_product_name
       std::string tmp = actual_product_name.substr(9);          // get from "assembly_" to the end
 
       pos = tmp.find("_");
       std::string actual_product_type = tmp.substr(0, pos);
-      gzerr << "actual product type: " << actual_product_type << std::endl;  // assembly_pump_blue
+      // gzerr << "actual product type: " << actual_product_type << std::endl;  // assembly_pump_blue
 
       briefcaseProduct.productName = actual_product_name;
       briefcaseProduct.productType = actual_product_type;

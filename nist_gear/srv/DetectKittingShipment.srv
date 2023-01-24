@@ -1,7 +1,0 @@
-
-# Ask a movable tray to report what products were placed on it
-
-
----
-# What was detected in the shipment
-TrayContents shipment

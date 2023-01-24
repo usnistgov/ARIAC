@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="assembly_table">
+    <static>true</static>
+
+    <link name="assembly_table_link">
+      <visual name="table_top">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/table_top.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Wood</name>
+          </script>
+        </material>
+      </visual>
+
+      <visual name="leg1">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/leg1.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.6 0.6 0.6 1.0</ambient>
+          <diffuse>0.6 0.6 0.6 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="leg2">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/leg2.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.6 0.6 0.6 1.0</ambient>
+          <diffuse>0.6 0.6 0.6 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="leg3">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/leg3.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.6 0.6 0.6 1.0</ambient>
+          <diffuse>0.6 0.6 0.6 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="leg4">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/leg4.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.6 0.6 0.6 1.0</ambient>
+          <diffuse>0.6 0.6 0.6 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="tape">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/tape_outline.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.0 0.0 1.0 1.0</ambient>
+          <diffuse>0.0 0.0 1.0 1.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/assembly_table_collision.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

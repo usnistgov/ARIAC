@@ -1,6 +1,0 @@
-# gripper_tray or gripper_part
-string gripper_type
-
----
-bool success
-string message

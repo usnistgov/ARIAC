@@ -1,0 +1,1 @@
+# Picking a part from a bin

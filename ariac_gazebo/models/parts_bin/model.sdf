@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="parts_bin">
+    <static>true</static>
+    <link name="link">
+      <visual name="exterior_visual">
+        <geometry>
+          <mesh>
+            <uri>model://parts_bin/meshes/bin_exterior.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <visual name="interior_visual">
+        <geometry>
+          <mesh>
+            <uri>model://parts_bin/meshes/bin_interior.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.4 0.82 1.0 1.0</ambient>
+          <diffuse>0.4 0.82 1.0 1.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="interior_collision">
+        <geometry>
+          <mesh>
+            <uri>model://parts_bin/meshes/bin_interior.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <collision name="exterior_collision">
+        <geometry>
+          <mesh>
+            <uri>model://parts_bin/meshes/bin_exterior.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

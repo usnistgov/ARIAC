@@ -1,6 +1,0 @@
-string tray_id
-string kit_type
-
----
-bool success
-float32 inspection_result

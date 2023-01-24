@@ -1,0 +1,3 @@
+float64 duration
+ariac_msgs/Condition condition
+ariac_msgs/Robots robots_to_disable

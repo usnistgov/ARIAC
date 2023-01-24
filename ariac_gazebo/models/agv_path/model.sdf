@@ -1,0 +1,16 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='agv_path'>
+    <static>true</static>
+    
+    <link name="link">  
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://agv_path/meshes/path.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

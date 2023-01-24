@@ -1,7 +1,0 @@
-# Service to move an AGV to station_name
-
-string station_name
-
----
-bool success
-string message

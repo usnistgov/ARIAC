@@ -1,28 +1,24 @@
 <?xml version="1.0"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>test_competitor</name>
   <version>0.0.0</version>
-  <description>The test_competitor package</description>
+  <description>TODO: Package description</description>
+  <maintainer email="justin.albrecht@nist.gov">justin</maintainer>
+  <license>TODO: License declaration</license>
 
-  <maintainer email="justin.albrecht@nist.gov">Justin Albrecht</maintainer>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <license>Apache 2.0</license>
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>ariac_msgs</depend>
+  <depend>shape_msgs</depend>
+  <depend>moveit_msgs</depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
-  <build_depend>rospy</build_depend>
-  <build_depend>nist_gear</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>tf2_geometry_msgs</build_depend>
-  <build_depend>trajectory_msgs</build_depend>
-  
-  <build_export_depend>rospy</build_export_depend>
-  
-  <exec_depend>rospy</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

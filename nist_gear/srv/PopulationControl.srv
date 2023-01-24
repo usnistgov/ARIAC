@@ -1,7 +1,0 @@
-# Population control
-
-# desired action: "pause", "resume" or "restart"
-string action
-
----
-bool success

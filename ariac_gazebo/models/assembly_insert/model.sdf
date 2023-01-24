@@ -1,0 +1,150 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="insert">
+    <static>true</static>
+
+    <link name="insert_link">
+      <visual name="base">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/insert_base.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.25 0.25 0.25 1.0</ambient>
+          <diffuse>0.25 0.25 0.25 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="mounts">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/mounts.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.8 0.8 0.8 1.0</ambient>
+          <diffuse>0.8 0.8 0.8 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="hardware">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/hardware.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.35 0.35 0.35 1.0</ambient>
+          <diffuse>0.35 0.35 0.35 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="pipe_1">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/pipe_1.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 0.82 0.10 1.0</ambient>
+          <diffuse>1.0 0.82 0.10 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="pipe_2">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/pipe_2.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 0.82 0.10 1.0</ambient>
+          <diffuse>1.0 0.82 0.10 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="screen">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/screen.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 1.0 1.0 1.0</ambient>
+          <diffuse>1.0 1.0 1.0 1.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="base_collision">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/insert_collision.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <collision name="pump_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/pump_contact.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <sensor type="contact" name="pump_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>pump_contact</collision>
+        </contact>
+      </sensor>
+
+      <collision name="regulator_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/regulator_contact.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <sensor type="contact" name="regulator_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>regulator_contact</collision>
+        </contact>
+      </sensor>      
+
+      <collision name="sensor_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/sensor_contact.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <sensor type="contact" name="sensor_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>sensor_contact</collision>
+        </contact>
+      </sensor>
+
+      <collision name="battery_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/battery_contact.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <sensor type="contact" name="battery_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>battery_contact</collision>
+        </contact>
+      </sensor>
+
+
+    </link>
+  </model>
+</sdf>

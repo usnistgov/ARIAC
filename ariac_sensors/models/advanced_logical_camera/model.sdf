@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="advanced_logical_camera">
+    <static>true</static>
+    <link name="advanced_logical_camera">
+      <visual name="visual">
+        <pose>-0.02 0 -0.02 0 0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <uri>model://advanced_logical_camera/meshes/camera.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <sensor name="advanced_logical_camera" type="logical_camera">
+        <logical_camera>
+            <near>0.2</near>
+            <far>1.1</far>
+            <horizontal_fov>1.5</horizontal_fov>
+            <aspect_ratio>1.2</aspect_ratio>
+        </logical_camera>
+
+        <visualize>true</visualize>
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+
+        <plugin name="advanced_logical_camera_plugin" filename="libAriacLogicalCameraPlugin.so">
+          <ros>
+            <namespace></namespace>
+          </ros>
+          <sensor_type>advanced</sensor_type>
+          <camera_name>advanced_logical_camera</camera_name>
+          <frame_name>advanced_logical_camera_frame</frame_name>
+        </plugin>
+      </sensor>
+    </link>
+  </model>
+</sdf>

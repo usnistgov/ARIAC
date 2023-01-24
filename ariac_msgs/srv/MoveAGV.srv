@@ -1,0 +1,9 @@
+int8 KITTING=0
+int8 ASSEMBLY_FRONT=1
+int8 ASSEMBLY_BACK=2 
+int8 WAREHOUSE=3 
+
+int8 location
+---
+bool success
+string message

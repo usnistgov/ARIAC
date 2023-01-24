@@ -1,0 +1,383 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="world">
+    <!-- Set the initial camera pose to be looking at the workspace. -->
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <!-- pretty overview shot-->
+        <pose frame=''>6.72633 4.82882 7.2056 0 0.485796 -2.71512</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+
+    <scene>
+      <shadows>0</shadows>
+      <grid>0</grid>
+      <origin_visual>0</origin_visual>
+      <ambient>0.25 0.25 0.25 1</ambient>
+      <background>0.5 0.5 0.5 1</background>
+    </scene>
+
+    <!-- <light name='user_spot_light_0' type='spot'>
+      <pose frame=''>-12.409511 -2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+    
+    <light name='user_spot_light_1' type='spot'>
+      <pose frame=''>-12.409511 2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+    
+    <light name='user_spot_light_2' type='spot'>
+      <pose frame=''>-7.530130 -2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light>
+    
+    <light name='user_spot_light_3' type='spot'>
+      <pose frame=''>-7.530130 2.985986 4.049673 0 -0 0</pose>
+      <diffuse>0.5 0.5 0.5 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <direction>0 0 -1</direction>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light> -->
+    
+    <!-- A global light source -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+    
+    <!-- A directed light source -->
+    <!-- <light name="spot_light" type='point'>
+      <pose>-10 0 5.0 0 0.0 0</pose>
+      <diffuse>127 127 127 255</diffuse>
+      <specular>25 25 25 255</specular>
+      <attenuation>
+        <range>20</range>
+        <constant>0.5</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <cast_shadows>0</cast_shadows>
+      <spot>
+        <inner_angle>0.6</inner_angle>
+        <outer_angle>1</outer_angle>
+        <falloff>1</falloff>
+      </spot>
+    </light> -->
+
+    <!-- Models for aesthetics -->
+    <!-- <include>
+      <name>CageFactory1</name>
+      <uri>model://cage_factory</uri>
+      <pose>-17.6 -0.5 0. 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>CageFactory2</name>
+      <uri>model://cage_factory</uri>
+      <pose>-17.6 4.8 0. 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>CageFactory3</name>
+      <uri>model://cage_factory</uri>
+      <pose>-17.0 -2.03 2.6 0 0 3.1415</pose>
+    </include>
+
+    <include>
+      <name>FactoryShelf1</name>
+      <uri>model://factory_shelf</uri>
+      <pose>-2.357211 -10.597721 0.015890 0 0 -1.570048</pose>
+    </include>
+
+    <include>
+      <name>FactoryShelf2</name>
+      <uri>model://factory_shelf</uri>
+      <pose>-4.714521 -9.957084 0.015890 0 0 1.570048</pose>
+    </include>
+
+    <include>
+      <name>FactoryShelf3</name>
+      <uri>model://factory_shelf</uri>
+      <pose>-7.073606 -9.989021 0.015890 0 0 1.570048</pose>
+    </include>
+
+    <include>
+      <name>FactoryShelf4</name>
+      <uri>model://factory_shelf</uri>
+      <pose>-9.429011 -9.995264 0.015890 0 0 1.570048</pose>
+    </include>
+
+    <include>
+      <name>FactoryShelf5</name>
+      <uri>model://factory_shelf</uri>
+      <pose>-11.89 -10.748168 0.015890 0 0 -1.570048</pose>
+    </include>
+
+    <include>
+      <name>FactoryShelf6</name>
+      <uri>model://factory_shelf</uri>
+      <pose>-14.137 -10.188283 0.015890 0 0 1.570048</pose>
+    </include>
+
+    <include>
+      <name>Computer1</name>
+      <uri>model://computer_2</uri>
+      <pose>1.885278 4.035417 0.0 0 0 1.557780</pose>
+    </include>
+
+    <include>
+      <name>Computer2</name>
+      <uri>model://computer</uri>
+      <pose>1.691086 3.033527  0.0 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>BoxPallet6</name>
+      <uri>model://box_pallets_3</uri>
+      <pose>0.5554 -7.468 0.01589 0 0 -0.065512</pose>
+    </include>-->
+
+    <include>
+      <name>part_disposal_bin</name>
+      <uri>model://disposal_bin</uri>
+      <pose>-2.2 0 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>conveyor_disposal_bin1</name>
+      <uri>model://disposal_bin</uri>
+      <pose>-0.6 -4.72 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>conveyor_disposal_bin2</name>
+      <uri>model://disposal_bin</uri>
+      <pose>-0.6 4.72 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>workcell_floor</name>
+      <uri>model://floor</uri>
+      <pose>0 0 0 0 0 0</pose>
+    </include>
+
+    <!-- Insert AGV paths -->
+    <include>
+      <name>agv_path_1</name>
+      <uri>model://agv_path</uri>
+      <pose>-1.5 4.8 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>agv_path_2</name>
+      <uri>model://agv_path</uri>
+      <pose>-1.5 1.2 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>agv_path_3</name>
+      <uri>model://agv_path</uri>
+      <pose>-1.5 -1.2 0 0 0 0</pose>
+    </include>
+    <include>
+      <name>agv_path_4</name>
+      <uri>model://agv_path</uri>
+      <pose>-1.5 -4.8 0 0 0 0</pose>
+    </include>
+
+    <include>
+      <name>warehouse</name>
+      <uri>model://warehouse</uri>
+      <pose>-19 0 0 0 0 0</pose>
+    </include>
+
+    <!-- Insert Bins -->
+    <include>
+      <name>bin1</name>
+      <uri>model://parts_bin</uri>
+      <pose>-1.9 3.375 0 0 0 3.1416</pose>
+    </include>
+
+    <include>
+      <name>bin2</name>
+      <uri>model://parts_bin</uri>
+      <pose>-1.9 2.625 0 0 0 3.1416</pose>
+    </include>
+
+    <include>
+      <name>bin3</name>
+      <uri>model://parts_bin</uri>
+      <pose>-2.65 2.625 0 0 0 3.1416</pose>
+    </include>
+
+    <include>
+      <name>bin4</name>
+      <uri>model://parts_bin</uri>
+      <pose>-2.65 3.375 0 0 0 3.1416</pose>
+    </include>
+
+    <include>
+      <name>bin5</name>
+      <uri>model://parts_bin</uri>
+      <pose>-1.9 -3.375 0 0 0 3.1416</pose>
+    </include>
+
+    <include>
+      <name>bin6</name>
+      <uri>model://parts_bin</uri>
+      <pose>-1.9 -2.625 0 0 0 3.1416</pose>
+    </include>
+
+    <include>
+      <name>bin7</name>
+      <uri>model://parts_bin</uri>
+      <pose>-2.65 -2.625 0 0 0 3.1416</pose>
+    </include>
+
+    <include>
+      <name>bin8</name>
+      <uri>model://parts_bin</uri>
+      <pose>-2.65 -3.375 0 0 0 3.1416</pose>
+    </include>
+
+    <!-- Insert Conveyor Belt -->
+    <include>
+      <name>conveyor_belt</name>
+      <pose>-0.6 0 0 0 0</pose>
+      <uri>model://conveyor_belt</uri>
+    </include>
+
+    <!-- Insert Assembly Stations -->
+    <include>
+      <name>assembly_table_1</name>
+      <pose>-7.3 3 0 0 0 0 </pose>
+      <uri>model://assembly_table</uri>
+    </include>
+
+    <include>
+      <name>assembly_insert_1</name>
+      <pose>-7.7 3 1.011 0 0 0 </pose>
+      <uri>model://assembly_insert</uri>
+    </include>
+
+    <joint name="assembly_insert_1_joint" type="fixed">
+      <parent>assembly_table_1::assembly_table_link</parent>
+      <child>assembly_insert_1::insert_link</child>
+    </joint>
+
+    <include>
+      <name>assembly_table_2</name>
+      <pose>-12.3 3 0 0 0 0 </pose>
+      <uri>model://assembly_table</uri>
+    </include>
+
+    <include>
+      <name>assembly_insert_2</name>
+      <pose>-12.7 3 1.011 0 0 0 </pose>
+      <uri>model://assembly_insert</uri>
+    </include>
+
+    <include>
+      <name>assembly_table_3</name>
+      <pose>-7.3 -3 0 0 0 0 </pose>
+      <uri>model://assembly_table</uri>
+    </include>
+
+    <include>
+      <name>assembly_insert_3</name>
+      <pose>-7.7 -3 1.011 0 0 0 </pose>
+      <uri>model://assembly_insert</uri>
+    </include>
+
+    <include>
+      <name>assembly_table_4</name>
+      <pose>-12.3 -3 0 0 0 0 </pose>
+      <uri>model://assembly_table</uri>
+    </include>
+
+    <include>
+      <name>assembly_insert_4</name>
+      <pose>-12.7 -3 1.011 0 0 0 </pose>
+      <uri>model://assembly_insert</uri>
+    </include>
+
+    <!-- Insert tray tables -->
+    <include>
+      <name>tray_table_1</name>
+      <pose>-1.3 -5.84 0 0 0 3.14159</pose>
+      <uri>model://kit_tray_table</uri>
+    </include>
+
+    <include>
+      <name>tray_table_2</name>
+      <pose>-1.3 5.84 0 0 0 0</pose>
+      <uri>model://kit_tray_table</uri>
+    </include>
+
+    <plugin name="task_manager" filename="libTaskManagerPlugin.so" />
+
+  </world>
+</sdf>

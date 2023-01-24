@@ -1,0 +1,654 @@
+Panels:
+  - Class: rviz_common/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Status1
+        - /PlanningScene1
+        - /PlanningScene1/Scene Geometry1
+        - /PlanningScene1/Scene Robot1
+        - /TF1
+        - /TF1/Frames1
+      Splitter Ratio: 0.5823529362678528
+    Tree Height: 363
+  - Class: rviz_common/Selection
+    Name: Selection
+  - Class: rviz_common/Tool Properties
+    Expanded:
+      - /2D Goal Pose1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.5886790156364441
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz_common/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: ""
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: -8
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 16
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Class: moveit_rviz_plugin/PlanningScene
+      Enabled: true
+      Move Group Namespace: ""
+      Name: PlanningScene
+      Planning Scene Topic: /monitored_planning_scene
+      Robot Description: robot_description
+      Scene Geometry:
+        Scene Alpha: 0.8999999761581421
+        Scene Color: 206; 92; 0
+        Scene Display Time: 9.999999747378752e-05
+        Show Scene Geometry: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Scene Robot:
+        Attached Body Color: 78; 154; 6
+        Links:
+          All Links Enabled: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Link Tree Style: Links in Alphabetic Order
+          agv1_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          agv1_track:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          agv1_tray:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          agv2_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          agv2_track:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          agv2_tray:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          agv3_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          agv3_track:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          agv3_tray:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          agv4_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          agv4_track:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          agv4_tray:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          ceiling_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          ceiling_base_link_inertia:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_flange:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          ceiling_forearm_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_ft_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          ceiling_gripper:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_shoulder_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_tool0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          ceiling_upper_arm_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_wrist_1_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_wrist_2_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          ceiling_wrist_3_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          floor_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          floor_base_link_inertia:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_flange:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          floor_forearm_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_ft_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          floor_gripper:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_shoulder_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_tool0:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          floor_upper_arm_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_wrist_1_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_wrist_2_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          floor_wrist_3_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          long_rail_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          long_rail_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          robot_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          slide_bar:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          small_rail:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          torso_base:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          torso_main:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          torso_tray:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          world:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+        Robot Alpha: 1
+        Show Robot Collision: false
+        Show Robot Visual: true
+      Value: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        agv1_base:
+          Value: false
+        agv1_track:
+          Value: false
+        agv1_tray:
+          Value: true
+        agv2_base:
+          Value: false
+        agv2_track:
+          Value: false
+        agv2_tray:
+          Value: true
+        agv3_base:
+          Value: false
+        agv3_track:
+          Value: false
+        agv3_tray:
+          Value: true
+        agv4_base:
+          Value: false
+        agv4_track:
+          Value: false
+        agv4_tray:
+          Value: true
+        as1_insert_frame:
+          Value: true
+        as1_table_frame:
+          Value: false
+        as2_insert_frame:
+          Value: true
+        as2_table_frame:
+          Value: false
+        as3_insert_frame:
+          Value: true
+        as3_table_frame:
+          Value: false
+        as4_insert_frame:
+          Value: true
+        as4_table_frame:
+          Value: false
+        bin1_frame:
+          Value: true
+        bin2_frame:
+          Value: true
+        bin3_frame:
+          Value: true
+        bin4_frame:
+          Value: true
+        bin5_frame:
+          Value: true
+        bin6_frame:
+          Value: true
+        bin7_frame:
+          Value: true
+        bin8_frame:
+          Value: true
+        ceiling_base:
+          Value: false
+        ceiling_base_link:
+          Value: false
+        ceiling_base_link_inertia:
+          Value: false
+        ceiling_flange:
+          Value: false
+        ceiling_forearm_link:
+          Value: false
+        ceiling_ft_frame:
+          Value: false
+        ceiling_gripper:
+          Value: true
+        ceiling_shoulder_link:
+          Value: false
+        ceiling_tool0:
+          Value: false
+        ceiling_upper_arm_link:
+          Value: false
+        ceiling_wrist_1_link:
+          Value: false
+        ceiling_wrist_2_link:
+          Value: false
+        ceiling_wrist_3_link:
+          Value: false
+        conveyor_belt_base_frame:
+          Value: false
+        conveyor_belt_part_spawn_frame:
+          Value: false
+        floor_base:
+          Value: false
+        floor_base_link:
+          Value: false
+        floor_base_link_inertia:
+          Value: false
+        floor_flange:
+          Value: false
+        floor_forearm_link:
+          Value: false
+        floor_ft_frame:
+          Value: false
+        floor_gripper:
+          Value: true
+        floor_shoulder_link:
+          Value: false
+        floor_tool0:
+          Value: false
+        floor_upper_arm_link:
+          Value: false
+        floor_wrist_1_link:
+          Value: false
+        floor_wrist_2_link:
+          Value: false
+        floor_wrist_3_link:
+          Value: false
+        kts1_camera_frame:
+          Value: false
+        kts1_table_frame:
+          Value: false
+        kts1_tool_changer_parts_frame:
+          Value: true
+        kts1_tool_changer_trays_frame:
+          Value: true
+        kts2_camera_frame:
+          Value: false
+        kts2_table_frame:
+          Value: false
+        kts2_tool_changer_parts_frame:
+          Value: true
+        kts2_tool_changer_trays_frame:
+          Value: true
+        left_bins_camera_frame:
+          Value: false
+        long_rail_1:
+          Value: false
+        long_rail_2:
+          Value: false
+        right_bins_camera_frame:
+          Value: false
+        robot_base:
+          Value: false
+        slide_bar:
+          Value: false
+        small_rail:
+          Value: false
+        torso_base:
+          Value: false
+        torso_main:
+          Value: false
+        torso_tray:
+          Value: false
+        world:
+          Value: true
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: false
+      Show Axes: true
+      Show Names: false
+      Tree:
+        world:
+          agv1_track:
+            agv1_base:
+              agv1_tray:
+                {}
+          agv2_track:
+            agv2_base:
+              agv2_tray:
+                {}
+          agv3_track:
+            agv3_base:
+              agv3_tray:
+                {}
+          agv4_track:
+            agv4_base:
+              agv4_tray:
+                {}
+          as1_table_frame:
+            as1_insert_frame:
+              {}
+          as2_table_frame:
+            as2_insert_frame:
+              {}
+          as3_table_frame:
+            as3_insert_frame:
+              {}
+          as4_table_frame:
+            as4_insert_frame:
+              {}
+          bin1_frame:
+            {}
+          bin2_frame:
+            {}
+          bin3_frame:
+            {}
+          bin4_frame:
+            {}
+          bin5_frame:
+            {}
+          bin6_frame:
+            {}
+          bin7_frame:
+            {}
+          bin8_frame:
+            {}
+          conveyor_belt_base_frame:
+            conveyor_belt_part_spawn_frame:
+              {}
+          kts1_camera_frame:
+            {}
+          kts1_table_frame:
+            kts1_tool_changer_parts_frame:
+              {}
+            kts1_tool_changer_trays_frame:
+              {}
+          kts2_camera_frame:
+            {}
+          kts2_table_frame:
+            kts2_tool_changer_parts_frame:
+              {}
+            kts2_tool_changer_trays_frame:
+              {}
+          left_bins_camera_frame:
+            {}
+          long_rail_1:
+            long_rail_2:
+              small_rail:
+                torso_base:
+                  torso_main:
+                    ceiling_base_link:
+                      ceiling_base:
+                        {}
+                      ceiling_base_link_inertia:
+                        ceiling_shoulder_link:
+                          ceiling_upper_arm_link:
+                            ceiling_forearm_link:
+                              ceiling_wrist_1_link:
+                                ceiling_wrist_2_link:
+                                  ceiling_wrist_3_link:
+                                    ceiling_flange:
+                                      ceiling_tool0:
+                                        {}
+                                    ceiling_ft_frame:
+                                      {}
+                                    ceiling_gripper:
+                                      {}
+                    torso_tray:
+                      {}
+          right_bins_camera_frame:
+            {}
+          slide_bar:
+            robot_base:
+              floor_base_link:
+                floor_base:
+                  {}
+                floor_base_link_inertia:
+                  floor_shoulder_link:
+                    floor_upper_arm_link:
+                      floor_forearm_link:
+                        floor_wrist_1_link:
+                          floor_wrist_2_link:
+                            floor_wrist_3_link:
+                              floor_flange:
+                                floor_tool0:
+                                  {}
+                              floor_ft_frame:
+                                {}
+                              floor_gripper:
+                                {}
+      Update Interval: 0
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+      Hide Inactive Objects: true
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+    - Class: rviz_default_plugins/Measure
+      Line color: 128; 128; 0
+    - Class: rviz_default_plugins/SetInitialPose
+      Covariance x: 0.25
+      Covariance y: 0.25
+      Covariance yaw: 0.06853891909122467
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /initialpose
+    - Class: rviz_default_plugins/SetGoal
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /goal_pose
+    - Class: rviz_default_plugins/PublishPoint
+      Single click: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /clicked_point
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 8.921540260314941
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: -2.3044843673706055
+        Y: -3.5008909702301025
+        Z: 0.5595264434814453
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.5853981971740723
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 5.978596210479736
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: true
+  Height: 716
+  Hide Left Dock: true
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd0000000400000000000001560000035afc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000003d0000035a000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000176000001a90000000000000000fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000000000010000010f0000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000039c0000003efc0100000002fb0000000800540069006d006501000000000000039c000002eb00fffffffb0000000800540069006d006501000000000000045000000000000000000000039c0000022e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 924
+  X: 970
+  Y: 57

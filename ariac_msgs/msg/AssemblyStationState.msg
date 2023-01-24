@@ -1,0 +1,4 @@
+bool battery_attached
+bool sensor_attached
+bool regulator_attached
+bool pump_attached

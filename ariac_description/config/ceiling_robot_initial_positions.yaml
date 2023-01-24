@@ -1,0 +1,9 @@
+small_long_joint: 0
+torso_rail_joint: 0
+torso_base_main_joint: 0
+shoulder_pan_joint: 0.0
+shoulder_lift_joint: -1.57
+elbow_joint: -1.57
+wrist_1_joint: 0
+wrist_2_joint: 0.0
+wrist_3_joint: 0.0

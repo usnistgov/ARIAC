@@ -1,0 +1,176 @@
+controller_manager:
+  ros__parameters:
+
+    update_rate: 1000 # Hz
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+    floor_robot_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    ceiling_robot_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    linear_rail_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    gantry_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    agv1_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+    agv2_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+    agv3_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+    agv4_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+
+floor_robot_controller:
+  ros__parameters:
+    joints:
+      - floor_shoulder_pan_joint
+      - floor_shoulder_lift_joint
+      - floor_elbow_joint
+      - floor_wrist_1_joint
+      - floor_wrist_2_joint
+      - floor_wrist_3_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 1000.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.2
+      goal_time: 0.0
+      linear_actuator: {trajectory: 0.1, goal: 0.1}
+      floor_shoulder_pan_joint: { trajectory: 0.2, goal: 0.1 }
+      floor_shoulder_lift_joint: { trajectory: 0.2, goal: 0.1 }
+      floor_elbow_joint: { trajectory: 0.2, goal: 0.1 }
+      floor_wrist_1_joint: { trajectory: 0.2, goal: 0.1 }
+      floor_wrist_2_joint: { trajectory: 0.2, goal: 0.1 }
+      floor_wrist_3_joint: { trajectory: 0.2, goal: 0.1 }
+
+
+
+ceiling_robot_controller:
+  ros__parameters:
+    joints:
+      - ceiling_shoulder_pan_joint
+      - ceiling_shoulder_lift_joint
+      - ceiling_elbow_joint
+      - ceiling_wrist_1_joint
+      - ceiling_wrist_2_joint
+      - ceiling_wrist_3_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 1000.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.2
+      goal_time: 0.0
+      ceiling_shoulder_pan_joint: { trajectory: 0.2, goal: 0.1 }
+      ceiling_shoulder_lift_joint: { trajectory: 0.2, goal: 0.1 }
+      ceiling_elbow_joint: { trajectory: 0.2, goal: 0.1 }
+      ceiling_wrist_1_joint: { trajectory: 0.2, goal: 0.1 }
+      ceiling_wrist_2_joint: { trajectory: 0.2, goal: 0.1 }
+      ceiling_wrist_3_joint: { trajectory: 0.2, goal: 0.1 }
+
+
+
+linear_rail_controller:
+  ros__parameters:
+    joints:
+      - linear_actuator_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 1000.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.2
+      goal_time: 0.0
+      linear_actuator_joint: {trajectory: 0.1, goal: 0.1}
+
+
+
+gantry_controller:
+  ros__parameters:
+    joints:
+      - gantry_x_axis_joint
+      - gantry_y_axis_joint
+      - gantry_rotation_joint
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+    state_publish_rate: 1000.0
+    action_monitor_rate: 20.0
+    allow_partial_joints_goal: false
+    constraints:
+      stopped_velocity_tolerance: 0.2
+      goal_time: 0.0
+      gantry_x_axis_joint: {trajectory: 0.1, goal: 0.1}
+      gantry_y_axis_joint:  {trajectory: 0.1, goal: 0.1}
+      gantry_rotation_joint: {trajectory: 0.1, goal: 0.1}
+
+
+
+agv1_controller:
+  ros__parameters:
+    joints:
+      - agv1_joint
+    command_interfaces:
+      - velocity
+    state_interfaces:
+      - position
+
+
+
+agv2_controller:
+  ros__parameters:
+    joints:
+      - agv2_joint
+    command_interfaces:
+      - velocity
+    state_interfaces:
+      - position
+
+
+
+agv3_controller:
+  ros__parameters:
+    joints:
+      - agv3_joint
+    command_interfaces:
+      - velocity
+    state_interfaces:
+      - position
+
+
+
+agv4_controller:
+  ros__parameters:
+    joints:
+      - agv4_joint
+    command_interfaces:
+      - velocity
+    state_interfaces:
+      - position
+

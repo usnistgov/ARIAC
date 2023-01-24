@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="ariac_robots">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="floor_robot">
+        <chain base_link="world" tip_link="floor_gripper"/>
+    </group>
+    <group name="floor_arm">
+        <chain base_link="floor_base_link" tip_link="floor_gripper"/>
+    </group>
+    <group name="ceiling_robot">
+        <chain base_link="world" tip_link="ceiling_gripper"/>
+    </group>
+    <group name="ceiling_arm">
+        <chain base_link="ceiling_base_link" tip_link="ceiling_gripper"/>
+    </group>
+    <group name="gantry">
+        <chain base_link="world" tip_link="torso_main"/>
+    </group>
+    <!--GROUP STATES: Purpose: Define a named state for a particular group, in terms of joint values. This is useful to define states like 'folded arms'-->
+    <group_state name="home" group="floor_robot">
+        <joint name="floor_elbow_joint" value="1.571"/>
+        <joint name="floor_gripper_joint" value="0"/>
+        <joint name="floor_shoulder_lift_joint" value="-1.571"/>
+        <joint name="floor_shoulder_pan_joint" value="0"/>
+        <joint name="floor_wrist_1_joint" value="-1.571"/>
+        <joint name="floor_wrist_2_joint" value="-1.571"/>
+        <joint name="floor_wrist_3_joint" value="0.012"/>
+        <joint name="linear_actuator_joint" value="0"/>
+    </group_state>
+    <group_state name="home" group="ceiling_robot">
+        <joint name="ceiling_elbow_joint" value="1.571"/>
+        <joint name="ceiling_gripper_joint" value="0"/>
+        <joint name="ceiling_shoulder_lift_joint" value="-1.571"/>
+        <joint name="ceiling_shoulder_pan_joint" value="0"/>
+        <joint name="ceiling_wrist_1_joint" value="3.14"/>
+        <joint name="ceiling_wrist_2_joint" value="-1.571"/>
+        <joint name="ceiling_wrist_3_joint" value="0"/>
+        <joint name="gantry_x_axis_joint" value="2"/>
+        <joint name="gantry_y_axis_joint" value="0"/>
+        <joint name="gantry_rotation_joint" value="-1.571"/>
+    </group_state>
+    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
+    <passive_joint name="floor_gripper_joint"/>
+    <passive_joint name="ceiling_gripper_joint"/>
+    
+    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="agv1_base" link2="agv1_tray" reason="Adjacent"/>
+    <disable_collisions link1="agv1_base" link2="agv2_base" reason="Adjacent"/>
+    <disable_collisions link1="agv1_base" link2="agv2_tray" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="agv3_base" reason="Adjacent"/>
+    <disable_collisions link1="agv1_base" link2="agv3_tray" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="agv4_base" reason="Adjacent"/>
+    <disable_collisions link1="agv1_base" link2="agv4_tray" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="long_rail_1" reason="Adjacent"/>
+    <disable_collisions link1="agv1_base" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="slide_bar" reason="Adjacent"/>
+    <disable_collisions link1="agv1_base" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv1_base" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="agv2_base" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="agv2_tray" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="agv3_base" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="agv3_tray" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="agv4_base" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="agv4_tray" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="agv2_tray" reason="Adjacent"/>
+    <disable_collisions link1="agv2_base" link2="agv3_base" reason="Adjacent"/>
+    <disable_collisions link1="agv2_base" link2="agv3_tray" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="agv4_base" reason="Adjacent"/>
+    <disable_collisions link1="agv2_base" link2="agv4_tray" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="long_rail_1" reason="Adjacent"/>
+    <disable_collisions link1="agv2_base" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="slide_bar" reason="Adjacent"/>
+    <disable_collisions link1="agv2_base" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv2_base" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="agv3_base" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="agv3_tray" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="agv4_base" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="agv4_tray" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv2_tray" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="agv3_tray" reason="Adjacent"/>
+    <disable_collisions link1="agv3_base" link2="agv4_base" reason="Adjacent"/>
+    <disable_collisions link1="agv3_base" link2="agv4_tray" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="long_rail_1" reason="Adjacent"/>
+    <disable_collisions link1="agv3_base" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="slide_bar" reason="Adjacent"/>
+    <disable_collisions link1="agv3_base" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv3_base" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="agv4_base" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="agv4_tray" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv3_tray" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="agv4_tray" reason="Adjacent"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="long_rail_1" reason="Adjacent"/>
+    <disable_collisions link1="agv4_base" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="slide_bar" reason="Adjacent"/>
+    <disable_collisions link1="agv4_base" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv4_base" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_gripper" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="agv4_tray" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="ceiling_shoulder_link" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="ceiling_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="torso_main" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_base_link_inertia" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="ceiling_upper_arm_link" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="ceiling_wrist_1_link" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_forearm_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="ceiling_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="ceiling_wrist_3_link" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_gripper" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="ceiling_upper_arm_link" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="ceiling_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="ceiling_shoulder_link" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="ceiling_wrist_2_link" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="ceiling_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="ceiling_wrist_3_link" reason="Adjacent"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_base_link_inertia" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_forearm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_gripper" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_shoulder_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="floor_shoulder_link" reason="Adjacent"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="floor_upper_arm_link" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="slide_bar" reason="Adjacent"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="floor_base_link_inertia" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="floor_forearm_link" link2="floor_upper_arm_link" reason="Adjacent"/>
+    <disable_collisions link1="floor_forearm_link" link2="floor_wrist_1_link" reason="Adjacent"/>
+    <disable_collisions link1="floor_forearm_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_forearm_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_forearm_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_forearm_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="floor_gripper" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="floor_gripper" link2="floor_wrist_2_link" reason="Never"/>
+    <disable_collisions link1="floor_gripper" link2="floor_wrist_3_link" reason="Adjacent"/>
+    <disable_collisions link1="floor_gripper" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_gripper" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_gripper" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_gripper" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="floor_shoulder_link" link2="floor_upper_arm_link" reason="Adjacent"/>
+    <disable_collisions link1="floor_shoulder_link" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="floor_shoulder_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_shoulder_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_shoulder_link" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="floor_shoulder_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_shoulder_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="floor_shoulder_link" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="floor_upper_arm_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_upper_arm_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_upper_arm_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_upper_arm_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="floor_wrist_1_link" link2="floor_wrist_2_link" reason="Adjacent"/>
+    <disable_collisions link1="floor_wrist_1_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="floor_wrist_1_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_wrist_1_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_wrist_1_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_wrist_1_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="floor_wrist_2_link" link2="floor_wrist_3_link" reason="Adjacent"/>
+    <disable_collisions link1="floor_wrist_2_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_wrist_2_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_wrist_2_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_wrist_2_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="floor_wrist_3_link" link2="long_rail_1" reason="Never"/>
+    <disable_collisions link1="floor_wrist_3_link" link2="long_rail_2" reason="Never"/>
+    <disable_collisions link1="floor_wrist_3_link" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="floor_wrist_3_link" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="long_rail_1" link2="long_rail_2" reason="Adjacent"/>
+    <disable_collisions link1="long_rail_1" link2="slide_bar" reason="Adjacent"/>
+    <disable_collisions link1="long_rail_1" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="long_rail_1" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="long_rail_1" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="long_rail_1" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="long_rail_2" link2="slide_bar" reason="Never"/>
+    <disable_collisions link1="long_rail_2" link2="small_rail" reason="Adjacent"/>
+    <disable_collisions link1="long_rail_2" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="long_rail_2" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="long_rail_2" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="slide_bar" link2="small_rail" reason="Never"/>
+    <disable_collisions link1="slide_bar" link2="torso_base" reason="Never"/>
+    <disable_collisions link1="slide_bar" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="slide_bar" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="small_rail" link2="torso_base" reason="Adjacent"/>
+    <disable_collisions link1="small_rail" link2="torso_main" reason="Never"/>
+    <disable_collisions link1="small_rail" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="torso_base" link2="torso_main" reason="Adjacent"/>
+    <disable_collisions link1="torso_base" link2="torso_tray" reason="Never"/>
+    <disable_collisions link1="torso_main" link2="torso_tray" reason="Adjacent"/>
+</robot>

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="agv_tray_sensor">
+    <static>false</static>
+    <pose>0 0 0 0 1.5708 0</pose>
+    <link name="sensor_base">
+      <!-- Visual for debugging -->
+      <!-- <visual name="sensor_visual">
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.05</size>
+          </box>
+        </geometry>
+      </visual> -->
+
+      <sensor name="agv_tray_sensor" type="logical_camera">
+        <logical_camera>
+            <near>0.2</near>
+            <far>1</far>
+            <horizontal_fov>0.68</horizontal_fov>
+            <aspect_ratio>1.4</aspect_ratio>
+        </logical_camera>
+
+        <visualize>false</visualize>
+        <always_on>true</always_on>
+        <update_rate>10</update_rate>
+
+        <!-- <plugin name="agv_tray_sensor_plugin" filename="libAGVTraySensorPlugin.so">
+          <ros>
+            <namespace></namespace>
+          </ros>
+          <sensor_num>0</sensor_num>
+        </plugin> -->
+      </sensor>
+    </link>
+  </model>
+</sdf>

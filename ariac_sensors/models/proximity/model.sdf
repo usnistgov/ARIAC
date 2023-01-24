@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="proximity_sensor">
+    <static>true</static>
+    <pose>0 0 0 0 0 0</pose>
+
+    <link name="proximity_sensor_body">
+      <inertial>
+        <mass>0.1</mass>
+      </inertial>
+      
+     <visual name="visual">
+        <pose>0 0 0 0 1.5708 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.006</radius> <!-- diameter of sensing head -->
+            <length>0.046</length> <!-- length of sensor body -->
+          </cylinder>
+        </geometry>
+      </visual>
+
+      <sensor type="ray" name="proximity_sensor">
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>5</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.0625</min_angle>
+              <max_angle>0.0625</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.01</min>
+            <max>0.15</max>
+            <resolution>0.01</resolution>
+          </range>
+          <!-- Using gazebo's noise instead of plugin's -->
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </ray>
+        <!-- Using gazebo's update rate instead of plugin's -->
+        <update_rate>10</update_rate>
+        <visualize>true</visualize>
+
+        <plugin name="proximity_sensor_plugin" filename="libAriacRayPlugin.so">
+          <ros>
+            <namespace></namespace>
+          </ros>
+          <sensor_type>proximity</sensor_type>
+          <sensor_name>proximity_sensor</sensor_name>
+          <frame_name>proximity_sensor_frame</frame_name>
+        </plugin>
+      </sensor>
+    </link>
+
+    <link name="cord">
+      <gravity>false</gravity>
+      <visual name="visual">
+        <pose>-0.025 0 0 0 1.5708 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.001</radius> 
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

@@ -1,6 +1,0 @@
-<launch>
-    <node name="ariac_sim" pkg="nist_gear" type="gear.py" args="
-          --load-moveit
-          -f $(find test_competitor)/config/tasks_config/assembly_dev.yaml
-          $(find test_competitor)/config/sensors_config/assembly_sensors.yaml" required="true" output="screen"  />
-</launch>

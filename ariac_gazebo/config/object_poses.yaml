@@ -1,0 +1,109 @@
+bins:
+  bin1:
+    pose:
+      xyz: [-1.9, 3.375, 0.72]
+      rpy: [0, 0, pi]
+  bin2:
+    pose:
+      xyz: [-1.9, 2.625, 0.72]
+      rpy: [0, 0, pi]
+  bin3:
+    pose:
+      xyz: [-2.65, 2.625, 0.72]
+      rpy: [0, 0, pi]
+  bin4:
+    pose:
+      xyz: [-2.65, 3.375, 0.72]
+      rpy: [0, 0, pi]
+  bin5:
+    pose:
+      xyz: [-1.9, -3.375, 0.72]
+      rpy: [0, 0, pi]
+  bin6:
+    pose:
+      xyz: [-1.9, -2.625, 0.72]
+      rpy: [0, 0, pi]
+  bin7:
+    pose:
+      xyz: [-2.65, -2.625, 0.72]
+      rpy: [0, 0, pi]
+  bin8:
+    pose:
+      xyz: [-2.65, -3.375, 0.72]
+      rpy: [0, 0, pi]
+
+assembly_stations:
+  as1:
+    table:
+      pose:
+        xyz: [-7.3, 3, 0]
+        rpy: [0, 0, 0]
+    insert:
+      pose:
+        xyz: [-0.4, 0, 1.011]
+        rpy: [0, 0, 0]
+  as2:
+    table:
+      pose:
+        xyz: [-12.3, 3, 0]
+        rpy: [0, 0, 0]
+    insert:
+      pose:
+        xyz: [-0.4, 0, 1.011]
+        rpy: [0, 0, 0]
+  as3:
+    table:
+      pose:
+        xyz: [-7.3, -3, 0]
+        rpy: [0, 0, 0]
+    insert:
+      pose:
+        xyz: [-0.4, 0, 1.011]
+        rpy: [0, 0, 0]
+  as4:
+    table:
+      pose:
+        xyz: [-12.3, -3, 0]
+        rpy: [0, 0, 0]
+    insert:
+      pose:
+        xyz: [-0.4, 0, 1.011]
+        rpy: [0, 0, 0]
+
+kit_tray_stations:
+  kts1:
+    table:
+      pose:
+        xyz: [-1.3, -5.84, 0.725]
+        rpy: [0, 0, 'pi']
+    tool_changer_parts:
+      pose:
+        xyz: [-0.2, -0.46, -0.05]
+        rpy: [0, 0, 0]
+    tool_changer_trays:
+      pose:
+        xyz: [0.2, -0.46, -0.05]
+        rpy: [0, 0, 0]
+  kts2:
+    table:
+      pose:
+        xyz: [-1.3, 5.84, 0.725]
+        rpy: [0, 0, 0]
+    tool_changer_parts:
+      pose:
+        xyz: [-0.2, -0.46, -0.05]
+        rpy: [0, 0, 0]
+    tool_changer_trays:
+      pose:
+        xyz: [0.2, -0.46, -0.05]
+        rpy: [0, 0, 0]
+
+conveyor_belt:
+  base:
+    pose:
+      xyz: [-0.6, 0, 0]
+      rpy: [0, 0, 0]
+  part_spawn:
+    pose:
+      xyz: [0, 4.0, 0.875]
+      rpy: [0, 0, '-pi/2']

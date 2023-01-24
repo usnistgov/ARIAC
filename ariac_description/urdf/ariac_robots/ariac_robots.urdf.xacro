@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="ariac_robots">
+
+  <!-- Root link -->
+  <link name="world"/>
+
+  <!-- Material for RVIZ -->
+  <material name="Grey">
+    <color rgba="${220/255} ${220/255} ${220/255} 1.0"/>
+  </material>
+
+  <!-- Locate Robot Macros -->
+  <xacro:include filename="$(find ariac_description)/urdf/floor_robot/floor_robot_macro.xacro"/>
+  <xacro:include filename="$(find ariac_description)/urdf/ceiling_robot/ceiling_robot_macro.xacro"/>
+  <xacro:include filename="$(find ariac_description)/urdf/agv/agv_macro.xacro"/>
+
+  <!-- Floor Robot -->
+  <xacro:floor_robot/>
+
+  <!-- Ceiling Robot -->
+  <xacro:ceiling_robot/>
+
+  <!-- AGV1 -->
+  <xacro:agv
+    agv_number="agv1"
+    y_position="4.8" >
+  </xacro:agv>
+
+  <!-- AGV2 -->
+  <xacro:agv
+    agv_number="agv2"
+    y_position="1.2" >
+  </xacro:agv>
+
+  <!-- AGV3 -->
+  <xacro:agv
+    agv_number="agv3"
+    y_position="-1.2" >
+  </xacro:agv>
+
+  <!-- AGV4 -->
+  <xacro:agv
+    agv_number="agv4"
+    y_position="-4.8" >
+  </xacro:agv>
+
+  <gazebo 
+    reference="world">
+  </gazebo>
+
+  <!-- ROS2 Control Plugin -->
+  <xacro:arg name="controllers" default="$(find ariac_description)/config/robot_controllers.yaml" />
+
+  <gazebo>
+    <plugin filename="libgazebo_ros2_control.so" name="ariac_robots_gazebo_ros2_control">
+      <ros>
+      </ros>
+      <parameters>$(arg controllers)</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>

@@ -1,9 +1,0 @@
-# Move an AGV from its kitting station to an assembly station
-# The shipment is scored in this case
-
-#shipment type (e.g., 'order_0_kitting_shipment_0')
-string shipment_type
-
----
-bool success
-string message

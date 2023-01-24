@@ -1,0 +1,64 @@
+sensors:
+  # breakbeam_0:
+  #   type: break_beam
+  #   visualize_fov: true
+  #   pose:
+  #     xyz: [-0.35, 3, 0.95]
+  #     rpy: [0, 0, pi]
+
+  # proximity_sensor_0:
+  #   type: proximity
+  #   visualize_fov: true
+  #   pose:
+  #     xyz: [-0.573, 2.84, 1]
+  #     rpy: [pi/2, pi/6, pi/2]
+
+  # laser_profiler_0:
+  #   type: laser_profiler
+  #   visualize_fov: true
+  #   pose:
+  #     xyz: [-0.573, 1.486, 1.526]
+  #     rpy: [pi/2, pi/2, 0]
+
+  # lidar_0:
+  #   type: lidar
+  #   visualize_fov: true
+  #   pose:
+  #     xyz: [-2.286, -2.96, 1.8]
+  #     rpy: [pi, pi/2, 0]
+
+  # right_bins_camera:
+  #   type: rgb_camera
+  #   visualize_fov: true
+  #   pose:
+  #     xyz: [-2.286, 2.96, 1.8]
+  #     rpy: [pi, pi/2, 0]
+
+  # left_bins_camera:
+  #   type: rgbd_camera
+  #   visualize_fov: true
+  #   pose:
+  #     xyz: [-2.286, 4.96, 1.8]
+  #     rpy: [pi, pi/2, 0]
+
+  # right_bins_logical_camera:
+  #   visualize_fov: true
+  #   type: basic_logical_camera
+  #   pose:
+  #     xyz: [-2.286, 2.96, 1.8]
+  #     rpy: [pi, pi/2, 0]
+
+  # left_bins_logical_camera:
+  #   visualize_fov: true
+  #   type: advanced_logical_camera
+  #   pose:
+  #     xyz: [-2.286, -2.96, 1.8]
+  #     rpy: [pi, pi/2, 0]
+
+  kit_tray_table_logical_camera:
+    visualize_fov: true
+    type: advanced_logical_camera
+    pose:
+      xyz: [-1.3, -5.8, 1.8]
+      rpy: [pi, pi/2, pi/2]
+  

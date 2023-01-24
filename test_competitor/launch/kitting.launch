@@ -1,7 +1,0 @@
-<launch>
-    <node name="ariac_sim" pkg="nist_gear" type="gear.py" args="
-          --load-moveit
-          --development-mode
-          -f $(find test_competitor)/config/tasks_config/hpo_kitting_assembly.yaml
-          $(find test_competitor)/config/sensors_config/kitting_sensors.yaml" required="true" output="screen" />
-</launch>

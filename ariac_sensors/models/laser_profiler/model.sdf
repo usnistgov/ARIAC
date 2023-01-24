@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="laser_profiler">
+    <static>true</static>
+    <pose>0 0 0 0 0 0</pose>
+
+    <link name="laser_profiler_body">
+      <inertial>
+        <mass>0.1</mass>
+      </inertial>
+      
+     <visual name="visual">
+        <pose>0 0 -0.06 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.093 0.05 0.167</size>
+          </box>
+        </geometry>
+      </visual>
+
+      <sensor type="ray" name="laser_profiler">
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>400</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.35</min_angle>
+              <max_angle>0.35</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.181</min>
+            <max>0.725</max>
+            <resolution>0.001</resolution>
+          </range>
+          <!-- Using gazebo's noise instead of plugin's -->
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </ray>
+        <!-- Using gazebo's update rate instead of plugin's -->
+        <update_rate>30</update_rate>
+        <visualize>true</visualize>
+
+        <plugin name="laser_profiler_plugin" filename="libAriacRayPlugin.so">
+          <ros>
+            <namespace></namespace>
+          </ros>
+          <sensor_type>laser_profiler</sensor_type>
+          <sensor_name>laser_profiler</sensor_name>
+          <frame_name>laser_profiler_frame</frame_name>
+        </plugin>
+      </sensor>
+    </link>
+  </model>
+</sdf>

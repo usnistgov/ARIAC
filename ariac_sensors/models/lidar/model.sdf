@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="lidar">
+    <static>true</static>
+    <pose>0 0 0 0 0 0</pose>
+
+    <link name="link">
+      <visual name="visual">
+        <pose>-0.03 0 -0.032 0 0</pose>
+          <geometry>
+          <mesh>
+              <uri>model://lidar/meshes/SR4000.stl</uri>
+          </mesh>
+          </geometry>
+          <material>
+              <ambient>0.15 0.15 0.15 1</ambient>
+              <diffuse>0.15 0.15 0.15 1</diffuse>
+              <specular>0.1 0.1 0.1 1</specular>
+              <emissive>0 0 0 0</emissive>
+          </material>
+      </visual>
+
+      <sensor type="ray" name="lidar">
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>50</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.75</min_angle>
+              <max_angle>0.75</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>50</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.55</min_angle>
+              <max_angle>0.55</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.2</min>
+            <max>1.8</max>
+            <resolution>0.001</resolution>
+          </range>
+          <!-- Using gazebo's noise instead of plugin's -->
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </ray>
+        <!-- Using gazebo's update rate instead of plugin's -->
+        <update_rate>5</update_rate>
+        <visualize>true</visualize>
+
+        <plugin name="lidar_plugin" filename="libAriacRayPlugin.so">
+          <ros>
+            <namespace></namespace>
+          </ros>
+          <sensor_type>lidar</sensor_type>
+          <sensor_name>lidar</sensor_name>
+          <frame_name>lidar_frame</frame_name>
+        </plugin>
+      </sensor>
+    </link>
+  </model>
+</sdf>

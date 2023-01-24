@@ -1,0 +1,3 @@
+string type
+ariac_msgs/TimeCondition time_condition
+ariac_msgs/PartPlaceCondition part_place_condition

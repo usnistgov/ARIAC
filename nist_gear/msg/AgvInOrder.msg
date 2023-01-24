@@ -1,4 +1,0 @@
-
-string name
-string assembly_station
-MovableTrayInOrder movable_tray

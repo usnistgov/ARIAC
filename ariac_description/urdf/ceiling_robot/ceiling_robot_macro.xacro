@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:macro name="ceiling_robot" params="">
+
+    <xacro:include filename="$(find ariac_description)/urdf/ceiling_robot/gantry_macro.xacro"/>
+    
+    <!-- Inclue ur robot macro -->
+    <xacro:include filename="$(find ur_description)/urdf/ur_macro.xacro"/>
+
+    <!-- Inclue gripper macro -->
+    <xacro:include filename="$(find ariac_description)/urdf/vacuum_gripper/vacuum_gripper_macro.xacro"/>
+
+    <xacro:arg name="initial_positions_file" default="$(find ariac_description)/config/ceiling_robot_initial_positions.yaml"/>
+    <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
+
+    <!-- Run gantry macro -->
+    <xacro:gantry
+      parent="world"
+      long_rail_length="15.0"
+      long_rail_width="0.2"
+      long_rail_offset="-5.0"
+      small_rail_length="15.0"
+      small_rail_width="0.2"
+      rail_height="2.9"
+      rail_thickness="0.1"
+      torso_height="-2.3"
+      initial_positions="${load_yaml(initial_positions_file)}"
+      >
+    </xacro:gantry>
+
+    <!-- Run ur macro -->
+    <xacro:ur_robot
+      name="ceiling_arm"
+      prefix="ceiling_"
+      parent="torso_main"
+      joint_limits_parameters_file="$(find ur_description)/config/ur10e/joint_limits.yaml"
+      kinematics_parameters_file="$(find ur_description)/config/ur10e/default_kinematics.yaml"
+      physical_parameters_file="$(find ur_description)/config/ur10e/physical_parameters.yaml"
+      visual_parameters_file="$(find ur_description)/config/ur10e/visual_parameters.yaml"
+      sim_gazebo="true"
+      initial_positions="${load_yaml(initial_positions_file)}">
+      <origin xyz="0.51 0.0 1.3" rpy="0 1.57 0" />
+    </xacro:ur_robot>
+
+    <!-- Run gripper macro -->
+    <xacro:vacuum_gripper
+      parent="wrist_3_link"
+      prefix="ceiling"
+      >
+    </xacro:vacuum_gripper>
+    
+    <xacro:arg name="controllers" default="$(find ariac_description)/config/robot_controllers.yaml" />
+
+  </xacro:macro>
+
+</robot>

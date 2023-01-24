@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="rgb_camera">
+    <static>true</static>
+
+    <link name="link">
+      <visual name="visual">
+        <pose>-0.03 0 -0.032 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://rgb_camera/meshes/SR4000.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.15 0.15 0.15 1</ambient>
+          <diffuse>0.15 0.15 0.15 1</diffuse>
+          <specular>0.1 0.1 0.1 1</specular>
+          <emissive>0 0 0 0</emissive>
+        </material>
+      </visual>
+
+      <sensor type="camera" name="rgb_camera">
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>15</update_rate>
+        
+        <camera name="camera_name">
+          <horizontal_fov>1.5</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.2</near>
+            <far>1.1</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </camera>
+
+        <plugin name="rgb_camera_plugin" filename="libAriacCameraPlugin.so">
+          <ros>
+            <namespace></namespace>
+          </ros>
+          <camera_type>rgb</camera_type>
+          <camera_name>custom_camera</camera_name>
+          <frame_name>custom_frame</frame_name>
+        </plugin>
+      </sensor>
+    </link>
+  </model>
+</sdf>

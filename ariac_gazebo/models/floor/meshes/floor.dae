@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 3.3.0 commit date:2022-09-06, commit time:15:39, hash:0759f671ce1f</authoring_tool>
+    </contributor>
+    <created>2022-11-16T15:28:19</created>
+    <modified>2022-11-16T15:28:19</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_cameras>
+    <camera id="skp_camera_Last_Saved_SketchUp_View_003-camera" name="skp_camera_Last_Saved_SketchUp_View.003">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">0</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">1</znear>
+            <zfar sid="zfar">1000</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <dof_distance sid="dof_distance" type="float">10</dof_distance>
+        </technique>
+      </extra>
+    </camera>
+    <camera id="skp_camera_Last_Saved_SketchUp_View_002-camera" name="skp_camera_Last_Saved_SketchUp_View.002">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">0</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">1</znear>
+            <zfar sid="zfar">1000</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <dof_distance sid="dof_distance" type="float">10</dof_distance>
+        </technique>
+      </extra>
+    </camera>
+    <camera id="skp_camera_Last_Saved_SketchUp_View_001-camera" name="skp_camera_Last_Saved_SketchUp_View.001">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">0</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">1</znear>
+            <zfar sid="zfar">1000</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <dof_distance sid="dof_distance" type="float">10</dof_distance>
+        </technique>
+      </extra>
+    </camera>
+    <camera id="skp_camera_Last_Saved_SketchUp_View-camera" name="skp_camera_Last_Saved_SketchUp_View">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">0</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">1</znear>
+            <zfar sid="zfar">1000</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <dof_distance sid="dof_distance" type="float">10</dof_distance>
+        </technique>
+      </extra>
+    </camera>
+    <camera id="Camera-camera" name="Camera">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">39.59775</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <dof_distance sid="dof_distance" type="float">10</dof_distance>
+        </technique>
+      </extra>
+    </camera>
+  </library_cameras>
+  <library_lights>
+    <light id="Light-light" name="Light">
+      <technique_common>
+        <point>
+          <color sid="color">1000 1000 1000</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0.00111109</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <type sid="type" type="int">0</type>
+          <flag sid="flag" type="int">0</flag>
+          <mode sid="mode" type="int">1</mode>
+          <gamma sid="blender_gamma" type="float">1</gamma>
+          <red sid="red" type="float">1</red>
+          <green sid="green" type="float">1</green>
+          <blue sid="blue" type="float">1</blue>
+          <shadow_r sid="blender_shadow_r" type="float">0</shadow_r>
+          <shadow_g sid="blender_shadow_g" type="float">0</shadow_g>
+          <shadow_b sid="blender_shadow_b" type="float">0</shadow_b>
+          <energy sid="blender_energy" type="float">1000</energy>
+          <dist sid="blender_dist" type="float">29.99998</dist>
+          <spotsize sid="spotsize" type="float">75</spotsize>
+          <spotblend sid="spotblend" type="float">0.15</spotblend>
+          <att1 sid="att1" type="float">0</att1>
+          <att2 sid="att2" type="float">1</att2>
+          <falloff_type sid="falloff_type" type="int">2</falloff_type>
+          <clipsta sid="clipsta" type="float">0.04999995</clipsta>
+          <clipend sid="clipend" type="float">30.002</clipend>
+          <bias sid="bias" type="float">1</bias>
+          <soft sid="soft" type="float">3</soft>
+          <bufsize sid="bufsize" type="int">2880</bufsize>
+          <samp sid="samp" type="int">3</samp>
+          <buffers sid="buffers" type="int">1</buffers>
+          <area_shape sid="area_shape" type="int">1</area_shape>
+          <area_size sid="area_size" type="float">0.1</area_size>
+          <area_sizey sid="area_sizey" type="float">0.1</area_sizey>
+          <area_sizez sid="area_sizez" type="float">1</area_sizez>
+        </technique>
+      </extra>
+    </light>
+  </library_lights>
+  <library_effects>
+    <effect id="Suede_Blue-effect">
+      <profile_COMMON>
+        <newparam sid="Suede_Blue_jpg-surface">
+          <surface type="2D">
+            <init_from>Suede_Blue_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="Suede_Blue_jpg-sampler">
+          <sampler2D>
+            <source>Suede_Blue_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0.1 0.1 0.1 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="Suede_Blue_jpg-sampler" texcoord="ID14"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_images>
+    <image id="Suede_Blue_jpg" name="Suede_Blue_jpg">
+      <init_from>Suede_Blue.jpg</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="Suede_Blue-material" name="Suede_Blue">
+      <instance_effect url="#Suede_Blue-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="ID5-mesh" name="ID5">
+      <mesh>
+        <source id="ID5-mesh-positions">
+          <float_array id="ID5-mesh-positions-array" count="144">1377.953 -196.8504 1.968504 295.2756 984.2521 1.968504 295.2756 -196.8504 1.968504 1377.953 984.2521 1.968504 1377.953 984.2521 1.968504 1377.953 -196.8504 1.968504 295.2756 984.2521 1.968504 295.2756 -196.8504 1.968504 1377.953 984.2521 0 1377.953 -196.8504 1.968504 1377.953 -196.8504 0 1377.953 984.2521 1.968504 1377.953 984.2521 1.968504 1377.953 984.2521 0 1377.953 -196.8504 1.968504 1377.953 -196.8504 0 295.2756 984.2521 1.968504 1377.953 984.2521 0 295.2756 984.2521 0 1377.953 984.2521 1.968504 1377.953 984.2521 1.968504 295.2756 984.2521 1.968504 1377.953 984.2521 0 295.2756 984.2521 0 295.2756 984.2521 1.968504 295.2756 -196.8504 0 295.2756 -196.8504 1.968504 295.2756 984.2521 0 295.2756 984.2521 0 295.2756 984.2521 1.968504 295.2756 -196.8504 0 295.2756 -196.8504 1.968504 1377.953 -196.8504 1.968504 295.2756 -196.8504 0 1377.953 -196.8504 0 295.2756 -196.8504 1.968504 295.2756 -196.8504 1.968504 1377.953 -196.8504 1.968504 295.2756 -196.8504 0 1377.953 -196.8504 0 1377.953 984.2521 0 295.2756 -196.8504 0 295.2756 984.2521 0 1377.953 -196.8504 0 1377.953 -196.8504 0 1377.953 984.2521 0 295.2756 -196.8504 0 295.2756 984.2521 0</float_array>
+          <technique_common>
+            <accessor source="#ID5-mesh-positions-array" count="48" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="ID5-mesh-normals">
+          <float_array id="ID5-mesh-normals-array" count="18">0 0 1 0 0 -1 1 0 0 -1 0 0 0 1 0 0 -1 0</float_array>
+          <technique_common>
+            <accessor source="#ID5-mesh-normals-array" count="6" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="ID5-mesh-map-0">
+          <float_array id="ID5-mesh-map-0-array" count="144">22.96588 -3.28084 4.92126 16.4042 4.92126 -3.28084 4.92126 16.4042 22.96588 -3.28084 22.96588 16.4042 22.96588 16.4042 22.96588 -3.28084 4.92126 16.4042 4.92126 -3.28084 4.92126 16.4042 22.96588 -3.28084 16.4042 0 -3.28084 0.03280836 -3.28084 0 -3.28084 0.03280836 16.4042 0 16.4042 0.03280836 16.4042 0.03280836 16.4042 0 -3.28084 0.03280836 -3.28084 0 -3.28084 0.03280836 16.4042 0 -4.92126 0.03280836 -22.96588 0 -4.92126 0 -22.96588 0 -4.92126 0.03280836 -22.96588 0.03280836 -22.96588 0.03280836 -4.92126 0.03280836 -22.96588 0 -4.92126 0 -22.96588 0 -4.92126 0.03280836 -16.4042 0.03280836 3.28084 0 3.28084 0.03280836 3.28084 0 -16.4042 0.03280836 -16.4042 0 -16.4042 0 -16.4042 0.03280836 3.28084 0 3.28084 0.03280836 3.28084 0 -16.4042 0.03280836 22.96588 0.03280836 4.92126 0 22.96588 0 4.92126 0 22.96588 0.03280836 4.92126 0.03280836 4.92126 0.03280836 22.96588 0.03280836 4.92126 0 22.96588 0 4.92126 0 22.96588 0.03280836 -22.96588 16.4042 -4.92126 -3.28084 -4.92126 16.4042 -4.92126 -3.28084 -22.96588 16.4042 -22.96588 -3.28084 -22.96588 -3.28084 -22.96588 16.4042 -4.92126 -3.28084 -4.92126 16.4042 -4.92126 -3.28084 -22.96588 16.4042</float_array>
+          <technique_common>
+            <accessor source="#ID5-mesh-map-0-array" count="72" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="ID5-mesh-vertices">
+          <input semantic="POSITION" source="#ID5-mesh-positions"/>
+        </vertices>
+        <triangles material="Suede_Blue-material" count="24">
+          <input semantic="VERTEX" source="#ID5-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#ID5-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#ID5-mesh-map-0" offset="2" set="0"/>
+          <p>0 0 0 1 0 1 2 0 2 1 0 3 0 0 4 3 0 5 4 1 6 5 1 7 6 1 8 7 1 9 6 1 10 5 1 11 8 2 12 9 2 13 10 2 14 9 2 15 8 2 16 11 2 17 12 3 18 13 3 19 14 3 20 15 3 21 14 3 22 13 3 23 16 4 24 17 4 25 18 4 26 17 4 27 16 4 28 19 4 29 20 5 30 21 5 31 22 5 32 23 5 33 22 5 34 21 5 35 24 3 36 25 3 37 26 3 38 25 3 39 24 3 40 27 3 41 28 2 42 29 2 43 30 2 44 31 2 45 30 2 46 29 2 47 32 5 48 33 5 49 34 5 50 33 5 51 32 5 52 35 5 53 36 4 54 37 4 55 38 4 56 39 4 57 38 4 58 37 4 59 40 1 60 41 1 61 42 1 62 41 1 63 40 1 64 43 1 65 44 0 66 45 0 67 46 0 68 47 0 69 46 0 70 45 0 71</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="SketchUp_001" name="SketchUp.001" type="NODE">
+        <matrix sid="transform">0.0254 0 0 0 0 0.0254 0 0 0 0 0.0254 0 0 0 0 1</matrix>
+        <node id="skp_camera_Last_Saved_SketchUp_View_003" name="skp_camera_Last_Saved_SketchUp_View.003" type="NODE">
+          <matrix sid="transform">-0.3942519 -0.5829581 0.7104405 1112.456 0.9190026 -0.2500889 0.3047787 552.4993 3.79055e-8 0.773056 0.6343379 1238.987 0 0 0 1</matrix>
+          <instance_camera url="#skp_camera_Last_Saved_SketchUp_View_003-camera"/>
+        </node>
+        <node id="instance_0" name="instance_0" type="NODE">
+          <matrix sid="transform">1 0 0 -1181.102 0 1 0 -393.7008 0 0 1 -1.968504 0 0 0 1</matrix>
+          <instance_geometry url="#ID5-mesh" name="instance_0">
+            <bind_material>
+              <technique_common>
+                <instance_material symbol="Suede_Blue-material" target="#Suede_Blue-material">
+                  <bind_vertex_input semantic="ID14" input_semantic="TEXCOORD" input_set="0"/>
+                </instance_material>
+              </technique_common>
+            </bind_material>
+          </instance_geometry>
+        </node>
+      </node>
+      <node id="SketchUp" name="SketchUp" type="NODE">
+        <matrix sid="transform">0.0254 0 0 0 0 0.0254 0 0 0 0 0.0254 0 0 0 0 1</matrix>
+        <node id="skp_camera_Last_Saved_SketchUp_View_002" name="skp_camera_Last_Saved_SketchUp_View.002" type="NODE">
+          <matrix sid="transform">-0.6350105 -0.3993098 0.6612967 141.8503 0.7725036 -0.3282391 0.5435967 360.2476 -3.85895e-8 0.8560438 0.5169035 285.755 0 0 0 1</matrix>
+          <instance_camera url="#skp_camera_Last_Saved_SketchUp_View_002-camera"/>
+        </node>
+      </node>
+      <node id="skp_camera_Last_Saved_SketchUp_View_001" name="skp_camera_Last_Saved_SketchUp_View.001" type="NODE">
+        <matrix sid="transform">-0.7654889 0.3592063 -0.5338516 314.5707 -0.6434491 -0.4273352 0.6351047 96.09798 7.73726e-9 0.8296719 0.5582513 67.37855 0 0 0 1</matrix>
+        <instance_camera url="#skp_camera_Last_Saved_SketchUp_View_001-camera"/>
+      </node>
+      <node id="skp_camera_Last_Saved_SketchUp_View" name="skp_camera_Last_Saved_SketchUp_View" type="NODE">
+        <matrix sid="transform">-0.9307191 0.1791157 -0.3188723 321.5573 -0.3657348 -0.4558121 0.8114637 159.2618 -1.96435e-8 0.8718675 0.4897419 80.1189 0 0 0 1</matrix>
+        <instance_camera url="#skp_camera_Last_Saved_SketchUp_View-camera"/>
+      </node>
+      <node id="Camera" name="Camera" type="NODE">
+        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.358891 0.7276763 0.3054208 -0.6141704 -6.925791 0 0.8953956 0.4452714 4.958309 0 0 0 1</matrix>
+        <instance_camera url="#Camera-camera"/>
+      </node>
+      <node id="Light" name="Light" type="NODE">
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
+        <instance_light url="#Light-light"/>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

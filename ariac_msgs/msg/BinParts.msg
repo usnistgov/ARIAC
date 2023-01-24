@@ -1,0 +1,1 @@
+ariac_msgs/BinInfo[] bins

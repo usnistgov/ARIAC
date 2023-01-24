@@ -1,0 +1,96 @@
+# Trial Name: qc.yaml
+# ARIAC2023
+
+# ENVIRONMENT SETUP
+
+time_limit: -1 # options: -1 (no time limit) or number of seconds (max 500)
+
+kitting_trays: # Which kitting trays will be spawn
+  tray_ids: [3, 8] 
+  slots: [1, 4]
+
+parts:  
+  bins: # bin params - 8 total bins each bin has nine total slots (1-9)
+    bin2:
+      - type: 'pump'
+        color: 'purple'
+        slots: [1, 3, 7, 9]
+        flipped: true
+    bin6:
+      - type: 'battery'
+        color: 'blue'
+        slots: [1, 3, 7, 9]
+  # agvs:
+  #   agv4:
+  #     tray_id: 3
+  #     parts:
+  #       - type: 'battery'
+  #         color: 'blue'
+  #         quadrant: 1
+  #         rotation: 0
+  #         flipped: true
+
+  # conveyor_belt: # population params for conveyor belt
+  #   active: true
+  #   spawn_rate: 3.0 # seconds between spawn
+  #   order: 'random' # random or sequential
+  #   parts_to_spawn:
+  #     - type: 'battery'
+  #       color: 'red'
+  #       number: 5
+  #       offset: 0.5 # between -1 and 1
+  #       flipped: false
+  #       rotation: 'pi/6'
+  #     - type: 'sensor'
+  #       color: 'green'
+  #       number: 5
+  #       offset: -0.25 # between -1 and 1
+  #       flipped: true
+  #       rotation: 'pi'
+
+
+# challenges:
+#   - faulty_part:
+#       order_id: 'MMB30H56'
+#       quadrant1: true
+  # - robot_malfunction:
+  #     duration: 5.0
+  #     robots_to_disable: ['floor_robot']
+  #     part_place_condition:
+  #       color: 'blue'
+  #       type: 'battery'
+  #       agv: 4
+  # - sensor_blackout:
+  #     duration: 5.0
+  #     sensors_to_disable: ['lidar', 'logical_camera']
+  #     submission_condition:
+  #       order_id: 'MMB30H57'
+
+
+orders:
+  - id: 'MMB30H56'
+    type: 'kitting'
+    announcement:
+      time_condition: 0
+    priority: false
+    kitting_task:
+      agv_number: 4
+      tray_id: 3
+      destination: 'warehouse'
+      products:
+        - type: 'battery'
+          color: 'blue'
+          quadrant: 1
+  # - id: '8EX92YUD'
+  #   type: 'kitting'
+  #   announcement:
+  #     time_condition: 40
+  #   priority: false
+  #   kitting_task:
+  #     agv_number: 1
+  #     tray_id: 8
+  #     destination: 'warehouse'
+  #     products:
+  #       - type: 'pump'
+  #         color: 'purple'
+  #         quadrant: 2

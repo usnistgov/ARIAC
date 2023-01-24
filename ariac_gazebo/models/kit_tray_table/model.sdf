@@ -1,0 +1,82 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="kit_tray_table">
+    <static>true</static>
+
+    <link name="kit_tray_table_link">
+      <visual name="table">
+        <geometry>
+          <mesh>
+            <uri>model://kit_tray_table/meshes/kit_tray_table.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.5 0.5 0.5 1.0</ambient>
+          <diffuse>0.5 0.5 0.5 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="tool_changer_1">
+        <!-- <pose>-0.2 -0.435 0.635 0 0 0</pose> -->
+        <geometry>
+          <mesh>
+            <uri>model://kit_tray_table/meshes/tool_changer_1.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.00 0.18 0.70 1.0</ambient>
+          <diffuse>0.00 0.18 0.70 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="tool_changer_2">
+        <!-- <pose>0.2 -0.435 0.635 0 0 0</pose> -->
+        <geometry>
+          <mesh>
+            <uri>model://kit_tray_table/meshes/tool_changer_2.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>0.4 0.0 0.4 1.0</ambient>
+          <diffuse>0.4 0.0 0.4 1.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="table_exterior">
+        <geometry>
+          <mesh>
+            <uri>model://kit_tray_table/meshes/table_collision.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <collision name="table_top">
+        <pose>0 0 0.7 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.34 0.68 0.05</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <collision name="tool_changer_1_collision">
+        <!-- <pose>-0.2 -0.435 0.635 0 0 0</pose> -->
+        <geometry>
+          <mesh>
+            <uri>model://kit_tray_table/meshes/tool_changer_1.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <collision name="tool_changer_2_collision">
+        <!-- <pose>0.2 -0.435 0.635 0 0 0</pose> -->
+        <geometry>
+          <mesh>
+            <uri>model://kit_tray_table/meshes/tool_changer_2.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+    </link>
+  </model>
+</sdf>

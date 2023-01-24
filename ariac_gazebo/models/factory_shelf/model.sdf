@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="factory_shelf">
+    <static>true</static>
+    <link name="link">
+      <pose>0 0 0 0 0 0</pose>
+      <visual name="visual">
+         <geometry>
+           <mesh>
+             <uri>model://factory_shelf/meshes/factory_shelf.dae</uri>
+            <scale>0.01 0.01 0.01</scale>
+           </mesh>
+         </geometry>
+       </visual>
+    </link>
+  </model>
+</sdf>

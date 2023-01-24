@@ -1,0 +1,49 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <model name='warehouse'>
+    <static>true</static>
+    
+    <link name="link">  
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://warehouse/meshes/warehouse.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <visual name="roof_visual">
+        <geometry>
+          <mesh>
+            <uri>model://warehouse/meshes/roof.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <ambient>1.0 1.0 1.0 0.5</ambient>
+          <diffuse>1.0 1.0 1.0 0.5</diffuse>
+        </material>
+      </visual>
+
+      <visual name="tape_visual">
+        <geometry>
+          <mesh>
+            <uri>model://warehouse/meshes/tape.stl</uri>
+          </mesh>
+        </geometry>        
+        <material>
+          <ambient>1.0 0.0 0.0 1.0</ambient>
+          <diffuse>1.0 0.0 0.0 1.0</diffuse>
+        </material>
+      </visual>
+
+
+      <collision name="collision">
+        <geometry>
+          <mesh>
+            <uri>model://warehouse/meshes/warehouse.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+  </model>
+</sdf>

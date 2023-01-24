@@ -1,47 +1,82 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.5)
 project(test_competitor)
 
-find_package(catkin REQUIRED COMPONENTS
-  rospy
-  std_msgs
-  sensor_msgs
-  geometry_msgs
-  message_generation
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+set(THIS_PACKAGE_INCLUDE_DEPENDS
+  rclcpp 
+  moveit_ros_planning_interface
+  ariac_msgs
+  shape_msgs
 )
 
-catkin_python_setup()
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
+  find_package(${Dependency} REQUIRED)
+endforeach()
 
-## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  Part.msg
+add_library(${PROJECT_NAME} SHARED
+  src/test_competitor.cpp
+)
+target_include_directories(${PROJECT_NAME} PRIVATE include)
+ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+# Add main competitor executable
+add_executable(competitor src/competitor.cpp)
+target_include_directories(competitor PRIVATE include)
+target_link_libraries(competitor
+  ${PROJECT_NAME}
+)
+ament_target_dependencies(competitor ${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+install(TARGETS competitor
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
-## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  DetectObjects.srv
-  MoveGantry.srv
+# Add moveit test executable
+add_executable(moveit_test src/moveit_test.cpp)
+target_include_directories(moveit_test PRIVATE include)
+target_link_libraries(moveit_test
+  ${PROJECT_NAME}
+)
+ament_target_dependencies(moveit_test ${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+install(TARGETS moveit_test
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
-## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  sensor_msgs
-  geometry_msgs
+install(TARGETS ${PROJECT_NAME}
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
 )
 
-catkin_package(
-  CATKIN_DEPENDS
-  message_runtime
-  std_msgs
+install(DIRECTORY include/
+  DESTINATION include
 )
 
-catkin_install_python(
-  PROGRAMS
-  nodes/object_detector_node.py
-  nodes/competitor.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+install(DIRECTORY 
+  launch
+  meshes
+  rviz
+  DESTINATION share/${PROJECT_NAME}
 )
 
+ament_export_libraries(
+  ${PROJECT_NAME}
+)
+ament_export_include_directories(
+  include
+)
+ament_export_dependencies(
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+ament_package()

@@ -1,9 +1,0 @@
-# action can be "lock" or "unlock"
-string action
-
-# ID of the AGV on which to lock a movable tray
-string agv_id
-
----
-bool success
-string message

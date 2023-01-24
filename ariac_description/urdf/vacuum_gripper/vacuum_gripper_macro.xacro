@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:macro name="vacuum_gripper" params="
+    parent
+    prefix">
+
+    <link name="${prefix}_gripper">
+      <visual name="${prefix}_gripper_visual">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/vacuum_gripper.stl" scale="1 1 1"/>
+        </geometry>
+        <material name="Grey"/>
+      </visual>
+      
+      <collision name="${prefix}_gripper_collision">
+        <origin xyz="0 0 -0.005" rpy="0 0 0"/>
+        <geometry>
+          <!-- <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/vacuum_gripper.stl" scale="1 1 1"/> -->
+          <cylinder radius="0.05" length="0.01" />
+        </geometry>
+      </collision>
+      
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.01"/>
+        <inertia ixx="0.0000063" ixy="0.0" ixz="0.0" iyy="0.0000063" iyz="0.0" izz="0.000025"/>
+      </inertial>
+    </link>
+
+
+    <gazebo reference="${prefix}_gripper">
+      <visual name="${prefix}_gripper_visual">
+        <plugin filename="libGripperColorPlugin.so" name="${prefix}_gripper_color_plugin">
+          <ros>
+          </ros>
+          <robot_name>${prefix}_robot</robot_name>
+        </plugin>   
+      </visual>
+    </gazebo>
+
+
+    <gazebo reference="${prefix}_gripper">
+      <material>Gazebo/Black</material>      
+    </gazebo>
+
+    <joint name="${prefix}_gripper_joint" type="revolute">
+      <axis xyz="0 0 1"/>
+      <parent link="${prefix}_${parent}"/>
+      <child link="${prefix}_gripper"/>
+      <limit lower="-.001" upper=".001" effort="1000" velocity="0" />
+      <origin xyz="0.0 0.0 0.01" rpy="0.0 0.0 0.0"/>
+    </joint>
+
+    <!-- Add a contact sensor to the gripper -->
+    <gazebo reference="${prefix}_gripper">
+      <sensor type="contact" name="bumper">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>${prefix}_gripper_collision_collision</collision>
+        </contact>
+      </sensor>
+    </gazebo>
+
+    <gazebo>
+      <plugin filename="libVacuumGripperPlugin.so" name="${prefix}_vacuum_gripper_plugin">
+        <ros>
+        </ros>
+        <gripper_link>${prefix}_gripper</gripper_link>
+        <robot_name>${prefix}_robot</robot_name>
+      </plugin>
+    </gazebo>
+
+    <ros2_control name="${prefix}_gripper_control" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+      <joint name="${prefix}_gripper_joint">
+        <state_interface name="position">
+          <param name="initial_value">0</param>
+        </state_interface>
+      </joint>
+    </ros2_control>
+
+  </xacro:macro>
+</robot>

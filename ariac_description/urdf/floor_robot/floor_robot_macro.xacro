@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+  <xacro:macro name="floor_robot" params="">
+
+    <!-- Include linear actuator macro -->
+    <xacro:include filename="$(find ariac_description)/urdf/floor_robot/linear_actuator_macro.xacro"/>
+
+    <!-- Inclue ur robot macro -->
+    <xacro:include filename="$(find ur_description)/urdf/ur_macro.xacro"/>
+
+    <!-- Inclue gripper macro -->
+    <xacro:include filename="$(find ariac_description)/urdf/vacuum_gripper/vacuum_gripper_macro.xacro"/>
+
+    <xacro:arg name="initial_positions_file" default="$(find ariac_description)/config/floor_robot_initial_positions.yaml"/>
+    <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
+
+    <!-- Run linear actuator macro -->
+    <xacro:linear_actuator
+      parent="world"
+      initial_positions="${load_yaml(initial_positions_file)}"
+      >
+    </xacro:linear_actuator>
+
+    <!-- Run ur macro -->
+    <xacro:ur_robot
+      name="floor_arm"
+      prefix="floor_"
+      parent="robot_base"
+      joint_limits_parameters_file="$(find ur_description)/config/ur10e/joint_limits.yaml"
+      kinematics_parameters_file="$(find ur_description)/config/ur10e/default_kinematics.yaml"
+      physical_parameters_file="$(find ur_description)/config/ur10e/physical_parameters.yaml"
+      visual_parameters_file="$(find ur_description)/config/ur10e/visual_parameters.yaml"
+      sim_gazebo="true"
+      initial_positions="${load_yaml(initial_positions_file)}">
+      <origin xyz="0 0 0.05" rpy="0 0 0" />
+    </xacro:ur_robot>
+
+    <!-- Run gripper macro -->
+    <xacro:vacuum_gripper
+      parent="wrist_3_link"
+      prefix="floor"
+      >
+    </xacro:vacuum_gripper>
+    
+
+  </xacro:macro>
+</robot>

@@ -51,7 +51,7 @@ Kitting Task Score
   
       1. :math:`isCorrectTrayID \rightarrow A` is true if the shipment tray ID matches the kitting tray ID.
       2. :math:`isCorrectDestination` is true if the shipment was sent to the correct destination (as1, as2, as3, as4, kitting, or warehouse).
-  * For each quadrant `q` of the kitting tray there are four Boolean condition:
+  * For each quadrant `q` of the kitting tray there are four Boolean conditions:
   
       1. :math:`isCorrectType_{q} \rightarrow B` is true if the part type in quadrant :math:`q` is correct.
       2. :math:`isCorrectColor_{q} \rightarrow C` is true if the part color in quadrant :math:`q` is correct.

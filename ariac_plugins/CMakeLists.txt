@@ -55,6 +55,27 @@ ament_target_dependencies(agv_plugin
 )
 ament_export_libraries(agv_plugin)
 
+# Assembly Lock Plugin
+add_library(assembly_lock_plugin SHARED
+  src/assembly_lock_plugin.cpp
+)
+target_include_directories(assembly_lock_plugin PUBLIC include)
+ament_target_dependencies(assembly_lock_plugin
+  "gazebo_ros"
+)
+ament_export_libraries(assembly_lock_plugin)
+
+# Assembly State Publisher
+add_library(assembly_state_publisher SHARED
+  src/assembly_state_publisher.cpp
+)
+target_include_directories(assembly_state_publisher PUBLIC include)
+ament_target_dependencies(assembly_state_publisher
+  "gazebo_ros"
+  "ariac_msgs"
+)
+ament_export_libraries(assembly_state_publisher)
+
 # Gripper Change Plugin
 add_library(GripperColorPlugin SHARED
   src/gripper_color_plugin.cpp
@@ -86,7 +107,7 @@ ament_target_dependencies(ObjectDisposalPlugin
 )
 ament_export_libraries(ObjectDisposalPlugin)
 
-# Vacuum Gripper
+# Tray Plugin
 add_library(AGVTrayPlugin SHARED
   src/agv_tray_plugin.cpp
 )
@@ -121,6 +142,8 @@ install(TARGETS
     VacuumGripperPlugin
     conveyor_belt_plugin
     agv_plugin
+    assembly_lock_plugin
+    assembly_state_publisher
     GripperColorPlugin
     disable_shadows_plugin
     ObjectDisposalPlugin

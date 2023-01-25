@@ -19,7 +19,7 @@ jobs:
         apt-get update && apt-get install -q -y --no-install-recommends \
           python3-colcon-ros
         cd /home/ariac_ws/src/
-        rosdep update
+        rosdep update --include-eol-distros
         rosdep install --from-paths ./ -i -y --rosdistro galactic \
           --ignore-src
     - name: Build project

@@ -21,12 +21,16 @@ git clone https://github.com/usnistgov/ARIAC.git src/ariac
 - Install dependencies
 
 ``` bash
+sudo apt install python3-rosdep
+sudo rosdep init
+rosdep update --include-eol-distros
 rosdep install --from-paths src -y --ignore-src
 ```
 
 - Build the colcon workspace
 
 ``` bash
+sudo apt install python3-colcon-common-extensions
 colcon build
 ```
 

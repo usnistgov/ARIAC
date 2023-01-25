@@ -18,6 +18,7 @@ set(msg_files
   "msg/AssemblyPart.msg"
   "msg/AssemblyStationState.msg"
   "msg/AssemblyTask.msg"
+  "msg/AssemblyState.msg"
   "msg/BasicLogicalCameraImage.msg"
   "msg/BinInfo.msg"
   "msg/BinParts.msg"

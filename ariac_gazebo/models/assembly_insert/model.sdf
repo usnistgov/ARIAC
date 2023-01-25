@@ -143,8 +143,21 @@
           <collision>battery_contact</collision>
         </contact>
       </sensor>
-
-
     </link>
+    <plugin filename="libassembly_lock_plugin.so" name="assembly_lock_pump">
+      <assembly_part_type>pump</assembly_part_type>
+    </plugin>
+    <plugin filename="libassembly_lock_plugin.so" name="assembly_lock_regulator">
+      <assembly_part_type>regulator</assembly_part_type>
+    </plugin>
+    <plugin filename="libassembly_lock_plugin.so" name="assembly_lock_sensor">
+      <assembly_part_type>sensor</assembly_part_type>
+    </plugin>
+    <plugin filename="libassembly_lock_plugin.so" name="assembly_lock_battery">
+      <assembly_part_type>battery</assembly_part_type>
+    </plugin>
+    <plugin filename="libassembly_state_publisher.so" name="assembly_state_publisher">
+      <ros></ros>
+    </plugin>
   </model>
 </sdf>

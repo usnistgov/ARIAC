@@ -686,6 +686,7 @@ namespace ariac_common
               bool _priority,
               double _trial_time_limit) : announced_(false),
                                           submitted_(false),
+                                          pre_assembly_service_called_(false),
                                           id_(_id),
                                           type_(_type),
                                           priority_(_priority),
@@ -818,6 +819,18 @@ namespace ariac_common
         double GetSubmittedTime() const { return submitted_time_; }
 
         /**
+         * @brief Check whether or not the service has been called for this order
+         * @return true  Service has been called
+         * @return false  Service has not been called
+         */
+        bool WasPreAssemblyServiceCalled() { return pre_assembly_service_called_; }
+
+        /**
+         * @brief Set this order as called
+         */
+        void SetPreAssemblyServiceCalled() { pre_assembly_service_called_ = true; }
+
+        /**
          * @brief Set the KittingScore object for the order
          *
          * @param _kitting_score Pointer to the KittingScore object for the order
@@ -843,6 +856,11 @@ namespace ariac_common
          * @brief Whether or not this order has already been submitted
          */
         bool submitted_;
+
+        /**
+         * @brief Whether or not the pre assembly pose service was called
+         */
+        bool pre_assembly_service_called_;
 
         /**
          * @brief id of the order

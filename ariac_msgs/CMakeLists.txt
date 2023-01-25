@@ -62,6 +62,7 @@ set(srv_files
   "srv/SubmitOrder.srv"
   "srv/VacuumGripperControl.srv"
   "srv/PerformQualityCheck.srv"
+  "srv/GetPreAssemblyPoses.srv"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}

@@ -6,10 +6,9 @@ jobs:
   build_docker:
     runs-on: ubuntu-latest
     container:
-      image: ubuntu:jammy
+      image: ubuntu:focal
     steps:
       - uses: ros-tooling/setup-ros@v0.5
         with:
-          required-ros-distributions: noetic humble
-      - run: "source /opt/ros/humble/setup.bash && ros2 run --help"
-      - run: "source /opt/ros/noetic/setup.bash && rosnode --help"
+          required-ros-distributions: galactic
+      - run: "source /opt/ros/galactic/setup.bash && ros2 run --help"

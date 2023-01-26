@@ -64,6 +64,7 @@ install(DIRECTORY include/
 )
 
 install(DIRECTORY 
+  config
   launch
   meshes
   rviz

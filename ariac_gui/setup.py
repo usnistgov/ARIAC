@@ -13,14 +13,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='zeid',
-    maintainer_email='zeidk@umd.edu',
-    description='TODO: Package description',
-    license='TODO: License declaration',
-    tests_require=['pytest'],
+    maintainer='jfernandez',
+    maintainer_email='jothomas0615@gmail.com',
+    description='For testing ros 2',
+    license='ARIAC',
     entry_points={
         'console_scripts': [
-            'ariac_gui = ariac_gui.ariac_gui:main'
+            'gui = ariac_gui.gui_node:main',
+            'zeid_gui = ariac_gui.zeid_ariac_gui:main'
         ],
     },
 )

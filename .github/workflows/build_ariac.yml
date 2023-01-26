@@ -1,0 +1,30 @@
+name: ARIAC Build
+
+on: [push, pull_request, pull_request_review]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: osrf/ros:galactic-desktop
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup colcon workspace
+      id: configure
+      run: |
+        cd ..
+        mkdir -p /home/ariac_ws/src
+        cp -r ARIAC /home/ariac_ws/src/
+        apt-get update && apt-get upgrade -q -y
+        apt-get update && apt-get install -q -y --no-install-recommends \
+          python3-colcon-ros
+        cd /home/ariac_ws/src/
+        rosdep update --include-eol-distros
+        rosdep install --from-paths ./ -i -y --rosdistro galactic \
+          --ignore-src
+    - name: Build project
+      id: build
+      run: |
+        cd /home/ariac_ws/
+        . /opt/ros/galactic/local_setup.sh
+        colcon build

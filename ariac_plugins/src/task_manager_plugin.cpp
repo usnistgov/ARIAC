@@ -43,6 +43,7 @@
 #include <ariac_msgs/msg/agv_status.hpp>
 #include <ariac_msgs/srv/submit_order.hpp>
 #include <ariac_msgs/srv/perform_quality_check.hpp>
+#include <ariac_msgs/srv/get_pre_assembly_poses.hpp>
 // ROS
 #include <rclcpp/rclcpp.hpp>
 #include <controller_manager_msgs/srv/switch_controller.hpp>
@@ -154,10 +155,7 @@ namespace ariac_plugins
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr end_competition_srv_{nullptr};
         rclcpp::Service<ariac_msgs::srv::SubmitOrder>::SharedPtr submit_order_srv_{nullptr};
         rclcpp::Service<ariac_msgs::srv::PerformQualityCheck>::SharedPtr quality_check_service_;
-        /*!< Client to start/stop robot controllers. */
-        // rclcpp::Client<controller_manager_msgs::srv::SwitchController>::SharedPtr switch_controller_srv_client_;
-        /*!< Client to stop the competition. */
-        rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr end_competition_srv_client_;
+        rclcpp::Service<ariac_msgs::srv::GetPreAssemblyPoses>::SharedPtr pre_assembly_poses_service_;
 
         //============== PUBLISHERS =================
 
@@ -215,9 +213,14 @@ namespace ariac_plugins
         std::vector<std::shared_ptr<ariac_common::FaultyPartChallenge>> faulty_part_challenges_;
 
         /**
-         * @brief Map of AGV trays. The key is the AGV ID and the value is information about the tray.
+         * @brief Map of AGV trays images. The key is the AGV ID and the value is the logical camera image.
          */
         std::map<int, gazebo::msgs::LogicalCameraImage> agv_tray_images_;
+
+        /**
+         * @brief Map of Assembly Station images. The key is the AGV ID and the value is the logical camera image.
+         */
+        std::map<int, gazebo::msgs::LogicalCameraImage> assembly_station_images_;
 
         /*!< Callback to parse the tray located on AGV1. */
         void AGV1TraySensorCallback(ConstLogicalCameraImagePtr &_msg);
@@ -227,6 +230,15 @@ namespace ariac_plugins
         void AGV3TraySensorCallback(ConstLogicalCameraImagePtr &_msg);
         /*!< Callback to parse the tray located on AGV4. */
         void AGV4TraySensorCallback(ConstLogicalCameraImagePtr &_msg);
+
+        /*!< Callback to logical camera above assembly station 1. */
+        void Station1SensorCallback(ConstLogicalCameraImagePtr &_msg);
+        /*!< Callback to logical camera above assembly station 2. */
+        void Station2SensorCallback(ConstLogicalCameraImagePtr &_msg);
+        /*!< Callback to logical camera above assembly station 3. */
+        void Station3SensorCallback(ConstLogicalCameraImagePtr &_msg);
+        /*!< Callback to logical camera above assembly station 4. */
+        void Station4SensorCallback(ConstLogicalCameraImagePtr &_msg);
 
         // Kitting Methods
 
@@ -250,6 +262,9 @@ namespace ariac_plugins
 
         void PerformQualityCheck(ariac_msgs::srv::PerformQualityCheck::Request::SharedPtr request,
                                  ariac_msgs::srv::PerformQualityCheck::Response::SharedPtr response);
+
+        void GetPreAssemblyPoses(ariac_msgs::srv::GetPreAssemblyPoses::Request::SharedPtr request,
+                                 ariac_msgs::srv::GetPreAssemblyPoses::Response::SharedPtr response);
 
         std::map<std::string, int> part_types_ = {{"battery", ariac_msgs::msg::Part::BATTERY},
                                                   {"pump", ariac_msgs::msg::Part::PUMP},
@@ -311,10 +326,10 @@ namespace ariac_plugins
         std::string station3_topic = "/gazebo/world/assembly_station_sensor_3/sensor_base/assembly_station_sensor/models";
         std::string station4_topic = "/gazebo/world/assembly_station_sensor_4/sensor_base/assembly_station_sensor/models";
 
-        // impl_->station1_sub_ = impl_->gznode_->Subscribe(station1_topic, &TaskManagerPluginPrivate::Station1SensorCallback, impl_.get());
-        // impl_->station2_sub_ = impl_->gznode_->Subscribe(station2_topic, &TaskManagerPluginPrivate::Station2SensorCallback, impl_.get());
-        // impl_->station3_sub_ = impl_->gznode_->Subscribe(station3_topic, &TaskManagerPluginPrivate::Station3SensorCallback, impl_.get());
-        // impl_->station4_sub_ = impl_->gznode_->Subscribe(station4_topic, &TaskManagerPluginPrivate::Station4SensorCallback, impl_.get());
+        impl_->station1_sub_ = impl_->gznode_->Subscribe(station1_topic, &TaskManagerPluginPrivate::Station1SensorCallback, impl_.get());
+        impl_->station2_sub_ = impl_->gznode_->Subscribe(station2_topic, &TaskManagerPluginPrivate::Station2SensorCallback, impl_.get());
+        impl_->station3_sub_ = impl_->gznode_->Subscribe(station3_topic, &TaskManagerPluginPrivate::Station3SensorCallback, impl_.get());
+        impl_->station4_sub_ = impl_->gznode_->Subscribe(station4_topic, &TaskManagerPluginPrivate::Station4SensorCallback, impl_.get());
 
         RCLCPP_INFO(impl_->ros_node_->get_logger(), "Starting ARIAC 2023");
 
@@ -352,8 +367,6 @@ namespace ariac_plugins
         impl_->robot_health_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::Robots>("/ariac/robot_health", 10);
         impl_->competition_state_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::CompetitionState>("/ariac/competition_state", 10);
         impl_->order_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::Order>("/ariac/orders", 1);
-        //============== SERVICES =================
-        impl_->end_competition_srv_client_ = impl_->ros_node_->create_client<std_srvs::srv::Trigger>("/ariac/end_competition");
 
         // Sensor health
         impl_->break_beam_sensor_health_ = true;
@@ -394,21 +407,25 @@ namespace ariac_plugins
         agv_tray_images_.insert_or_assign(4, *_msg);
     }
 
-    // void TaskManagerPluginPrivate::Station1SensorCallback(ConstContactsPtr &_msg)
-    // {
-    // }
+    void TaskManagerPluginPrivate::Station1SensorCallback(ConstLogicalCameraImagePtr &_msg)
+    {
+        assembly_station_images_.insert_or_assign(1, *_msg);
+    }
 
-    // void TaskManagerPluginPrivate::Station2SensorCallback(ConstContactsPtr &_msg)
-    // {
-    // }
+    void TaskManagerPluginPrivate::Station2SensorCallback(ConstLogicalCameraImagePtr &_msg)
+    {
+        assembly_station_images_.insert_or_assign(2, *_msg);
+    }
 
-    // void TaskManagerPluginPrivate::Station3SensorCallback(ConstContactsPtr &_msg)
-    // {
-    // }
+    void TaskManagerPluginPrivate::Station3SensorCallback(ConstLogicalCameraImagePtr &_msg)
+    {
+        assembly_station_images_.insert_or_assign(3, *_msg);
+    }
 
-    // void TaskManagerPluginPrivate::Station4SensorCallback(ConstContactsPtr &_msg)
-    // {
-    // }
+    void TaskManagerPluginPrivate::Station4SensorCallback(ConstLogicalCameraImagePtr &_msg)
+    {
+        assembly_station_images_.insert_or_assign(4, *_msg);
+    }
 
     //==============================================================================
     const ariac_msgs::msg::KittingTask
@@ -989,9 +1006,15 @@ namespace ariac_plugins
 
             impl_->quality_check_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::PerformQualityCheck>("/ariac/perform_quality_check",
                                                                                                                    std::bind(&TaskManagerPluginPrivate::PerformQualityCheck,
-                                                                                                                             this->impl_.get(),
-                                                                                                                             std::placeholders::_1,
-                                                                                                                             std::placeholders::_2));
+                                                                                                                            this->impl_.get(),
+                                                                                                                            std::placeholders::_1,
+                                                                                                                            std::placeholders::_2));
+
+            impl_->pre_assembly_poses_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::GetPreAssemblyPoses>("/ariac/get_pre_assembly_poses",
+                                                                                                                        std::bind(&TaskManagerPluginPrivate::GetPreAssemblyPoses,
+                                                                                                                            this->impl_.get(),
+                                                                                                                            std::placeholders::_1,
+                                                                                                                            std::placeholders::_2));
         }
 
         // If the competition has started, do the main work
@@ -1843,6 +1866,130 @@ namespace ariac_plugins
                     //         }
                     //     }
                     // }
+                }
+            }
+        }
+    }
+
+    //==============================================================================
+    void TaskManagerPluginPrivate::GetPreAssemblyPoses(
+        ariac_msgs::srv::GetPreAssemblyPoses::Request::SharedPtr request,
+        ariac_msgs::srv::GetPreAssemblyPoses::Response::SharedPtr response)
+    {
+        // Check if service has already been checked for requested order
+        response->valid_id = false;
+        
+        std::shared_ptr<ariac_common::Order> order = nullptr;
+
+        // Check if order id matches any of the orders
+        for (int i = 0; i < all_orders_.size(); i++)
+        {
+            if (request->order_id == all_orders_.at(i)->GetId())
+            {
+                // Check if that order is assembly or combined
+                if (all_orders_.at(i)->GetType() == ariac_msgs::msg::Order::ASSEMBLY || 
+                    all_orders_.at(i)->GetType() == ariac_msgs::msg::Order::COMBINED)
+                {
+                    // Retrieve the kitting task
+                    order = all_orders_.at(i);
+
+                    if (order->WasPreAssemblyServiceCalled()) {
+                        RCLCPP_WARN(ros_node_->get_logger(), "Cannot call service twice for the same order");
+                        response->valid_id = false;
+                        return;
+                    }
+                    
+                    response->valid_id = true;
+                    break;
+                }
+            }
+        }
+
+        if (!response->valid_id)
+            return;
+
+        // Find what AGVs are at the assembly station for that order
+        int order_station;
+        if (order->GetType() == ariac_msgs::msg::Order::ASSEMBLY) {
+            order_station = order->GetAssemblyTask()->GetStation();
+        } else if (order->GetType() == ariac_msgs::msg::Order::COMBINED) {
+            order_station = order->GetCombinedTask()->GetStation();
+        }
+
+        std::vector<int> agvs_to_check;
+        if (order_station == ariac_msgs::msg::AssemblyTask::AS1 ) {
+            if (agv1_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_FRONT)
+                agvs_to_check.push_back(1);
+            if (agv2_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_FRONT)
+                agvs_to_check.push_back(2);
+        }
+        else if (order_station == ariac_msgs::msg::AssemblyTask::AS2) {
+            if (agv1_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_BACK)
+                agvs_to_check.push_back(1);
+            if (agv2_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_BACK)
+                agvs_to_check.push_back(2);
+        }
+        else if (order_station == ariac_msgs::msg::AssemblyTask::AS3 ) {
+            if (agv3_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_FRONT)
+                agvs_to_check.push_back(3);
+            if (agv4_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_FRONT)
+                agvs_to_check.push_back(4);
+        }
+        else if (order_station == ariac_msgs::msg::AssemblyTask::AS4) {
+            if (agv3_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_BACK)
+                agvs_to_check.push_back(3);
+            if (agv4_location_ == ariac_msgs::msg::AGVStatus::ASSEMBLY_BACK)
+                agvs_to_check.push_back(4);
+        }
+
+        if (agvs_to_check.size() == 0) {
+            response->agv_at_station = false;
+            return;
+        } else {
+            order->SetPreAssemblyServiceCalled();
+            response->agv_at_station = true;
+        }
+
+        // Get part poses on AGVs to check
+        for (auto agv: agvs_to_check) {
+            KDL::Frame world_to_sensor;
+            tf2::fromMsg(gazebo_ros::Convert<geometry_msgs::msg::Pose>(
+                gazebo::msgs::ConvertIgn(agv_tray_images_[agv].pose())), world_to_sensor);
+            
+            for (int i = 0; i < agv_tray_images_[agv].model_size(); i++)
+            {
+                const auto &lc_model = agv_tray_images_[agv].model(i);
+                std::string model_name = lc_model.name();
+
+                bool classified_part = false;
+                // Determine part type
+                for (const auto &part_type : part_types_)
+                {
+                    if (model_name.find(part_type.first) != std::string::npos)
+                    {
+                        // Determine part color
+                        for (const auto &color : part_colors_)
+                        {
+                            if (model_name.find(color.first) != std::string::npos)
+                            {
+                                ariac_msgs::msg::PartPose part_pose;
+                                part_pose.part.type = part_type.second;
+                                part_pose.part.color = color.second;
+
+                                KDL::Frame sensor_to_part;
+                                tf2::fromMsg(gazebo_ros::Convert<geometry_msgs::msg::Pose>(
+                                    gazebo::msgs::ConvertIgn(lc_model.pose())), sensor_to_part);
+
+                                part_pose.pose = tf2::toMsg(world_to_sensor * sensor_to_part);
+
+                                response->parts.push_back(part_pose);
+                                classified_part = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (classified_part)
+                        break;
                 }
             }
         }

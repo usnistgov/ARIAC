@@ -24,9 +24,11 @@ def saveMainWind(window, flag):
     window.destroy()
 
 def runGUI():
+
     pathIncrement = []  # gives the full path for recursive deletion
     createdDir = []  # to deleted directories made if canceled
     nameLabels = []  # holds temporary flags to be deleted
+
     agv1Parts=[]
     agv2Parts=[]
     agv3Parts=[]
@@ -35,6 +37,7 @@ def runGUI():
     agv2Quadrants=["1","2","3","4"] # available quadrants for agv2
     agv3Quadrants=["1","2","3","4"] # available quadrants for agv3
     agv4Quadrants=["1","2","3","4"] # available quadrants for agv4
+
     bins=[] # holds the bins
     bin1Slots=[] # holds the available slots for bin1
     bin2Slots=[] # holds the available slots for bin2
@@ -45,7 +48,7 @@ def runGUI():
     bin7Slots=[] # holds the available slots for bin7
     bin8Slots=[] # holds the available slots for bin8
     convParts=[] # holds conveyor belt parts
-    for i in range(9):
+    for i in range(9): # writes all slots to each of the bins
         bin1Slots.append(str(i+1))
         bin2Slots.append(str(i+1))
         bin3Slots.append(str(i+1))
@@ -54,13 +57,15 @@ def runGUI():
         bin6Slots.append(str(i+1))
         bin7Slots.append(str(i+1))
         bin8Slots.append(str(i+1))
-    orderCounter=[] # for counting the number of orders
-    orderMSGS=[] # holds all order ros2 messages
-    orderConditions=[] #holds all order condition ros2 messages
     binPresentFlags=[] # to hold which bins are present 
     for i in range(8):
         binPresentFlags.append(0)
+
+    orderCounter=[] # for counting the number of orders
+    orderMSGS=[] # holds all order ros2 messages
+    orderConditions=[] #holds all order condition ros2 messages
     usedIDs=[] # holds the ids that have already been used to avoid repeated ids
+
     robotMalfunctions=[] # holds all robot malfunctions
     faultyParts=[] # holds all faulty parts
     droppedParts=[] # holds all dropped parts
@@ -68,18 +73,22 @@ def runGUI():
     robotsToDisable=[] # holds robots to be disabled
     faultyPartQuadrants=[] # holds quadrants for dropped parts
     sensorsToDisable=[] # holds sensors for sensor blackout
-    availableTrays=["Tray 0","Tray 1","Tray 2","Tray 3","Tray 4","Tray 5","Tray 6","Tray 7","Tray 8","Tray 9"]
-    availableSlots=["Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"]
-    kittingTrayCounter=[]
+
+    availableTrays=["Tray 0","Tray 1","Tray 2","Tray 3","Tray 4","Tray 5","Tray 6","Tray 7","Tray 8","Tray 9"] #list of trays to hold available trays for kitting trays
+    availableSlots=["Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"] #list of slots to hold available slots for kitting trays
+    kittingTrayCounter=[] #holds the number of trays present to avoid overflow in the kitting tray window
+
     # window outputs
     timeVal="0"
     noTimeVal="0"
     timeList=[timeVal, noTimeVal]
+
     trayVals=[]
     slotVals=[]
     for i in range(6):
         trayVals.append("")
         slotVals.append("")
+
     agv1TrayIdVal=agvTrayIds[0]
     agv2TrayIdVal=agvTrayIds[0]
     agv3TrayIdVal=agvTrayIds[0]
@@ -93,29 +102,9 @@ def runGUI():
     # START OF GUI
     getFileName = tk.Tk() #window to create and get the file
     fileNameVar = tk.StringVar()
-    faultySkipFlag = tk.StringVar()
-    faultySkipFlag.set('0')
-    dropsSkipFlag = tk.StringVar()
-    dropsSkipFlag.set('0')
-    sensor_blackout_skip_flag = tk.StringVar()
-    sensor_blackout_skip_flag.set('0')
-    secondOrderFlag = tk.StringVar()
-    secondOrderFlag.set('0')
-    assembProdsFlag = tk.StringVar()
-    assembProdsFlag.set('0')
-    kitProdsFlag = tk.StringVar()
-    kitProdsFlag.set('0')
-    orderFlag = tk.StringVar()
-    orderFlag.set('0')
-    orderNextFlag = tk.StringVar()
-    orderNextFlag.set('0')
-    kittingFlag = tk.StringVar()
-    kittingFlag.set('0')
-    assembFlag = tk.StringVar()
-    assembFlag.set('0')
     frame = tk.Frame(getFileName)
-    getFileName.geometry("850x600")
-    # getFileName.attributes('-fullscreen', True)
+    #getFileName.geometry("850x600")
+    getFileName.attributes('-fullscreen', True)
     frame.pack()
 
     pkg_share = get_package_share_directory('ariac_gui')
@@ -129,8 +118,6 @@ def runGUI():
     ordersFlag.set('0')
     challengesFlag=tk.StringVar()
     challengesFlag.set('0')
-    saveOrdersFlag=tk.StringVar()
-    saveOrdersFlag.set('0')
     saveMainFlag=tk.StringVar()
     saveMainFlag.set('0')
     partFlag=tk.StringVar()

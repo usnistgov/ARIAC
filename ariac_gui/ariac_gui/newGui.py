@@ -101,17 +101,17 @@ def runGUI():
     # ----------------------------------------------------------------------------------------------
     # START OF GUI
     getFileName = tk.Tk() #window to create and get the file
-    fileNameVar = tk.StringVar()
+    getFileName.attributes('-fullscreen', True)
+    getFileName.title("NIST ARIAC CONFIG GUI")
+
     frame = tk.Frame(getFileName)
     #getFileName.geometry("850x600")
-    getFileName.attributes('-fullscreen', True)
     frame.pack()
-
     pkg_share = get_package_share_directory('ariac_gui')
-
     nistLogo = ImageTk.PhotoImage(Image.open(pkg_share + "/resource/NIST_logo.png"))
     logoImgLabel = tk.Label(frame, image=nistLogo)
     logoImgLabel.pack(pady=40)
+    
     cancelFlag = tk.StringVar()
     cancelFlag.set('0')
     ordersFlag=tk.StringVar()
@@ -122,7 +122,6 @@ def runGUI():
     saveMainFlag.set('0')
     partFlag=tk.StringVar()
     partFlag.set('0')
-    getFileName.title("NIST ARIAC CONFIG GUI")
     fileName = tk.StringVar()
     fileName.set("")
     invalidFlag = tk.StringVar()
@@ -131,6 +130,8 @@ def runGUI():
     reqFlag.set("0")
     existFlag = tk.StringVar()
     existFlag.set("0")
+    
+    fileNameVar = tk.StringVar()
     fileNameCorrectFunc = partial(correct_file_name, fileName)
     saveAndExit = partial(make_file, getFileName, fileNameVar)
     openFileExp = tk.Button(getFileName, text="Create file", command=saveAndExit)
@@ -143,6 +144,7 @@ def runGUI():
     fileExit.pack(side=tk.BOTTOM, pady=20)
     fileName.trace('w', fileNameCorrectFunc)
     getFileName.mainloop()
+    
     if cancelFlag.get()=='1':
         quit()
     tempFilePath=''
@@ -159,14 +161,17 @@ def runGUI():
     while (saveMainFlag.get()=="0"):
         mainWind=tk.Tk()
         mainWind.attributes('-fullscreen', True)
+
         #Time limit
         get_time_limit=partial(guiTimeWindow, timeList, mainWind)
         mainTimeButton=tk.Button(mainWind, text="Time Limit", command=get_time_limit)
         mainTimeButton.pack()
+        
         #Kitting trays and slots
         get_kitting_trays=partial(runKittingTrayWind,kittingTrayCounter, availableTrays, availableSlots, cancelFlag,pathIncrement, fileName, createdDir,trayVals, slotVals, mainWind)
         mainKittingTraysButton=tk.Button(mainWind, text="Kitting Trays", command=get_kitting_trays)
         mainKittingTraysButton.pack()
+        
         #Parts
         get_parts=partial(addPart,partVals,agv1Parts, agv2Parts, agv3Parts, agv4Parts, 
         agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants,bins,
@@ -174,22 +179,28 @@ def runGUI():
         convParts, cancelFlag, pathIncrement,fileName,createdDir, partFlag, mainWind)
         mainPartButton=tk.Button(mainWind, text="Parts", command=get_parts)
         mainPartButton.pack()
+        
         #Orders
         get_order=partial(runOrdersWind, orderMSGS,  orderConditions, orderCounter, usedIDs, ordersFlag, mainWind)
         mainOrderButton=tk.Button(mainWind, text="Orders", command=get_order)
         mainOrderButton.pack()
+        
         #Challenges
         get_challenge=partial(runChallengeWind,robotMalfunctions, usedIDs, faultyParts, droppedParts, sensorBlackouts,cancelFlag, pathIncrement,fileName, createdDir, challengesFlag, mainWind)
         mainChallengeButton=tk.Button(mainWind, text="Challenges", command=get_challenge)
         mainChallengeButton.pack()
+        
         #save button
         save_main_wind=partial(saveMainWind, mainWind, saveMainFlag)
         saveMainButton=tk.Button(mainWind, text="Save and Continue", command=save_main_wind)
         saveMainButton.pack()
+        
         #cancel button
         cancel_main_command=partial(cancel_wind, mainWind, cancelFlag)
         cancelMainButton=tk.Button(mainWind, text="Cancel and Exit", command=cancel_main_command)
         cancelMainButton.pack()
+        
+        #continues to write in the same file
         if partFlag.get()=="1": # checks if the user is still in parts
             mainWind.withdraw()
             addPart(partVals,agv1Parts, agv2Parts, agv3Parts, agv4Parts, 
@@ -202,10 +213,12 @@ def runGUI():
         if challengesFlag.get()=="1":# checks if the user is still in challenges
             mainWind.withdraw()
             runChallengeWind(robotMalfunctions, usedIDs, faultyParts, droppedParts, sensorBlackouts,cancelFlag, pathIncrement,fileName, createdDir, challengesFlag, mainWind)
+        
         mainWind.mainloop()
         check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
     # END OF MAIN WIND
     # ----------------------------------------------------------------------------------------------
+
     #Finds which bins are present
     for i in bins:
         if i.binName=="bin1":
@@ -224,6 +237,8 @@ def runGUI():
             binPresentFlags[6]=1
         if i.binName=="bin8":
             binPresentFlags[7]=1
+        
+    #gets the kitting trays and slots to write to the file
     KTraysSTR=""
     for i in trayVals:
         KTraysSTR+=i
@@ -238,6 +253,7 @@ def runGUI():
     for i in KSlotsSTR:
         if i.isnumeric():
             chosenKSlots.append(i)
+
     #  WRITE TO FILE
     with open(saveFileName, "a") as o:
         o.write("# Trial Name: "+saveFileName+"\n")
@@ -353,7 +369,7 @@ def runGUI():
                     o.write("          assembly_direction: ["+str(combinedPart.install_direction.x)+", "+str(combinedPart.install_direction.y)+", "+str(combinedPart.install_direction.z)+"]\n")
         #end of order writing to file
         
-        #writes orders to file
+        #writes challenges to file
         if len(robotMalfunctions)+len(faultyParts)+len(droppedParts)+len(sensorBlackouts)>0:
             o.write("\n# GLOBAL CHALLENGES\n")
             o.write("challenges:\n")

@@ -67,7 +67,7 @@ ros2 launch ariac_gazebo ariac.launch.py
 
 In terminal 2 start the moveit node:
 ``` bash
-ros2 launch ariac_moveit_config ariac_robots.launch.py
+ros2 launch ariac_moveit_config ariac_robots_moveit.launch.py
 ```
 
 In terminal 3 start the moveit test node:
@@ -89,7 +89,7 @@ ros2 launch ariac_gazebo ariac.launch.py trial_config:={test_competitor.yaml} us
 
 In terminal 2 start the moveit node:
 ``` bash
-ros2 launch ariac_moveit_config ariac_robots.launch.py
+ros2 launch ariac_moveit_config ariac_robots_moveit.launch.py
 ```
 
 In terminal 3 start the competitor node:

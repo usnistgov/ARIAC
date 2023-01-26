@@ -18,6 +18,7 @@ from ariac_gui.challengesFuncs import *
 from ariac_gui.msgNames import *
 from ariac_gui.kittingTrayFunctions import *
 from ariac_msgs.msg import *
+from ament_index_python.packages import get_package_share_directory
 
 def saveMainWind(window, flag):
     flag.set('1')
@@ -114,10 +115,13 @@ def runGUI():
     assembFlag = tk.StringVar()
     assembFlag.set('0')
     frame = tk.Frame(getFileName)
-    #getFileName.geometry("850x600")
-    getFileName.attributes('-fullscreen', True)
+    getFileName.geometry("850x600")
+    # getFileName.attributes('-fullscreen', True)
     frame.pack()
-    nistLogo = ImageTk.PhotoImage(Image.open("src/ARIAC/ariac_gui/ariac_gui/GUI_Images/new_NIST_logo.png"))
+
+    pkg_share = get_package_share_directory('ariac_gui')
+
+    nistLogo = ImageTk.PhotoImage(Image.open(pkg_share + "/resource/NIST_logo.png"))
     logoImgLabel = tk.Label(frame, image=nistLogo)
     logoImgLabel.pack(pady=40)
     cancelFlag = tk.StringVar()

@@ -53,8 +53,20 @@ ros2 launch ariac_gazebo ariac.launch.py
 To launch the ARIAC environment with a custom configuration
 
 ``` bash
-ros2 launch ariac_gazebo ariac.launch.py trial_config:={trial.yaml} user_config:={user.yaml}
+ros2 launch ariac_gazebo ariac.launch.py trial_name:={name_of_trial} competitor_pkg:={package_name} sensor_config:={name_of_sensor_config}
 ```
+
+For this to work properly:
+- The yaml file for the trial `name_of_trial.yaml` must be located in the directory `ariac_gazebo/config/trials`
+- The competitor package must be built with a `config` directory installed to the share directory for that package. To do this add the snippet below to your package's `CMakeLists.txt` file
+    ```
+    # Install config files.
+    install(DIRECTORY
+    config
+    DESTINATION share/${PROJECT_NAME}/
+    )
+    ```
+- The yaml file for your sensors `name_of_sensor_config.yaml` needs to be located in the config directory of the `competitor_pkg`
 
 ## Moving the robots 
 
@@ -84,7 +96,7 @@ A test competitor has been created to demonstrate how to complete some of the ba
 
 In terminal 1 start the environment using the test_competitor configurations:
 ``` bash
-ros2 launch ariac_gazebo ariac.launch.py trial_config:={test_competitor.yaml} user_config:={test_competitor.yaml}
+ros2 launch ariac_gazebo ariac.launch.py trial_config:=kitting
 ```
 
 In terminal 2 start the moveit node:

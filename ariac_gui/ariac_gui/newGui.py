@@ -1,12 +1,11 @@
 import tkinter as tk
-import platform
 from datetime import datetime
 from os import chdir
 from functools import partial
 from PIL import Image, ImageTk  # needed for images in gui
 from ariac_gui.checkCancel import *
 from ariac_gui.updateRanges import *
-from ariac_gui.validationFunc import *
+from ariac_gui.validationFunctions import *
 from ariac_gui.fileFunc import *
 from ariac_gui.buttonFuncs import *
 from ariac_gui.timeFunctions import *

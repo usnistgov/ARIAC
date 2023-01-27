@@ -23,11 +23,7 @@ Below is a description of the different fields in the sensor configuration file.
    * `advanced_logical_camera`
 3. A pose (defined in the world frame):
     * Position (e.g. `xyz: [-2.286, 2.96, 1.8]`).
-    * Orientation (e.g. `rpy: [pi, pi/2, 0]`). The orientation is defined using the [roll-pitch-yaw](https://en.wikipedia.org/wiki/Euler_angles) convention. The orientation is defined in radians and can be defined using floating-point values or with the `pi` constant. Example:
-      * `pi`: 3.141592653589793
-      * `pi/2`: 1.5707963267948966
-      * `pi/4`: 0.7853981633974483
-      * etc
+    * Orientation (e.g. `rpy: [pi, pi/2, 0]`). The orientation is defined using the [roll-pitch-yaw](https://en.wikipedia.org/wiki/Euler_angles) convention. The orientation is defined in radians and can be defined using floating-point values or with the `pi` constant (`pi`, `pi/2`, `pi/4`, etc.).
 
 Below is an example of a sensor configuration file. The field `visualize_fov` is optional and can be used to visualize the field of view of the sensor. The field `visualize_fov` can be set to `true` or `false`. If the field `visualize_fov` is not defined, the field of view will not be visualized.
 

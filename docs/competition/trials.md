@@ -6,7 +6,7 @@ ARIAC consists of two main configuration files, which are described below in the
 
 ## Sensor Configuration File
 
-The sensor configuration file describes the location of the sensors on the competition field. One example of sensor configuration file is provided in the [test_competitor](../../test_competitor/config/sensors.yaml) package.
+The sensor configuration file describes the location of the sensors on the competition field. One example of sensor configuration file (`sensors.yaml`) is provided in the [test_competitor](../../test_competitor/config) package.
 
 Below is a description of the different fields in the sensor configuration file. This file contains 4 sensors which have to be described under the field `sensors` and each sensor consists of:
 
@@ -65,3 +65,38 @@ Another way to place sensors is to add them in the sensor configuration file and
 ## Trial Configuration File
 
 Trials are the main way to test your robot's performance. Multiple trials are used during the qualifiers and the finals. The results of each trial are recorded and then used to rank competitors.
+
+A trial configuration file (`sample.yaml`) is provided in the [ariac_gazebo](../../ariac_gazebo/config/trials) package. Below is a description of the different sections in the trial configuration file. 
+
+### Time Limit (Mandatory)
+
+The time limit is defined in the `time_limit` field. The time limit is defined in (simulation) seconds and can be defined using floating-point values. A time limit of `-1` means that there is no time limit for this trial. Competitors can set no time limit during testing. During the qualifiers and the finals, there will be a time limit for each trial.
+
+```yaml
+time_limit: -1 # no time limit
+```
+
+```yaml
+time_limit: 300 # A 5 minute time limit
+```
+
+### Kitting Trays (Mandatory)
+
+Kitting trays are defined in the `kitting_trays` field. Information in this field is used to spawn kitting trays in the environment. The tray IDs are provided in a list of integers and set with the field `tray_ids`. Kitting tray IDs range from 0 to 9. The location of kitting trays in the environment is defined in the field `slots`, which are slots located on the tray tables. Each tray table has 3 slots. Slots 1-3 for one tray table and slots 4-6 for the other tray table.
+
+
+![](../images/TableSlots.jpeg)
+
+The example below describes 2 kitting trays which are located in slots 2 and 4 on the tray tables. The tray IDs are 1 and 6 respectively.
+
+```yaml
+kitting_trays: # Which kitting trays will be spawn
+  tray_ids: [1, 6] 
+  slots: [2, 4]
+```
+
+### Part Locations (Optional)
+
+Parts can be found in 3 different location types: Bins, conveyor belt, and AGVs. The locations of parts in the environment are defined in the `parts` field. The `parts` field can have three subfields: `bins`, `agvs`, `conveyor_belt`.
+
+#### Bins

@@ -29,6 +29,7 @@ Welcome to ARIAC 2023!
    competition/environment
    competition/orders
    competition/sensors
+   competition/trials
    competition/ros_communication
    competition/challenges
    competition/scoring

@@ -88,12 +88,12 @@ Kitting is the process which groups separate but related [parts](#part) as one u
 
 An example of a kitting task in a trial configuration file is presented below with the following description:
 
-- This is a regular order (```yaml priority: false```).
-- This order consists of a kitting task (`type` is set to `kitting`).
-- The kit must be built on AGV2 (`agv_number` is set to `2`).
-- The kit try with id 2 must be used to build the kit (`tray_id` is set to `2`).
-- A blue battery must be place in quadrant 1 in the kit tray (`type` is set to `battery`, `color` is set to `blue`, and `quadrant` is set to `1`).
-- Once the kit is built, the AGV must be directed to the warehouse  (`destination` is set to `warehouse`).
+- This is a regular order (```priority: false```).
+- This order consists of a kitting task (```type: kitting```).
+- The kit must be built on AGV2 (```agv_number: 2```).
+- The kit try with id 2 must be used to build the kit (```tray_id: 2```).
+- A blue battery must be place in quadrant 1 in the kit tray (```type: battery```, ```color: blue```, and ```quadrant: 1```).
+- Once the kit is built, the AGV must be directed to the warehouse  (```destination: warehouse```).
 
 
 ```yaml

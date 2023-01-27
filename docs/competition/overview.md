@@ -36,4 +36,4 @@ A description of the flowchart is provided below.
 
     The result of the call will set the state of the competition to `ENDED`.
 
-7. **calculate scoring**: The last phase of a trial is the computation of the score for the trial. The score is computed using the formulas described in the [Scoring](scoring.md) section. The score is published on the topic `/ariac/score` and is also displayed on the terminal.
+7. **calculate scoring**: The last phase of a trial is the computation of the score for the trial. The score is computed using the formulas described in the [Scoring](scoring.md) section.

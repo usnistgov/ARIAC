@@ -1,6 +1,6 @@
 # Agility Challenges
 
-There are eight possible agility challenges in ARIAC 2023. A description of each challenge is provided below. Besides the `Human Operator` challenge, all other challenges can occur multiple times in a trial. 
+There are eight possible agility challenges in ARIAC 2023. A description of each challenge is provided below. Besides the `Human Operator` challenge, all other challenges can occur multiple times in a trial.
 <!-- The number of times a challenge can occur is specified in the trial configuration file. The `Human Operator` challenge can only occur once in a trial. The `Human Operator` challenge is triggered when the `Human Operator` field in the trial configuration file is set to `true`. -->
 
 *Note*: A trial may have only some challenges, may not have any challenge at all, or may have all the challenges.

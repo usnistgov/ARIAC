@@ -143,8 +143,8 @@ bins: # bin params - 8 total bins each bin has nine total slots (1-9)
         color: 'purple'
         slots: [2, 3]
         rotation: 'pi/6'
-        flipped: false
+        flipped: true
 ```
 
 
-The `bins` field can have 8 subfields: `bin1`, `bin2`, `bin3`, `bin4`, `bin5`, `bin6`, `bin7`, `bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment#part-bins) section for more information on slots in a bin). The `type` field describes the part type in a bin. The `color` field describes the part color in a bin. The `slots` field describes the slots in a bin where the part can be found. The `rotation` field describes the rotation of the part in a bin. The `flipped` field describes whether the part is flipped in a bin. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the part will not be flipped. See the [Challenge](challenges#flipped-parts) section for more information about flipped parts.
+The `bins` field can have 8 subfields: `bin1`, `bin2`, `bin3`, `bin4`, `bin5`, `bin6`, `bin7`, `bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on slots in a bin). The `type` field describes the part type in a bin. The `color` field describes the part color in a bin. The `slots` field describes the slots in a bin where the part can be found. The `rotation` field describes the rotation of the part in a bin. The `flipped` field describes whether the parts are flipped in a bin. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. In the provided example, all purple regulators in bin3 are flipped and all the red pumps in bin1 are not flipped. See the [Challenges](challenges.md) page for more information about flipped parts.

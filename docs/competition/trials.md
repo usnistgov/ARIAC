@@ -6,7 +6,7 @@ ARIAC consists of two main configuration files, which are described below in the
 
 ## Sensor Configuration File
 
-The sensor configuration file describes the location of the sensors on the competition field. One example of sensor configuration file (`sensors.yaml`) is provided in the [test_competitor](../../test_competitor/config) package.
+The sensor configuration file describes the location of the sensors on the competition field. One example of sensor configuration file (`sensors.yaml`) is provided in the [test_competitor](https://github.com/usnistgov/ARIAC/tree/ariac2023/test_competitor/config) package.
 
 Below is a description of the different fields in the sensor configuration file. This file contains 4 sensors which have to be described under the field `sensors` and each sensor consists of:
 
@@ -96,7 +96,7 @@ Another way to place sensors is to add them in the sensor configuration file and
 
 Trials are the main way to test your robot's performance. Multiple trials are used during the qualifiers and the finals. The results of each trial are recorded and then used to rank competitors.
 
-A trial configuration file (`sample.yaml`) is provided in the [ariac_gazebo](../../ariac_gazebo/config/trials) package. Below is a description of the different sections in the trial configuration file. 
+A trial configuration file (`sample.yaml`) is provided in the [ariac_gazebo](https://github.com/usnistgov/ARIAC/tree/ariac2023/ariac_gazebo/config/trials) package. Below is a description of the different sections in the trial configuration file. 
 
 ### Time Limit (Mandatory Field)
 

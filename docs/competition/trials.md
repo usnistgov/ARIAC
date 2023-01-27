@@ -145,12 +145,20 @@ bins: # bin params - 8 total bins each bin has nine total slots (1-9)
     bin3:
       - type: 'regulator'
         color: 'purple'
-        slots: [2, 3]
+        slots: [1, 2]
+        rotation: 'pi/2'
+      - type: 'regulator'
+        color: 'purple'
+        slots: [3, 4]
         rotation: 'pi/6'
+        flipped: true
+      - type: 'regulator'
+        color: 'purple'
+        slots: [5, 6]
+        rotation: 0
         flipped: true
 ```
 
-
-The `bins` field can have 8 subfields: `bin1`, `bin2`, `bin3`, `bin4`, `bin5`, `bin6`, `bin7`, `bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on slots in a bin). The `type` field describes the part type in a bin. There can be multiple parts of different types in a bin. In the provided example, there are 3 pumps and 2 batteries in bin1.
+The `bins` field can have 8 subfields: `bin1`, `bin2`, `bin3`, `bin4`, `bin5`, `bin6`, `bin7`, `bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on bin slots). The `type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In the provided example, there are 3 pumps and 2 batteries in bin1. There are 6 purple regulators in bin3. The way part locations are defined in bin3 allows for the same part with different orientations and flipped states to be placed in the same bin.
 
 The `color` field describes the part color in a bin. The `slots` field describes the slots in a bin where the part can be found. The `rotation` field describes the rotation of the part in a bin. The `flipped` field describes whether the parts are flipped in a bin. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. In the provided example, all purple regulators in bin3 are flipped and all the red pumps in bin1 are not flipped. See the [Challenges](challenges.md) page for more information about flipped parts.

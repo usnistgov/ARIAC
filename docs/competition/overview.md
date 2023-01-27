@@ -19,7 +19,7 @@ A description of the flowchart is provided below.
     ```bash
     ros2 service call /ariac/start_competition std_srvs/srv/Trigger
     ```
-    
+
     The call to this service will start the robot controllers, the conveyor belt, and will activate all sensors. Orders will be announced on the topic `/ariac/orders`. The result of the call will set the state of the competition to `STARTED`.
 
 3. **announce order(s)**: The AM will announce orders on the topic`/ariac/orders`. The CCS will  need to subscribe to the topic to receive the orders. If all orders have been announced, the AM will set the state of the competition to`ORDER_ANNOUNCEMENTS_DONE`. This state does not mean that the competition is over. The CCS may still be working on orders that were announced earlier.

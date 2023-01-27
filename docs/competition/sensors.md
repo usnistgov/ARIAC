@@ -17,6 +17,7 @@ Competitors can place sensors anywghere in the environment. Sensors have no coll
 
 ## Sensor Types
 
+A description of each sensor type is provided below.
 ### Break Beam
 
 The break beam sensor reports when a beam is broken by an object. It does not provide distance information.

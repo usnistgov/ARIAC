@@ -31,64 +31,64 @@ Below is a description of the different fields in the sensor configuration file.
 
 Below is an example of a sensor configuration file. The field `visualize_fov` is optional and can be used to visualize the field of view of the sensor. The field `visualize_fov` can be set to `true` or `false`. If the field `visualize_fov` is not defined, the field of view will not be visualized.
 
-    ```yaml
-    sensors:
-        breakbeam_0:
-            type: break_beam
-            visualize_fov: true
-            pose:
-                xyz: [-0.35, 3, 0.95]
-                rpy: [0, 0, pi]
+```yaml
+sensors:
+   breakbeam_0:
+       type: break_beam
+       visualize_fov: true
+       pose:
+           xyz: [-0.35, 3, 0.95]
+           rpy: [0, 0, pi]
 
-        proximity_sensor_0:
-            type: proximity
-            visualize_fov: true
-            pose:
-                xyz: [-0.573, 2.84, 1]
-                rpy: [pi/2, pi/6, pi/2]
+   proximity_sensor_0:
+       type: proximity
+       visualize_fov: true
+       pose:
+           xyz: [-0.573, 2.84, 1]
+           rpy: [pi/2, pi/6, pi/2]
 
-        laser_profiler_0:
-            type: laser_profiler
-            visualize_fov: true
-            pose:
-                xyz: [-0.573, 1.486, 1.526]
-                rpy: [pi/2, pi/2, 0]
+   laser_profiler_0:
+       type: laser_profiler
+       visualize_fov: true
+       pose:
+           xyz: [-0.573, 1.486, 1.526]
+           rpy: [pi/2, pi/2, 0]
 
-        lidar_0:
-            type: lidar
-            visualize_fov: false
-            pose:
-                xyz: [-2.286, -2.96, 1.8]
-                rpy: [pi, pi/2, 0]
+   lidar_0:
+       type: lidar
+       visualize_fov: false
+       pose:
+           xyz: [-2.286, -2.96, 1.8]
+           rpy: [pi, pi/2, 0]
 
-        rgb_camera_0:
-            type: rgb_camera
-            visualize_fov: false
-            pose:
-                xyz: [-2.286, 2.96, 1.8]
-                rpy: [pi, pi/2, 0]
+   rgb_camera_0:
+       type: rgb_camera
+       visualize_fov: false
+       pose:
+           xyz: [-2.286, 2.96, 1.8]
+           rpy: [pi, pi/2, 0]
 
-        rgbd_camera_0:
-            type: rgbd_camera
-            visualize_fov: false
-            pose:
-                xyz: [-2.286, 4.96, 1.8]
-                rpy: [pi, pi/2, 0]
+   rgbd_camera_0:
+       type: rgbd_camera
+       visualize_fov: false
+       pose:
+           xyz: [-2.286, 4.96, 1.8]
+           rpy: [pi, pi/2, 0]
 
-        basic_logical_camera_0:
-            visualize_fov: false
-            type: basic_logical_camera
-            pose:
-                xyz: [-2.286, 2.96, 1.8]
-                rpy: [pi, pi/2, 0]
+   basic_logical_camera_0:
+       visualize_fov: false
+       type: basic_logical_camera
+       pose:
+           xyz: [-2.286, 2.96, 1.8]
+           rpy: [pi, pi/2, 0]
 
-        advanced_logical_camera_0:
-            visualize_fov: false
-            type: advanced_logical_camera
-            pose:
-                xyz: [-2.286, -2.96, 1.8]
-                rpy: [pi, pi/2, 0]
-    ```
+   advanced_logical_camera_0:
+       visualize_fov: false
+       type: advanced_logical_camera
+       pose:
+           xyz: [-2.286, -2.96, 1.8]
+           rpy: [pi, pi/2, 0]
+```
 
 ### Placing Sensors in the Environment
 
@@ -106,13 +106,13 @@ A trial configuration file (`sample.yaml`) is provided in the [ariac_gazebo](../
 
 The time limit is defined in the `time_limit` field. The time limit is defined in (simulation) seconds and can be defined using floating-point values. A time limit of `-1` means that there is no time limit for this trial. Competitors can set no time limit during testing. During the qualifiers and the finals, there will be a time limit for each trial.
 
-    ```yaml
-    time_limit: -1 # no time limit
-    ```
+```yaml
+time_limit: -1 # no time limit
+```
 
-    ```yaml
-    time_limit: 300 # A 5 minute time limit
-    ```
+```yaml
+time_limit: 300 # A 5 minute time limit
+```
 
 ### Kitting Trays (Mandatory Field)
 

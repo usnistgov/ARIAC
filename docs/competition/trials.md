@@ -23,37 +23,71 @@ Below is a description of the different fields in the sensor configuration file.
    * `advanced_logical_camera`
 3. A pose (defined in the world frame):
     * Position (e.g. `xyz: [-2.286, 2.96, 1.8]`).
-    * Orientation (e.g. `rpy: [pi, pi/2, 0]`). The orientation is defined using the [roll-pitch-yaw](https://en.wikipedia.org/wiki/Euler_angles) convention. The orientation is defined in radians and can be defined using floating-point values or with the following constants:
+    * Orientation (e.g. `rpy: [pi, pi/2, 0]`). The orientation is defined using the [roll-pitch-yaw](https://en.wikipedia.org/wiki/Euler_angles) convention. The orientation is defined in radians and can be defined using floating-point values or with the `pi` constant. Example:
       * `pi`: 3.141592653589793
       * `pi/2`: 1.5707963267948966
       * `pi/4`: 0.7853981633974483
       * etc
 
+Below is an example of a sensor configuration file. The field `visualize_fov` is optional and can be used to visualize the field of view of the sensor. The field `visualize_fov` can be set to `true` or `false`. If the field `visualize_fov` is not defined, the field of view will not be visualized.
+
     ```yaml
     sensors:
-      right_bins_camera:
-          type: advanced_logical_camera
-          pose:
-          xyz: [-2.286, 2.96, 1.8]
-          rpy: [pi, pi/2, 0]
+        breakbeam_0:
+            type: break_beam
+            visualize_fov: true
+            pose:
+                xyz: [-0.35, 3, 0.95]
+                rpy: [0, 0, pi]
 
-      left_bins_camera:
-          type: advanced_logical_camera
-          pose:
-          xyz: [-2.286, -2.96, 1.8]
-          rpy: [pi, pi/2, 0]
+        proximity_sensor_0:
+            type: proximity
+            visualize_fov: true
+            pose:
+                xyz: [-0.573, 2.84, 1]
+                rpy: [pi/2, pi/6, pi/2]
 
-      kts1_camera:
-          type: advanced_logical_camera
-          pose:
-          xyz: [-1.3, -5.8, 1.8]
-          rpy: [pi, pi/2, pi/2]
-      
-      kts2_camera:
-          type: advanced_logical_camera
-          pose:
-          xyz: [-1.3, 5.8, 1.8]
-          rpy: [pi, pi/2, -pi/2]
+        laser_profiler_0:
+            type: laser_profiler
+            visualize_fov: true
+            pose:
+                xyz: [-0.573, 1.486, 1.526]
+                rpy: [pi/2, pi/2, 0]
+
+        lidar_0:
+            type: lidar
+            visualize_fov: false
+            pose:
+                xyz: [-2.286, -2.96, 1.8]
+                rpy: [pi, pi/2, 0]
+
+        rgb_camera_0:
+            type: rgb_camera
+            visualize_fov: false
+            pose:
+                xyz: [-2.286, 2.96, 1.8]
+                rpy: [pi, pi/2, 0]
+
+        rgbd_camera_0:
+            type: rgbd_camera
+            visualize_fov: false
+            pose:
+                xyz: [-2.286, 4.96, 1.8]
+                rpy: [pi, pi/2, 0]
+
+        basic_logical_camera_0:
+            visualize_fov: false
+            type: basic_logical_camera
+            pose:
+                xyz: [-2.286, 2.96, 1.8]
+                rpy: [pi, pi/2, 0]
+
+        advanced_logical_camera_0:
+            visualize_fov: false
+            type: advanced_logical_camera
+            pose:
+                xyz: [-2.286, -2.96, 1.8]
+                rpy: [pi, pi/2, 0]
     ```
 
 ### Placing Sensors in the Environment
@@ -68,19 +102,19 @@ Trials are the main way to test your robot's performance. Multiple trials are us
 
 A trial configuration file (`sample.yaml`) is provided in the [ariac_gazebo](../../ariac_gazebo/config/trials) package. Below is a description of the different sections in the trial configuration file. 
 
-### Time Limit (Mandatory)
+### Time Limit (Mandatory Field)
 
 The time limit is defined in the `time_limit` field. The time limit is defined in (simulation) seconds and can be defined using floating-point values. A time limit of `-1` means that there is no time limit for this trial. Competitors can set no time limit during testing. During the qualifiers and the finals, there will be a time limit for each trial.
 
-```yaml
-time_limit: -1 # no time limit
-```
+    ```yaml
+    time_limit: -1 # no time limit
+    ```
 
-```yaml
-time_limit: 300 # A 5 minute time limit
-```
+    ```yaml
+    time_limit: 300 # A 5 minute time limit
+    ```
 
-### Kitting Trays (Mandatory)
+### Kitting Trays (Mandatory Field)
 
 Kitting trays are defined in the `kitting_trays` field. Information in this field is used to spawn kitting trays in the environment. The tray IDs are provided in a list of integers and set with the field `tray_ids`. Kitting tray IDs range from 0 to 9. The location of kitting trays in the environment is defined in the field `slots`, which are slots located on the tray tables. Each tray table has 3 slots. Slots 1-3 for one tray table and slots 4-6 for the other tray table.
 
@@ -95,7 +129,7 @@ kitting_trays: # Which kitting trays will be spawn
   slots: [2, 4]
 ```
 
-### Part Locations (Optional)
+### Part Locations (Mandatory Field)
 
 Parts can be found in 3 different location types: Bins, conveyor belt, and AGVs. The locations of parts in the environment are defined in the `parts` field. The `parts` field can have three subfields: `bins`, `agvs`, `conveyor_belt`.
 

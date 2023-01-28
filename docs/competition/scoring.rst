@@ -115,6 +115,9 @@ Destination Score
     0, &\text{otherwise} \\
     \end{cases}
 
+
+==================
+
 Task Score
 ,,,,,,,,,,,
   
@@ -127,9 +130,11 @@ Assembly Task Score
 ^^^^^^^^^^^^^^^^^^^
 
   * An assembly task has :math:`n` parts that need to be assembled into the insert.
-  * For each task there are one Boolean condition:
+  * For each task there is one Boolean condition:
+
       1. :math:`isCorrectStation` is true if the assembly was done at the correct station (as1, as2, as3, or as4).
   * Each slot `s` in the insert has the following Boolean conditions:
+
       1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitely means that the part is of the correct type.
       2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in slot :math:`s` is of correct color.
       3. :math:`isCorrectPose_{s} \rightarrow C` is true if the part in slot :math:`s` has the correct pose.
@@ -162,7 +167,7 @@ Station Score
 
   .. math::
 
-    \texttt{destination} = \begin{cases}
+    \texttt{station} = \begin{cases}
     1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
     0, &\text{otherwise} \\
     \end{cases}
@@ -181,3 +186,66 @@ Task Score
 
 Combined Task Score
 ^^^^^^^^^^^^^^^^^^^
+
+  * A combined task has :math:`n` parts that need to be gathered from the environment and assembled to the insert.
+  * For each task there is one Boolean condition:
+
+      1. :math:`isCorrectStation` is true if the assembly was done at the correct station (as1, as2, as3, or as4).
+  * Each slot `s` in the insert has the following Boolean conditions:
+  
+      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitely means that the part is of the correct type.
+      2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in slot :math:`s` is of correct color.
+      3. :math:`isCorrectPose_{s} \rightarrow C` is true if the part in slot :math:`s` has the correct pose.
+      4. :math:`isFaulty_{s} \rightarrow D` is true if the part in slot :math:`s` is faulty. To prevent faulty parts from being used in assembly, it is 
+      highly recommended to place them on an AGV and use the quality control sensor to check their status.
+
+
+Slot Score
+,,,,,,,,,,,,,,
+
+  .. math::
+
+    \texttt{pt}_s = \begin{cases}
+    0, &\text{if} ~~ \lnot A \lor D \\5, &\text{if} ~~ A \land (B \land C)\\
+    4, &\text{if} ~~ A \land (B \lor C)\\
+    3, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
+    \end{cases}
+
+Bonus Score
+,,,,,,,,,,,
+
+  .. math::
+
+    \texttt{pt}_b = \begin{cases}
+    n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 5 \\
+    0, &\text{otherwise} \\
+    \end{cases}
+
+Station Score
+,,,,,,,,,,,,,,
+
+  .. math::
+
+    \texttt{station} = \begin{cases}
+    1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
+    0, &\text{otherwise} \\
+    \end{cases}
+
+
+==================
+
+Task Score
+,,,,,,,,,,,
+  
+  .. math::
+
+    S_{c} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
+
+Trial Score
+-----------------------
+
+The trial score :math:`TrialScore` combines the completion scores present in that trial.
+
+.. math::
+
+    TrialScore = \sum_{i=0}^{n_k}{S_{k_i}} + \sum_{j=0}^{n_a}{S_{a_j}} + \sum_{k=0}^{n_c}{S_{c_k}}

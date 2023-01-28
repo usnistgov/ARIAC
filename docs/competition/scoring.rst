@@ -2,6 +2,8 @@
 Scoring
 ========
 
+:term:`Sphinx`
+
 There are three major components of the Trial Score in ARIAC 2023.
 
   1. `Cost Factor`: How much does the system (sensors) cost?

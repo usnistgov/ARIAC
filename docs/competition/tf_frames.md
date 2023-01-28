@@ -6,27 +6,27 @@ This section describes the TF frames used in the competition. The TF frames are 
 cd /tmp && ros2 run tf2_tools view_frames  && evince frames.pdf
 ```
 
-A PDF file containing the TF frames is also available [here](../images/frames.pdf).
+![drawing](../images/AdvancedLogicalCamera.png)
 
-A summary of the TF frames used in the competition is provided below:
 
-* **world**: The world frame is the root frame of the TF tree. It is located at the origin of the competition arena.
 
-```
-project
-│   README.md
-│   file001.txt
-│
-└───folder1
-│   │   file011.txt
-│   │   file012.txt
-│   │
-│   └───subfolder1
-│       │   file111.txt
-│       │   file112.txt
-│       │   ...
-│
-└───folder2
-    │   file021.txt
-    │   file022.txt
-```
+A PDF file containing the TF frames is also available [here](../images/frames.pdf). A summary of the TF frames used in the competition is provided below:
+
+* **World**: The `world` frame is the root frame of the TF tree. It is located at the origin of the competition arena.
+* **AGV Trays**: `agv1_tray`, `agv2_tray`, `agv3_tray`, and `agv4_tray` frames are located at the origin of the AGV trays.
+
+    ```
+    world
+    └─── agv1_track
+         └─── agv1_base
+                └─── agv1_tray
+    └─── agv2_track
+        └─── agv2_base
+                └─── agv2_tray
+    └─── agv3_track
+        └─── agv3_base
+                └─── agv3_tray
+    └─── agv4_track
+        └─── agv4_base
+                └─── agv1_tray
+    ```

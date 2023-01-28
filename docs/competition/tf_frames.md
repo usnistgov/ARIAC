@@ -9,7 +9,8 @@ cd /tmp && ros2 run tf2_tools view_frames  && evince frames.pdf
 A PDF file containing the TF frames is also available [here](../images/frames.pdf).
 
 A summary of the TF frames used in the competition is provided below:
-    * **world**: The world frame is the root frame of the TF tree. It is located at the origin of the competition arena.
+
+* **world**: The world frame is the root frame of the TF tree. It is located at the origin of the competition arena.
 
 ```
 project

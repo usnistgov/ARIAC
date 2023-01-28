@@ -3,10 +3,17 @@ Terminology
 #############
 
 .. glossary::
+    :sorted:
 
     Agility Challenge
       The ARIAC Agility Challenge is a competition that tests the ability of a robot to perform a series of tasks in a dynamic environment. The tasks are designed to test the robot's ability to perform pick-and-place operations, assembly, and kitting. The competition is designed to be a testbed for the development of algorithms that can be used in a real-world manufacturing environment.
 
+    Competitor Control System (CCS)
+      The competitor control system (CCS) is the software that is provided by competitors. The CCS is responsible for communicating with the competition environment and executing the tasks. 
+    
+    ARIAC Manager (AM)
+      The ARIAC manager is the interface provided to competitors. The AM includes the simulation environment and ROS interfaces.
+    
     Competitor
       Person competing in ARIAC. Sometimes competitor is referred as "team" or "participant".
 

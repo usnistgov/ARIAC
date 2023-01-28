@@ -18,7 +18,7 @@ Faulty parts are parts that are not in good condition. They are not suitable for
 Detecting Faulty Parts
 ----------------------------
 
-The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument.
+The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument. When a faulty part is detected, the :term:`CCS<Competitor Control System>` has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager>`.
 
 .. caution::
   This service can be called only once for each order ID. 

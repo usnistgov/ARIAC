@@ -20,8 +20,11 @@ Detecting Faulty Parts
 
 The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument.
 
-.. warning::
-  This service can be called only once for each order ID. It is suggested to call this service after the order is completed but before it is submitted.
+.. caution::
+  This service can be called only once for each order ID. 
+  
+.. tip::
+  It is suggested to call this service after the order is completed but before it is submitted.
 
 
 The service definition is described in the file ``PerformQualityCheck.srv`` in the ``ariac_msgs`` package.

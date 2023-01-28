@@ -245,17 +245,15 @@ Detecting Robot Malfunctions
 -----------------------------
 
 .. important::
-  To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health``. 
+  To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health`` The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
 
-The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
-
-.. code-block:: bash
-  :caption: Robots.msg message file.
-  :name: robots-health
-  
-  # Robots.msg
-  bool floor_robot
-  bool ceiling_robot
+  .. code-block:: bash
+    :caption: Robots.msg message file.
+    :name: robots-health
+    
+    # Robots.msg
+    bool floor_robot
+    bool ceiling_robot
 
 
 .. _target to sensor blackout:

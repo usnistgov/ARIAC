@@ -130,9 +130,9 @@ Assembly Task Score
   * For each task there are one Boolean condition:
       1. :math:`isCorrectStation` is true if the assembly was done at the correct station (as1, as2, as3, or as4).
   * Each slot `s` in the insert has the following Boolean conditions:
-      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in the slot is assembled. This implicitely means that the part is of the correct type.
-      2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in the slot in slot :math:`s` is of correct color.
-      3. :math:`isCorrectPose_{s} \rightarrow C` is true if a part has been inserted in slot :math:`s` with the correct pose.
+      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitely means that the part is of the correct type.
+      2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in slot :math:`s` is of correct color.
+      3. :math:`isCorrectPose_{s} \rightarrow C` is true if the part in slot :math:`s` has the correct pose.
 
 
 Slot Score
@@ -167,6 +167,8 @@ Station Score
     0, &\text{otherwise} \\
     \end{cases}
 
+
+==================
 
 Task Score
 ,,,,,,,,,,,

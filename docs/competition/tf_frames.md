@@ -109,9 +109,9 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     |
     └─── kts1_table_frame
     |    |
-    |    └─── ktsX_tool_changer_parts_frame
+    |    └─── kts1_tool_changer_parts_frame
     |    |
-    |    └─── ktsX_tool_changer_trays_frame
+    |    └─── kts1_tool_changer_trays_frame
     |
     └─── kts2_table_frame
          |
@@ -122,12 +122,12 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
 
 * **Conveyor Belt**: Frames for the conveyor belt consists of two frames:
   * `conveyor_belt_base_frame` is the frame located below the conveyor belt.
-  * `conveyor_belt_pat_spawn_frame` is the frame origin where parts are spawn on the conveyor belt.
+  * `conveyor_belt_part_spawn_frame` is the frame origin where parts are spawn on the conveyor belt. This frame is located at one end of the conveyor belt.
 
 ```
     world
     |
     └─── conveyor_belt_base_frame
          |
-         └─── conveyor_belt_parts_spawn_frame
+         └─── conveyor_belt_part_spawn_frame
 ```

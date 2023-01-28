@@ -6,7 +6,9 @@ This section describes the TF frames used in the competition. The TF frames are 
 cd /tmp && ros2 run tf2_tools view_frames  && evince frames.pdf
 ```
 
-![drawing](../images/AdvancedLogicalCamera.png)
+<img src="../images/AdvancedLogicalCamera.png" alt="drawing" width="100"/>
+
+<!-- ![drawing](../images/AdvancedLogicalCamera.png) -->
 
 
 
@@ -20,21 +22,21 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     └─── agv1_track
     |    |
     |    └─── agv1_base
-    |            |
-    |            └─── agv1_tray
+    |         |
+    |         └─── agv1_tray
     └─── agv2_track
     |    |
     |    └─── agv2_base
-    |            |
-    |            └─── agv2_tray
+    |         |
+    |         └─── agv2_tray
     └─── agv3_track
     |    |
     |    └─── agv3_base
-    |            |
-    |            └─── agv3_tray
+    |         |
+    |         └─── agv3_tray
     └─── agv4_track
-    |    |
-    |    └─── agv4_base
-    |            |
-    |            └─── agv4_tray
+         |
+         └─── agv4_base
+              |
+              └─── agv4_tray
 ```

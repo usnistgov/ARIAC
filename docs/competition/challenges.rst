@@ -175,7 +175,10 @@ The robot malfunction challenge simulates a robot malfunction. The robot can mal
 Detecting Robot Malfunctions
 -----------------------------
 
-To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
+.. important::
+  To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health``. 
+
+The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
 
 .. code-block:: bash
   :caption: Robots.msg message file.
@@ -192,7 +195,7 @@ The robot malfunction challenge is specified with ``robot_malfunction`` as a sub
 
 * ``duration``: The duration of the robot malfunction in seconds.
 * ``robots_to_disable``: A list of robots that malfunction. It can be either ``floor_robot`` or ``ceiling_robot`` or both.
-* :ref:`Conditions<target to condition>` that can trigger the robot malfunction:
+* :ref:`Conditions<target to conditions>` that can trigger the robot malfunction:
 
 ..
   * ``part_place_condition``: The challenge starts when a part of a specific type and color is placed on a specific AGV.

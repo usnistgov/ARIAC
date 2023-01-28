@@ -39,3 +39,5 @@ Assembly is a manufacturing process in which interchangeable parts are added to 
 ## Combined Task
 
 A combined task consists of a Kitting Task and an Assembly Task. In a combined task, only the Assembly Task is scored. Competitors have to find a way to move parts from their original locations to the assembly station.
+
+## Insert

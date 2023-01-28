@@ -45,7 +45,7 @@ Completion score varies between Kitting, Assembly, and Combined tasks. Each task
 Kitting Task Score
 ^^^^^^^^^^^^^^^^^^^
 
-  * A kitting order has :math:`n` parts that need to be placed on the kitting tray.
+  * A kitting task has :math:`n` parts that need to be placed on the kitting tray.
   * A shipment has :math:`m` parts on the kitting tray.
   * For each task there are two Boolean conditions:
   
@@ -105,13 +105,13 @@ A penalty is only applied if more parts are on the tray than needed.
     0, &\text{otherwise} \\
     \end{cases}
 
-Destination
-,,,,,,,,,,,,
+Destination Score
+,,,,,,,,,,,,,,,,,
 
   .. math::
 
     \texttt{destination} = \begin{cases}
-    1, &\text{if}\, isCorrectDestination=true \\
+    1, &\text{if}\, isCorrectDestination\, \text{is true} \\
     0, &\text{otherwise} \\
     \end{cases}
 
@@ -121,3 +121,61 @@ Task Score
   .. math::
 
     S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
+
+
+Assembly Task Score
+^^^^^^^^^^^^^^^^^^^
+
+  * An assembly task has :math:`n` parts that need to be assembled into the insert.
+  * For each task there are one Boolean condition:
+      1. :math:`isCorrectStation` is true if the assembly was done at the correct station (as1, as2, as3, or as4).
+  * Each slot `s` in the insert has the following Boolean conditions:
+      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in the slot is assembled. This implicitely means that the part is of the correct type.
+      2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in the slot in slot :math:`s` is of correct color.
+      3. :math:`isCorrectPose_{s} \rightarrow C` is true if a part has been inserted in slot :math:`s` with the correct pose.
+
+
+Slot Score
+,,,,,,,,,,,,,,
+
+  .. math::
+
+    \texttt{pt}_s = \begin{cases}
+    3, &\text{if} ~~ A \land (B \land C)\\
+    2, &\text{if} ~~ A \land (B \lor C)\\
+    1, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
+    0, &\text{if} ~~ \lnot A \\
+    \end{cases}
+
+Bonus Score
+,,,,,,,,,,,
+
+  .. math::
+
+    \texttt{pt}_b = \begin{cases}
+    n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 3 \\
+    0, &\text{otherwise} \\
+    \end{cases}
+
+Station Score
+,,,,,,,,,,,,,,
+
+  .. math::
+
+    \texttt{destination} = \begin{cases}
+    1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
+    0, &\text{otherwise} \\
+    \end{cases}
+
+
+Task Score
+,,,,,,,,,,,
+  
+  .. math::
+
+    S_{a} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
+
+
+
+Combined Task Score
+^^^^^^^^^^^^^^^^^^^

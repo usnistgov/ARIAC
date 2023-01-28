@@ -9,7 +9,7 @@ cd /tmp && ros2 run tf2_tools view_frames  && evince frames.pdf
 A PDF file containing the TF frames is also available [here](../images/frames.pdf). A summary of the TF frames used in the competition is provided below:
 
 * **World**: The `world` frame is the root frame of the TF tree. It is located at the origin of the competition arena.
-* **AGV Trays**: `agv1_tray`, `agv2_tray`, `agv3_tray`, and `agv4_tray` frames are located at the origin of the AGV trays.
+* **AGV Trays**: Frames for the AGV trays  are located at the origin of the trays. The frames are named as `agvX_tray` where `X` is the agv number.
 
 ```
     world
@@ -43,8 +43,8 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     |    |
     |    └─── ...
     └─── slide_bar (frames for the floor robot)
-    |    |
-    |    └─── ...
+         |
+         └─── ...
 ```
 
 * **Cameras**: Frames for the cameras and sensors defined in the sensor configuration file are published on the TF tree. **Note**: In previous versions of ARIAC parts detected by cameras were published on the TF tree. This is no longer the case. The TF frames are only used to describe the position and orientation of the cameras and sensors. Competitors are expected to subscribe to the topics provided by the cameras and sensors to get the information about the parts.
@@ -58,7 +58,7 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     └─── ...
 ```
 
-* **Bins**: Frames for the bins are published on the TF tree. The frames are located at the origin of the bins. The frames are named as `binX_frame` where `X` is the bin number.
+* **Bins**: Frames for the bins are located at the origin of the bins. The frames are named as `binX_frame` where `X` is the bin number.
 
 ```
     world
@@ -79,7 +79,7 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     └─── bin8_frame
 ```
 
-* **Inserts**: Frames for the inserts are published on the TF tree. The frames are located at the origin of the inserts. The frames are named as `asX_insert_frame` where `X` is the assembly station number. These frames are useful for assembly and combined tasks.
+* **Inserts**: Frames for the inserts are located at the origin of the inserts. The frames are named as `asX_insert_frame` where `X` is the assembly station number. These frames are useful for assembly and combined tasks.
 
 ```
     world
@@ -96,6 +96,38 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     |    └─── as3_insert_frame
     |
     └─── as4_table_frame
+         |
+         └─── as4_insert_frame
+```
+
+* **Tray/Tool Changer Tables**: Frames for the tray tables are  named as `ktsX_table_frame` where `X` is the table number. Each `ktsX_table_frame` has two children:
+  * `ktsX_tool_changer_parts_frame` is the frame of the tool changer for the parts gripper.
+  * `ktsX_tool_changer_trays_frame` is the frame of the tool changer for the trays gripper.
+
+```
+    world
+    |
+    └─── kts1_table_frame
     |    |
-    |    └─── as4_insert_frame
+    |    └─── ktsX_tool_changer_parts_frame
+    |    |
+    |    └─── ktsX_tool_changer_trays_frame
+    |
+    └─── kts2_table_frame
+         |
+         └─── kts2_tool_changer_parts_frame
+         |
+         └─── kts2_tool_changer_trays_frame
+```
+
+* **Conveyor Belt**: Frames for the conveyor belt consists of two frames:
+  * `conveyor_belt_base_frame` is the frame located below the conveyor belt.
+  * `conveyor_belt_pat_spawn_frame` is the frame origin where parts are spawn on the conveyor belt.
+
+```
+    world
+    |
+    └─── conveyor_belt_base_frame
+         |
+         └─── conveyor_belt_parts_spawn_frame
 ```

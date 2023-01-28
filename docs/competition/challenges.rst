@@ -115,10 +115,11 @@ The example below describes all purple regulators as flipped in ``bin3``. The CC
       rotation: 'pi/6'
       flipped: true
 
-The example below describes all orange batteries as flipped on the conveyor belt.
+Snippet :numref:`flipped_parts_on_conveyor_belt` describes all orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
   :caption: Setting flipped parts on the conveyor belt
+  :name: flipped_parts_on_conveyor_belt
   
   conveyor_belt: 
     active: true

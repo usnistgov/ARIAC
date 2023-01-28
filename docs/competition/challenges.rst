@@ -184,6 +184,7 @@ The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` .
   :caption: Robots.msg message file.
   :name: robots-health
   
+  # Robots.msg
   bool floor_robot
   bool ceiling_robot
 
@@ -194,15 +195,15 @@ Robot Malfunction Example
 The robot malfunction challenge is specified with ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
 
 * ``duration``: The duration of the robot malfunction in seconds.
-* ``robots_to_disable``: A list of robots that malfunction. It can be either ``floor_robot`` or ``ceiling_robot`` or both.
-* :ref:`Conditions<target to conditions>` that can trigger the robot malfunction:
+* ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
+* :ref:`Conditions<target to conditions>` that can trigger the robot malfunction.
 
 ..
   * ``part_place_condition``: The challenge starts when a part of a specific type and color is placed on a specific AGV.
   * ``time_condition``: The challenge starts after a specific time.
   * ``submission_condition``: The challenge starts when a specific order is submitted.
 
-Robot malfunctions can occur multiple times in the same trial. The example :ref:`below<robot-malfunction-yaml>` shows a robot malfunction challenge occurring four times.
+Robot malfunctions can occur multiple times in the same trial. The example :ref:`below<robot-malfunction-yaml>` shows a robot malfunction challenge occurring 4 times in the same trial.
 
 
 .. code-block:: yaml
@@ -232,43 +233,56 @@ Robot malfunctions can occur multiple times in the same trial. The example :ref:
         agv: 4
 
 
-## Sensor Blackout
+Sensor Blackout
+================
 
-The sensor blackout challenge simulates a sensor blackout. The sensor can black out in some conditions (time, part placement, or submission) during the trial. When a sensor blacks out, it stops publishing data. The sensor will remain in the same state until the sensor blackout is resolved (after a duration). To specify how long a sensor blacks out, a time duration  is specified in the trial configuration file. Sensor blackouts can occur on any sensor type and multiple times during the same challenge. 
+The sensor blackout challenge simulates a situation where some sensors stop reporting data during X seconds. The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
 
-The goal of this challenge is to test the ability of the competitors' control system to use the other sensors or use a stored world model to continue the tasks that were being performed before the blackout.
+.. note::
+  This challenge has been modified from previous ARIAC iterations. In previous iterations, the sensor blackout challenge affected all sensor types at once. In this iteration, the sensor blackout can be customized to affect only selected sensor types.
+  
 
-### Sensor Blackout Example
+The sensor blackout challenge is triggered based on :ref:`conditions<target to conditions>`. When a sensor type blacks out, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), sensors will start publishing data again. Sensor blackouts can occur multiple times during the same challenge. 
 
-The sensor blackout challenge is specified in the trial configuration file using the following fields:
+
+
+Sensor Blackout Example
+---------------------------
+
+
+The sensor blackout challenge is specified with ``sensor_blackout`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
 
 * `duration`: The duration of the sensor blackout in seconds.
-* `sensors_to_disable`: A list of sensor types that are disabled:
-  * 'break_beam'
-  * 'proximity'
-  * 'laser_profiler'
-  * 'lidar'
-  * 'camera'
-  * 'logical_camera'
-* Conditions that can trigger the sensor blackout:
-  * `part_place_condition`: The challenge starts when a part of a specific type and color is placed on a specific AGV.
-  * `time_condition`: The challenge starts after a specific time.
-  * `submission_condition`: The challenge starts when a specific order is submitted.
+* `sensors_to_disable`: A list of sensor types to disable:
 
-The sensor blackout challenge can occur multiple times in the same trial. The example below shows the challenge occurring twice in the same trial.
+  * ``'break_beam'``
+  * ``'proximity'``
+  * ``'laser_profiler'``
+  * ``'lidar'``
+  * ``'camera'``
+  * ``'logical_camera'``
+* :ref:`Conditions<target to conditions>` to trigger the challenge.
 
-```yaml
-challenges:
-  - sensor_blackout:
-      duration: 25.0
-      sensors_to_disable: ['break_beam']
-      time_condition: 20
-  - sensor_blackout:
-      duration: 5.0
-      sensors_to_disable: ['lidar', 'logical_camera']
-      submission_condition:
-        order_id: 'MMB30H57'
-```
+
+The sensor blackout challenge can occur multiple times in the same trial. The example :ref:`below<sensor-blackout-yaml>` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
+
+
+
+.. code-block:: yaml
+  :caption: Multiple occurrences of the sensor blackout challenge.
+  :name: sensor-blackout-yaml
+  :emphasize-lines: 2,6
+
+  challenges:
+    - sensor_blackout:
+        duration: 25.0
+        sensors_to_disable: ['break_beam']
+        time_condition: 20
+    - sensor_blackout:
+        duration: 15.0
+        sensors_to_disable: ['lidar', 'logical_camera']
+        submission_condition:
+          order_id: 'MMB30H57'
 
 ## High-priority Orders
 

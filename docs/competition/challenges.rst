@@ -20,7 +20,7 @@ Faulty parts are parts that are not in good condition. They are not suitable for
 Detecting Faulty Parts
 ----------------------------
 
-The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the **/ariac/perform_quality_check** service with an order ID argument. When a faulty part is detected, the :term:`CCS<Competitor Control System (CCS)>` has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the ``/ariac/perform_quality_check`` service with an order ID argument. When a faulty part is detected, the :term:`CCS<Competitor Control System (CCS)>` has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
 
 .. caution::
   This service can be called only once for each order ID. 
@@ -104,10 +104,12 @@ Flipped parts detection is performed similarly to faulty parts detection. The qu
 Flipped Parts Example
 ----------------------------
 
-The example below describes all purple regulators as flipped in ``bin3``. The CCS will need to flip these parts again so they end up with the correct orientation.
+The example :ref:`below<flipped-parts-in-bin>` describes all purple regulators as flipped in ``bin3``. The CCS will need to flip these parts again so they end up with the correct orientation.
 
 .. code-block:: yaml
-  
+  :caption: Setting flipped parts in a bin.
+  :name: flipped-parts-in-bin
+
   bin3:
     - type: 'regulator'
       color: 'purple'
@@ -115,7 +117,7 @@ The example below describes all purple regulators as flipped in ``bin3``. The CC
       rotation: 'pi/6'
       flipped: true
 
-Snippet :ref:`below<flipped-parts-on-conveyor-belt>` describes all orange batteries as flipped on the conveyor belt.
+The example :ref:`below<flipped-parts-on-conveyor-belt>` describes all orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
   :caption: Setting flipped parts on the conveyor belt.
@@ -165,25 +167,46 @@ Robot Malfunction
 
 The robot malfunction challenge simulates a robot malfunction. The robot can malfunction in some conditions (time, part placement, or submission) during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the competitors' control system. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
-The goal of this challenge is to test the ability of the competitors' control system to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
+  The goal of this challenge is to test the ability of the competitors' control system to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
-It can happen that both robots malfunction at the same time. In this case, competitors's control system must wait until the malfunction is resolved before continuing with the trial.
+.. note::
+  It can happen that both robots malfunction at the same time. In this case, competitors's control system must wait until the malfunction is resolved before continuing with the trial.
 
-### Robot Malfunction Example
+Detecting Robot Malfunctions
+-----------------------------
 
-The robot malfunction challenge is specified in the trial configuration file using the following fields:
+To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
 
-* `duration`: The duration of the robot malfunction in seconds.
-* `robots_to_disable`: A list of robots that malfunction. It can be either `floor_robot` or `ceiling_robot` or both.
-* Conditions that can trigger the robot malfunction:
-  * `part_place_condition`: The challenge starts when a part of a specific type and color is placed on a specific AGV.
-  * `time_condition`: The challenge starts after a specific time.
-  * `submission_condition`: The challenge starts when a specific order is submitted.
+.. code-block:: bash
+  :caption: Robots.msg message file.
+  :name: robots-health
+  
+  bool floor_robot
+  bool ceiling_robot
 
-Robot malfunctions can occur multiple times in the same trial. The example below shows a robot malfunction challenge occurring four times.
 
-```yaml
-challenges:
+Robot Malfunction Example
+----------------------------
+
+The robot malfunction challenge is specified with ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
+
+* ``duration``: The duration of the robot malfunction in seconds.
+* ``robots_to_disable``: A list of robots that malfunction. It can be either ``floor_robot`` or ``ceiling_robot`` or both.
+* :ref:`Conditions<target to condition>` that can trigger the robot malfunction:
+
+..
+  * ``part_place_condition``: The challenge starts when a part of a specific type and color is placed on a specific AGV.
+  * ``time_condition``: The challenge starts after a specific time.
+  * ``submission_condition``: The challenge starts when a specific order is submitted.
+
+Robot malfunctions can occur multiple times in the same trial. The example :ref:`below<robot-malfunction-yaml>` shows a robot malfunction challenge occurring four times.
+
+
+.. code-block:: yaml
+  :caption: Multiple occurrences of the robot malfunction challenge.
+  :name: robot-malfunction-yaml
+  
+  challenges:
   - robot_malfunction:
       duration: 20.0
       robots_to_disable: ['floor_robot']
@@ -204,7 +227,7 @@ challenges:
         color: 'green'
         type: 'sensor'
         agv: 4
-```
+
 
 ## Sensor Blackout
 

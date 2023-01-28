@@ -1,5 +1,9 @@
 # TF Frames
 
+
+![](../images/FRAMES.png)
+
+
 This section describes the TF frames used in the competition. The TF frames are used to describe the position and orientation of the different objects in the competition. After starting the environment, one can visualize the TF tree with the following command:
 
 ```bash

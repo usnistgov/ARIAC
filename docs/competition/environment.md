@@ -57,7 +57,7 @@ Parts can spawn in the environment in one of three places: bins, conveyor belt, 
 
 ### Part Bins
 
-There are a total of eight part bins in the workcell. Each bin consists of nine slots where parts can be located. Parts can be at any rotation and can be flipped.
+There are a total of eight part bins in the workcell. Each bin consists of nine slots (see Figure) where parts can be located. Parts can be at any rotation and can be flipped.
 
 ![](../images/BinSlots.jpeg)
 

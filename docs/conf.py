@@ -12,10 +12,14 @@ version = '0.1.0'
 # -- General configuration
 
 extensions = [
-        'myst_parser',
-        'sphinx.ext.mathjax',
-        'sphinx_rtd_theme',
+    'myst_parser',
+    'sphinx.ext.mathjax',
+    'sphinx_rtd_theme',
+    'sphinx.ext.autosectionlabel'
 ]
+
+# Make sure the target is unique
+autosectionlabel_prefix_document = True
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3/', None),

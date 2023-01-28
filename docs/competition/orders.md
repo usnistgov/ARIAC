@@ -2,6 +2,8 @@
 
 This page describes the different types of orders and tasks that can be found in a trial configuration file.
 
+.. _target to orders:
+
 ## Orders
 
 An order is an intruction containing information on a task ([kitting task](#kitting-task), [assembly task](#assembly-task), or [combined task](#combined-task)). Each task consists of at least one part of a specific color and type.
@@ -77,6 +79,8 @@ orders:
           quadrant: 4
 ```
 
+.. _target to kitting task:
+
 ## Kitting Task
 
 Kitting is the process which groups separate but related [parts](#part) as one unit. For a kitting task, competitors are expected to:
@@ -112,6 +116,8 @@ orders:
           color: 'blue'
           quadrant: 1
 ```
+
+.. _target to assembly task:
 
 ## Assembly Task
 
@@ -168,6 +174,9 @@ An example of an assembly task in a trial configuration file is presented below 
           rpy: [0.2, 0, 0]
           assembly_direction: [-3, -3.3, -3.33] # unit vector in insert frame
 ```
+
+.. _target to combined task:
+
 
 ## Combined Task
 

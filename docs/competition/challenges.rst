@@ -46,15 +46,18 @@ The service definition is described in the file ``PerformQualityCheck.srv`` in t
 
 
 
-* The service returns a boolean value for the field `valid_id` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
-* The field `all_passed` is set to `true` only if:
+* The service returns a boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
+
+* The field ``all_passed`` is set to ``true`` only if:
+
   * All parts in the kitting tray are NOT faulty.
   * All parts are present in the kitting tray (no empty quadrant).
   * All parts have the correct orientation (no flipped part).
   * All parts are of the correct type.
   * All parts are of the correct color.
-* The field `incorrect_tray` informs on whether or not the kitting task was performed in the correct kitting tray.
-* Information for each quadrant is reported as a `QualityIssue` message. The `QualityIssue` message is defined in the file `QualityIssue.msg` in the `ariac_msgs` package.
+  
+* The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
+* Information for each quadrant is reported as a ``QualityIssue``` message. The ``QualityIssue`` message is defined in the file ``QualityIssue.msg``` in the ``ariac_msgs``` package.
 
 
 .. code-block:: bash
@@ -75,7 +78,7 @@ Faulty Parts Example
 The faulty parts challenge is set with the field ``faulty_part`` under the ``challenges`` field  in the trial configuration file. As mentioned earlier, only the first part placed in a quadrant is faulty. In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order ``MMB30H56`` is faulty. If these parts are removed and replaced with new parts, the new parts are set to non-faulty.
 
 .. code-block:: yaml
-  
+
   challenges:
     - faulty_part:
     order_id: 'MMB30H56'

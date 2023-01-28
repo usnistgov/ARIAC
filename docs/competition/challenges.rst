@@ -58,7 +58,7 @@ Detecting Faulty Parts
     ariac_msgs/QualityIssue quadrant3
     ariac_msgs/QualityIssue quadrant4
 
-  * The service returns a boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
+  * The service returns a Boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
 
   * The field ``all_passed`` is set to ``true`` only if:
 
@@ -77,7 +77,7 @@ Detecting Faulty Parts
     :name: quality-issue-msg
 
     # QualityIssue.msg
-    bool all_passed           # True if everything else is correct
+    bool all_passed           # True if everything is correct in the quadrant
     bool missing_part         # True if a part is missing in the quadrant
     bool flipped_part         # True if a part is flipped in the quadrant
     bool faulty_part          # True if a part is faulty in the quadrant
@@ -91,9 +91,10 @@ Detecting Faulty Parts
 Flipped Parts
 ================
 
-The environment can be started with parts that are flipped. Flipped parts are parts that are upside down. When a part is spawned as flipped, competitors will need to flip those parts again so they end up with the correct orientation. If an order is submitted with flipped parts, these parts are not considered for scoring. Flipped parts are identified by quality control sensors, which are attached to AGVs.
+The environment can be started with parts that are flipped. Flipped parts are parts that are upside down. When a part is spawned as flipped, the CCS is required to flip this part again so it ends up with the correct orientation. If an order is submitted with flipped parts, these parts are not considered for scoring. 
 
-Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding part.
+
+
 
 
 
@@ -101,7 +102,9 @@ Flipped parts apply to a specific part type and color in a specific bin or on th
 Flipped Parts Example
 ----------------------------
 
-The example :ref:`below<flipped-parts-in-bin>` describes all purple regulators as flipped in ``bin3``. The CCS will need to flip these parts again so they end up with the correct orientation.
+Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding parts.
+
+The example :ref:`below<flipped-parts-in-bin>` describes all purple regulators as flipped in ``bin3``. 
 
 .. code-block:: yaml
   :caption: Setting flipped parts in a bin.
@@ -136,7 +139,10 @@ The example :ref:`below<flipped-parts-on-conveyor-belt>` describes all orange ba
 Detecting Flipped Parts
 ----------------------------
 
-Flipped parts detection is performed similarly to faulty parts detection. The quality control sensor located above each AGV is capable of detecting flipped parts. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
+.. important::
+  Flipped parts detection is performed similarly to faulty parts detection. The quality control sensor located above each AGV is capable of detecting flipped parts. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
+
+
 
 
 .. _target to faulty gripper:
@@ -311,21 +317,19 @@ Detecting Sensor Blackouts
 -----------------------------
 
 .. important::
-  To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. 
+  To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. The message type for this topic is :ref:`ariac_msgs/msg/Sensors<sensors-health>` . The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors for a sensor type are healthy (they are publishing) and a ``false`` value indicates that all sensors for a sensor type are malfunctioning (they are not publishing).
 
-The message type for this topic is :ref:`ariac_msgs/msg/Sensors<sensors-health>` . The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors for a sensor type are healthy (they are publishing) and a ``false`` value indicates that all sensors for a sensor type are malfunctioning (they are not publishing).
-
-.. code-block:: bash
-  :caption: Sensors.msg message file.
-  :name: sensors-health
-  
-  # Sensors.msg
-  bool break_beam
-  bool proximity
-  bool laser_profiler
-  bool lidar
-  bool camera
-  bool logical_camera
+  .. code-block:: bash
+    :caption: Sensors.msg message file.
+    :name: sensors-health
+    
+    # Sensors.msg
+    bool break_beam
+    bool proximity
+    bool laser_profiler
+    bool lidar
+    bool camera
+    bool logical_camera
 
 
 High-priority Orders

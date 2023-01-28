@@ -29,27 +29,23 @@ ariac_msgs/QualityIssue quadrant4
 ```
 
 
-The service returns a boolean value for the field `valid_id` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID. 
-
-The field `all_passed` is set to `true` only if:
-
-* All parts in the kitting tray are NOT faulty.
-* All parts are present in the kitting tray (no empty quadrant).
-* All parts have the correct orientation (no flipped part).
-* All parts are of the correct type.
-* All parts are of the correct color.
-
-The field `incorrect_tray` informs on whether or not the kitting task was performed on the correct kitting tray.
-
-Information for each quadrant is reported as a `QualityIssue` message. The `QualityIssue` message is defined in the file `QualityIssue.msg` in the `ariac_msgs` package.
+* The service returns a boolean value for the field `valid_id` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
+* The field `all_passed` is set to `true` only if:
+  * All parts in the kitting tray are NOT faulty.
+  * All parts are present in the kitting tray (no empty quadrant).
+  * All parts have the correct orientation (no flipped part).
+  * All parts are of the correct type.
+  * All parts are of the correct color.
+* The field `incorrect_tray` informs on whether or not the kitting task was performed on the correct kitting tray.
+* Information for each quadrant is reported as a `QualityIssue` message. The `QualityIssue` message is defined in the file `QualityIssue.msg` in the `ariac_msgs` package.
 
 ```bash
-bool all_passed
-bool missing_part
-bool flipped_part
-bool faulty_part
-bool incorrect_part_type
-bool incorrect_part_color
+bool all_passed           # True if everything else is correct
+bool missing_part         # True if a part is missing in the quadrant
+bool flipped_part         # True if a part is flipped in the quadrant
+bool faulty_part          # True if a part is faulty in the quadrant
+bool incorrect_part_type  # True if a part has the wrong type in the quadrant
+bool incorrect_part_color # True if a part has the wrong color in the quadrant
 ```
 
 

@@ -18,8 +18,10 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     ```
     world
     └─── agv1_track
-         └─── agv1_base
-                └─── agv1_tray
+    |    |
+    |    └─── agv1_base
+    |            |
+    |            └─── agv1_tray
     └─── agv2_track
         └─── agv2_base
                 └─── agv2_tray

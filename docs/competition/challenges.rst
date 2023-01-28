@@ -171,14 +171,14 @@ Detecting Faulty Gripper
 .. important::
   To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type ``ariac_msgs/msg/VacuumGripperState``, which has the structure :ref:`below<VacuumGripperState>`. The field ``attached`` can be checked in this challenge to know if the gripper is holding an object. 
 
-  .. code-block:: bash
-  :caption: VacuumGripperState.msg message file.
-  :name: VacuumGripperState
-  
-  # VacuumGripperState.msg
-  bool enabled  # is the succion enabled?
-  bool attached # is an object attached to the gripper?
-  string type   # type of the gripper attached to the arm
+    .. code-block:: bash
+    :caption: VacuumGripperState.msg message file.
+    :name: VacuumGripperState
+    
+    # VacuumGripperState.msg
+    bool enabled  # is the succion enabled?
+    bool attached # is an object attached to the gripper?
+    string type   # type of the gripper attached to the arm
 
 
 
@@ -245,7 +245,7 @@ Detecting Robot Malfunctions
 -----------------------------
 
 .. important::
-  To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health`` The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
+  To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
 
   .. code-block:: bash
     :caption: Robots.msg message file.

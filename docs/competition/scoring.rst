@@ -59,7 +59,9 @@ Kitting Task Score
       4. :math:`isFaulty_{q} \rightarrow E` is true if the part in quadrant :math:`q` is faulty.
 
 
-  * Tray score:
+Tray score
+,,,,,,,,,,
+
 
     .. math::
       

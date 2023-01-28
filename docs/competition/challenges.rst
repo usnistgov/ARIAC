@@ -104,7 +104,7 @@ Flipped parts detection is performed similarly to faulty parts detection. The qu
 Flipped Parts Example
 ----------------------------
 
-The example below describes all purple regulators as flipped in ``bin3``.
+The example below describes all purple regulators as flipped in ``bin3``. The CCS will need to flip these parts again so they end up with the correct orientation.
 
 .. code-block:: yaml
   
@@ -118,6 +118,7 @@ The example below describes all purple regulators as flipped in ``bin3``.
 The example below describes all orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
+  :caption: Setting flipped parts on the conveyor belt
   
   conveyor_belt: 
     active: true

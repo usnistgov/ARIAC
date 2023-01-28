@@ -235,7 +235,7 @@ Some trials require parts to be spawned on the conveyor belt. It can happen that
     * The `flipped` field describes whether the parts are flipped on the conveyor belt. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
     * The `rotation` field describes the rotation of the parts on the conveyor belt.
 
-The Figure below shows an example of how parts are spawned on the conveyor belt from the example above.
+The Figure below shows an example of how parts are spawned on the conveyor belt from the snippet above.
 
 ![](../images/ConveyorRandomParts.jpeg)
 

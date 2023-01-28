@@ -15,7 +15,7 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
 * **World**: The `world` frame is the root frame of the TF tree. It is located at the origin of the competition arena.
 * **AGV Trays**: `agv1_tray`, `agv2_tray`, `agv3_tray`, and `agv4_tray` frames are located at the origin of the AGV trays.
 
-    ```
+```
     world
     └─── agv1_track
     |    |
@@ -23,12 +23,18 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
     |            |
     |            └─── agv1_tray
     └─── agv2_track
-        └─── agv2_base
-                └─── agv2_tray
+    |    |
+    |    └─── agv2_base
+    |            |
+    |            └─── agv2_tray
     └─── agv3_track
-        └─── agv3_base
-                └─── agv3_tray
+    |    |
+    |    └─── agv3_base
+    |            |
+    |            └─── agv3_tray
     └─── agv4_track
-        └─── agv4_base
-                └─── agv1_tray
-    ```
+    |    |
+    |    └─── agv4_base
+    |            |
+    |            └─── agv4_tray
+```

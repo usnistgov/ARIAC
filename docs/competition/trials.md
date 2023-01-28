@@ -234,3 +234,11 @@ Some trials require parts to be spawned on the conveyor belt. It can happen that
     * The `offset` field describes the offset between parts of the same type and color that will be spawned on the conveyor belt. The `offset` field is a float value in meters.
     * The `flipped` field describes whether the parts are flipped on the conveyor belt. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
     * The `rotation` field describes the rotation of the parts on the conveyor belt.
+
+## Challenges
+
+The field `challenges` is used to define the challenges that will be used in the trial. See the [Challenges](challenges.md) page for more information on how to define challenges.
+
+## Orders
+
+The field `orders` is used to define the orders that will be used in the trial. See the [Orders and Tasks](orders.md) page for more information on how to define orders.

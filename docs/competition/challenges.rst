@@ -5,10 +5,12 @@ Agility Challenges
 
 
 
-There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. A description of each challenge is provided below. Besides the ``Human Operator`` challenge, all other challenges can occur multiple times in a trial. 
+There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. A description of each challenge is provided below. Besides the :ref:`target to human operator` challenge, all other challenges can occur multiple times in a trial. 
 
 .. note::
   A trial may have only some challenges, may not have any challenge at all, or may have all the challenges.
+
+.. _target to faulty part:
 
 Faulty Parts
 ================
@@ -54,28 +56,32 @@ The service definition is described in the file ``PerformQualityCheck.srv`` in t
 * The field `incorrect_tray` informs on whether or not the kitting task was performed in the correct kitting tray.
 * Information for each quadrant is reported as a `QualityIssue` message. The `QualityIssue` message is defined in the file `QualityIssue.msg` in the `ariac_msgs` package.
 
-```bash
-# QualityIssue.msg
-bool all_passed           # True if everything else is correct
-bool missing_part         # True if a part is missing in the quadrant
-bool flipped_part         # True if a part is flipped in the quadrant
-bool faulty_part          # True if a part is faulty in the quadrant
-bool incorrect_part_type  # True if a part has the wrong type in the quadrant
-bool incorrect_part_color # True if a part has the wrong color in the quadrant
-```
+
+.. code-block:: bash
+
+  # QualityIssue.msg
+  bool all_passed           # True if everything else is correct
+  bool missing_part         # True if a part is missing in the quadrant
+  bool flipped_part         # True if a part is flipped in the quadrant
+  bool faulty_part          # True if a part is faulty in the quadrant
+  bool incorrect_part_type  # True if a part has the wrong type in the quadrant
+  bool incorrect_part_color # True if a part has the wrong color in the quadrant
 
 
-### Faulty Parts Example
 
-Parts are set to faulty through the `faulty_part` challenge in the trial configuration file. Only the first parts placed in a tray are faulty. In the example below, the first parts placed in quadrants 1 and 2 in the tray required by order `MMB30H56` are always faulty. If these parts are removed and replaced with new parts, the new parts are not faulty.
+Faulty Parts Example
+----------------------------
 
-```yaml
-challenges:
-  - faulty_part:
+The faulty parts challenge is set with the field ``faulty_part`` under the ``challenges`` field  in the trial configuration file. As mentioned earlier, only the first part placed in a quadrant is faulty. In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order ``MMB30H56`` is faulty. If these parts are removed and replaced with new parts, the new parts are set to non-faulty.
+
+.. code-block:: yaml
+  
+  challenges:
+    - faulty_part:
     order_id: 'MMB30H56'
     quadrant1: true
     quadrant2: true
-```
+
 
 ## Flipped Parts
 
@@ -301,6 +307,8 @@ orders:
           color: 'blue'
           quadrant: 4
 ```
+
+.. _target to human operator:
 
 ## Human Operator
 

@@ -171,9 +171,9 @@ An example of an assembly task in a trial configuration file is presented below 
 
 ## Combined Task
 
-A combined task is a task which requires both kitting and assembly. For a combined task, competitors are expected to first perform a kitting task and then perform an assembly task. *Note*: Only information about the assembly task is provided in the trial configuration file. The kitting task information is left to the competitors to figure out based on the assembly task information. 
+A combined task is a task which requires both kitting and assembly. For a combined task, competitors are expected to first perform a kitting task and then perform an assembly task. **Only information about the assembly task is provided in the trial configuration file**. The kitting task information is left to the competitors to figure out based on the assembly task information. 
 
-Competitors can place part anywhere on AGVs and then move those AGVs to the station where assembly is to be performed. Once the assembly is complete, competitors can submit the assembly via a ROS service call. The ARIAC environment will then evaluate the submitted assembly for scoring. Kitting is not scored in a combined task.
+Competitors can place part anywhere on AGVs and then move those AGVs to the station where assembly is to be performed. Once the assembly is complete, competitors can submit the assembly via a ROS service call. The ARIAC environment will then evaluate the submitted assembly for scoring. **Kitting is not scored in a combined task**.
 
 ### Example
 

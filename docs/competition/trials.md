@@ -231,9 +231,13 @@ Some trials require parts to be spawned on the conveyor belt. It can happen that
     * The `type` field describes the part type on the conveyor belt.
     * The `color` field describes the part color on the conveyor belt. 
     * The `number` field describes the number of parts of the same type and color that will be spawned on the conveyor belt.
-    * The `offset` field describes the offset between parts of the same type and color that will be spawned on the conveyor belt. The `offset` field is a float value in meters.
+    * The `offset` field describes the offset between parts of the same type and color that will be spawned on the conveyor belt. The `offset` field is a float value in meters and must be between -1 and 1. 
     * The `flipped` field describes whether the parts are flipped on the conveyor belt. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
     * The `rotation` field describes the rotation of the parts on the conveyor belt.
+
+The Figure below shows an example of how parts are spawned on the conveyor belt from the example above.
+
+![](../images/ConveyorRandomParts.jpeg)
 
 ## Challenges
 

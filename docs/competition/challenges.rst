@@ -1,18 +1,25 @@
-# Agility Challenges
+
+========
+Agility Challenges
+========
 
 There are eight possible agility challenges in ARIAC 2023. A description of each challenge is provided below. Besides the `Human Operator` challenge, all other challenges can occur multiple times in a trial. 
-<!-- The number of times a challenge can occur is specified in the trial configuration file. The `Human Operator` challenge can only occur once in a trial. The `Human Operator` challenge is triggered when the `Human Operator` field in the trial configuration file is set to `true`. -->
 
-*Note*: A trial may have only some challenges, may not have any challenge at all, or may have all the challenges.
+.. note::
+  A trial may have only some challenges, may not have any challenge at all, or may have all the challenges.
 
-## Faulty Parts
+Faulty Parts
+================
 
 Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to AGVs.
 
-### Faulty Parts Detection
+Faulty Parts Detection
+----------------------------
 
 The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument.
-   >**This service can be called only once for each order ID**. It is suggested to call this service after the order is completed but before it is submitted.
+
+.. warning::
+  This service can be called only once for each order ID. It is suggested to call this service after the order is completed but before it is submitted.
 
 
 The service definition is described in the file `PerformQualityCheck.srv` in the `ariac_msgs` package.

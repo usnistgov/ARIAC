@@ -34,8 +34,10 @@ html_theme = 'sphinx_rtd_theme'
 
 source_suffix = ['.rst', '.md']
 
+html_static_path = ['_static']
+
 html_css_files = [
-    'custom.css',
+    'css/custom.css',
 ]
 
 # mathjax_path = 'MathJax.js?config=TeX-AMS_HTML'

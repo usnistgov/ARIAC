@@ -335,13 +335,22 @@ Detecting Sensor Blackouts
 High-priority Orders
 =====================
 
-The high-priority orders challenge simulates an order that must be completed before a low-priority order. The high-priority order must be completed and  submitted before the low-priority order.
+The high-priority orders challenge simulates an order that must be completed before a regular-priority order. The high-priority order must be completed and  submitted before the regular-priority order.
 
-The goal of this challenge is to test the ability of the competitors' control system to prioritize  high-priority orders over low-priority orders. This may require switching from kitting to assembly or vice versa. This may also require switching from one kitting task to another kitting task or switching from one assembly task to another assembly task.
+  The goal of this challenge is to test the ability of the CCS to prioritize  high-priority orders over regular-priority orders. This requires the CCS to  be able to detect when a high-priority order is announced and to switch task.
 
-### High-priority Orders Example
 
-To specify a high-priority order, the `priority` field is set to `true` in the order configuration file. The example below shows a high priority order with the order ID `MMB30H57` and a low priority order with the order ID `MMB30H58`.
+.. note::
+  A high-priority order can be announced in one of the two following :ref:`conditions<target to conditions>`: time and part placement. The submission condition is not used to announce a high-priority order.
+
+.. note::
+  A high-priority order will only be announced when only regular orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.
+
+
+High-priority Orders Example
+-----------------------------
+
+To specify a high-priority order, the `priority` field is set to `true` in the order configuration file. The example below shows a high priority order with the order ID `MMB30H57` and a regular-priority order with the order ID `MMB30H58`.
 
 ```yaml
 orders:

@@ -169,11 +169,11 @@ Detecting Faulty Gripper
 ----------------------------
 
 .. important::
-  To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type ``ariac_msgs/msg/VacuumGripperState``, which has the structure :ref:`below<VacuumGripperState>`. The field ``attached`` can be checked in this challenge to know if the gripper is holding an object. 
-
-    .. code-block:: bash
+  To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type ``ariac_msgs/msg/VacuumGripperState``, which has the structure :ref:`below<vacuum-gripper-state-yaml>`. The field ``attached`` can be checked in this challenge to know if the gripper is holding an object. 
+  
+  .. code-block:: bash
     :caption: VacuumGripperState.msg message file.
-    :name: VacuumGripperState
+    :name: vacuum-gripper-state-yaml
     
     # VacuumGripperState.msg
     bool enabled  # is the succion enabled?

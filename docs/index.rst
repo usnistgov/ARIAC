@@ -11,7 +11,7 @@ Welcome to ARIAC 2023!
 
 .. toctree::
    :caption: Getting Started
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
 
    getting_started/updates
@@ -21,11 +21,11 @@ Welcome to ARIAC 2023!
 
 .. toctree::
    :caption: Competition Specifications
-   :maxdepth: 2
+   :maxdepth: 3
    :hidden:
 
-   competition/overview
    competition/terminology
+   competition/overview
    competition/environment
    competition/orders
    competition/sensors

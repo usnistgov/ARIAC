@@ -24,18 +24,19 @@ The quality control sensor located above each AGV is capable of detecting faulty
 
 The service definition is described in the file `PerformQualityCheck.srv` in the `ariac_msgs` package.
 
-```bash
-# PerformQualityCheck.srv
-string order_id
----
-bool valid_id
-bool all_passed
-bool incorrect_tray
-ariac_msgs/QualityIssue quadrant1
-ariac_msgs/QualityIssue quadrant2
-ariac_msgs/QualityIssue quadrant3
-ariac_msgs/QualityIssue quadrant4
-```
+.. code-block:: bash
+  
+  # PerformQualityCheck.srv
+  string order_id
+  ---
+  bool valid_id
+  bool all_passed
+  bool incorrect_tray
+  ariac_msgs/QualityIssue quadrant1
+  ariac_msgs/QualityIssue quadrant2
+  ariac_msgs/QualityIssue quadrant3
+  ariac_msgs/QualityIssue quadrant4
+
 
 
 * The service returns a boolean value for the field `valid_id` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.

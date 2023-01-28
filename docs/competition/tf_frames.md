@@ -11,6 +11,7 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
 A summary of the TF frames used in the competition is provided below:
     * **world**: The world frame is the root frame of the TF tree. It is located at the origin of the competition arena.
 
+```
 project
 │   README.md
 │   file001.txt
@@ -27,3 +28,4 @@ project
 └───folder2
     │   file021.txt
     │   file022.txt
+```

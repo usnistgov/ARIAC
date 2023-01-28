@@ -6,12 +6,6 @@ This section describes the TF frames used in the competition. The TF frames are 
 cd /tmp && ros2 run tf2_tools view_frames  && evince frames.pdf
 ```
 
-<img src="../images/AdvancedLogicalCamera.png" alt="drawing" width="100"/>
-
-<!-- ![drawing](../images/AdvancedLogicalCamera.png) -->
-
-
-
 A PDF file containing the TF frames is also available [here](../images/frames.pdf). A summary of the TF frames used in the competition is provided below:
 
 * **World**: The `world` frame is the root frame of the TF tree. It is located at the origin of the competition arena.
@@ -39,4 +33,69 @@ A PDF file containing the TF frames is also available [here](../images/frames.pd
          └─── agv4_base
               |
               └─── agv4_tray
+```
+
+* **Robots**: Frames of the robots are provided in the TF tree.
+
+```
+    world
+    └─── long_rail_1 (frames for the ceiling robot)
+    |    |
+    |    └─── ...
+    └─── slide_bar (frames for the floor robot)
+    |    |
+    |    └─── ...
+```
+
+* **Cameras**: Frames for the cameras and sensors defined in the sensor configuration file are published on the TF tree. **Note**: In previous versions of ARIAC parts detected by cameras were published on the TF tree. This is no longer the case. The TF frames are only used to describe the position and orientation of the cameras and sensors. Competitors are expected to subscribe to the topics provided by the cameras and sensors to get the information about the parts.
+
+```
+    world
+    └─── right_bins_camera_frame
+    |
+    └─── left_bins_camera_frame
+    | 
+    └─── ...
+```
+
+* **Bins**: Frames for the bins are published on the TF tree. The frames are located at the origin of the bins. The frames are named as `binX_frame` where `X` is the bin number.
+
+```
+    world
+    └─── bin1_frame
+    |
+    └─── bin2_frame
+    |
+    └─── bin3_frame
+    |
+    └─── bin4_frame
+    |
+    └─── bin5_frame
+    |
+    └─── bin6_frame
+    |
+    └─── bin7_frame
+    |
+    └─── bin8_frame
+```
+
+* **Inserts**: Frames for the inserts are published on the TF tree. The frames are located at the origin of the inserts. The frames are named as `asX_insert_frame` where `X` is the assembly station number. These frames are useful for assembly and combined tasks.
+
+```
+    world
+    └─── as1_table_frame
+    |    |
+    |    └─── as1_insert_frame
+    |
+    └─── as2_table_frame
+    |    |
+    |    └─── as2_insert_frame
+    |
+    └─── as3_table_frame
+    |    |
+    |    └─── as3_insert_frame
+    |
+    └─── as4_table_frame
+    |    |
+    |    └─── as4_insert_frame
 ```

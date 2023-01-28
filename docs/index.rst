@@ -32,5 +32,6 @@ Welcome to ARIAC 2023!
    competition/trials
    competition/ros_communication
    competition/challenges
+   competition/tf_frames
    competition/scoring
  

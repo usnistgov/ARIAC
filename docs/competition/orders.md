@@ -36,11 +36,11 @@ An order has the following specifications:
   
   - **Submission condition**: When this condition is used, the order is announced as soon as another order is submitted. The following snippet shows an example of a submission condition:
   
-  ```yaml
-    announcement:
-      submission_condition:
-        order_id: 'MMB30H56'
-    ```
+    ```yaml
+      announcement:
+        submission_condition:
+          order_id: 'MMB30H56'
+      ```
 
 - Manufacturing task: Only one manufacturing task which can be one of the following options:
   - [Kitting task](#kitting-task): Only kitting is to be performed.

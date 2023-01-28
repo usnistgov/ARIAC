@@ -17,6 +17,21 @@ Faulty Parts
 
 Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to AGVs.
 
+
+Faulty Parts Example
+----------------------------
+
+The faulty parts challenge is set with the field ``faulty_part`` under the ``challenges`` field  in the trial configuration file. As mentioned earlier, only the first part placed in a quadrant is faulty. In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order ``MMB30H56`` is faulty. If these parts are removed and replaced with new parts, the new parts are set to non-faulty.
+
+.. code-block:: yaml
+
+  challenges:
+    - faulty_part:
+      order_id: 'MMB30H56'
+      quadrant1: true
+      quadrant2: true
+
+
 Detecting Faulty Parts
 ----------------------------
 
@@ -72,20 +87,6 @@ The service definition is described in the file ``PerformQualityCheck.srv`` in t
 
 
 
-Faulty Parts Example
-----------------------------
-
-The faulty parts challenge is set with the field ``faulty_part`` under the ``challenges`` field  in the trial configuration file. As mentioned earlier, only the first part placed in a quadrant is faulty. In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order ``MMB30H56`` is faulty. If these parts are removed and replaced with new parts, the new parts are set to non-faulty.
-
-.. code-block:: yaml
-
-  challenges:
-    - faulty_part:
-      order_id: 'MMB30H56'
-      quadrant1: true
-      quadrant2: true
-
-
 .. _target to flipped part:
 
 Flipped Parts
@@ -95,10 +96,7 @@ The environment can be started with parts that are flipped. Flipped parts are pa
 
 Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding part.
 
-Detecting Flipped Parts
-----------------------------
 
-Flipped parts detection is performed similarly to faulty parts detection. The quality control sensor located above each AGV is capable of detecting flipped parts. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
 
 
 Flipped Parts Example
@@ -136,12 +134,18 @@ The example :ref:`below<flipped-parts-on-conveyor-belt>` describes all orange ba
         rotation: 'pi/6'
 
 
+Detecting Flipped Parts
+----------------------------
+
+Flipped parts detection is performed similarly to faulty parts detection. The quality control sensor located above each AGV is capable of detecting flipped parts. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
+
+
 .. _target to faulty gripper:
 
 Faulty Gripper
 ================
 
-The faulty gripper challenge simulates a faulty gripper which can drop a part after the part has been picked up. The gripper can drop a part at any time during the trial. The gripper can drop a part that is in the gripper's grasp even if the gripper is not moving. 
+The faulty gripper challenge simulates a faulty gripper which can drop a part after the part has been picked up. The gripper can drop a part at any time during the trial. The gripper can drop a part that is in the gripper's grasp even if the gripper or robot is not moving. 
 
 The goal of this challenge is to test the ability of the competitors' control system to pick a part of the same type and color again after the gripper has dropped a part. The control system may try to pick the part again from where it was dropped or pick up a part from a different location.
 
@@ -160,6 +164,25 @@ The example below describes a faulty gripper occuring 5 seconds after the ceilin
         drop_after: 5
         delay: 5
 
+
+Detecting Faulty Gripper
+----------------------------
+
+.. important::
+  To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type ``ariac_msgs/msg/VacuumGripperState``, which has the structure :ref:`below<VacuumGripperState>`. The field ``attached`` can be checked in this challenge to know if the gripper is holding an object. 
+
+  .. code-block:: bash
+  :caption: VacuumGripperState.msg message file.
+  :name: VacuumGripperState
+  
+  # VacuumGripperState.msg
+  bool enabled  # is the succion enabled?
+  bool attached # is an object attached to the gripper?
+  string type   # type of the gripper attached to the arm
+
+
+
+
 .. _target to robot malfunction:
 
 Robot Malfunction
@@ -172,21 +195,7 @@ The robot malfunction challenge simulates a robot malfunction. The robot can mal
 .. note::
   It can happen that both robots malfunction at the same time. In this case, competitors's control system must wait until the malfunction is resolved before continuing with the trial.
 
-Detecting Robot Malfunctions
------------------------------
 
-.. important::
-  To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health``. 
-
-The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
-
-.. code-block:: bash
-  :caption: Robots.msg message file.
-  :name: robots-health
-  
-  # Robots.msg
-  bool floor_robot
-  bool ceiling_robot
 
 
 Robot Malfunction Example
@@ -207,7 +216,7 @@ Robot malfunctions can occur multiple times in the same trial. The example :ref:
 
 
 .. code-block:: yaml
-  :caption: Multiple occurrences of the robot malfunction challenge.
+  :caption: Example of multiple occurrences of the robot malfunction challenge in the same trial.
   :name: robot-malfunction-yaml
   
   challenges:
@@ -232,6 +241,24 @@ Robot malfunctions can occur multiple times in the same trial. The example :ref:
         type: 'sensor'
         agv: 4
 
+Detecting Robot Malfunctions
+-----------------------------
+
+.. important::
+  To detect a robot malfunction the CCS needs a subscriber to the topic ``/ariac/robot_health``. 
+
+The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
+
+.. code-block:: bash
+  :caption: Robots.msg message file.
+  :name: robots-health
+  
+  # Robots.msg
+  bool floor_robot
+  bool ceiling_robot
+
+
+.. _target to sensor blackout:
 
 Sensor Blackout
 ================
@@ -242,9 +269,7 @@ The sensor blackout challenge simulates a situation where some sensors stop repo
   This challenge has been modified from previous ARIAC iterations. In previous iterations, the sensor blackout challenge affected all sensor types at once. In this iteration, the sensor blackout can be customized to affect only selected sensor types.
   
 
-The sensor blackout challenge is triggered based on :ref:`conditions<target to conditions>`. When a sensor type blacks out, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), sensors will start publishing data again. Sensor blackouts can occur multiple times during the same challenge. 
-
-
+The sensor blackout challenge is triggered based on :ref:`conditions<target to conditions>`. When a sensor type blacks out, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
 
 Sensor Blackout Example
 ---------------------------
@@ -269,7 +294,7 @@ The sensor blackout challenge can occur multiple times in the same trial. The ex
 
 
 .. code-block:: yaml
-  :caption: Multiple occurrences of the sensor blackout challenge.
+  :caption: Example of multiple occurrences of the sensor blackout challenge in the same trial.
   :name: sensor-blackout-yaml
   :emphasize-lines: 2,6
 
@@ -284,7 +309,30 @@ The sensor blackout challenge can occur multiple times in the same trial. The ex
         submission_condition:
           order_id: 'MMB30H57'
 
-## High-priority Orders
+
+Detecting Sensor Blackouts
+-----------------------------
+
+.. important::
+  To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. 
+
+The message type for this topic is :ref:`ariac_msgs/msg/Sensors<sensors-health>` . The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors for a sensor type are healthy (they are publishing) and a ``false`` value indicates that all sensors for a sensor type are malfunctioning (they are not publishing).
+
+.. code-block:: bash
+  :caption: Sensors.msg message file.
+  :name: sensors-health
+  
+  # Sensors.msg
+  bool break_beam
+  bool proximity
+  bool laser_profiler
+  bool lidar
+  bool camera
+  bool logical_camera
+
+
+High-priority Orders
+=====================
 
 The high-priority orders challenge simulates an order that must be completed before a low-priority order. The high-priority order must be completed and  submitted before the low-priority order.
 

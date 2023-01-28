@@ -11,12 +11,14 @@ Faulty parts are parts that are not in good condition. They are not suitable for
 
 ### Faulty Parts Detection
 
-The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument. **This service can be called only once for each order ID**. It is suggested to call this service after the order is completed but before it is submitted.
+The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument.
+   >**This service can be called only once for each order ID**. It is suggested to call this service after the order is completed but before it is submitted.
 
 
 The service definition is described in the file `PerformQualityCheck.srv` in the `ariac_msgs` package.
 
 ```bash
+# PerformQualityCheck.srv
 string order_id
 ---
 bool valid_id
@@ -36,10 +38,11 @@ ariac_msgs/QualityIssue quadrant4
   * All parts have the correct orientation (no flipped part).
   * All parts are of the correct type.
   * All parts are of the correct color.
-* The field `incorrect_tray` informs on whether or not the kitting task was performed on the correct kitting tray.
+* The field `incorrect_tray` informs on whether or not the kitting task was performed in the correct kitting tray.
 * Information for each quadrant is reported as a `QualityIssue` message. The `QualityIssue` message is defined in the file `QualityIssue.msg` in the `ariac_msgs` package.
 
 ```bash
+# QualityIssue.msg
 bool all_passed           # True if everything else is correct
 bool missing_part         # True if a part is missing in the quadrant
 bool flipped_part         # True if a part is flipped in the quadrant

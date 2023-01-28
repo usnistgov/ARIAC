@@ -17,6 +17,8 @@ Faulty Parts
 
 Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to AGVs.
 
+  The goal of this challenge is to test the ability of the :term:`CCS<Competitor Control System (CCS)>` to 1) correctly use the quality check sensor to detect faulty parts and 2) replace them with new parts.
+
 
 Faulty Parts Example
 ----------------------------
@@ -35,55 +37,52 @@ The faulty parts challenge is set with the field ``faulty_part`` under the ``cha
 Detecting Faulty Parts
 ----------------------------
 
-The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the ``/ariac/perform_quality_check`` service with an order ID argument. When a faulty part is detected, the :term:`CCS<Competitor Control System (CCS)>` has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+.. important::
+  The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the ``/ariac/perform_quality_check`` service with an order ID argument (see structure of the :ref:`service file<perform-quality-check-srv>`). When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
 
-.. caution::
-  This service can be called only once for each order ID. 
-  
-.. tip::
-  It is suggested to call this service after the order is completed but before it is submitted.
+  .. caution::
+    This service can be called only once for each order ID. It is suggested to call this service after the order is completed but before it is submitted.
 
+  .. code-block:: bash
+    :caption: Message for the quality check service.
+    :name: perform-quality-check-srv
 
-The service definition is described in the file ``PerformQualityCheck.srv`` in the ``ariac_msgs`` package.
+    # PerformQualityCheck.srv
+    string order_id
+    ---
+    bool valid_id
+    bool all_passed
+    bool incorrect_tray
+    ariac_msgs/QualityIssue quadrant1
+    ariac_msgs/QualityIssue quadrant2
+    ariac_msgs/QualityIssue quadrant3
+    ariac_msgs/QualityIssue quadrant4
 
-.. code-block:: bash
+  * The service returns a boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
 
-  # PerformQualityCheck.srv
-  string order_id
-  ---
-  bool valid_id
-  bool all_passed
-  bool incorrect_tray
-  ariac_msgs/QualityIssue quadrant1
-  ariac_msgs/QualityIssue quadrant2
-  ariac_msgs/QualityIssue quadrant3
-  ariac_msgs/QualityIssue quadrant4
+  * The field ``all_passed`` is set to ``true`` only if:
 
+    * All parts in the kitting tray are NOT faulty.
+    * All parts are present in the kitting tray (no empty quadrant).
+    * All parts have the correct orientation (no flipped part).
+    * All parts are of the correct type.
+    * All parts are of the correct color.
 
-
-* The service returns a boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
-
-* The field ``all_passed`` is set to ``true`` only if:
-
-  * All parts in the kitting tray are NOT faulty.
-  * All parts are present in the kitting tray (no empty quadrant).
-  * All parts have the correct orientation (no flipped part).
-  * All parts are of the correct type.
-  * All parts are of the correct color.
-
-* The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
-* Information for each quadrant is reported as a ``QualityIssue`` message. The ``QualityIssue`` message is defined in the file **QualityIssue.msg** in the **ariac_msgs** package.
+  * The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
+  * Information for each quadrant is reported as a ``ariac_msgs/msg/QualityIssue`` :ref:`message<quality-issue-msg>`.
 
 
-.. code-block:: bash
+  .. code-block:: bash
+    :caption: Quality information for one quadrant.
+    :name: quality-issue-msg
 
-  # QualityIssue.msg
-  bool all_passed           # True if everything else is correct
-  bool missing_part         # True if a part is missing in the quadrant
-  bool flipped_part         # True if a part is flipped in the quadrant
-  bool faulty_part          # True if a part is faulty in the quadrant
-  bool incorrect_part_type  # True if a part has the wrong type in the quadrant
-  bool incorrect_part_color # True if a part has the wrong color in the quadrant
+    # QualityIssue.msg
+    bool all_passed           # True if everything else is correct
+    bool missing_part         # True if a part is missing in the quadrant
+    bool flipped_part         # True if a part is flipped in the quadrant
+    bool faulty_part          # True if a part is faulty in the quadrant
+    bool incorrect_part_type  # True if a part has the wrong type in the quadrant
+    bool incorrect_part_color # True if a part has the wrong color in the quadrant
 
 
 

@@ -8,7 +8,7 @@ Agility Challenges
 There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. A description of each challenge is provided below. Besides the :ref:`target to human operator` challenge, all other challenges can occur multiple times in a trial. 
 
 .. note::
-  A trial may have only some challenges, may not have any challenge at all, or may have all the challenges.
+  A trial may consist of some of the challenges described in this page, may consist of no  challenge at all, or may consist of all the challenges.
 
 .. _target to faulty part:
 
@@ -20,7 +20,7 @@ Faulty parts are parts that are not in good condition. They are not suitable for
 Detecting Faulty Parts
 ----------------------------
 
-The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument. When a faulty part is detected, the :term:`CCS<Competitor Control System (CCS)>` has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the **/ariac/perform_quality_check** service with an order ID argument. When a faulty part is detected, the :term:`CCS<Competitor Control System (CCS)>` has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
 
 .. caution::
   This service can be called only once for each order ID. 
@@ -55,9 +55,9 @@ The service definition is described in the file ``PerformQualityCheck.srv`` in t
   * All parts have the correct orientation (no flipped part).
   * All parts are of the correct type.
   * All parts are of the correct color.
-  
+
 * The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
-* Information for each quadrant is reported as a ``QualityIssue``` message. The ``QualityIssue`` message is defined in the file ``QualityIssue.msg``` in the ``ariac_msgs``` package.
+* Information for each quadrant is reported as a ``QualityIssue`` message. The ``QualityIssue`` message is defined in the file **QualityIssue.msg** in the **ariac_msgs** package.
 
 
 .. code-block:: bash
@@ -81,67 +81,79 @@ The faulty parts challenge is set with the field ``faulty_part`` under the ``cha
 
   challenges:
     - faulty_part:
-    order_id: 'MMB30H56'
-    quadrant1: true
-    quadrant2: true
+      order_id: 'MMB30H56'
+      quadrant1: true
+      quadrant2: true
 
 
-## Flipped Parts
+.. _target to flipped part:
+
+Flipped Parts
+================
 
 The environment can be started with parts that are flipped. Flipped parts are parts that are upside down. When a part is spawned as flipped, competitors will need to flip those parts again so they end up with the correct orientation. If an order is submitted with flipped parts, these parts are not considered for scoring. Flipped parts are identified by quality control sensors, which are attached to AGVs.
 
-Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the `flipped` field in the trial configuration file must be set as `true` for the corresponding part.
+Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding part.
 
-### Flipped Parts Example
+Flipped Parts Example
+----------------------------
 
-The example below describes all purple regulators as flipped in `bin3`.
+The example below describes all purple regulators as flipped in ``bin3``.
 
-```yaml
-bin3:
-  - type: 'regulator'
-    color: 'purple'
-    slots: [2, 3]
-    rotation: 'pi/6'
-    flipped: true
-```
+.. code-block:: yaml
+  
+  bin3:
+    - type: 'regulator'
+      color: 'purple'
+      slots: [2, 3]
+      rotation: 'pi/6'
+      flipped: true
 
 The example below describes all orange batteries as flipped on the conveyor belt.
 
-```yaml
-conveyor_belt: 
-  active: true
-  spawn_rate: 3.0 
-  order: 'sequential' 
-  parts_to_spawn:
-    - type: 'battery'
-      color: 'orange'
-      number: 5
-      offset: 0.5 # between -1 and 1
-      flipped: true
-      rotation: 'pi/6'
-```
+.. code-block:: yaml
+  
+  conveyor_belt: 
+    active: true
+    spawn_rate: 3.0 
+    order: 'sequential' 
+    parts_to_spawn:
+      - type: 'battery'
+        color: 'orange'
+        number: 5
+        offset: 0.5 # between -1 and 1
+        flipped: true
+        rotation: 'pi/6'
 
-## Faulty Gripper
+
+.. _target to faulty gripper:
+
+Faulty Gripper
+================
 
 The faulty gripper challenge simulates a faulty gripper which can drop a part after the part has been picked up. The gripper can drop a part at any time during the trial. The gripper can drop a part that is in the gripper's grasp even if the gripper is not moving. 
 
 The goal of this challenge is to test the ability of the competitors' control system to pick a part of the same type and color again after the gripper has dropped a part. The control system may try to pick the part again from where it was dropped or pick up a part from a different location.
 
-### Faulty Gripper Example
+Faulty Gripper Example
+----------------------------
 
 The example below describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump.
 
-```yaml
-challenges:
-  - dropped_part:
-    robot: 'ceiling_robot'
-    type: 'pump'
-    color: 'red'
-    drop_after: 1
-    delay: 5
-```
+.. code-block:: yaml
+  
+    challenges:
+      - dropped_part:
+        robot: 'ceiling_robot'
+        type: 'pump'
+        color: 'red'
+        drop_after: 5
+        delay: 5
 
-## Robot Malfunction
+.. _target to robot malfunction:
+
+Robot Malfunction
+==================
 
 The robot malfunction challenge simulates a robot malfunction. The robot can malfunction in some conditions (time, part placement, or submission) during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the competitors' control system. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 

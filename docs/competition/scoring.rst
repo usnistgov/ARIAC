@@ -226,7 +226,7 @@ Station Score
   .. math::
 
     \texttt{station} = \begin{cases}
-    1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
+    1, &\text{if}\: isCorrectStation\: \text{is true} \\
     0, &\text{otherwise} \\
     \end{cases}
 

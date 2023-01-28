@@ -163,3 +163,74 @@ bins: # bin params - 8 total bins each bin has nine total slots (1-9)
 The `bins` field can have 8 subfields: `bin1`, `bin2`, `bin3`, `bin4`, `bin5`, `bin6`, `bin7`, `bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on bin slots). The `type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In the provided example, there are 3 pumps and 2 batteries in bin1. There are 6 purple regulators in bin3. The way part locations are defined in bin3 allows for the same part type and color with different orientations and flipped states to be placed in the same bin.
 
 The `color` field describes the part color in a bin. The `slots` field describes the slots in a bin where the part can be found. The `rotation` field describes the rotation of the part in a bin. The `flipped` field describes whether the parts are flipped in a bin. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. In the provided example, all red pumps in bin1 are flipped and all the blue batteries in bin1 are not flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
+
+#### AGVs
+
+In trials where assembly is required, the environment starts with parts already located on the AGVs. The `agvs` field describes the parts on the AGVs. The subfields of `agvs` can be `agv1`, `agv2`, `agv3`, and `agv4`. Each one of these subfields contains a tray ID and a list of parts. The `tray_id` field describes the tray ID located on the AGV. By convention, tray IDs located on AGVs at the start of the environment are 0. The `parts` field describes the parts on the AGV. The `type` field describes the part type on the AGV. The `color` field describes the part color on the AGV. The `quadrant` field describes the quadrant of the AGV where the part is located. The `rotation` field describes the rotation of the part on the AGV. The `flipped` field describes whether the part is flipped on the AGV. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
+
+It is important to note that AGVs are always located at their kitting station. Competitors have to move the AGVs to the assembly station to assemble the parts.
+
+```yaml
+parts:
+  agvs:
+    agv4:
+      tray_id: 0
+      parts:
+        - type: 'pump'
+          color: 'green'
+          quadrant: 1
+          rotation: 0
+          flipped: true
+        - type: 'sensor'
+          color: 'green'
+          quadrant: 3
+          rotation: 'pi'
+```
+
+#### Conveyor Belt
+
+Some trials require parts to be spawned on the conveyor belt. It can happen that parts required in a trial can only be found on the conveyor belt. Below is an example of how parts are defined on the conveyor belt.
+
+```yaml
+  conveyor_belt: # population params for conveyor belt
+    active: true
+    spawn_rate: 3.0 # seconds between spawn
+    order: 'random' # random or sequential
+    parts_to_spawn:
+      - type: 'battery'
+        color: 'red'
+        number: 2
+        offset: 0.15 # between -1 and 1
+        flipped: false
+        rotation: 'pi/6'
+      - type: 'sensor'
+        color: 'green'
+        number: 2
+        offset: 0.1 # between -1 and 1
+        flipped: true
+        rotation: 'pi'
+      - type: 'regulator'
+        color: 'blue'
+        number: 3
+        offset: -0.2 # between -1 and 1
+        flipped: false
+        rotation: 'pi/2'
+      - type: 'pump'
+        color: 'orange'
+        number: 1
+        offset: -0.15 # between -1 and 1
+        flipped: true
+        rotation: 'pi/3'
+```
+
+* The `conveyor_belt` field describes the parts on the conveyor belt.
+  * `active` field describes whether the conveyor belt is active. The `active` field can be set to `true` or `false`. If the `active` field is not defined, the conveyor belt will not be active (parts will not be spawned on the conveyor belt).
+  * `spawn_rate` field describes the rate at which parts are spawned on the conveyor belt. The `spawn_rate` field is a float value in seconds.
+  * `order` field describes the order in which parts are spawned on the conveyor belt. The `order` field can be set to `random` or `sequential`. When set to `sequential`, parts will be spawned in the order they are defined in the `parts_to_spawn` field. When set to `random`, parts will be spawned in a random order.
+  * `parts_to_spawn` field describes the parts that will be spawned on the conveyor belt. The `parts_to_spawn` field contains a list of parts.
+    * The `type` field describes the part type on the conveyor belt.
+    * The `color` field describes the part color on the conveyor belt. 
+    * The `number` field describes the number of parts of the same type and color that will be spawned on the conveyor belt.
+    * The `offset` field describes the offset between parts of the same type and color that will be spawned on the conveyor belt. The `offset` field is a float value in meters.
+    * The `flipped` field describes whether the parts are flipped on the conveyor belt. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
+    * The `rotation` field describes the rotation of the parts on the conveyor belt.

@@ -9,6 +9,50 @@ There are eight possible agility challenges in ARIAC 2023. A description of each
 
 Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to AGVs.
 
+### Faulty Parts Detection
+
+The quality control sensor located above each AGV is capable of detecting faulty parts. A quality check can be performed by calling the `/ariac/perform_quality_check` service with an order ID argument. **This service can be called only once for each order ID**. It is suggested to call this service after the order is completed but before it is submitted.
+
+
+The service definition is described in the file `PerformQualityCheck.srv` in the `ariac_msgs` package.
+
+```bash
+string order_id
+---
+bool valid_id
+bool all_passed
+bool incorrect_tray
+ariac_msgs/QualityIssue quadrant1
+ariac_msgs/QualityIssue quadrant2
+ariac_msgs/QualityIssue quadrant3
+ariac_msgs/QualityIssue quadrant4
+```
+
+
+The service returns a boolean value for the field `valid_id` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID. 
+
+The field `all_passed` is set to `true` only if:
+
+* All parts in the kitting tray are NOT faulty.
+* All parts are present in the kitting tray (no empty quadrant).
+* All parts have the correct orientation (no flipped part).
+* All parts are of the correct type.
+* All parts are of the correct color.
+
+The field `incorrect_tray` informs on whether or not the kitting task was performed on the correct kitting tray.
+
+Information for each quadrant is reported as a `QualityIssue` message. The `QualityIssue` message is defined in the file `QualityIssue.msg` in the `ariac_msgs` package.
+
+```bash
+bool all_passed
+bool missing_part
+bool flipped_part
+bool faulty_part
+bool incorrect_part_type
+bool incorrect_part_color
+```
+
+
 ### Faulty Parts Example
 
 Parts are set to faulty through the `faulty_part` challenge in the trial configuration file. Only the first parts placed in a tray are faulty. In the example below, the first parts placed in quadrants 1 and 2 in the tray required by order `MMB30H56` are always faulty. If these parts are removed and replaced with new parts, the new parts are not faulty.

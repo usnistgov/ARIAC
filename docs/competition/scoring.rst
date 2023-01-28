@@ -2,7 +2,7 @@
 Scoring
 ========
 
-:term:`Sphinx`
+.. :term:`Sphinx`
 
 There are three major components of the Trial Score in ARIAC 2023.
 

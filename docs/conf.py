@@ -34,6 +34,10 @@ html_theme = 'sphinx_rtd_theme'
 
 source_suffix = ['.rst', '.md']
 
+html_css_files = [
+    'custom.css',
+]
+
 # mathjax_path = 'MathJax.js?config=TeX-AMS_HTML'
 
 # -- Options for EPUB output

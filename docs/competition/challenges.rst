@@ -95,6 +95,12 @@ The environment can be started with parts that are flipped. Flipped parts are pa
 
 Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding part.
 
+Detecting Flipped Parts
+----------------------------
+
+Flipped parts detection is performed similarly to faulty parts detection. The quality control sensor located above each AGV is capable of detecting flipped parts. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
+
+
 Flipped Parts Example
 ----------------------------
 

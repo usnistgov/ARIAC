@@ -29,12 +29,13 @@ intersphinx_disabled_domains = ['std']
 
 templates_path = ['_templates']
 
-# The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'manni'
+
 
 # -- Options for HTML output
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinxdoc'
+# The name of the Pygments (syntax highlighting) style to use.
+pygments_style = 'manni'
 
 source_suffix = ['.rst', '.md']
 

@@ -242,9 +242,9 @@ Setup
 ----------------------------
 
 The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
-* ``duration``: The duration of the robot malfunction in seconds.
-* ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
-* :ref:`target to conditions` that can trigger the robot malfunction.
+  * ``duration``: The duration of the robot malfunction in seconds.
+  * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
+  * :ref:`target to conditions` that can trigger the robot malfunction.
 
 Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
 
@@ -279,7 +279,7 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is *Robots.msg* (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is **Robots.msg** (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
 
 .. code-block:: bash
   :caption: Robots.msg
@@ -294,33 +294,31 @@ To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/
 Sensor Blackout
 ================
 
-The sensor blackout challenge simulates a situation where some sensors stop reporting data during X seconds. 
+The sensor blackout challenge simulates a situation where some sensors stop reporting data for :math:`x` seconds. 
 
   The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
 
-The sensor blackout challenge is triggered based on :ref:`target to conditions`. When a sensor type blacks out, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
+The sensor blackout challenge is triggered based on :ref:`target to conditions`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
 
 
 
-Sensor Blackout Example
+Setup
 ---------------------------
 
 
-The sensor blackout challenge is specified with ``sensor_blackout`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
-
-* `duration`: The duration of the sensor blackout in seconds.
-* `sensors_to_disable`: A list of sensor types to disable:
-
-  * ``'break_beam'``
-  * ``'proximity'``
-  * ``'laser_profiler'``
-  * ``'lidar'``
-  * ``'camera'``
-  * ``'logical_camera'``
-* :ref:`Conditions<target to conditions>` to trigger the challenge.
+The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor blackout challenge. The relevant fields for this agility challenge are listed below.
+  * `duration`: The duration of the sensor blackout in seconds.
+  * `sensors_to_disable`: A list of sensor types to disable:
+    * ``'break_beam'``
+    * ``'proximity'``
+    * ``'laser_profiler'``
+    * ``'lidar'``
+    * ``'camera'``
+    * ``'logical_camera'``
+* :ref:`target to conditions` to trigger the challenge.
 
 
-The sensor blackout challenge can occur multiple times in the same trial. The example :ref:`below<sensor-blackout-yaml>` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
+The sensor blackout challenge can occur multiple times in the same trial.  :numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
 
 
 
@@ -341,23 +339,23 @@ The sensor blackout challenge can occur multiple times in the same trial. The ex
           order_id: 'MMB30H57'
 
 
-Detecting Sensor Blackouts
+Detection
 -----------------------------
 
-.. important::
-  To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. The message type for this topic is :ref:`ariac_msgs/msg/Sensors<sensors-health>` . The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors for a sensor type are healthy (they are publishing) and a ``false`` value indicates that all sensors for a sensor type are malfunctioning (they are not publishing).
 
-  .. code-block:: bash
-    :caption: Sensors.msg message file.
-    :name: sensors-health
-    
-    # Sensors.msg
-    bool break_beam
-    bool proximity
-    bool laser_profiler
-    bool lidar
-    bool camera
-    bool logical_camera
+To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. The message type for this topic is **Sensors.msg** (see :numref:`sensors-health`). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+
+.. code-block:: bash
+  :caption: Sensors.msg
+  :name: sensors-health
+  
+  # Sensors.msg
+  bool break_beam
+  bool proximity
+  bool laser_profiler
+  bool lidar
+  bool camera
+  bool logical_camera
 
 
 High-priority Orders
@@ -368,17 +366,17 @@ The high-priority orders challenge simulates an order that must be completed bef
   The goal of this challenge is to test the ability of the CCS to prioritize  high-priority orders over regular-priority orders. This requires the CCS to  be able to detect when a high-priority order is announced and to switch task.
 
 
-.. note::
-  A high-priority order can be announced in one of the two following :ref:`conditions<target to conditions>`: time and part placement. The submission condition is not used to announce a high-priority order.
+.. warning::
+  A high-priority order can be announced in one of the two following :ref:`target to conditions`: time and part placement. The submission condition is not used to announce a high-priority order.
 
 .. note::
   A high-priority order will only be announced when only regular-priority orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.
 
 
-High-priority Orders Example
+Setup
 -----------------------------
 
-To specify a high-priority order, the ``priority`` field is set to ``true`` in the order description in the trial configuration file. The :ref:`example<high-priority-order-yaml>` below shows a high-priority order for order ``MMB30H57`` and a regular-priority order for order ID ``MMB30H58``.
+To specify a high-priority order, the ``priority`` field is set to ``true`` in the order description. :numref:`high-priority-order-yaml` shows a high-priority order for order ``MMB30H57`` and a regular-priority order for order ``MMB30H58``.
 
 
 .. code-block:: yaml
@@ -414,26 +412,26 @@ To specify a high-priority order, the ``priority`` field is set to ``true`` in t
             quadrant: 4
 
 
-Detecting High-priority Orders
+Detection
 -------------------------------
 
-.. important::
-  To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is :ref:`ariac_msgs/msg/order<order-msg>`. For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
-  .. code-block:: bash
-    :caption: Order.msg message file.
-    :name: order-msg
-    
-    uint8 KITTING=0
-    uint8 ASSEMBLY=1
-    uint8 COMBINED=2
+To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is **Order.msg** (see :numref:`order-msg`). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
-    string id
-    uint8 type
-    bool priority
-    ariac_msgs/KittingTask kitting_task 
-    ariac_msgs/AssemblyTask assembly_task
-    ariac_msgs/CombinedTask combined_task
+.. code-block:: bash
+  :caption: Order.msg
+  :name: order-msg
+  
+  uint8 KITTING=0
+  uint8 ASSEMBLY=1
+  uint8 COMBINED=2
+
+  string id
+  uint8 type
+  bool priority
+  ariac_msgs/KittingTask kitting_task 
+  ariac_msgs/AssemblyTask assembly_task
+  ariac_msgs/CombinedTask combined_task
 
 
 Insufficient Parts
@@ -441,12 +439,12 @@ Insufficient Parts
 
 The insufficient parts challenge simulates a situation where the workcell does not contain enough parts to complete one or multiple orders. 
 
-  The goal of this challenge is to test whether or not the CCS is capable of identifying insufficient parts to complete one or multiple orders. When an insufficient part challenge takes place, the CCS must submit incomplete orders.
+  The goal of this challenge is to test whether or not the CCS is capable of identifying insufficient parts to complete one or multiple orders. When an insufficient parts challenge takes place, the CCS must submit incomplete orders.
 
-Insufficient Parts Example
+Setup
 -----------------------------
 
-There is no specific field in the trial configuration file to specify this challenge. The :ref:`example<insufficient-parts-yaml>` below shows a trial configuration file where the workcell does not have enough parts to complete order ``MMB30H58``. The order requires 4 blue batteries but the whole workcell has only 2 blue batteries (located in bin1).
+There is no specific field in the trial configuration file to specify this challenge.  :numref:`insufficient-parts-yaml` shows a trial configuration file where the workcell does not have enough parts to complete order ``MMB30H58``. The order requires 4 blue batteries but the whole workcell has only 2 blue batteries (located in bin1).
 
 .. code-block:: yaml
   :caption: Example of insufficient parts challenge.
@@ -489,10 +487,10 @@ There is no specific field in the trial configuration file to specify this chall
             color: 'blue'
             quadrant: 4
 
-.. _target to human operator:
 
 
-Detecting Insufficient Parts
+
+Detection
 -------------------------------
 
 
@@ -549,11 +547,7 @@ To figure out if the insufficient parts challenge is part of a trial, the CCS ca
         quantity: 1
       ---
 
-
-
-
-
-  
+.. _target to human operator:
 
 Human Operator
 ==============

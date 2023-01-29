@@ -2,31 +2,26 @@ Overview of the Competition
 ===========================
 
 .. figure:: ../images/ARIAC2023Flowchart.png
-   :scale: 50 %
-   :alt: map to buried treasure
+   :scale: 100 %
+   :alt: flowchart
+   :align: center
+   :figclass: align-center
+   :name: flowchart
+   :class: no-border
+   
 
-   This is the caption of the figure (a simple paragraph).
+   Flowchart showing the interactions between the :term:`CCS<Competitor Control System (CCS)>` and the :term:`AM<ARIAC Manager (AM)>`.
 
-   The legend consists of all elements after the caption.  In this
-   case, the legend consists of this paragraph and the following
-   table:
-
-   +-----------------------+-----------------------+
-   | Symbol                | Meaning               |
-   +=======================+=======================+
-   | .. image:: tent.png   | Campground            |
-   +-----------------------+-----------------------+
-   | .. image:: waves.png  | Lake                  |
-   +-----------------------+-----------------------+
-   | .. image:: peak.png   | Mountain              |
-   +-----------------------+-----------------------+
+   
 
 
-The flowchart below provides an overview of the competition. The competition consists of two main actors, the Competitor Control System (CCS) and the ARIAC Manager (AM). The competition is set to different states while it is running and competitors need to subscribe to the topic `/ariac/competition_state` to properly implement the programming logic.
+:numref:`flowchart` provides an overview of the competition. 
+The competition consists of two main actors, the :term:`CCS<Competitor Control System (CCS)>` and the :term:`AM<ARIAC Manager (AM)>`. 
+The competition is set to different states while it is running and the CCS needs to subscribe to the topic `/ariac/competition_state` to properly implement the programming logic.
 
-![Flowchart](../images/ARIAC2023Flowchart.png)
 
-A description of the flowchart is provided below.
+
+A description of :numref:`flowchart` is provided below.
 
 1. **start environment**: The competitor starts the environment with the following command:
 

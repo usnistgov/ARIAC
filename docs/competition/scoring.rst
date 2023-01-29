@@ -60,6 +60,7 @@ Kitting Task Score
       4. :math:`isFaulty_{q} \rightarrow E` is true if the part in quadrant :math:`q` is faulty.
 
   * Tray Score
+    
     * .. math::
 
       \texttt{pt}_{tray} = \begin{cases}
@@ -67,6 +68,7 @@ Kitting Task Score
       0, &\text{otherwise}  \\
       \end{cases}
   * Quadrant Score
+  
     * .. math::
 
       \texttt{pt}_q = \begin{cases}

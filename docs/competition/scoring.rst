@@ -62,15 +62,14 @@ Kitting Task Score
   * Tray Score
     
     * .. math::
-
       \texttt{pt}_{tray} = \begin{cases}
       3, &\text{if} ~~ A \\
       0, &\text{otherwise}  \\
       \end{cases}
-  * Quadrant Score
-  
-    * .. math::
 
+  * Quadrant Score
+    * .. math::
+      
       \texttt{pt}_q = \begin{cases}
         0, &\text{if} ~~ \lnot B \lor E \\
         3, &\text{if} ~~ B \land C \land \lnot D \land \lnot E\\

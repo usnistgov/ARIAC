@@ -1,8 +1,10 @@
-.. _Communication Overview:
+.. _COMMUNICATIONS:
 
-# ROS Communication Overview
+ROS Communication Overview
+==========================
 
-## Topics
+Topics
+------
 
 List of topics with the message type and a brief description.
 
@@ -18,7 +20,8 @@ List of topics with the message type and a brief description.
 | `/ariac/robot_health`          | `ariac_msgs/msg/Robots`             | Health of the robots                                 |
 | `/ariac/sensor_health`         | `ariac_msgs/msg/Sensors`            | Health of the sensors                                |
 
-## Services
+Services
+--------
 
 List of service with the service type and a brief description.
 
@@ -34,7 +37,8 @@ List of service with the service type and a brief description.
 | `/ariac/{robot}_enable_gripper` | `ariac_msgs/srv/VacuumGripperControl` | Set the state of {robot}'s gripper to the request state            |
 | `/ariac/{robot}_change_gripper` | `ariac_msgs/srv/ChangeGripper`        | Change the type of {robot}'s gripper to the request type           |
 
-## Sensor Topics
+Sensor Topics
+-------------
 
 List of sensor topics and their msg types:
 

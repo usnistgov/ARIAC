@@ -3,7 +3,7 @@ Conditions, Orders, and Tasks
 
 This page describes the different types of conditions, orders and tasks that can be found in a trial configuration file.
 
-.. _target to conditions:
+.. _CONDITIONS:
 
 Conditions
 ----------
@@ -63,7 +63,7 @@ Each task consists of at least one part of a specific color and type. Orders are
     * ``'assembly'``: Only assembly is to be performed.
     * ``'combined'``: Both kitting and assembly are to be performed.
   * ``priority`` (boolean): Each order has a priority. When set to `false` the order is a regular order and when set to `true`, the order is of high priority.
-  * ``announcement``: One of the 3 :ref:`target to conditions`.
+  * ``announcement``: One of the 3 :ref:`CONDITIONS`.
   * Manufacturing task: Only one of the manufacturing tasks below must be provided:
     
     * :ref:`KITTING_TASK`: Only kitting is to be performed.
@@ -116,6 +116,9 @@ Kitting is the process which groups separate but related parts as one unit. For 
   2. Place parts onto that kit tray in a specific quadrant.
   3. Direct the AGV to the warehouse.
   4. Evaluate the submitted kit for scoring.
+
+Setup
+^^^^^
 
 An example of a kitting task in a trial configuration file is presented in :numref:`kitting-task-yaml`. The kitting task in this example is described as follows:
 
@@ -220,20 +223,28 @@ An example of an assembly task in a trial configuration file is presented in :nu
 Combined Task
 -------------
 
-A combined task is a task which requires both kitting and assembly. For a combined task, competitors are expected to first perform a kitting task and then perform an assembly task. **Only information about the assembly task is provided in the trial configuration file**. The kitting task information is left to the competitors to figure out based on the assembly task information. 
-
-Competitors can place part anywhere on AGVs and then move those AGVs to the station where assembly is to be performed. Once the assembly is complete, competitors can submit the assembly via a ROS service call. The ARIAC environment will then evaluate the submitted assembly for scoring. **Kitting is not scored in a combined task**.
-
-### Example
-
-An example of a combined task in a trial configuration file is presented below. This example is similar to the assembly task example above, but the field `agv_number` is not provided. Besides the absence of the `agv_number` field, the following description applies to only a combined task:
-
-- `type: 'combined'`
-- `combined_task` field.
+A combined task is a task which requires both kitting and assembly. 
+For a combined task, the CCS are expected to first perform a kitting task and then perform an assembly task. 
 
 
-```yaml
-- id: 'MMB30H58'
+.. note::
+  The kitting task information is left to the competitors to figure out based on the assembly task information. 
+  The CCS can place part anywhere on AGVs and then move those AGVs to the station where assembly is to be performed. 
+  Once the assembly is complete, the CCS can submit the assembly via a ROS service call (see :ref:`COMMUNICATIONS`). 
+  The :term:`AM<ARIAC Manager (AM)>` will then evaluate the submitted assembly for scoring (kitting task is not scored). 
+
+
+Setup
+^^^^^
+
+An example of a combined task in a trial configuration file is presented in :numref:`combined-task-yaml`. 
+This example is similar to the assembly task from :numref:`assembly-task-yaml`, except for the field ``agv_number`` which is not used. 
+
+.. code-block:: yaml
+  :caption: Example of a combined task description.
+  :name: combined-task-yaml
+
+  - id: 'MMB30H58'
     type: 'combined'
     announcement:
       time_condition: 25
@@ -265,4 +276,5 @@ An example of a combined task in a trial configuration file is presented below. 
           xyz: [0.14, 0.144, 0.144]
           rpy: [0.2, 0, 0]
           assembly_direction: [-3, -3.3, -3.33] # unit vector in insert frame
-```
+
+

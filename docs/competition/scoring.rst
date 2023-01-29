@@ -112,77 +112,78 @@ Kitting Task Score
 
 .. admonition:: Task Score
   :class: tip
+  :name: task-score
 
    .. math::
 
         S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
 
+..
+  Tray Score
+  ,,,,,,,,,,
 
-Tray Score
-,,,,,,,,,,
 
+      .. math::
+        
+        \texttt{pt}_{tray} = \begin{cases}
+        3, &\text{if} ~~ A \\
+        0, &\text{otherwise}  \\
+        \end{cases}
+
+  Quadrant Score
+  ,,,,,,,,,,,,,,
 
     .. math::
-      
-      \texttt{pt}_{tray} = \begin{cases}
-      3, &\text{if} ~~ A \\
-      0, &\text{otherwise}  \\
+
+      \texttt{pt}_q = \begin{cases}
+      0, &\text{if} ~~ \lnot B \lor E \\
+      3, &\text{if} ~~ B \land C \land \lnot D \land \lnot E\\
+      2, &\text{if} ~~ B \land \lnot C \land \lnot D \land \lnot E\\
+      2, &\text{if} ~~ B \land C \land  D \land \lnot E\\
+      1, &\text{if} ~~ B \land \lnot C \land D \land \lnot E\\
       \end{cases}
 
-Quadrant Score
-,,,,,,,,,,,,,,
+  Bonus Score
+  ,,,,,,,,,,,
 
-  .. math::
+    .. math::
 
-    \texttt{pt}_q = \begin{cases}
-    0, &\text{if} ~~ \lnot B \lor E \\
-    3, &\text{if} ~~ B \land C \land \lnot D \land \lnot E\\
-    2, &\text{if} ~~ B \land \lnot C \land \lnot D \land \lnot E\\
-    2, &\text{if} ~~ B \land C \land  D \land \lnot E\\
-    1, &\text{if} ~~ B \land \lnot C \land D \land \lnot E\\
-    \end{cases}
+      \texttt{pt}_b = \begin{cases}
+      n, &\text{if} ~~ \sum_{q}^{n}{\texttt{pt}_q} = n\times 3 \\
+      0, &\text{otherwise} \\
+      \end{cases}
 
-Bonus Score
-,,,,,,,,,,,
+  Penalty
+  ,,,,,,,,,,,,,
 
-  .. math::
+  A penalty is only applied if more parts are on the tray than needed.
 
-    \texttt{pt}_b = \begin{cases}
-    n, &\text{if} ~~ \sum_{q}^{n}{\texttt{pt}_q} = n\times 3 \\
-    0, &\text{otherwise} \\
-    \end{cases}
+    .. math::
 
-Penalty
-,,,,,,,,,,,,,
+      \texttt{pn}_{ep} = \begin{cases}
+      m - n, &\text{if} ~~ m>n \\
+      0, &\text{otherwise} \\
+      \end{cases}
 
-A penalty is only applied if more parts are on the tray than needed.
+  Destination Score
+  ,,,,,,,,,,,,,,,,,
 
-  .. math::
+    .. math::
 
-    \texttt{pn}_{ep} = \begin{cases}
-    m - n, &\text{if} ~~ m>n \\
-    0, &\text{otherwise} \\
-    \end{cases}
-
-Destination Score
-,,,,,,,,,,,,,,,,,
-
-  .. math::
-
-    \texttt{destination} = \begin{cases}
-    1, &\text{if}\, isCorrectDestination\, \text{is true} \\
-    0, &\text{otherwise} \\
-    \end{cases}
+      \texttt{destination} = \begin{cases}
+      1, &\text{if}\, isCorrectDestination\, \text{is true} \\
+      0, &\text{otherwise} \\
+      \end{cases}
 
 
-==================
+  ==================
 
-Task Score
-,,,,,,,,,,,
-  
-  .. math::
+  Task Score
+  ,,,,,,,,,,,
+    
+    .. math::
 
-    S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
+      S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
 
 
 Assembly Task Score
@@ -199,47 +200,86 @@ Assembly Task Score
       3. :math:`isCorrectPose_{s} \rightarrow C` is true if the part in slot :math:`s` has the correct pose.
 
 
-Slot Score
-,,,,,,,,,,,,,,
+.. admonition:: Slot Score
 
-  .. math::
+   .. math::
 
-    \texttt{pt}_s = \begin{cases}
-    3, &\text{if} ~~ A \land (B \land C)\\
-    2, &\text{if} ~~ A \land (B \lor C)\\
-    1, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
-    0, &\text{if} ~~ \lnot A \\
-    \end{cases}
+        \texttt{pt}_s = \begin{cases}
+        3, &\text{if} ~~ A \land (B \land C)\\
+        2, &\text{if} ~~ A \land (B \lor C)\\
+        1, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
+        0, &\text{if} ~~ \lnot A \\
+        \end{cases}
 
-Bonus Score
-,,,,,,,,,,,
+.. admonition:: Bonus Score
 
-  .. math::
+   .. math::
 
-    \texttt{pt}_b = \begin{cases}
-    n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 3 \\
-    0, &\text{otherwise} \\
-    \end{cases}
+        \texttt{pt}_b = \begin{cases}
+        n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 3 \\
+        0, &\text{otherwise} \\
+        \end{cases}
 
-Station Score
-,,,,,,,,,,,,,,
+.. admonition:: Station Score
 
-  .. math::
+   .. math::
 
-    \texttt{station} = \begin{cases}
-    1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
-    0, &\text{otherwise} \\
-    \end{cases}
+        \texttt{station} = \begin{cases}
+        1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
+        0, &\text{otherwise} \\
+        \end{cases}
+
+.. admonition:: Task Score
+  :class: tip
+  :name: task-score-assembly
+
+   .. math::
+
+        S_{a} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
 
 
-==================
+..
+  Slot Score
+  ,,,,,,,,,,,,,,
 
-Task Score
-,,,,,,,,,,,
-  
-  .. math::
+    .. math::
 
-    S_{a} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
+      \texttt{pt}_s = \begin{cases}
+      3, &\text{if} ~~ A \land (B \land C)\\
+      2, &\text{if} ~~ A \land (B \lor C)\\
+      1, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
+      0, &\text{if} ~~ \lnot A \\
+      \end{cases}
+
+  Bonus Score
+  ,,,,,,,,,,,
+
+    .. math::
+
+      \texttt{pt}_b = \begin{cases}
+      n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 3 \\
+      0, &\text{otherwise} \\
+      \end{cases}
+
+  Station Score
+  ,,,,,,,,,,,,,,
+
+    .. math::
+
+      \texttt{station} = \begin{cases}
+      1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
+      0, &\text{otherwise} \\
+      \end{cases}
+
+
+  ==================
+
+  Task Score
+  ,,,,,,,,,,,
+    
+    .. math::
+
+      S_{a} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
 
 
 

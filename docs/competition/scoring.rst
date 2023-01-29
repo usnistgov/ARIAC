@@ -74,6 +74,7 @@ Kitting Task Score
         3, &\text{if} ~~ A \\
         0, &\text{otherwise}  \\
         \end{cases}
+
     * - Quadrant Score
       - .. math::
 
@@ -84,6 +85,7 @@ Kitting Task Score
         2, &\text{if} ~~ B \land C \land  D \land \lnot E\\
         1, &\text{if} ~~ B \land \lnot C \land D \land \lnot E\\
         \end{cases}
+
     * - Bonus Score
       - .. math::
 
@@ -91,6 +93,7 @@ Kitting Task Score
         n, &\text{if} ~~ \sum_{q}^{n}{\texttt{pt}_q} = n\times 3 \\
         0, &\text{otherwise} \\
         \end{cases}
+
     * - Penalty
       -  .. math::
 
@@ -98,6 +101,7 @@ Kitting Task Score
         0, &\text{if} ~~ m \leq n \\
         3 \times (m-n), &\text{if} ~~ m > n \\
         \end{cases}
+
     * - Destination Score
       - .. math::
 
@@ -105,6 +109,7 @@ Kitting Task Score
         0, &\text{if} ~~ \lnot isCorrectDestination \\
         3, &\text{otherwise} \\
         \end{cases}
+        
     * - Total Score
       - .. math::
 

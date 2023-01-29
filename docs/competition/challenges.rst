@@ -344,45 +344,72 @@ The high-priority orders challenge simulates an order that must be completed bef
   A high-priority order can be announced in one of the two following :ref:`conditions<target to conditions>`: time and part placement. The submission condition is not used to announce a high-priority order.
 
 .. note::
-  A high-priority order will only be announced when only regular orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.
+  A high-priority order will only be announced when only regular-priority orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.
 
 
 High-priority Orders Example
 -----------------------------
 
-To specify a high-priority order, the `priority` field is set to `true` in the order configuration file. The example below shows a high priority order with the order ID `MMB30H57` and a regular-priority order with the order ID `MMB30H58`.
+To specify a high-priority order, the ``priority`` field is set to ``true`` in the order description in the trial configuration file. Example :ref:`below<high-priority-order-yaml>` shows a high-priority order for order ``MMB30H57`` and a regular-priority order for order ID ``MMB30H58``.
 
-```yaml
-orders:
-  - id: 'MMB30H58'
-    type: 'kitting'
-    announcement:
-      time_condition: 0
-    priority: false
-    kitting_task:
-      agv_number: 2
-      tray_id: 2
-      destination: 'warehouse'
-      products:
-        - type: 'battery'
-          color: 'blue'
-          quadrant: 1
-  - id: 'MMB30H57'
-    type: 'kitting'
-    announcement:
-      time_condition: 44.5
-    priority: true
-    kitting_task:
-      agv_number: 3
-      tray_id: 5
-      destination: 'warehouse'
-      products:
-        - type: 'sensor'
-          color: 'orange'
-          quadrant: 4
-```
 
-## Insufficient Parts
+.. code-block:: yaml
+  :caption: Example of a high-priority order.
+  :name: high-priority-order-yaml
+
+  orders:
+    - id: 'MMB30H58'
+      type: 'kitting'
+      announcement:
+        time_condition: 0
+      priority: false
+      kitting_task:
+        agv_number: 2
+        tray_id: 2
+        destination: 'warehouse'
+        products:
+          - type: 'battery'
+            color: 'blue'
+            quadrant: 1
+    - id: 'MMB30H57'
+      type: 'kitting'
+      announcement:
+        time_condition: 44.5
+      priority: true
+      kitting_task:
+        agv_number: 3
+        tray_id: 5
+        destination: 'warehouse'
+        products:
+          - type: 'sensor'
+            color: 'orange'
+            quadrant: 4
+
+
+Detecting High-priority Orders
+-------------------------------
+
+.. important::
+  To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is :ref:`ariac_msgs/msg/orders<order-msg>`. For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+
+  .. code-block:: bash
+    :caption: Order.msg message file.
+    :name: order-msg
+    
+    uint8 KITTING=0
+    uint8 ASSEMBLY=1
+    uint8 COMBINED=2
+
+    string id
+    uint8 type
+    bool priority
+    ariac_msgs/KittingTask kitting_task 
+    ariac_msgs/AssemblyTask assembly_task
+    ariac_msgs/CombinedTask combined_task
+
+
+Insufficient Parts
+===================
 
 The insufficient parts challenge simulates a situation where the competitors' control system does not have enough parts to complete an order. This challenge is set up by not providing enough parts in the workcell. The competitors' control system must be able to detect that it does not have enough parts to complete the order and submit incomplete orders.
 

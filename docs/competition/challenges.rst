@@ -228,7 +228,7 @@ To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{rob
 Robot Malfunction
 ==================
 
-The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`target to conditions_`` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
+The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`target to conditions` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
   The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
@@ -242,12 +242,11 @@ Setup
 ----------------------------
 
 The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
-
 * ``duration``: The duration of the robot malfunction in seconds.
 * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
-* :ref:`target to conditions_` that can trigger the robot malfunction.
+* :ref:`target to conditions` that can trigger the robot malfunction.
 
-Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times in the same trial.
+Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
 
 
 .. code-block:: yaml
@@ -279,16 +278,15 @@ Robot malfunctions can occur multiple times in the same trial. :numref:`robot-ma
 Detection
 -----------------------------
 
-.. important::
-  To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is :ref:`ariac_msgs/msg/Robots<robots-health>` . The message contains Boolean-type fields which provide information on the health of the robots. The ``floor_robot`` field is ``true`` if the floor robot is healthy and ``false`` if it is malfunctioning. The ``ceiling_robot`` field is ``true`` if the ceiling robot is healthy and ``false`` if it is malfunctioning.
 
-  .. code-block:: bash
-    :caption: Robots.msg message file.
-    :name: robots-health
-    
-    # Robots.msg
-    bool floor_robot
-    bool ceiling_robot
+To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is *Robots.msg* (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+
+.. code-block:: bash
+  :caption: Robots.msg
+  :name: robots-health
+  
+  bool floor_robot
+  bool ceiling_robot
 
 
 .. _target to sensor blackout:
@@ -296,13 +294,13 @@ Detection
 Sensor Blackout
 ================
 
-The sensor blackout challenge simulates a situation where some sensors stop reporting data during X seconds. The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
+The sensor blackout challenge simulates a situation where some sensors stop reporting data during X seconds. 
 
-.. note::
-  This challenge has been modified from previous ARIAC iterations. In previous iterations, the sensor blackout challenge affected all sensor types at once. In this iteration, the sensor blackout can be customized to affect only selected sensor types.
-  
+  The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
 
-The sensor blackout challenge is triggered based on :ref:`conditions<target to conditions>`. When a sensor type blacks out, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
+The sensor blackout challenge is triggered based on :ref:`target to conditions`. When a sensor type blacks out, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
+
+
 
 Sensor Blackout Example
 ---------------------------

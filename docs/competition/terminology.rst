@@ -24,7 +24,7 @@ Terminology
       Parts are used during pick-and-place operations. There are four available parts (battery, pump, regulator, and sensor) and each part can be one of five possible colors (red, green, blue, orange, and purple).
 
     Order
-      An order is an intruction containing information on a task (:ref:`target to kitting task`, :ref:`target to assembly task`, or :ref:`target to combined task`). Each task consists of at least one part of a specific color and type.
+      An order is an intruction containing information on a task (`target to kitting task_`, `target to assembly task_`, or `target to combined task_`). Each task consists of at least one part of a specific color and type.
     
     Kitting Task
       Kitting is the process which groups separate but related [parts](#part) as one unit. For a kitting task, competitors are expected to: 

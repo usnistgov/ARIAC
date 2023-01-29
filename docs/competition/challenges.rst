@@ -57,8 +57,7 @@ The quality control sensor located above an AGV is capable of detecting faulty p
   ariac_msgs/QualityIssue quadrant3
   ariac_msgs/QualityIssue quadrant4
 
-More information on the fields of the service message is provided below.
-
+More information on the fields of the service message is provided as follows:
   * The service returns a Boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
 
   * The field ``all_passed`` is set to ``true`` only if:

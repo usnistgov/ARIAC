@@ -224,12 +224,12 @@ Combined Task
 -------------
 
 A combined task is a task which requires both kitting and assembly. 
-For a combined task, the CCS are expected to first perform a kitting task and then perform an assembly task. 
+For a combined task, the CCS is expected to first perform a kitting task followed with an assembly task. 
 
 
 .. note::
   The kitting task information is left to the competitors to figure out based on the assembly task information. 
-  The CCS can place part anywhere on AGVs and then move those AGVs to the station where assembly is to be performed. 
+  The CCS can place part sanywhere on AGVs and then move those AGVs to the station where assembly is to be performed. 
   Once the assembly is complete, the CCS can submit the assembly via a ROS service call (see :ref:`COMMUNICATIONS`). 
   The :term:`AM<ARIAC Manager (AM)>` will then evaluate the submitted assembly for scoring (kitting task is not scored). 
 

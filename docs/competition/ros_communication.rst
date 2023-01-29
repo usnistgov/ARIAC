@@ -6,6 +6,43 @@ ROS Communication Overview
 Topics
 ------
 
+.. list-table:: List of topics with the message type and a brief description.
+   :widths: 25 25 50
+   :header-rows: 1
+
+   * - Topic Name
+     - MSG type
+     - Description  
+   * - ``/ariac/orders``
+     - ``ariac_msgs/msg/Order``
+     - Orders that the CCS should submit 
+   * - ``/ariac/competition_state``
+     - Row 2, column 2
+     - Row 2, column 3
+   * - ``/ariac/bin_parts``
+     - Row 2, column 2
+     - Row 2, column 3
+   * - ``/ariac/conveyor_parts``
+     - Row 2, column 2
+     - Row 2, column 3
+   * - Row 2, column 1
+     - Row 2, column 2
+     - Row 2, column 3
+   * - Row 2, column 1
+     - Row 2, column 2
+     - Row 2, column 3
+   * - Row 2, column 1
+     - Row 2, column 2
+     - Row 2, column 3
+   * - Row 2, column 1
+     - Row 2, column 2
+     - Row 2, column 3
+   * - Row 2, column 1
+     - Row 2, column 2
+     - Row 2, column 3
+
+
+
 List of topics with the message type and a brief description.
 
 | Topic Name                     | MSG type                            | Description                                          |

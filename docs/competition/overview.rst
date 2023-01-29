@@ -23,7 +23,7 @@ A description of :numref:`flowchart` is provided below.
 1. **start environment**: The CCS starts the environment with the following command:
 
     .. code-block:: bash
-        
+
         ros2 launch ariac_gazebo ariac.launch.py trial_config:=<yaml_file> user_config:=<yaml_file>
 
 
@@ -44,6 +44,11 @@ the CCS can call the following service to start the competition:
 4. **work on order(s)**: During this phase, the CCS will perform different activities in order to fulfill the orders. The AM may announce new orders or start agility challenges based on the state of the workcell.
 
 5. **submit order(s)**: After orders are completed they are submitted by the CCS. Order submission may announce new orders and/or start agility challenges.  
+
+    .. warning:: 
+        
+        To submit a kitting order, the CCS needs to ensure the AGV is at the warehouse before calling the service to submit an order.
+        More information to get the AGV state can be found in the :ref:`COMMUNICATIONS` section.
 
 6. **end competition**: Once the CCS have submitted all orders, they need to call the following service to end the competition.
 

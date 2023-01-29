@@ -468,11 +468,12 @@ Detecting Insufficient Parts
 -------------------------------
 
 .. important::
-  When this challenge is included in a trial, the only way to know if it is present, is through two important topics:
-  * ``/ariac/bin_parts``: :ref:`ariac_msgs/msg/BinParts<bin-msg>`
-  * ``/ariac/conveyor_parts``: :ref:`ariac_msgs/msg/ConveyorParts<conveyor-msg>`
+  To figure out if the insufficient parts challenge is part of a trial, the CCS can rely on two important topics to retrieve part information from bins and the conveyor belt.
 
-  .. code-block:: bash
+    * ``/ariac/bin_parts``: :ref:`ariac_msgs/msg/BinParts<bin-msg>`
+    * ``/ariac/conveyor_parts``: :ref:`ariac_msgs/msg/ConveyorParts<conveyor-msg>`
+
+    .. code-block:: bash
     :caption: BinParts.msg
     :name: bin-msg
     
@@ -484,6 +485,8 @@ Detecting Insufficient Parts
     
     ariac_msgs/PartLot[] parts
 
+
+  
 
 ## Human Operator
 

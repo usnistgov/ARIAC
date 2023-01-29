@@ -470,73 +470,73 @@ Detecting Insufficient Parts
 
 To figure out if the insufficient parts challenge is part of a trial, the CCS can rely on two important topics to retrieve part type, color, and quantity from bins and the conveyor belt.
 
-  * ``/ariac/bin_parts``: :ref:`ariac_msgs/msg/BinParts<bin-msg>` outputs for each bin the type, the color, and the quantity of parts.
+  * ``/ariac/bin_parts``: :ref:`ariac_msgs/msg/BinParts<bin-msg>` outputs for each bin: The type, the color, and the quantity of parts.
 
-  .. code-block:: bash
-  :caption: BinParts.msg
-  :name: bin-msg
+    .. code-block:: bash
+      :caption: BinParts.msg
+      :name: bin-msg
 
-  ariac_msgs/BinInfo[] bins
-  
-  An example message from ``ros2 topic echo /ariac/bin_parts`` is depicted in the :ref:`listing<bin-parts-outputs>` below. The message shows that bin1 contains 3 red pumps and 2 blue batteries.
+      ariac_msgs/BinInfo[] bins
+    
+    An example of output from ``ros2 topic echo /ariac/bin_parts`` is depicted in the :ref:`listing<bin-parts-outputs>` below. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
-  .. note::
-    Bins that do not contain parts are not included in the message.
+    .. note::
+      Bins that do not contain parts are not included in the message.
 
-  .. code-block:: bash
-  :caption: Message published on the topic ``/ariac/bin_parts``.
-  :name: bin-parts-outputs
+    .. code-block:: bash
+      :caption: Message published on the topic ``/ariac/bin_parts``.
+      :name: bin-parts-outputs
 
-  ---
-  bins:
-  - bin_number: 1
-    parts:
-    - part:
-        color: 0
-        type: 11
-      quantity: 3
-    - part:
-        color: 2
-        type: 10
-      quantity: 2
-  ---
+      ---
+      bins:
+      - bin_number: 1
+        parts:
+        - part:
+            color: 0
+            type: 11
+          quantity: 3
+        - part:
+            color: 2
+            type: 10
+          quantity: 2
+      ---
 
 
 
   * ``/ariac/conveyor_parts``: :ref:`ariac_msgs/msg/ConveyorParts<conveyor-msg>` outputs information on parts that are expected to spawn on the conveyor belt.
 
-  .. code-block:: bash
-    :caption: ConveyorParts.msg
-    :name: conveyor-msg
+    .. code-block:: bash
+      :caption: ConveyorParts.msg
+      :name: conveyor-msg
 
-    ariac_msgs/PartLot[] parts
+      ariac_msgs/PartLot[] parts
 
-An example message from ``ros2 topic echo /ariac/conveyor_parts`` is depicted in the :ref:`listing<conveyor-parts-outputs>` below. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+    An example message from ``ros2 topic echo /ariac/conveyor_parts`` is depicted in the :ref:`listing<conveyor-parts-outputs>` below. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
-  .. code-block:: bash
-    :caption: Message published on the topic ``/ariac/conveyor_parts``.
-    :name: conveyor-parts-outputs
+    .. code-block:: bash
+      :caption: Message published on the topic ``/ariac/conveyor_parts``.
+      :name: conveyor-parts-outputs
 
-    ---
-    parts:
-    - part:
-        color: 0
-        type: 10
-      quantity: 2
-    - part:
-        color: 1
-        type: 12
-      quantity: 2
-    - part:
-        color: 2
-        type: 13
-      quantity: 3
-    - part:
-        color: 3
-        type: 11
-      quantity: 1
-    ---
+      ---
+      parts:
+      - part:
+          color: 0
+          type: 10
+        quantity: 2
+      - part:
+          color: 1
+          type: 12
+        quantity: 2
+      - part:
+          color: 2
+          type: 13
+        quantity: 3
+      - part:
+          color: 3
+          type: 11
+        quantity: 1
+      ---
 
 
 

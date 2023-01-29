@@ -60,8 +60,8 @@ Kitting Task Score
       4. :math:`isFaulty_{q} \rightarrow E` is true if the part in quadrant :math:`q` is faulty.
 
 
-.. list-table:: List of sensor topics with message types.
-   :widths: 25 50
+.. list-table:: Scores for a kitting task.
+   :widths: 25 70
    :header-rows: 1
    :name: score
 
@@ -69,11 +69,47 @@ Kitting Task Score
      - Formula  
    * - Tray Score
      - .. math::
-      
+
         \texttt{pt}_{tray} = \begin{cases}
         3, &\text{if} ~~ A \\
         0, &\text{otherwise}  \\
         \end{cases}
+    * - Quadrant Score
+      - .. math::
+
+        \texttt{pt}_q = \begin{cases}
+        0, &\text{if} ~~ \lnot B \lor E \\
+        3, &\text{if} ~~ B \land C \land \lnot D \land \lnot E\\
+        2, &\text{if} ~~ B \land \lnot C \land \lnot D \land \lnot E\\
+        2, &\text{if} ~~ B \land C \land  D \land \lnot E\\
+        1, &\text{if} ~~ B \land \lnot C \land D \land \lnot E\\
+        \end{cases}
+    * - Bonus Score
+      - .. math::
+
+        \texttt{pt}_b = \begin{cases}
+        n, &\text{if} ~~ \sum_{q}^{n}{\texttt{pt}_q} = n\times 3 \\
+        0, &\text{otherwise} \\
+        \end{cases}
+    * - Penalty
+      -  .. math::
+
+        \texttt{pt}_p = \begin{cases}
+        0, &\text{if} ~~ m \leq n \\
+        3 \times (m-n), &\text{if} ~~ m > n \\
+        \end{cases}
+    * - Destination Score
+      - .. math::
+
+        \texttt{pt}_d = \begin{cases}
+        0, &\text{if} ~~ \lnot isCorrectDestination \\
+        3, &\text{otherwise} \\
+        \end{cases}
+    * - Total Score
+      - .. math::
+
+        \texttt{pt} = \texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pt}_p + \texttt{pt}_d
+
 
 Tray Score
 ,,,,,,,,,,

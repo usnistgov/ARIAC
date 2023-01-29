@@ -2,10 +2,8 @@
 Scoring
 ========
 
-.. 
-  :term:`Sphinx`
 
-There are three major components of the Trial Score in ARIAC 2023.
+There are 3 major components of the Trial Score in ARIAC 2023.
 
   1. `Cost Factor`: How much does the system (sensors) cost?
   2. `Efficiency Factor`: How fast or efficiently did the system complete the task(s)
@@ -61,6 +59,21 @@ Kitting Task Score
       3. :math:`isFlipped_{q} \rightarrow D` is true if the part in quadrant :math:`q` is still flipped.
       4. :math:`isFaulty_{q} \rightarrow E` is true if the part in quadrant :math:`q` is faulty.
 
+
+.. list-table:: List of sensor topics with message types.
+   :widths: 25 50
+   :header-rows: 1
+   :name: score
+
+   * - Score Type
+     - Formula  
+   * - Tray Score
+     - .. math::
+      
+        \texttt{pt}_{tray} = \begin{cases}
+        3, &\text{if} ~~ A \\
+        0, &\text{otherwise}  \\
+        \end{cases}
 
 Tray Score
 ,,,,,,,,,,

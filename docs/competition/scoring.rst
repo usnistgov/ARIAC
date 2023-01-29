@@ -118,73 +118,6 @@ Kitting Task Score
 
         S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
 
-..
-  Tray Score
-  ,,,,,,,,,,
-
-
-      .. math::
-        
-        \texttt{pt}_{tray} = \begin{cases}
-        3, &\text{if} ~~ A \\
-        0, &\text{otherwise}  \\
-        \end{cases}
-
-  Quadrant Score
-  ,,,,,,,,,,,,,,
-
-    .. math::
-
-      \texttt{pt}_q = \begin{cases}
-      0, &\text{if} ~~ \lnot B \lor E \\
-      3, &\text{if} ~~ B \land C \land \lnot D \land \lnot E\\
-      2, &\text{if} ~~ B \land \lnot C \land \lnot D \land \lnot E\\
-      2, &\text{if} ~~ B \land C \land  D \land \lnot E\\
-      1, &\text{if} ~~ B \land \lnot C \land D \land \lnot E\\
-      \end{cases}
-
-  Bonus Score
-  ,,,,,,,,,,,
-
-    .. math::
-
-      \texttt{pt}_b = \begin{cases}
-      n, &\text{if} ~~ \sum_{q}^{n}{\texttt{pt}_q} = n\times 3 \\
-      0, &\text{otherwise} \\
-      \end{cases}
-
-  Penalty
-  ,,,,,,,,,,,,,
-
-  A penalty is only applied if more parts are on the tray than needed.
-
-    .. math::
-
-      \texttt{pn}_{ep} = \begin{cases}
-      m - n, &\text{if} ~~ m>n \\
-      0, &\text{otherwise} \\
-      \end{cases}
-
-  Destination Score
-  ,,,,,,,,,,,,,,,,,
-
-    .. math::
-
-      \texttt{destination} = \begin{cases}
-      1, &\text{if}\, isCorrectDestination\, \text{is true} \\
-      0, &\text{otherwise} \\
-      \end{cases}
-
-
-  ==================
-
-  Task Score
-  ,,,,,,,,,,,
-    
-    .. math::
-
-      S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
-
 
 Assembly Task Score
 ^^^^^^^^^^^^^^^^^^^
@@ -238,50 +171,6 @@ Assembly Task Score
         S_{a} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
 
 
-..
-  Slot Score
-  ,,,,,,,,,,,,,,
-
-    .. math::
-
-      \texttt{pt}_s = \begin{cases}
-      3, &\text{if} ~~ A \land (B \land C)\\
-      2, &\text{if} ~~ A \land (B \lor C)\\
-      1, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
-      0, &\text{if} ~~ \lnot A \\
-      \end{cases}
-
-  Bonus Score
-  ,,,,,,,,,,,
-
-    .. math::
-
-      \texttt{pt}_b = \begin{cases}
-      n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 3 \\
-      0, &\text{otherwise} \\
-      \end{cases}
-
-  Station Score
-  ,,,,,,,,,,,,,,
-
-    .. math::
-
-      \texttt{station} = \begin{cases}
-      1, &\text{if}\, isCorrectStation\, \text{is}\, \text{true} \\
-      0, &\text{otherwise} \\
-      \end{cases}
-
-
-  ==================
-
-  Task Score
-  ,,,,,,,,,,,
-    
-    .. math::
-
-      S_{a} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
-
-
 
 Combined Task Score
 ^^^^^^^^^^^^^^^^^^^
@@ -298,52 +187,56 @@ Combined Task Score
       4. :math:`isFaulty_{s} \rightarrow D` is true if the part in slot :math:`s` is faulty. To prevent faulty parts from being used in assembly, it is highly recommended to place them on an AGV and use the quality control sensor to check their status.
 
 
-Slot Score
-,,,,,,,,,,,,,,
 
-  .. math::
+.. admonition:: Slot Score
 
-    \texttt{pt}_s = \begin{cases}
-    0, &\text{if} ~~ \lnot A \lor D \\5, &\text{if} ~~ A \land (B \land C)\\
-    4, &\text{if} ~~ A \land (B \lor C)\\
-    3, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
-    \end{cases}
+   .. math::
 
-Bonus Score
-,,,,,,,,,,,
+        \texttt{pt}_s = \begin{cases}
+        0, &\text{if} ~~ \lnot A \lor D \\5, &\text{if} ~~ A \land (B \land C)\\
+        4, &\text{if} ~~ A \land (B \lor C)\\
+        3, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
+        \end{cases}
 
-  .. math::
+.. admonition:: Bonus Score
 
-    \texttt{pt}_b = \begin{cases}
-    n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 5 \\
-    0, &\text{otherwise} \\
-    \end{cases}
+   .. math::
 
-Station Score
-,,,,,,,,,,,,,,
+        \texttt{pt}_b = \begin{cases}
+        n \times 4, &\text{if} ~~ \sum_{s}^{n}{\texttt{pt}_{s}} = n\times 5 \\
+        0, &\text{otherwise} \\
+        \end{cases}
 
-  .. math::
+.. admonition:: Station Score
 
-    \texttt{station} = \begin{cases}
-    1, &\text{if}\: isCorrectStation\: \text{is true} \\
-    0, &\text{otherwise} \\
-    \end{cases}
+   .. math::
+
+        \texttt{station} = \begin{cases}
+        1, &\text{if}\: isCorrectStation\: \text{is true} \\
+        0, &\text{otherwise} \\
+        \end{cases}
+
+.. admonition:: Task Score
+  :class: tip
+  :name: task-score-combined
+
+   .. math::
+
+        S_{c} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
 
 
-==================
 
-Task Score
-,,,,,,,,,,,
-  
-  .. math::
-
-    S_{c} = (\sum_{s}^{n}{\texttt{pt}_s} + \texttt{pt}_b) \times (\texttt{station})
 
 Trial Score
 -----------------------
 
 The trial score :math:`TrialScore` combines the completion scores present in that trial.
 
-.. math::
 
-    TrialScore = \sum_{i=0}^{n_k}{S_{k_i}} + \sum_{j=0}^{n_a}{S_{a_j}} + \sum_{k=0}^{n_c}{S_{c_k}}
+.. admonition:: Trial Score
+  :class: caution
+  :name: trial-score
+
+   .. math::
+
+        TrialScore = \sum_{i=0}^{n_k}{S_{k_i}} + \sum_{j=0}^{n_a}{S_{a_j}} + \sum_{k=0}^{n_c}{S_{c_k}}

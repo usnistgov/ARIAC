@@ -467,23 +467,46 @@ There is no specific field in the trial configuration file to specify this chall
 Detecting Insufficient Parts
 -------------------------------
 
-.. important::
-  To figure out if the insufficient parts challenge is part of a trial, the CCS can rely on two important topics to retrieve part information from bins and the conveyor belt.
 
-    * ``/ariac/bin_parts``: :ref:`ariac_msgs/msg/BinParts<bin-msg>`
-    * ``/ariac/conveyor_parts``: :ref:`ariac_msgs/msg/ConveyorParts<conveyor-msg>`
+To figure out if the insufficient parts challenge is part of a trial, the CCS can rely on two important topics to retrieve part information from bins and the conveyor belt.
 
-  .. code-block:: bash
-    :caption: BinParts.msg
-    :name: bin-msg
+  * ``/ariac/bin_parts``: :ref:`ariac_msgs/msg/BinParts<bin-msg>` which consists of a list of :ref:`ariac_msgs/msg/BinInfo<bin-info-msg>` describing parts (type and color) in bins.
+  * ``/ariac/conveyor_parts``: :ref:`ariac_msgs/msg/ConveyorParts<conveyor-msg>`, which consists of a list of :ref:`ariac_msgs/msg/PartLot<part-lot-msg>` describing parts that are expected to spawn on the conveyor belt.
 
-    ariac_msgs/BinInfo[] bins
+.. code-block:: bash
+  :caption: BinParts.msg
+  :name: bin-msg
 
-  .. code-block:: bash
-    :caption: ConveyorParts.msg
-    :name: conveyor-msg
-    
-    ariac_msgs/PartLot[] parts
+  ariac_msgs/BinInfo[] bins
+
+.. code-block:: bash
+  :caption: ConveyorParts.msg
+  :name: conveyor-msg
+
+  ariac_msgs/PartLot[] parts
+
+.. code-block:: bash
+  :caption: BinInfo.msg
+  :name: bin-info-msg
+
+  uint8 BIN1=1
+  uint8 BIN2=2
+  uint8 BIN3=3
+  uint8 BIN4=4
+  uint8 BIN5=5
+  uint8 BIN6=6
+  uint8 BIN7=7
+  uint8 BIN8=8
+
+  uint8 bin_number
+  ariac_msgs/PartLot[] parts
+
+.. code-block:: bash
+  :caption: PartLot.msg
+  :name: part-lot-msg
+
+  ariac_msgs/Part part
+  uint8 quantity
 
 
   

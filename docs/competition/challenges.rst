@@ -527,36 +527,46 @@ To figure out if the insufficient parts challenge is part of a trial, the CCS ca
 
   
 
-## Human Operator
+Human Operator
+==============
 
-The human operator challenge consists of a simulated human operator navigating the workcell. The simulated human operator will have one of the three following behaviors in a
-given trial and the selected behavior will stay the same during the trial.
+.. warning::
+  This section is under construction...
 
-* **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
-* **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot’s current task.
-* **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
+The human operator challenge consists of a simulated human operator navigating the workcell. The simulated human will have one of the three following behaviors: 
 
-The goal of this challenge is to test the ability of the competitors' control system to avoid collisions with the human operator. The pose of the human operator is published to a Topic and this information can also be retrieved from the `/tf` Topic.
+  * **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
+  * **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot’s current task.
+  * **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
-### Human Operator Example
+.. note::
+  The behavior does not change within a trial, it stays the same for the whole trial.
 
-The human operator challenge is specified in the trial configuration file using the following fields:
 
-* `behavior`: The behavior of the human operator:
-  * `'indifferent'`
-  * `'antagonistic'`
-  * `'helpful'`
-* Conditions that can trigger the human operator behavior:
-  * `part_place_condition`: The challenge starts when a part of a specific type and color is placed on a specific AGV.
-  * `time_condition`: The challenge starts after a specific time.
-  * `submission_condition`: The challenge starts when a specific order is submitted.
 
-  Below is an example of the human operator challenge with the behavior set to `'antagonistic'` and the challenge starting when the order with the order ID `MMB30H57` is submitted.
+..
+  The goal of this challenge is to test the ability of the CCS to avoid collisions with the human operator. The pose of the human operator is published to a Topic and this information can also be retrieved from the `/tf` Topic.
 
-```yaml
-challenges:
-  - human_operator:
-      behavior: 'antagonistic'
-      submission_condition:
-        order_id: 'MMB30H57'
-```
+  Human Operator Example
+  -----------------------
+
+  The human operator challenge is specified in the trial configuration file using the following fields:
+
+  * `behavior`: The behavior of the human operator:
+    * `'indifferent'`
+    * `'antagonistic'`
+    * `'helpful'`
+  * Conditions that can trigger the human operator behavior:
+    * `part_place_condition`: The challenge starts when a part of a specific type and color is placed on a specific AGV.
+    * `time_condition`: The challenge starts after a specific time.
+    * `submission_condition`: The challenge starts when a specific order is submitted.
+
+    Below is an example of the human operator challenge with the behavior set to `'antagonistic'` and the challenge starting when the order with the order ID `MMB30H57` is submitted.
+
+  ```yaml
+  challenges:
+    - human_operator:
+        behavior: 'antagonistic'
+        submission_condition:
+          order_id: 'MMB30H57'
+  ```

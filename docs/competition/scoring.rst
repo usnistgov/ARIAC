@@ -110,6 +110,12 @@ Kitting Task Score
         0, &\text{otherwise} \\
         \end{cases}
 
+.. admonition:: Task Score
+  :class: tip
+
+   .. math::
+
+        S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
 
 
 Tray Score

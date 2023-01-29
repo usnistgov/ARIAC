@@ -476,11 +476,13 @@ Detecting Insufficient Parts
   .. code-block:: bash
     :caption: BinParts.msg
     :name: bin-msg
+
     ariac_msgs/BinInfo[] bins
 
   .. code-block:: bash
     :caption: ConveyorParts.msg
     :name: conveyor-msg
+    
     ariac_msgs/PartLot[] parts
 
 

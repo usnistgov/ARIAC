@@ -411,50 +411,55 @@ Detecting High-priority Orders
 Insufficient Parts
 ===================
 
-The insufficient parts challenge simulates a situation where the competitors' control system does not have enough parts to complete an order. This challenge is set up by not providing enough parts in the workcell. The competitors' control system must be able to detect that it does not have enough parts to complete the order and submit incomplete orders.
+The insufficient parts challenge simulates a situation where the workcell does not contain enough parts to complete one or multiple orders. 
 
-### Insufficient Parts Example
+  The goal of this challenge is to test whether or not the CCS is capable of identifying insufficient parts to complete one or multiple orders. When an insufficient part challenge takes place, the CCS must submit incomplete orders.
 
-There is no specific field in the trial configuration file to specify this challenge. The example below shows a trial configuration file where the competitors' control system does not have enough parts to complete the order with the order ID `MMB30H58`: `bin1` has only two `battery` parts of color `blue` but  order `MMB30H58` requires 4.
+Insufficient Parts Example
+-----------------------------
 
-```yaml
-parts: 
-  bins: 
-    bin1: 
-      - type: 'pump'
-        color: 'red'
-        slots: [1, 2, 3]
-        rotation: 'pi/6'
-        flipped: false
-      - type: 'battery'
-        color: 'blue'
-        slots: [4, 5]
-        rotation: 'pi/2'
-        flipped: false
-orders:
-  - id: 'MMB30H58'
-    type: 'kitting'
-    announcement:
-      time_condition: 0
-    priority: false
-    kitting_task:
-      agv_number: 2
-      tray_id: 2
-      destination: 'warehouse'
-      products:
+There is no specific field in the trial configuration file to specify this challenge. The :ref:`example<insufficient-parts-yaml>` below shows a trial configuration file where the workcell does not have enough parts to complete order ``MMB30H58`` since bin1 has only 2 blue batteries but the order requires 4 blue batteries.
+
+.. code-block:: yaml
+  :caption: Example of insufficient parts challenge.
+  :name: insufficient-parts-yaml
+
+  parts: 
+    bins: 
+      bin1: 
+        - type: 'pump'
+          color: 'red'
+          slots: [1, 2, 3]
+          rotation: 'pi/6'
+          flipped: false
         - type: 'battery'
           color: 'blue'
-          quadrant: 1
-        - type: 'battery'
-          color: 'blue'
-          quadrant: 2
-        - type: 'battery'
-          color: 'blue'
-          quadrant: 3
-        - type: 'battery'
-          color: 'blue'
-          quadrant: 4
-```
+          slots: [4, 5]
+          rotation: 'pi/2'
+          flipped: false
+  orders:
+    - id: 'MMB30H58'
+      type: 'kitting'
+      announcement:
+        time_condition: 0
+      priority: false
+      kitting_task:
+        agv_number: 2
+        tray_id: 2
+        destination: 'warehouse'
+        products:
+          - type: 'battery'
+            color: 'blue'
+            quadrant: 1
+          - type: 'battery'
+            color: 'blue'
+            quadrant: 2
+          - type: 'battery'
+            color: 'blue'
+            quadrant: 3
+          - type: 'battery'
+            color: 'blue'
+            quadrant: 4
 
 .. _target to human operator:
 

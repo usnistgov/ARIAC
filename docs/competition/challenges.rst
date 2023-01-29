@@ -94,7 +94,7 @@ The environment can be started with parts that are flipped. Flipped parts are pa
 
   The goal of this challenge is to evaluate the approach used by the CCS to flip a part. 
 
-.. tip::
+.. attention::
   Competitors should keep in mind that one of the two robots can malfunction at any point during the trial. This means that the CCS should be able to handle the case where one of the robots is not available to flip a part.
 
 

@@ -61,19 +61,57 @@ Topics
 Services
 --------
 
-List of service with the service type and a brief description.
+.. list-table:: List of services with the service type and a brief description.
+   :widths: 25 25 50
+   :header-rows: 1
+   :name: communications-services
 
-| Service Name                    | SRV type                              | Description                                                        |
-| ---                             | ---                                   | ---                                                                | 
-| `/ariac/start_competition`      | `std_srvs/srv/Trigger`                | Start the competition                                              |
-| `/ariac/end_competition`        | `std_srvs/srv/Trigger`                | End the competition                                                | 
-| `/ariac/submit_order`           | `ariac_msgs/srv/SubmitOrder`          | Submit an order with the requested `order_id`                      |
-| `/ariac/perform_quality_check`  | `ariac_msgs/srv/PerformQualityCheck`  | Check the quality of a kitting order with the requested `order_id` |
-| `/ariac/move_agv{n}`            | `ariac_msgs/srv/MoveAGV`              | Move the AGV {n} to the requested location                         |
-| `/ariac/agv{n}_lock_tray`       | `std_srvs/srv/Trigger`                | Lock a kit tray to AGV {n}                                         |
-| `/ariac/agv{n}_unlock_tray`     | `std_srvs/srv/Trigger`                | Unlock a kit tray to AGV {n}                                       |
-| `/ariac/{robot}_enable_gripper` | `ariac_msgs/srv/VacuumGripperControl` | Set the state of {robot}'s gripper to the request state            |
-| `/ariac/{robot}_change_gripper` | `ariac_msgs/srv/ChangeGripper`        | Change the type of {robot}'s gripper to the request type           |
+   * - Topic Name
+     - MSG type
+     - Description  
+   * - ``/ariac/start_competition``
+     - ``std_srvs/srv/Trigger```
+     - Start the competition   
+   * - ``/ariac/end_competition``
+     - ``std_srvs/srv/Trigger```
+     - End the competition
+   * - ``/ariac/submit_order``
+     - ``ariac_msgs/srv/SubmitOrder``
+     - Submit an order with the requested ``order_id`` 
+   * - ``/ariac/perform_quality_check``
+     - ``ariac_msgs/srv/PerformQualityCheck``
+     - Check the quality of a kitting order with the requested ``order_id``
+   * - ``/ariac/move_agv{n}``  
+     - ``ariac_msgs/srv/MoveAGV``
+     - Move the AGV {n} to the requested location  
+   * - ``/ariac/agv{n}_lock_tray``  
+     - ``std_srvs/srv/Trigger``
+     - Lock a kit tray to AGV {n} 
+   * - ``/ariac/agv{n}_unlock_tray``` 
+     - ``std_srvs/srv/Trigger``
+     - Unlock a kit tray to AGV {n} 
+   * - ``/ariac/{robot}_enable_gripper``
+     - ``ariac_msgs/srv/VacuumGripperControl``
+     - Set the state of {robot}'s gripper to the request state
+   * - ``/ariac/{robot}_change_gripper``
+     - ``ariac_msgs/srv/ChangeGripper`` 
+     - Change the type of {robot}'s gripper to the request type
+
+..
+
+    List of service with the service type and a brief description.
+
+    | Service Name                    | SRV type                              | Description                                                        |
+    | ---                             | ---                                   | ---                                                                | 
+    | `/ariac/start_competition`      | `std_srvs/srv/Trigger`                | Start the competition                                              |
+    | `/ariac/end_competition`        | `std_srvs/srv/Trigger`                | End the competition                                                | 
+    | `/ariac/submit_order`           | `ariac_msgs/srv/SubmitOrder`          | Submit an order with the requested `order_id`                      |
+    | `/ariac/perform_quality_check`  | `ariac_msgs/srv/PerformQualityCheck`  | Check the quality of a kitting order with the requested `order_id` |
+    | `/ariac/move_agv{n}`            | `ariac_msgs/srv/MoveAGV`              | Move the AGV {n} to the requested location                         |
+    | `/ariac/agv{n}_lock_tray`       | `std_srvs/srv/Trigger`                | Lock a kit tray to AGV {n}                                         |
+    | `/ariac/agv{n}_unlock_tray`     | `std_srvs/srv/Trigger`                | Unlock a kit tray to AGV {n}                                       |
+    | `/ariac/{robot}_enable_gripper` | `ariac_msgs/srv/VacuumGripperControl` | Set the state of {robot}'s gripper to the request state            |
+    | `/ariac/{robot}_change_gripper` | `ariac_msgs/srv/ChangeGripper`        | Change the type of {robot}'s gripper to the request type           |
 
 Sensor Topics
 -------------

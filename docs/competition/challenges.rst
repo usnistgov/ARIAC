@@ -315,7 +315,7 @@ The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor 
     * ``'lidar'``
     * ``'camera'``
     * ``'logical_camera'``
-* :ref:`target to conditions` to trigger the challenge.
+  * :ref:`target to conditions` to trigger the challenge.
 
 
 The sensor blackout challenge can occur multiple times in the same trial.  :numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
@@ -496,56 +496,60 @@ Detection
 
 To figure out if the insufficient parts challenge is part of a trial, the CCS can rely on two important topics to retrieve part type, color, and quantity from bins and the conveyor belt.
 
-  The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+Bins
+^^^^^
 
-    .. code-block:: bash
-      :caption: Message published on the topic ``/ariac/bin_parts``.
-      :name: bin-parts-outputs
+The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
-      ---
-      bins:
-      - bin_number: 1
-        parts:
-        - part:
-            color: 0
-            type: 11
-          quantity: 3
-        - part:
-            color: 2
-            type: 10
-          quantity: 2
-      ---
+  .. code-block:: bash
+    :caption: Message published on the topic ``/ariac/bin_parts``.
+    :name: bin-parts-outputs
 
-    .. note::
-      Bins that do not contain parts are not included in the message.
-
-
-  The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
-
-
-    .. code-block:: bash
-      :caption: Message published on the topic ``/ariac/conveyor_parts``.
-      :name: conveyor-parts-outputs
-
-      ---
+    ---
+    bins:
+    - bin_number: 1
       parts:
       - part:
           color: 0
-          type: 10
-        quantity: 2
-      - part:
-          color: 1
-          type: 12
-        quantity: 2
-      - part:
-          color: 2
-          type: 13
+          type: 11
         quantity: 3
       - part:
-          color: 3
-          type: 11
-        quantity: 1
-      ---
+          color: 2
+          type: 10
+        quantity: 2
+    ---
+
+  .. note::
+    Bins that do not contain parts are not included in the message.
+
+Conveyor Belt
+^^^^^^^^^^^^^^^
+The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+
+
+  .. code-block:: bash
+    :caption: Message published on the topic ``/ariac/conveyor_parts``.
+    :name: conveyor-parts-outputs
+
+    ---
+    parts:
+    - part:
+        color: 0
+        type: 10
+      quantity: 2
+    - part:
+        color: 1
+        type: 12
+      quantity: 2
+    - part:
+        color: 2
+        type: 13
+      quantity: 3
+    - part:
+        color: 3
+        type: 11
+      quantity: 1
+    ---
 
 .. _target to human operator:
 

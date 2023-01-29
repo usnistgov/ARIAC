@@ -8,6 +8,20 @@ This page describes the different types of orders and tasks that can be found in
 Conditions
 ----------
 
+Orders and challenges are announced under some conditions. There are 3 types of conditions in ARIAC 2023:
+  * Time-based condition: This condition is used to announce an order when the competition time has reached the time provided in the condition. 
+    *Note*: The competition time is set when the competitor starts the competition. 
+    For each trial, the first order always uses a time-based condition with the value 0. 
+    This ensures the first order is announced as soon as the competitor starts the competition. 
+    The following snippet shows an example of a time-based condition:
+
+    .. code-block:: yaml
+    :caption: Time-based condition.
+    :name: time-based-condition
+
+      announcement:
+        time_condition: 0
+
 
 
 .. _target to orders:
@@ -90,7 +104,8 @@ orders:
 
 .. _target to kitting task:
 
-## Kitting Task
+Kitting Task
+------------
 
 Kitting is the process which groups separate but related [parts](#part) as one unit. For a kitting task, competitors are expected to:
 
@@ -128,7 +143,8 @@ orders:
 
 .. _target to assembly task:
 
-## Assembly Task
+Assembly Task
+-------------
 
 Assembly is a manufacturing process in which interchangeable parts are added to a product in a sequential manner to create an end product. In ARIAC, assembly is simplified by not "forcing" competitors to use a sequence during assembly. Competitors can place parts in an insert in any order.
 
@@ -187,7 +203,8 @@ An example of an assembly task in a trial configuration file is presented below 
 .. _target to combined task:
 
 
-## Combined Task
+Combined Task
+-------------
 
 A combined task is a task which requires both kitting and assembly. For a combined task, competitors are expected to first perform a kitting task and then perform an assembly task. **Only information about the assembly task is provided in the trial configuration file**. The kitting task information is left to the competitors to figure out based on the assembly task information. 
 

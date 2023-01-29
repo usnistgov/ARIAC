@@ -17,45 +17,45 @@ Topics
      - ``ariac_msgs/msg/Order``
      - Orders that the CCS should submit 
    * - ``/ariac/competition_state``
-     - Row 2, column 2
-     - Row 2, column 3
+     - ``ariac_msgs/msg/CompetitionState`` 
+     - Current state of the competition 
    * - ``/ariac/bin_parts``
-     - Row 2, column 2
-     - Row 2, column 3
+     - ``ariac_msgs/msg/BinParts`` 
+     - Parts in each bin at program start-up 
    * - ``/ariac/conveyor_parts``
-     - Row 2, column 2
-     - Row 2, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
-   * - Row 2, column 1
-     - Row 2, column 2
-     - Row 2, column 3
+     - ``ariac_msgs/msg/ConveyorParts`` 
+     - Parts that will come on the conveyor belt 
+   * - ``/ariac/agv{n}_status``
+     - ``ariac_msgs/msg/AGVStatus``
+     - State of the AGV {n} (location, position, velocity)
+   * - ``/ariac/{robot}_gripper_state``
+     - ``ariac_msgs/msg/VacuumGripperState``
+     - State of {robot}'s gripper (enabled, attached, type)
+   * - ``/ariac/conveyor_state``
+     - ``ariac_msgs/msg/ConveyorBeltState``
+     - State of the conveyor (enabled, power)
+   * - ``/ariac/robot_health``
+     - ``ariac_msgs/msg/Robots``
+     - Health of the robots
+   * - ``/ariac/sensor_health```
+     - ``ariac_msgs/msg/Sensors``
+     - Health of the sensors
 
 
+..
+    List of topics with the message type and a brief description.
 
-List of topics with the message type and a brief description.
-
-| Topic Name                     | MSG type                            | Description                                          |
-| ---                            | ---                                 | ---                                                  | 
-| `/ariac/orders`                | `ariac_msgs/msg/Order`              | Orders that the competitors should submit            |
-| `/ariac/competition_state`     | `ariac_msgs/msg/CompetitionState`   | Current state of the competition                     | 
-| `/ariac/bin_parts`             | `ariac_msgs/msg/BinParts`           | Parts in each bin at program start-up                |
-| `/ariac/conveyor_parts`        | `ariac_msgs/msg/ConveyorParts`      | Parts that will come on the conveyor belt            |
-| `/ariac/agv{n}_status`         | `ariac_msgs/msg/AGVStatus`          | State of the AGV {n} (location, position, velocity)  |
-| `/ariac/{robot}_gripper_state` | `ariac_msgs/msg/VacuumGripperState` | State of {robot}'s gripper (enabled, attached, type) |
-| `/ariac/conveyor_state`        | `ariac_msgs/msg/ConveyorBeltState`  | State of the conveyor (enabled, power)               |
-| `/ariac/robot_health`          | `ariac_msgs/msg/Robots`             | Health of the robots                                 |
-| `/ariac/sensor_health`         | `ariac_msgs/msg/Sensors`            | Health of the sensors                                |
+    | Topic Name                     | MSG type                            | Description                                          |
+    | ---                            | ---                                 | ---                                                  | 
+    | `/ariac/orders`                | `ariac_msgs/msg/Order`              | Orders that the competitors should submit            |
+    | `/ariac/competition_state`     | `ariac_msgs/msg/CompetitionState`   | Current state of the competition                     | 
+    | `/ariac/bin_parts`             | `ariac_msgs/msg/BinParts`           | Parts in each bin at program start-up                |
+    | `/ariac/conveyor_parts`        | `ariac_msgs/msg/ConveyorParts`      | Parts that will come on the conveyor belt            |
+    | `/ariac/agv{n}_status`         | `ariac_msgs/msg/AGVStatus`          | State of the AGV {n} (location, position, velocity)  |
+    | `/ariac/{robot}_gripper_state` | `ariac_msgs/msg/VacuumGripperState` | State of {robot}'s gripper (enabled, attached, type) |
+    | `/ariac/conveyor_state`        | `ariac_msgs/msg/ConveyorBeltState`  | State of the conveyor (enabled, power)               |
+    | `/ariac/robot_health`          | `ariac_msgs/msg/Robots`             | Health of the robots                                 |
+    | `/ariac/sensor_health`         | `ariac_msgs/msg/Sensors`            | Health of the sensors                                |
 
 Services
 --------

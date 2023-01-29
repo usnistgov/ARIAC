@@ -350,11 +350,11 @@ The high-priority orders challenge simulates an order that must be completed bef
 High-priority Orders Example
 -----------------------------
 
-To specify a high-priority order, the ``priority`` field is set to ``true`` in the order description in the trial configuration file. Example :ref:`below<high-priority-order-yaml>` shows a high-priority order for order ``MMB30H57`` and a regular-priority order for order ID ``MMB30H58``.
+To specify a high-priority order, the ``priority`` field is set to ``true`` in the order description in the trial configuration file. The :ref:`example<high-priority-order-yaml>` below shows a high-priority order for order ``MMB30H57`` and a regular-priority order for order ID ``MMB30H58``.
 
 
 .. code-block:: yaml
-  :caption: Example of a high-priority order.
+  :caption: Example of a high-priority order for order MMB30H57.
   :name: high-priority-order-yaml
 
   orders:
@@ -390,7 +390,7 @@ Detecting High-priority Orders
 -------------------------------
 
 .. important::
-  To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is :ref:`ariac_msgs/msg/orders<order-msg>`. For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+  To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is :ref:`ariac_msgs/msg/order<order-msg>`. For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
   .. code-block:: bash
     :caption: Order.msg message file.

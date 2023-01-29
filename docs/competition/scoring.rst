@@ -69,24 +69,10 @@ Kitting Task Score
         0, &\text{otherwise}  \\
         \end{cases}
   
+.. admonition:: Quadrant Score
 
-.. list-table:: Scores for a kitting task.
-   :widths: 25 70
-   :header-rows: 1
-   :name: score
+   .. math::
 
-   * - Score Type
-     - Formula  
-   * - Tray Score
-     - .. math::
-
-        \texttt{pt}_{tray} = \begin{cases}
-        3, &\text{if} ~~ A \\
-        0, &\text{otherwise}  \\
-        \end{cases}
-    * - Quadrant Score
-      - .. math::
-  
         \texttt{pt}_q = \begin{cases}
         0, &\text{if} ~~ \lnot B \lor E \\
         3, &\text{if} ~~ B \land C \land \lnot D \land \lnot E\\
@@ -95,7 +81,36 @@ Kitting Task Score
         1, &\text{if} ~~ B \land \lnot C \land D \land \lnot E\\
         \end{cases}
 
+.. admonition:: Bonus Score
+
+   .. math::
+
+        \texttt{pt}_b = \begin{cases}
+        n, &\text{if} ~~ \sum_{q}^{n}{\texttt{pt}_q} = n\times 3 \\
+        0, &\text{otherwise} \\
+        \end{cases}
    
+.. admonition:: Penalty
+
+  A penalty is only applied if more parts are on the tray than needed.
+
+   .. math::
+
+        \texttt{pn}_{ep} = \begin{cases}
+        m - n, &\text{if} ~~ m>n \\
+        0, &\text{otherwise} \\
+        \end{cases}
+
+.. admonition:: Destination Score
+
+   .. math::
+
+        \texttt{destination} = \begin{cases}
+        1, &\text{if}\, isCorrectDestination\, \text{is true} \\
+        0, &\text{otherwise} \\
+        \end{cases}
+
+
 
 Tray Score
 ,,,,,,,,,,

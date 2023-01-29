@@ -64,7 +64,7 @@ Each task consists of at least one part of a specific color and type. Orders are
     * ``'combined'``: Both kitting and assembly are to be performed.
   * ``priority`` (boolean): Each order has a priority. When set to `false` the order is a regular order and when set to `true`, the order is of high priority.
   * ``announcement``: One of the 3 :ref:`target to conditions`.
-  * Manufacturing task: Only one manufacturing task which can be one of the following options:
+  * Manufacturing task: Only one of the manufacturing tasks below must be provided:
     
     * :ref:`KITTING_TASK`: Only kitting is to be performed.
     * :ref:`ASSEMBLY_TASK`: Only assembly is to be performed.
@@ -119,8 +119,6 @@ Kitting is the process which groups separate but related parts as one unit. For 
 
 An example of a kitting task in a trial configuration file is presented in :numref:`kitting-task-yaml`. The kitting task in this example is described as follows:
 
-  - This is a regular order (``priority: false``).
-  - This order consists of a kitting task (``type: kitting``).
   - The kit must be built on AGV2 (``agv_number: 2``).
   - The kitting tray with id 2 must be used to build the kit (``tray_id: 2``).
   - A blue battery must be place in quadrant 1 in the kitting tray (``type: 'battery'``, ``color: 'blue'``, and ``quadrant: 1``).
@@ -152,59 +150,69 @@ An example of a kitting task in a trial configuration file is presented in :numr
 Assembly Task
 -------------
 
-Assembly is a manufacturing process in which interchangeable parts are added to a product in a sequential manner to create an end product. In ARIAC, assembly is simplified by not "forcing" competitors to use a sequence during assembly. Competitors can place parts in an insert in any order.
+Assembly is a manufacturing process in which interchangeable parts are added to a product in a sequential manner to create an end product. 
+In ARIAC, assembly is simplified by not "forcing" competitors to use a sequence during assembly. 
+The CCS can place parts in an :term:`insert<Insert>` in any order. 
+For a trial where assembly tasks are required, the ARIAC environment starts with parts already located on AGVs. 
+The CCS is expected to:
 
-For an assembly task, competitors are expected to use parts located on an AGV and assemble those parts at one of the four assembly stations. For a trial where assembly tasks are required, the ARIAC environment starts with parts already located on AGVs. Competitors first need to move the AGVs to the correct assembly stations and then start assembling those parts into inserts. Once the assembly is complete, competitors can submit the assembly via a ROS service call. The ARIAC environment will then evaluate the submitted assembly for scoring.
-
-### Example
-
-An example of an assembly task in a trial configuration file is presented below with the following description:
-- This is a regular order (`priority` is set to `false`).
-- This order consists of an assembly task (`type` is set to `assembly`).
-- The assembly must be performed at assembly station 4 on AGV2 (`station` is set to `as4`).
-- Parts required to do assembly can be found on AGV3 and AGV4 (`agv_number` is `[4,3]`).
-- Each part needed for the assembly is specified under the `products` field.
-    - `type`: The type of the part.
-    - `color`: The color of the part.
-    - `assembled_pose`: The pose of the part in the insert frame.
-    - `assembly_direction`: The direction in which the part should be inserted into the insert frame.
+  1. Move the AGVs to the correct assembly station.
+  2. Assemble the parts into an insert.
+  3. Submit the assembly for scoring.
 
 
-```yaml
-- id: 'MMB30H57'
-    type: 'assembly'
-    announcement:
-      time_condition: 5
-    priority: false
-    assembly_task:
-        agv_number: [4,3]
-        station: 'as4'
-        products:
-        - type: 'sensor'
-          color: 'green'
-          assembled_pose: # relative to insert frame
-          xyz: [0.405, 0.164, 0.110]
-          rpy: ['pi/2', 0, 0]
-          assembly_direction: [-1, 0, 0] # unit vector in insert frame
-        - type: 'battery'
-          color: 'red'
-          assembled_pose: # relative to insert frame
-          xyz: [0.12, 0.122, 0.1222]
-          rpy: ['pi/4', 0, 0]
-          assembly_direction: [-1, -1.1, -1.11] # unit vector in insert frame
-        - type: 'regulator'
-          color: 'purple'
-          assembled_pose: # relative to insert frame
-          xyz: [0.13, 0.133, 0.133]
-          rpy: ['pi', 0, 0]
-          assembly_direction: [-2, -2.2, -2.22] # unit vector in insert frame
-        - type: 'pump'
-          color: 'orange'
-          assembled_pose: # relative to insert frame
-          xyz: [0.14, 0.144, 0.144]
-          rpy: [0.2, 0, 0]
-          assembly_direction: [-3, -3.3, -3.33] # unit vector in insert frame
-```
+Setup
+^^^^^
+
+An example of an assembly task in a trial configuration file is presented in :numref:`assembly-task-yaml` with the following description:
+
+- Assembly is required to be performed at assembly station 4 (``station: 'as4'``).
+- Parts required to do assembly can be found on AGV3 and AGV4 (``agv_number: [4,3]``).
+- Each part needed for the assembly is specified under the ``products`` field.
+
+    - ``type``: The type of the part.
+    - ``color``: The color of the part.
+    - ``assembled_pose``: The pose of the part in the insert frame (*Note*: These are bogus numbers).
+    - ``assembly_direction``: The direction in which the part should be inserted into the insert frame (*Note*: These are bogus numbers).
+
+.. code-block:: yaml
+  :caption: Example of an assembly task description.
+  :name: assembly-task-yaml
+
+  - id: 'MMB30H57'
+      type: 'assembly'
+      announcement:
+        time_condition: 5
+      priority: false
+      assembly_task:
+          agv_number: [4,3]
+          station: 'as4'
+          products:
+          - type: 'sensor'
+            color: 'green'
+            assembled_pose: # relative to insert frame
+            xyz: [0.405, 0.164, 0.110]
+            rpy: ['pi/2', 0, 0]
+            assembly_direction: [-1, 0, 0] # unit vector in insert frame
+          - type: 'battery'
+            color: 'red'
+            assembled_pose: # relative to insert frame
+            xyz: [0.12, 0.122, 0.1222]
+            rpy: ['pi/4', 0, 0]
+            assembly_direction: [-1, -1.1, -1.11] # unit vector in insert frame
+          - type: 'regulator'
+            color: 'purple'
+            assembled_pose: # relative to insert frame
+            xyz: [0.13, 0.133, 0.133]
+            rpy: ['pi', 0, 0]
+            assembly_direction: [-2, -2.2, -2.22] # unit vector in insert frame
+          - type: 'pump'
+            color: 'orange'
+            assembled_pose: # relative to insert frame
+            xyz: [0.14, 0.144, 0.144]
+            rpy: [0.2, 0, 0]
+            assembly_direction: [-3, -3.3, -3.33] # unit vector in insert frame
+
 
 .. _COMBINED_TASK:
 

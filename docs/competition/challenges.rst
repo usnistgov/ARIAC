@@ -20,7 +20,7 @@ Faulty parts are parts that are not in good condition. They are not suitable for
   The goal of this challenge is to test the ability of the :term:`CCS<Competitor Control System (CCS)>` to 1) correctly use the quality check sensor to detect faulty parts and 2) replace them with new parts.
 
 
-Trial Configuration File
+Setup
 ----------------------------
 
 The faulty parts challenge is set with the field ``faulty_part`` under the ``challenges`` field  in the trial configuration file. Only the first part placed in a quadrant is faulty. In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order ``MMB30H56`` is faulty. If these parts are removed and replaced with new parts, the new parts will be non-faulty.
@@ -92,18 +92,23 @@ Flipped Parts
 
 The environment can be started with parts that are flipped. Flipped parts are parts that are upside down. When a part is spawned as flipped, the CCS is required to flip this part again so it ends up with the correct orientation. If an order is submitted with flipped parts, these parts are not considered for scoring. 
 
+  The goal of this challenge is to evaluate the approach used by the CCS to flip a part. 
+
+.. tips::
+  Competitors should keep in mind that one of the two robots can malfunction at any point during the trial. This means that the CCS should be able to handle the case where one of the robots is not available to flip a part.
 
 
 
 
 
 
-Flipped Parts Example
+
+Setup
 ----------------------------
 
 Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding parts.
 
-The example :ref:`below<flipped-parts-in-bin>` describes all purple regulators as flipped in ``bin3``. 
+:numref:`flipped-parts-in-bin` describes all purple regulators as flipped in ``bin3``. 
 
 .. code-block:: yaml
   :caption: Setting flipped parts in a bin.
@@ -116,7 +121,7 @@ The example :ref:`below<flipped-parts-in-bin>` describes all purple regulators a
       rotation: 'pi/6'
       flipped: true
 
-The example :ref:`below<flipped-parts-on-conveyor-belt>` describes all orange batteries as flipped on the conveyor belt.
+:numref:`flipped-parts-on-conveyor-belt` describes all orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
   :caption: Setting flipped parts on the conveyor belt.
@@ -135,11 +140,11 @@ The example :ref:`below<flipped-parts-on-conveyor-belt>` describes all orange ba
         rotation: 'pi/6'
 
 
-Detecting Flipped Parts
+Detection
 ----------------------------
 
-.. important::
-  Flipped parts detection is performed similarly to faulty parts detection. The quality control sensor located above each AGV is capable of detecting flipped parts. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
+
+Flipped parts detection is performed similarly to faulty parts detection. A quality check informs whether or not a part is flipped. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
 
 
 
@@ -151,7 +156,7 @@ Faulty Gripper
 
 The faulty gripper challenge simulates a faulty gripper which can drop a part after the part has been picked up. The gripper can drop a part at any time during the trial. The gripper can drop a part that is in the gripper's grasp even if the gripper or robot is not moving. 
 
-The goal of this challenge is to test the ability of the competitors' control system to pick a part of the same type and color again after the gripper has dropped a part. The control system may try to pick the part again from where it was dropped or pick up a part from a different location.
+  The goal of this challenge is to test the ability of the competitors' control system to pick a part of the same type and color again after the gripper has dropped a part. The control system may try to pick the part again from where it was dropped or pick up a part from a different location.
 
 Faulty Gripper Example
 ----------------------------

@@ -17,18 +17,18 @@ Overview of the Competition
 
 :numref:`flowchart` provides an overview of the competition. 
 The competition consists of two main actors, the :term:`CCS<Competitor Control System (CCS)>` and the :term:`AM<ARIAC Manager (AM)>`. 
-The competition is set to different states while it is running and the CCS needs to subscribe to the topic `/ariac/competition_state` to properly implement the programming logic. 
+The competition is set to different states while it is running and the CCS needs to subscribe to the topic ``/ariac/competition_state`` to properly implement the programming logic. 
 A description of :numref:`flowchart` is provided below.
 
-1. **start environment**: The CCS starts the environment with the following command:
+1. **start environment**: Competitors start the environment with the following command:
 
     .. code-block:: bash
 
         ros2 launch ariac_gazebo ariac.launch.py trial_config:=<yaml_file> user_config:=<yaml_file>
 
 
-The Gazebo simulation environment will start and many ARIAC processes will start in the background. The competition is in the ``IDLE`` state. 
-Once all the required processes have been loaded in the background, the AM will set the competition state to ``READY``. 
+    The Gazebo simulation environment will start and many ARIAC processes will start in the background. The competition is in the ``IDLE`` state. 
+    Once all the required processes have been loaded in the background, the AM will set the competition state to ``READY``. 
 
 2. **start competition**: Once the state of the competition is set to ``READY``, 
 the CCS can call the following service to start the competition:
@@ -48,7 +48,7 @@ the CCS can call the following service to start the competition:
     .. warning:: 
         
         To submit a kitting order, the CCS needs to ensure the AGV is at the warehouse before calling the service to submit an order.
-        More information to get the AGV state can be found in the :ref:`COMMUNICATIONS` section.
+        The AGV status can be retrieved by subscribing to the topic ``/ariac/agv{n}_status`` (see :ref:`COMMUNICATIONS` for more information).
 
 6. **end competition**: Once the CCS have submitted all orders, they need to call the following service to end the competition.
 
@@ -59,4 +59,4 @@ the CCS can call the following service to start the competition:
 
     The result of the call will set the state of the competition to ``ENDED``.
 
-7. **calculate scoring**: The last phase of a trial is the computation of the score for the trial. The score is computed using the formulas described in the :ref:`SCORING` section. The score is displayed in the terminal.
+7. **calculate scoring**: The last phase of a trial is the computation of the score for the trial. The score is computed using the formulas described in the :ref:`SCORING` section. The score is thendisplayed in the terminal.

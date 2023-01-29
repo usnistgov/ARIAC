@@ -215,7 +215,6 @@ To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{rob
   :caption: VacuumGripperState.msg
   :name: vacuum-gripper-state-yaml
   
-  # VacuumGripperState.msg
   bool enabled  # is the succion enabled?
   bool attached # is an object attached to the gripper?
   string type   # type of the gripper attached to the arm

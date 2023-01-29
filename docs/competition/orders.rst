@@ -9,15 +9,15 @@ Conditions
 ----------
 
 Orders and challenges are announced under some conditions. There are 3 types of conditions in ARIAC 2023:
-  * Time-based condition: This condition is used to announce an order when the competition time has reached the time provided in the condition. 
+  * **Time-based condition**: This condition is used to announce an order when the competition time has reached the time provided in the condition. 
     *Note*: The competition time is set when the competitor starts the competition. 
     For each trial, the first order always uses a time-based condition with the value 0. 
     This ensures the first order is announced as soon as the competitor starts the competition. 
     The following snippet shows an example of a time-based condition:
 
     .. code-block:: yaml
-    :caption: Time-based condition.
-    :name: time-based-condition
+      :caption: Time-based condition.
+      :name: time-based-condition
 
       announcement:
         time_condition: 0

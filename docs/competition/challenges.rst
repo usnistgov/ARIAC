@@ -418,7 +418,7 @@ The insufficient parts challenge simulates a situation where the workcell does n
 Insufficient Parts Example
 -----------------------------
 
-There is no specific field in the trial configuration file to specify this challenge. The :ref:`example<insufficient-parts-yaml>` below shows a trial configuration file where the workcell does not have enough parts to complete order ``MMB30H58`` since bin1 has only 2 blue batteries but the order requires 4 blue batteries.
+There is no specific field in the trial configuration file to specify this challenge. The :ref:`example<insufficient-parts-yaml>` below shows a trial configuration file where the workcell does not have enough parts to complete order ``MMB30H58``. The order requires 4 blue batteries but the whole workcell has only 2 blue batteries (located in bin1).
 
 .. code-block:: yaml
   :caption: Example of insufficient parts challenge.
@@ -462,6 +462,28 @@ There is no specific field in the trial configuration file to specify this chall
             quadrant: 4
 
 .. _target to human operator:
+
+
+Detecting Insufficient Parts
+-------------------------------
+
+.. important::
+  When this challenge is included in a trial, the only way to know if it is present, is through two important topics:
+  * ``/ariac/bin_parts``: :ref:`ariac_msgs/msg/BinParts<bin-msg>`
+  * ``/ariac/conveyor_parts``: :ref:`ariac_msgs/msg/ConveyorParts<conveyor-msg>`
+
+  .. code-block:: bash
+    :caption: BinParts.msg
+    :name: bin-msg
+    
+    ariac_msgs/BinInfo[] bins
+
+    .. code-block:: bash
+    :caption: ConveyorParts.msg
+    :name: conveyor-msg
+    
+    ariac_msgs/PartLot[] parts
+
 
 ## Human Operator
 

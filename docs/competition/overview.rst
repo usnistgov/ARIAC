@@ -1,4 +1,26 @@
-# Overview of the Competition
+Overview of the Competition
+===========================
+
+.. figure:: ../images/ARIAC2023Flowchart.png
+   :scale: 50 %
+   :alt: map to buried treasure
+
+   This is the caption of the figure (a simple paragraph).
+
+   The legend consists of all elements after the caption.  In this
+   case, the legend consists of this paragraph and the following
+   table:
+
+   +-----------------------+-----------------------+
+   | Symbol                | Meaning               |
+   +=======================+=======================+
+   | .. image:: tent.png   | Campground            |
+   +-----------------------+-----------------------+
+   | .. image:: waves.png  | Lake                  |
+   +-----------------------+-----------------------+
+   | .. image:: peak.png   | Mountain              |
+   +-----------------------+-----------------------+
+
 
 The flowchart below provides an overview of the competition. The competition consists of two main actors, the Competitor Control System (CCS) and the ARIAC Manager (AM). The competition is set to different states while it is running and competitors need to subscribe to the topic `/ariac/competition_state` to properly implement the programming logic.
 

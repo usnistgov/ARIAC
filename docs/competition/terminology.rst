@@ -12,7 +12,7 @@ Terminology
       The competitor control system (CCS) is the software that is provided by competitors. The CCS is responsible for communicating with the competition environment and executing the tasks. 
     
     ARIAC Manager (AM)
-      The ARIAC manager is the interface provided to competitors. The AM includes the simulation environment and ROS interfaces.
+      The ARIAC manager (AM) is the interface provided to competitors. The AM includes the simulation environment and ROS interfaces.
     
     Competitor
       Person competing in ARIAC. Sometimes competitor is referred as "team" or "participant".

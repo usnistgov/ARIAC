@@ -59,6 +59,15 @@ Kitting Task Score
       3. :math:`isFlipped_{q} \rightarrow D` is true if the part in quadrant :math:`q` is still flipped.
       4. :math:`isFaulty_{q} \rightarrow E` is true if the part in quadrant :math:`q` is faulty.
 
+
+.. admonition:: Tray Score
+
+   .. math::
+
+        \texttt{pt}_{tray} = \begin{cases}
+        3, &\text{if} ~~ A \\
+        0, &\text{otherwise}  \\
+        \end{cases}
   
 
 .. list-table:: Scores for a kitting task.
@@ -75,7 +84,6 @@ Kitting Task Score
         3, &\text{if} ~~ A \\
         0, &\text{otherwise}  \\
         \end{cases}
-
     * - Quadrant Score
       - .. math::
   

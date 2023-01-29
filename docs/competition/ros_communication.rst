@@ -6,13 +6,13 @@ ROS Communication Overview
 Topics
 ------
 
-.. list-table:: List of topics with the message type and a brief description.
+.. list-table:: List of topics with message types.
    :widths: 25 25 50
    :header-rows: 1
    :name: communications-topics
 
    * - Topic Name
-     - MSG type
+     - Message type
      - Description  
    * - ``/ariac/orders``
      - ``ariac_msgs/msg/Order``
@@ -61,13 +61,13 @@ Topics
 Services
 --------
 
-.. list-table:: List of services with the service type and a brief description.
+.. list-table:: List of services with service types.
    :widths: 25 25 50
    :header-rows: 1
    :name: communications-services
 
-   * - Topic Name
-     - MSG type
+   * - Service Name
+     - Service type
      - Description  
    * - ``/ariac/start_competition``
      - ``std_srvs/srv/Trigger```
@@ -98,7 +98,6 @@ Services
      - Change the type of {robot}'s gripper to the request type
 
 ..
-
     List of service with the service type and a brief description.
 
     | Service Name                    | SRV type                              | Description                                                        |
@@ -116,15 +115,49 @@ Services
 Sensor Topics
 -------------
 
-List of sensor topics and their msg types:
+.. list-table:: List of sensor topics with message types.
+   :widths: 25 50 50
+   :header-rows: 1
+   :name: communications-sensor-topics
 
-| Sensor Type               | Topic name(s)                                                                       |	MSG type                                              |
-| ---                       | ---                                                                                 | ---                                                   |
-| `break_beam`              | `/ariac/sensors/{sensor_name}/status` `/ariac/sensors/{sensor_name}/status`         | ariac_msgs/BreakBeamStatus ariac_msgs/BreakBeamStatus |
-| `proximity`               | `/ariac/sensors/{sensor_name}/scan`                                                 |	sensor_msgs/Range                                     |
-| `laser_profiler`          | `/ariac/sensors/{sensor_name}/scan`                                                 |	sensor_msgs/LaserScan                                 |
-| `lidar`	                  | `/ariac/sensors/{sensor_name}/scan`	                                                | sensor_msgs/PointCloud                                |
-| `rgb_camera`              | `/ariac/sensors/{sensor_name}/rgb_image`                                            |	sensor_msgs/Image sensor_msgs/Image                   |
-| `rgbd_camera`             | `/ariac/sensors/{sensor_name}/rgb_image` `/ariac/sensors/{sensor_name}/depth_image` | sensor_msgs/Image                                     |
-| `basic_logical_camera`    | `/ariac/sensors/{sensor_name}/image`                                                | ariac_msgs/BasicLogicalCameraImage                    |
-| `advanced_logical_camera` | `/ariac/sensors/{sensor_name}/image`                                                | ariac_msgs/AdvancedLogicalCameraImage                 |
+   * - Sensor Type
+     - Topic
+     - Message  
+   * - 'break_beam'
+     - ``/ariac/sensors/{sensor_name}/status`` ``/ariac/sensors/{sensor_name}/status``
+     - ``ariac_msgs/BreakBeamStatus`` ``ariac_msgs/BreakBeamStatus``
+   * - 'proximity`
+     - ``/ariac/sensors/{sensor_name}/scan``
+     - ``sensor_msgs/Range``
+   * - 'laser_profiler'
+     - ``/ariac/sensors/{sensor_name}/scan`` 
+     - ``sensor_msgs/LaserScan`` 
+   * - 'lidar'
+     - ``/ariac/sensors/{sensor_name}/scan``	
+     - ``sensor_msgs/PointCloud``
+   * - 'rgb_camera'
+     - ``/ariac/sensors/{sensor_name}/rgb_image``
+     - ``sensor_msgs/Image sensor_msgs/Image``
+   * - 'rgbd_camera'
+     - ``/ariac/sensors/{sensor_name}/rgb_image`` ``/ariac/sensors/{sensor_name}/depth_image``
+     - ``sensor_msgs/Image``
+   * - 'basic_logical_camera'
+     - ``/ariac/sensors/{sensor_name}/image``
+     - ``ariac_msgs/BasicLogicalCameraImage``
+   * - 'advanced_logical_camera'
+     - ``/ariac/sensors/{sensor_name}/image``
+     - ``ariac_msgs/AdvancedLogicalCameraImage``
+
+..
+    List of sensor topics and their msg types:
+
+    | Sensor Type               | Topic name(s)                                                                       |	MSG type                                              |
+    | ---                       | ---                                                                                 | ---                                                   |
+    | `break_beam`              | `/ariac/sensors/{sensor_name}/status` `/ariac/sensors/{sensor_name}/status`         | ariac_msgs/BreakBeamStatus ariac_msgs/BreakBeamStatus |
+    | `proximity`               | `/ariac/sensors/{sensor_name}/scan`                                                 |	sensor_msgs/Range                                     |
+    | `laser_profiler`          | `/ariac/sensors/{sensor_name}/scan`                                                 |	sensor_msgs/LaserScan                                 |
+    | `lidar`	                  | `/ariac/sensors/{sensor_name}/scan`	                                                | sensor_msgs/PointCloud                                |
+    | `rgb_camera`              | `/ariac/sensors/{sensor_name}/rgb_image`                                            |	sensor_msgs/Image sensor_msgs/Image                   |
+    | `rgbd_camera`             | `/ariac/sensors/{sensor_name}/rgb_image` `/ariac/sensors/{sensor_name}/depth_image` | sensor_msgs/Image                                     |
+    | `basic_logical_camera`    | `/ariac/sensors/{sensor_name}/image`                                                | ariac_msgs/BasicLogicalCameraImage                    |
+    | `advanced_logical_camera` | `/ariac/sensors/{sensor_name}/image`                                                | ariac_msgs/AdvancedLogicalCameraImage                 |

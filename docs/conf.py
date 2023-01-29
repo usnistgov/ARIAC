@@ -30,7 +30,7 @@ intersphinx_disabled_domains = ['std']
 templates_path = ['_templates']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'friendly'
+pygments_style = 'manni'
 
 # -- Options for HTML output
 

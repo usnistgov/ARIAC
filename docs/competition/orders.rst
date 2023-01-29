@@ -230,7 +230,7 @@ For a combined task, the CCS is expected to first perform a kitting task followe
 .. note::
   The kitting task information is left to the competitors to figure out based on the assembly task information. 
   The CCS can place part sanywhere on AGVs and then move those AGVs to the station where assembly is to be performed. 
-  Once the assembly is complete, the CCS can submit the assembly via a ROS service call (see :ref:`COMMUNICATIONS`). 
+  Once the assembly is complete, the CCS can submit the assembly via a ROS service call (see :numref:`communications-topics`). 
   The :term:`AM<ARIAC Manager (AM)>` will then evaluate the submitted assembly for scoring (kitting task is not scored). 
 
 

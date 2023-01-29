@@ -9,6 +9,7 @@ Topics
 .. list-table:: List of topics with the message type and a brief description.
    :widths: 25 25 50
    :header-rows: 1
+   :name: communications-topics
 
    * - Topic Name
      - MSG type

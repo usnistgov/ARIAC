@@ -5,12 +5,12 @@ Agility Challenges
 
 
 
-There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. A description of each challenge is provided below. Besides the :ref:`target to human operator` challenge, all other challenges can occur multiple times in a trial. 
+There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. A description of each challenge is provided below. Besides the :ref:`HUMANS` challenge, all other challenges can occur multiple times in a trial. 
 
 .. note::
   A trial may consist of some of the challenges described in this page, may consist of no  challenge at all, or may consist of all the challenges.
 
-.. _target to faulty part:
+.. _FAULTY_PARTS:
 
 Faulty Parts
 ================
@@ -85,7 +85,7 @@ More information on the fields of the service message is provided as follows:
 
 
 
-.. _target to flipped part:
+.. _FLIPPED_PARTS:
 
 Flipped Parts
 ================
@@ -94,7 +94,7 @@ The environment can be started with parts that are flipped. Flipped parts are pa
 
   The goal of this challenge is to evaluate the approach used by the CCS to flip a part. 
 
-.. tips::
+.. tip::
   Competitors should keep in mind that one of the two robots can malfunction at any point during the trial. This means that the CCS should be able to handle the case where one of the robots is not available to flip a part.
 
 
@@ -142,7 +142,7 @@ Detection
 ----------------------------
 
 
-Flipped parts detection is performed similarly to faulty parts detection. A quality check informs whether or not a part is flipped. See the :ref:`target to faulty part` section for more information on how to perform a quality check.
+Flipped parts detection is performed similarly to faulty parts detection. A quality check informs whether or not a part is flipped. See the :ref:`FAULTY_PARTS` section for more information on how to perform a quality check.
 
 
 
@@ -227,7 +227,7 @@ To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{rob
 Robot Malfunction
 ==================
 
-The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`target to conditions` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
+The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`CONDITIONS` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
   The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
@@ -243,7 +243,7 @@ Setup
 The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
   * ``duration``: The duration of the robot malfunction in seconds.
   * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
-  * :ref:`target to conditions` that can trigger the robot malfunction.
+  * :ref:`CONDITIONS` that can trigger the robot malfunction.
 
 Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
 
@@ -297,7 +297,7 @@ The sensor blackout challenge simulates a situation where some sensors stop repo
 
   The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
 
-The sensor blackout challenge is triggered based on :ref:`target to conditions`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
+The sensor blackout challenge is triggered based on :ref:`CONDITIONS`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
 
 
 
@@ -314,7 +314,7 @@ The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor 
     * ``'lidar'``
     * ``'camera'``
     * ``'logical_camera'``
-  * :ref:`target to conditions` to trigger the challenge.
+  * :ref:`CONDITIONS` to trigger the challenge.
 
 
 The sensor blackout challenge can occur multiple times in the same trial.  :numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
@@ -366,7 +366,7 @@ The high-priority orders challenge simulates an order that must be completed bef
 
 
 .. warning::
-  A high-priority order can be announced in one of the two following :ref:`target to conditions`: time and part placement. The submission condition is not used to announce a high-priority order.
+  A high-priority order can be announced in one of the two following :ref:`CONDITIONS` time and part placement. The submission condition is not used to announce a high-priority order.
 
 .. note::
   A high-priority order will only be announced when only regular-priority orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.
@@ -550,7 +550,7 @@ The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information 
       quantity: 1
     ---
 
-.. _target to human operator:
+.. _HUMANS:
 
 Human Operator
 ==============

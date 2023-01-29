@@ -78,37 +78,13 @@ Kitting Task Score
 
     * - Quadrant Score
       - .. math::
-
+  
         \texttt{pt}_q = \begin{cases}
         0, &\text{if} ~~ \lnot B \lor E \\
         3, &\text{if} ~~ B \land C \land \lnot D \land \lnot E\\
         2, &\text{if} ~~ B \land \lnot C \land \lnot D \land \lnot E\\
         2, &\text{if} ~~ B \land C \land  D \land \lnot E\\
         1, &\text{if} ~~ B \land \lnot C \land D \land \lnot E\\
-        \end{cases}
-
-    * - Bonus Score
-      - .. math::
-
-        \texttt{pt}_b = \begin{cases}
-        n, &\text{if} ~~ \sum_{q}^{n}{\texttt{pt}_q} = n\times 3 \\
-        0, &\text{otherwise} \\
-        \end{cases}
-
-    * - Penalty
-      -  .. math::
-
-        \texttt{pt}_p = \begin{cases}
-        0, &\text{if} ~~ m \leq n \\
-        3 \times (m-n), &\text{if} ~~ m > n \\
-        \end{cases}
-
-    * - Destination Score
-      - .. math::
-
-        \texttt{pt}_d = \begin{cases}
-        0, &\text{if} ~~ \lnot isCorrectDestination \\
-        3, &\text{otherwise} \\
         \end{cases}
 
    

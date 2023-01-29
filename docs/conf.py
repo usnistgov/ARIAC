@@ -44,7 +44,7 @@ html_css_files = [
     'css/custom.css',
 ]
 
-# mathjax_path = 'MathJax.js?config=TeX-AMS_HTML'
+numfig = True
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'

@@ -106,9 +106,7 @@ The environment can be started with parts that are flipped. Flipped parts are pa
 Setup
 ----------------------------
 
-Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding parts.
-
-:numref:`flipped-parts-in-bin` describes all purple regulators as flipped in ``bin3``. 
+Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple regulators as flipped in ``bin3``. :numref:`flipped-parts-on-conveyor-belt` describes all orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
   :caption: Setting flipped parts in a bin.
@@ -121,7 +119,7 @@ Flipped parts apply to a specific part type and color in a specific bin or on th
       rotation: 'pi/6'
       flipped: true
 
-:numref:`flipped-parts-on-conveyor-belt` describes all orange batteries as flipped on the conveyor belt.
+
 
 .. code-block:: yaml
   :caption: Setting flipped parts on the conveyor belt.
@@ -156,38 +154,71 @@ Faulty Gripper
 
 The faulty gripper challenge simulates a faulty gripper which can drop a part after the part has been picked up. The gripper can drop a part at any time during the trial. The gripper can drop a part that is in the gripper's grasp even if the gripper or robot is not moving. 
 
-  The goal of this challenge is to test the ability of the competitors' control system to pick a part of the same type and color again after the gripper has dropped a part. The control system may try to pick the part again from where it was dropped or pick up a part from a different location.
+  The goal of this challenge is to test the ability of the CCS to 1) recognize that the part has dropped from the gripper, and 2) pick a part of the same type and color.
 
-Faulty Gripper Example
+Setup
 ----------------------------
 
-The example below describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump.
+The faulty gripper challenge can be set up in the trial configuration file with the field `dropped_part` under the `challenges` field. :numref:`faulty-gripper-setup` describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump (specified with the `drop_after` field). Multiple occurrences of this challenge may be set up in the trial configuration file as seen in :numref:`multiple-faulty-gripper-setup`.
+
 
 .. code-block:: yaml
-  
+  :caption: Setting up the faulty gripper challenge.
+  :name: faulty-gripper-setup
+
     challenges:
       - dropped_part:
         robot: 'ceiling_robot'
         type: 'pump'
         color: 'red'
-        drop_after: 5
+        drop_after: 1
         delay: 5
 
 
-Detecting Faulty Gripper
+
+.. code-block:: yaml
+  :caption: Multiple occurences of the faulty gripper challenge.
+  :name: multiple-faulty-gripper-setup
+
+    challenges:
+      - dropped_part:
+        robot: 'ceiling_robot'
+        type: 'pump'
+        color: 'red'
+        drop_after: 1
+        delay: 5
+      - dropped_part:
+        robot: 'floor_robot'
+        type: 'battery'
+        color: 'green'
+        drop_after: 1
+        delay: 3
+      - dropped_part:
+        robot: 'floor_robot'
+        type: 'regulator'
+        color: 'orange'
+        drop_after: 2
+        delay: 15
+
+.. note::
+    The gripper can drop a part even if the robot is not moving.
+
+
+Detection
 ----------------------------
 
-.. important::
-  To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type ``ariac_msgs/msg/VacuumGripperState``, which has the structure :ref:`below<vacuum-gripper-state-yaml>`. The field ``attached`` can be checked in this challenge to know if the gripper is holding an object. 
+
+To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type **VacuumGripperState.msg**, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
+
   
-  .. code-block:: bash
-    :caption: VacuumGripperState.msg message file.
-    :name: vacuum-gripper-state-yaml
-    
-    # VacuumGripperState.msg
-    bool enabled  # is the succion enabled?
-    bool attached # is an object attached to the gripper?
-    string type   # type of the gripper attached to the arm
+.. code-block:: bash
+  :caption: VacuumGripperState.msg
+  :name: vacuum-gripper-state-yaml
+  
+  # VacuumGripperState.msg
+  bool enabled  # is the succion enabled?
+  bool attached # is an object attached to the gripper?
+  string type   # type of the gripper attached to the arm
 
 
 
@@ -197,31 +228,26 @@ Detecting Faulty Gripper
 Robot Malfunction
 ==================
 
-The robot malfunction challenge simulates a robot malfunction. The robot can malfunction in some conditions (time, part placement, or submission) during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the competitors' control system. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
+The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`target to conditions_`` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
-  The goal of this challenge is to test the ability of the competitors' control system to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
+  The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
 .. note::
-  It can happen that both robots malfunction at the same time. In this case, competitors's control system must wait until the malfunction is resolved before continuing with the trial.
+  It can happen that both robots malfunction at the same time. In this case, the CSS must wait until the malfunction is resolved before continuing with the trial.
 
 
 
 
-Robot Malfunction Example
+Setup
 ----------------------------
 
-The robot malfunction challenge is specified with ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
+The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
 
 * ``duration``: The duration of the robot malfunction in seconds.
 * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
-* :ref:`Conditions<target to conditions>` that can trigger the robot malfunction.
+* :ref:`target to conditions_` that can trigger the robot malfunction.
 
-..
-  * ``part_place_condition``: The challenge starts when a part of a specific type and color is placed on a specific AGV.
-  * ``time_condition``: The challenge starts after a specific time.
-  * ``submission_condition``: The challenge starts when a specific order is submitted.
-
-Robot malfunctions can occur multiple times in the same trial. The example :ref:`below<robot-malfunction-yaml>` shows a robot malfunction challenge occurring 4 times in the same trial.
+Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times in the same trial.
 
 
 .. code-block:: yaml
@@ -250,7 +276,7 @@ Robot malfunctions can occur multiple times in the same trial. The example :ref:
         type: 'sensor'
         agv: 4
 
-Detecting Robot Malfunctions
+Detection
 -----------------------------
 
 .. important::

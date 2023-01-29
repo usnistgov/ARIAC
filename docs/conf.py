@@ -33,7 +33,7 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
-html_theme = 'sphinxdoc'
+html_theme = 'sphinx_rtd_theme'
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'manni'
 

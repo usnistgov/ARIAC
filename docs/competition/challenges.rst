@@ -474,16 +474,14 @@ Detecting Insufficient Parts
     * ``/ariac/conveyor_parts``: :ref:`ariac_msgs/msg/ConveyorParts<conveyor-msg>`
 
     .. code-block:: bash
-    :caption: BinParts.msg
-    :name: bin-msg
-    
-    ariac_msgs/BinInfo[] bins
+      :caption: BinParts.msg
+      :name: bin-msg
+      ariac_msgs/BinInfo[] bins
 
     .. code-block:: bash
-    :caption: ConveyorParts.msg
-    :name: conveyor-msg
-    
-    ariac_msgs/PartLot[] parts
+      :caption: ConveyorParts.msg
+      :name: conveyor-msg
+      ariac_msgs/PartLot[] parts
 
 
   

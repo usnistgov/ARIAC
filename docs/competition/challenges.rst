@@ -470,9 +470,7 @@ Detecting Insufficient Parts
 
 To figure out if the insufficient parts challenge is part of a trial, the CCS can rely on two important topics to retrieve part type, color, and quantity from bins and the conveyor belt.
 
-  The topic ``/ariac/bin_parts`` (``ariac_msgs/msg/BinParts``) outputs for each bin: The type, the color, and the quantity of parts.
-  
-    An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+  The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
     .. code-block:: bash
       :caption: Message published on the topic ``/ariac/bin_parts``.
@@ -496,9 +494,7 @@ To figure out if the insufficient parts challenge is part of a trial, the CCS ca
       Bins that do not contain parts are not included in the message.
 
 
-  The topic ``/ariac/conveyor_parts`` (``ariac_msgs/msg/ConveyorParts``) outputs information on parts that are expected to spawn on the conveyor belt.
-
-    An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :ref:`listing<conveyor-parts-outputs>`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+  The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :ref:`listing<conveyor-parts-outputs>`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
     .. code-block:: bash

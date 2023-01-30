@@ -19,11 +19,11 @@ from ariac_gui.kittingTrayFunctions import *
 from ariac_msgs.msg import *
 from ament_index_python.packages import get_package_share_directory
 
-def saveMainWind(window, flag):
+def saveMainWind(window, flag): # saves and exits the main window
     flag.set('1')
     window.destroy()
 
-def runGUI():
+def runGUI(): # runs the entire gui
 
     pathIncrement = []  # gives the full path for recursive deletion
     createdDir = []  # to deleted directories made if canceled
@@ -261,7 +261,7 @@ def runGUI():
         o.write("# "+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"\n\n") #writes the time and date
         o.write("# ENVIRONMENT SETUP\n")
         if timeList[1]=="1": # runs if the user selects no time limit
-            
+
             o.write("time_limit: -1")
         else: #writes the time limit
             o.write("time_limit: "+timeList[0])

@@ -259,11 +259,12 @@ def runGUI():
         o.write("# Trial Name: "+saveFileName+"\n")
         o.write("# ARIAC2023\n")
         o.write("# "+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"\n\n") #writes the time and date
-        o.write("# ENVIRONMENT SETUP\n") 
-        if noTimeVal=="1": # runs if the user selects no time limit
+        o.write("# ENVIRONMENT SETUP\n")
+        if timeList[1]=="1": # runs if the user selects no time limit
+            
             o.write("time_limit: -1")
         else: #writes the time limit
-            o.write("time_limit: "+timeVal)
+            o.write("time_limit: "+timeList[0])
         o.write(" # options: -1 (no time limit) or number of seconds\n")
         if len(chosenKTrays)>0:
             o.write("\nkitting_trays: # Which kitting trays will be spawned\n")

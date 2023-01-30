@@ -1,9 +1,9 @@
 # Trial Name: test.yaml
 # ARIAC2023
-# 2023-01-30 16:27:10
+# 2023-01-30 18:20:01
 
 # ENVIRONMENT SETUP
-time_limit: 0 # options: -1 (no time limit) or number of seconds
+time_limit: -1 # options: -1 (no time limit) or number of seconds
 
 kitting_trays: # Which kitting trays will be spawned
   tray_ids: [0, 1]
@@ -23,9 +23,9 @@ parts:
     bin1:
       - type: 'sensor'
         color: 'green'
-        slots: [3,7]
+        slots: [2,6]
         rotation: 0
-        flipped: false
+        flipped: true
 
   conveyor_belt: #population params for conveyor belt
     active: false
@@ -41,7 +41,7 @@ parts:
 
 # ORDER SETUP
 orders:
-  - id: '48NC6MBL'
+  - id: '4V0IXO0H'
     type: 'kitting'
     announcement:
       time_condition: 0.0
@@ -52,5 +52,5 @@ orders:
       destination: 'warehouse'
       products:
         - type: 'sensor'
-          color: 'red'
+          color: 'green'
           quadrant: 1

@@ -12,13 +12,13 @@ def getPartName(val):
 
 def getPartColor(val):
     '''returns the part color from the given id. ids are from ariac ros2 msgs'''
-    if val==1:
+    if val==0:
         partColor="red"
-    elif val==2:
+    elif val==1:
         partColor="green"
-    elif val==3:
+    elif val==2:
         partColor="blue"
-    elif val==4:
+    elif val==3:
         partColor="orange"
     else:
         partColor="purple"

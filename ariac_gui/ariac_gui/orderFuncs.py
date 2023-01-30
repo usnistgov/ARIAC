@@ -23,6 +23,7 @@ taskPresentFlag=[]
 allProdTypes=["sensor", "pump", "regulator", "battery"]
 allProdColors=['green', 'red', 'purple','blue','orange']
 conditionTypes=['time','partPlace','submission']
+
 def typeOfProdSelect(kittingParts, assemblyParts, orderType):
     '''Runs the correct function based on the order type'''
     if orderType.get()=="kitting":

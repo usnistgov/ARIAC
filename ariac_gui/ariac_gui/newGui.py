@@ -1,7 +1,14 @@
 import tkinter as tk
 from datetime import datetime
 from os import chdir
+from tkinter import ttk
 from functools import partial
+from ariac_gui.notebookSetup import timeEntry, kittingTrayWidgets
+from ariac_gui.notebookParts import partsWidgets, agvTrayWidgets
+from ariac_gui.notebookBins import binWidgets
+from ariac_gui.notebookConveyor import convWidgets
+from ariac_gui.notebookOrders import orderWidgets
+from ariac_gui.notebookChallenges import allChallengeWidgets, chooseChallenge
 from PIL import Image, ImageTk  # needed for images in gui
 from ariac_gui.checkCancel import *
 from ariac_gui.updateRanges import *
@@ -18,10 +25,8 @@ from ariac_gui.msgNames import *
 from ariac_gui.kittingTrayFunctions import *
 from ariac_msgs.msg import *
 from ament_index_python.packages import get_package_share_directory
-
-def saveMainWind(window, flag): # saves and exits the main window
-    flag.set('1')
-    window.destroy()
+FRAMEWIDTH=1000
+FRAMEHEIGHT=750
 
 def runGUI(): # runs the entire gui
 
@@ -101,7 +106,7 @@ def runGUI(): # runs the entire gui
     # ----------------------------------------------------------------------------------------------
     # START OF GUI
     getFileName = tk.Tk() #window to create and get the file
-    getFileName.attributes('-fullscreen', True)
+    getFileName.geometry('1200x1000')
     getFileName.title("NIST ARIAC CONFIG GUI")
 
     frame = tk.Frame(getFileName)
@@ -158,64 +163,87 @@ def runGUI(): # runs the entire gui
     # END OF GETTING THE NAME OF THE FILE
     # ----------------------------------------------------------------------------------------------
     # START OF MAINWIND
-    while (saveMainFlag.get()=="0"):
-        mainWind=tk.Tk()
-        mainWind.attributes('-fullscreen', True)
+    presentChallengeWidgets=[]
+    allChallengeWidgetsArr=[]
+    agvTrayWidgetsArr = []
+    agvTrayValsArr = []
+    kittingParts=[] 
+    assemblyParts=[]
+    mainWind=tk.Tk()
+    mainWind.geometry('1200x1000')
+    mainWind.title('notebook testing')
 
-        #Time limit
-        get_time_limit=partial(guiTimeWindow, timeList, mainWind)
-        mainTimeButton=tk.Button(mainWind, text="Time Limit", command=get_time_limit)
-        mainTimeButton.pack()
-        
-        #Kitting trays and slots
-        get_kitting_trays=partial(runKittingTrayWind,kittingTrayCounter, availableTrays, availableSlots, cancelFlag,pathIncrement, fileName, createdDir,trayVals, slotVals, mainWind)
-        mainKittingTraysButton=tk.Button(mainWind, text="Kitting Trays", command=get_kitting_trays)
-        mainKittingTraysButton.pack()
-        
-        #Parts
-        get_parts=partial(addPart,partVals,agv1Parts, agv2Parts, agv3Parts, agv4Parts, 
-        agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants,bins,
-        bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, 
-        convParts, cancelFlag, pathIncrement,fileName,createdDir, partFlag, mainWind)
-        mainPartButton=tk.Button(mainWind, text="Parts", command=get_parts)
-        mainPartButton.pack()
-        
-        #Orders
-        get_order=partial(runOrdersWind, orderMSGS,  orderConditions, orderCounter, usedIDs, ordersFlag, mainWind)
-        mainOrderButton=tk.Button(mainWind, text="Orders", command=get_order)
-        mainOrderButton.pack()
-        
-        #Challenges
-        get_challenge=partial(runChallengeWind,robotMalfunctions, usedIDs, faultyParts, droppedParts, sensorBlackouts,cancelFlag, pathIncrement,fileName, createdDir, challengesFlag, mainWind)
-        mainChallengeButton=tk.Button(mainWind, text="Challenges", command=get_challenge)
-        mainChallengeButton.pack()
-        
-        #save button
-        save_main_wind=partial(saveMainWind, mainWind, saveMainFlag)
-        saveMainButton=tk.Button(mainWind, text="Save and Continue", command=save_main_wind)
-        saveMainButton.pack()
-        
-        #cancel button
-        cancel_main_command=partial(cancel_wind, mainWind, cancelFlag)
-        cancelMainButton=tk.Button(mainWind, text="Cancel and Exit", command=cancel_main_command)
-        cancelMainButton.pack()
-        
-        #continues to write in the same file
-        if partFlag.get()=="1": # checks if the user is still in parts
-            mainWind.withdraw()
-            addPart(partVals,agv1Parts, agv2Parts, agv3Parts, agv4Parts, 
-            agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants,bins,
-            bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, 
-            convParts, cancelFlag, pathIncrement,fileName,createdDir, partFlag, mainWind)
-        if ordersFlag.get()=="1": # checks if the user is still in orders
-            mainWind.withdraw()
-            runOrdersWind(orderMSGS, orderConditions, orderCounter, usedIDs, ordersFlag, mainWind)
-        if challengesFlag.get()=="1":# checks if the user is still in challenges
-            mainWind.withdraw()
-            runChallengeWind(robotMalfunctions, usedIDs, faultyParts, droppedParts, sensorBlackouts,cancelFlag, pathIncrement,fileName, createdDir, challengesFlag, mainWind)
-        
-        mainWind.mainloop()
-        check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
+    notebook=ttk.Notebook(mainWind)
+    notebook.pack(pady=10, expand=True)
+
+    setupFrame = ttk.Frame(notebook, width=800, height=600)
+    
+
+    setupFrame.pack(fill='both', expand=True)
+
+    timeVar=tk.StringVar()
+    timeEntry(setupFrame, timeVar, timeVal[0])
+    # add frames to notebook
+
+    #kitting trays
+    kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, availableTrays, trayVals, slotVals)
+    notebook.add(setupFrame, text='Setup')
+    partsFrame = ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+    partsFrame.pack(fill='both', expand=True)
+    notebook.add(partsFrame, text='Parts')
+
+    binFrame=ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+    binFrame.pack(fill='both', expand=True)
+    notebook.add(binFrame, text="Bins")
+
+    convFrame=ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+    convFrame.pack(fill='both', expand=True)
+    notebook.add(convFrame, text="Conveyor Belt")
+
+    ordersFrame=ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+    ordersFrame.pack(fill='both', expand=True)
+    notebook.add(ordersFrame, text="Orders")
+
+    challengesFrame=ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+    challengesFrame.pack(fill='both', expand=True)
+    notebook.add(challengesFrame, text="Challenges")
+
+    #Parts frame
+    partFlag=tk.StringVar()
+    partFlag.set('0')
+    partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr)
+    agvTrayWidgets(partsFrame, agvTrayWidgetsArr, agvTrayValsArr)
+
+    #Bins frame
+    bin1Slots=[] # holds the available slots for bin1
+    bin2Slots=[] # holds the available slots for bin2
+    bin3Slots=[] # holds the available slots for bin3
+    bin4Slots=[] # holds the available slots for bin4
+    bin5Slots=[] # holds the available slots for bin5
+    bin6Slots=[] # holds the available slots for bin6
+    bin7Slots=[] # holds the available slots for bin7
+    bin8Slots=[] # holds the available slots for bin8
+    for i in range(9):
+        bin1Slots.append(str(i+1))
+        bin2Slots.append(str(i+1))
+        bin3Slots.append(str(i+1))
+        bin4Slots.append(str(i+1))
+        bin5Slots.append(str(i+1))
+        bin6Slots.append(str(i+1))
+        bin7Slots.append(str(i+1))
+        bin8Slots.append(str(i+1))
+    binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots)
+    
+    #Conveyor fame
+    convWidgets(convFrame)
+    
+    #Orders frame
+    orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts)
+    #Challenges frame
+    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr)
+    chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets)
+    mainWind.mainloop()
+    check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
     # END OF MAIN WIND
     # ----------------------------------------------------------------------------------------------
 

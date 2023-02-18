@@ -1,13 +1,13 @@
 # Trial Name: test.yaml
 # ARIAC2023
-# 2023-01-30 18:20:01
+# 2023-02-02 18:15:12
 
 # ENVIRONMENT SETUP
 time_limit: -1 # options: -1 (no time limit) or number of seconds
 
 kitting_trays: # Which kitting trays will be spawned
-  tray_ids: [0, 1]
-  slots: [1, 2]
+  tray_ids: [4, 1, 2]
+  slots: [1, 2, 3]
 
 parts:
   agvs:
@@ -21,11 +21,11 @@ parts:
 
   bins: # bin params - 8 total bins each bin has nine total slots (1-9)
     bin1:
-      - type: 'sensor'
-        color: 'green'
-        slots: [2,6]
+      - type: 'regulator'
+        color: 'blue'
+        slots: [2,5]
         rotation: 0
-        flipped: true
+        flipped: false
 
   conveyor_belt: #population params for conveyor belt
     active: false
@@ -41,7 +41,7 @@ parts:
 
 # ORDER SETUP
 orders:
-  - id: '4V0IXO0H'
+  - id: '9LH16VGD'
     type: 'kitting'
     announcement:
       time_condition: 0.0
@@ -54,3 +54,12 @@ orders:
         - type: 'sensor'
           color: 'green'
           quadrant: 1
+
+# GLOBAL CHALLENGES
+challenges:
+  - dropped_part:
+      robot: 'ceiling_robot'
+      type: 'sensor'
+      color: 'green'
+      drop_after_num: 0 # first part the robot successfully picks
+      drop_after_time: 0.0 # secons

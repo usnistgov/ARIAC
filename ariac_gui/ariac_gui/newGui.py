@@ -81,6 +81,11 @@ def runGUI(): # runs the entire gui
     robotsToDisable=[] # holds robots to be disabled
     faultyPartQuadrants=[] # holds quadrants for dropped parts
     sensorsToDisable=[] # holds sensors for sensor blackout
+    rmVals=[]
+    fpVals=[]
+    dpVals=[]
+    sbVals=[]
+    chCondVals=[]
 
     availableTrays=["Tray 0","Tray 1","Tray 2","Tray 3","Tray 4","Tray 5","Tray 6","Tray 7","Tray 8","Tray 9"] #list of trays to hold available trays for kitting trays
     availableSlots=["Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"] #list of slots to hold available slots for kitting trays
@@ -243,9 +248,9 @@ def runGUI(): # runs the entire gui
     #Orders frame
     orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts)
     #Challenges frame
-    chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets)
-    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets)
-    
+    chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, chCondVals)
+    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals)
+
     mainSaveButton=tk.Button(mainWind, text="Save and Exit", command=mainWind.destroy)
     mainSaveButton.pack()
     mainWind.mainloop()

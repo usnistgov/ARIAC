@@ -82,11 +82,11 @@ def robotMalfunctionMenu(allChallengeWidgetsArr,presentChallengeWidgets):
     for index in range(4): #how many widgets there are for robot malfunction
         allChallengeWidgetsArr[index].grid(column=2, row=1+index)
         presentChallengeWidgets.append(allChallengeWidgetsArr[index])
-    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=5)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=5) # condition menu
     allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3].grid(column=2, row=6)
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4])
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3])
-    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2].grid(column=2, row=7)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2].grid(column=2, row=7) #time entrys
     allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1].grid(column=2, row=8)
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2])
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1])
@@ -114,11 +114,11 @@ def sensorBlackoutMenu(allChallengeWidgetsArr,presentChallengeWidgets):
     for index in range(10): #how many widgets there are for dropped part
         allChallengeWidgetsArr[index+20].grid(column=2, row=1+index)
         presentChallengeWidgets.append(allChallengeWidgetsArr[index+20])
-    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=11)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=11) #condition menu
     allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3].grid(column=2, row=12)
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4])
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3])
-    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2].grid(column=2, row=13)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2].grid(column=2, row=13) #time entrys
     allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1].grid(column=2, row=14)
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2])
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1])

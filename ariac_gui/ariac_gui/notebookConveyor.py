@@ -1,5 +1,6 @@
 import tkinter as tk
 from functools import partial
+from ariac_gui.newClasses import PartConv
 acceptedNum = "0123456789.-"  # for requiring number input for offset value
 partTypes=["sensor", "pump", "regulator", "battery"]
 partColors=['green', 'red', 'purple','blue','orange']
@@ -43,7 +44,8 @@ def showAndHideConvButton(addConvButton, val, convOptionFlag, saveNewConvButton,
         addConvButton.pack_forget()
         convOptionFlag.set('1')
 
-def saveConv(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
+def saveConv(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts):
+    convParts.append(PartConv(convValsArr[0].get(), convValsArr[1].get(),convValsArr[2].get(),convValsArr[3].get(), convValsArr[4].get()))
     switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets)
 
 def switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
@@ -67,7 +69,7 @@ def switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
             widget.pack()
         convFlag.set('0')
 
-def convWidgets(convFrame):
+def convWidgets(convFrame, convParts):
     convFlag=tk.StringVar()
     convFlag.set('0')
     convOptionFlag=tk.StringVar()
@@ -153,7 +155,7 @@ def convWidgets(convFrame):
     convSettingsWidgets.append(convOrderMenu)
 
     #save conveyor button
-    save_and_exit_conv=partial(saveConv, convValsArr, convWidgetsArr,convFlag, convSettingsWidgets)
+    save_and_exit_conv=partial(saveConv, convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts)
     saveConvButton=tk.Button(convFrame, text="Save and Exit", command=save_and_exit_conv)
     saveConvButton.pack_forget()
     #add conv button

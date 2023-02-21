@@ -235,7 +235,7 @@ def runGUI(): # runs the entire gui
     binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,bins)
     
     #Conveyor fame
-    convWidgets(convFrame)
+    convWidgets(convFrame, convParts)
     
     #Orders frame
     orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts)
@@ -246,6 +246,7 @@ def runGUI(): # runs the entire gui
     mainSaveButton.pack()
     mainWind.mainloop()
     check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
+    print(trayVals)
     # END OF MAIN WIND
     # ----------------------------------------------------------------------------------------------
 
@@ -290,12 +291,7 @@ def runGUI(): # runs the entire gui
         o.write("# ARIAC2023\n")
         o.write("# "+datetime.now().strftime("%Y-%m-%d %H:%M:%S")+"\n\n") #writes the time and date
         o.write("# ENVIRONMENT SETUP\n")
-        if timeList[1]=="1": # runs if the user selects no time limit
-
-            o.write("time_limit: -1")
-        else: #writes the time limit
-            o.write("time_limit: "+timeList[0])
-        o.write(" # options: -1 (no time limit) or number of seconds\n")
+        o.write("time_limit: "+timeVar.get()+" # options: -1 (no time limit) or number of seconds\n")
         if len(chosenKTrays)>0:
             o.write("\nkitting_trays: # Which kitting trays will be spawned\n")
             o.write("  tray_ids: ["+", ".join(chosenKTrays)+"]\n")

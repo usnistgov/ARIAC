@@ -166,7 +166,7 @@ def updateKSlotMenus(slot1, slot1Menu, slot2, slot2Menu, slot3, slot3Menu, slot4
         if (slot not in currentSlotVals) or slot==slot6.get():
             menu6.add_command(label=slot, command=lambda slot=slot: slot6.set(slot))
 
-def kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, availableTrays, trayVals, slotVals):
+def kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, availableTrays, trayVals, slotVals,trayValsMain, slotValsMain):
     kittingTrayLabel=tk.Label(setupFrame, text="Kitting Trays")
     kittingTrayLabel.grid(column=2, row=2)
     #variables and menus for the trays and slots
@@ -182,6 +182,18 @@ def kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, available
     slot4=tk.StringVar()
     slot5=tk.StringVar()
     slot6=tk.StringVar()
+    trayValsMain.append(tray1)
+    trayValsMain.append(tray2)
+    trayValsMain.append(tray3)
+    trayValsMain.append(tray4)
+    trayValsMain.append(tray5)
+    trayValsMain.append(tray6)
+    slotValsMain.append(slot1)
+    slotValsMain.append(slot2)
+    slotValsMain.append(slot3)
+    slotValsMain.append(slot4)
+    slotValsMain.append(slot5)
+    slotValsMain.append(slot6)
     tray1Menu=tk.OptionMenu(setupFrame, tray1, *availableTrays)
     tray2Menu=tk.OptionMenu(setupFrame, tray2, *availableTrays)
     tray3Menu=tk.OptionMenu(setupFrame, tray3, *availableTrays)

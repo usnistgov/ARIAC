@@ -34,6 +34,9 @@ def runGUI(): # runs the entire gui
     createdDir = []  # to deleted directories made if canceled
     nameLabels = []  # holds temporary flags to be deleted
 
+    trayValsMain=[]
+    slotValsMain=[]
+
     agv1Parts=[]
     agv2Parts=[]
     agv3Parts=[]
@@ -186,7 +189,7 @@ def runGUI(): # runs the entire gui
     # add frames to notebook
 
     #kitting trays
-    kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, availableTrays, trayVals, slotVals)
+    kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, availableTrays, trayVals, slotVals,trayValsMain, slotValsMain)
     notebook.add(setupFrame, text='Setup')
     partsFrame = ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
     partsFrame.pack(fill='both', expand=True)
@@ -246,7 +249,6 @@ def runGUI(): # runs the entire gui
     mainSaveButton.pack()
     mainWind.mainloop()
     check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
-    print(trayVals)
     # END OF MAIN WIND
     # ----------------------------------------------------------------------------------------------
 
@@ -271,15 +273,15 @@ def runGUI(): # runs the entire gui
         
     #gets the kitting trays and slots to write to the file
     KTraysSTR=""
-    for i in trayVals:
-        KTraysSTR+=i
+    for i in trayValsMain:
+        KTraysSTR+=i.get()
     chosenKTrays=[]
     for i in KTraysSTR:
         if i.isnumeric():
             chosenKTrays.append(i)
     KSlotsSTR=""
-    for i in slotVals:
-        KSlotsSTR+=i
+    for i in slotValsMain:
+        KSlotsSTR+=i.get()
     chosenKSlots=[]
     for i in KSlotsSTR:
         if i.isnumeric():

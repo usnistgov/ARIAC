@@ -2,6 +2,7 @@ import random
 import string
 import tkinter as tk
 from functools import partial
+from ariac_msgs.msg import *
 orderTypes=["kitting", "assembly", "combined"]
 quadrants=["1","2","3","4"]
 agvOptions=["1","2","3","4"]
@@ -16,7 +17,7 @@ taskPresentFlag=[]
 allProdTypes=["sensor", "pump", "regulator", "battery"]
 allProdColors=['green', 'red', 'purple','blue','orange']
 conditionTypes=['time','partPlace','submission']
-def showNewOrderMenu(orderWidgetsArr, orderValsArr):
+def showNewOrderMenu(orderWidgetsArr, orderValsArr, usedIDs):
     orderValsArr[0].set(orderCategories[0])
     orderValsArr[1].set(orderTypes[0])
     orderValsArr[2].set('0')
@@ -30,6 +31,7 @@ def showNewOrderMenu(orderWidgetsArr, orderValsArr):
     orderValsArr[10].set(kittingTrayIDs[0])
     orderValsArr[11].set(kittingDestinations[0])
     orderValsArr[12].set("")
+    orderValsArr[13].set(generateOrderId(usedIDs))
     orderWidgetsArr[0].grid(column=2, row=0)
     orderWidgetsArr[1].grid(column=2, row=1)
     orderWidgetsArr[2].grid(column=2, row=2)
@@ -139,13 +141,67 @@ def addAssembProduct(assemblyValsArr, assemblyWidgetsArr):
     for i in range(len(assemblyWidgetsArr)):
         assemblyWidgetsArr[i].grid(column=3, row=i)
 
-def saveKittingProd(kitValsArr, kitWidgetsArr):
+def saveKittingProd(kitValsArr, kitWidgetsArr, kittingParts):
     for widget in kitWidgetsArr:
         widget.grid_forget()
+    newKittingPart=KittingPart()
+    newPart=Part()
+    if kitValsArr[0].get()=="sensor":
+        newPart.type=newPart.SENSOR
+    elif kitValsArr[0].get()=="pump":
+        newPart.type=newPart.PUMP
+    elif kitValsArr[0].get()=="battery":
+        newPart.type=newPart.BATTERY
+    else:
+        newPart.type=newPart.REGULATOR
+    if kitValsArr[1].get()=="red":
+        newPart.color=newPart.RED
+    elif kitValsArr[1].get()=="green":
+        newPart.color=newPart.GREEN
+    elif kitValsArr[1].get()=="blue":
+        newPart.color=newPart.BLUE
+    elif kitValsArr[1].get()=="orange":
+        newPart.color=newPart.ORANGE
+    else:
+        newPart.color=newPart.PURPLE
+    newKittingPart.part=newPart
+    newKittingPart.quadrant=int(kitValsArr[2].get())
+    kittingParts.append(newKittingPart)
 
-def saveAssemblyProd(assemblyValsArr, assemblyWidgetsArr):
+def saveAssemblyProd(assemblyValsArr, assemblyWidgetsArr, assemblyParts):
     for widget in assemblyWidgetsArr:
         widget.grid_forget()
+    newAssembPart=AssemblyPart()
+    newPart=Part()
+    if assemblyValsArr[0].get()=="sensor":
+        newPart.type=newPart.SENSOR
+    elif assemblyValsArr[0].get()=="pump":
+        newPart.type=newPart.PUMP
+    elif assemblyValsArr[0].get()=="battery":
+        newPart.type=newPart.BATTERY
+    else:
+        newPart.type=newPart.REGULATOR
+    if assemblyValsArr[1].get()=="red":
+        newPart.color=newPart.RED
+    elif assemblyValsArr[1].get()=="green":
+        newPart.color=newPart.GREEN
+    elif assemblyValsArr[1].get()=="blue":
+        newPart.color=newPart.BLUE
+    elif assemblyValsArr[1].get()=="orange":
+        newPart.color=newPart.ORANGE
+    else:
+        newPart.color=newPart.PURPLE
+    newAssembPart.part=newPart
+    newDirection=Vector3()
+    newDirection.x =float(assemblyValsArr[8].get())
+    newDirection.y=float(assemblyValsArr[9].get())
+    newDirection.z=float(assemblyValsArr[10].get())
+    newAssembPart.install_direction=newDirection
+    newPoint=Point()
+    newPoint.x=float(assemblyValsArr[2].get())
+    newPoint.y=float(assemblyValsArr[3].get())
+    newPoint.z=float(assemblyValsArr[4].get())
+    assemblyParts.append(newAssembPart)
     
 def updateTaskOptions(orderType, kitTrayId, taskAgvMenu,kitTrayIdLabel, kitTrayIdMenu, kittingDestination, kittingDestinationLabel, kittingDestinationMenu, assemblyStation, assemblyStationLabel, assemblyStationMenu,a,b,c):
     '''Shows the correct options for different types of orders'''
@@ -181,9 +237,83 @@ def generateOrderId(usedId):
     usedId.append(newId)
     return newId
 
-def saveOrder(orderWidgetsArr):
+def saveOrder(orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderMSGS, orderConditions):
     for widget in orderWidgetsArr:
         widget.grid_forget()
+    tempKittingParts=[]
+    tempAssemblyParts=[]
+    for part in kittingParts:
+        tempKittingParts.append(part)
+    for part in assemblyParts:
+        tempAssemblyParts.append(part)
+    newOrder=Order()
+    newOrder.id=orderValsArr[13].get()
+    newOrder.type=orderTypes.index(orderValsArr[1].get())
+    if orderValsArr[2].get()=="0":
+        newOrder.priority=False
+    else:
+        newOrder.priority=True
+    if orderValsArr[1].get()=="kitting":
+        newKittingTask=KittingTask()
+        newKittingTask.agv_number=int(orderValsArr[9].get())
+        newKittingTask.tray_id=int(orderValsArr[10].get())
+        if orderValsArr[11].get()=="warehouse":
+            newKittingTask.destination=newKittingTask.WAREHOUSE
+        elif orderValsArr[11].get()=="kitting":
+            newKittingTask.destination=newKittingTask.KITTING
+        elif orderValsArr[11].get()=="assembly_front":
+            newKittingTask.destination=newKittingTask.ASSEMBLY_FRONT
+        else:
+            newKittingTask.destination=newKittingTask.ASSENBLY_BACK
+        newKittingTask.parts=tempKittingParts
+        newOrder.kitting_task=newKittingTask
+    elif orderValsArr[1].get()=="assembly":
+        agvNumList=[]
+        agvNumList.append(int(orderValsArr[9].get()))
+        newAssemblyTask=AssemblyTask()
+        newAssemblyTask.agv_numbers=agvNumList
+        newAssemblyTask.station=assemblyStations.index(assemblyStation.get())+1
+        newAssemblyTask.parts=tempAssemblyParts
+        newOrder.assembly_task=newAssemblyTask
+    else:
+        agvNumList=[]
+        agvNumList.append(int(orderValsArr[9].get()))
+        newCombinedTask=CombinedTask()
+        newCombinedTask.station=assemblyStations.index(orderValsArr[12].get())+1
+        newCombinedTask.parts=tempAssemblyParts
+        newOrder.combined_task=newCombinedTask
+    orderMSGS.append(newOrder)
+    orderCondition=Condition()
+    orderCondition.type=conditionTypes.index(orderValsArr[3].get())
+    if orderValsArr[3].get()==conditionTypes[0]:
+        orderCondition.time_condition.seconds=float(orderValsArr[4].get())
+    elif orderValsArr[3].get()==conditionTypes[1]:
+        newPart=Part()
+        if orderValsArr[6].get()=="sensor":
+            newPart.type=newPart.SENSOR
+        elif orderValsArr[6].get()=="pump":
+            newPart.type=newPart.PUMP
+        elif orderValsArr[6].get()=="battery":
+            newPart.type=newPart.BATTERY
+        else:
+            newPart.type=newPart.REGULATOR
+        if orderValsArr[7].get()=="red":
+            newPart.color=newPart.RED
+        elif orderValsArr[7].get()=="green":
+            newPart.color=newPart.GREEN
+        elif orderValsArr[7].get()=="blue":
+            newPart.color=newPart.BLUE
+        elif orderValsArr[7].get()=="orange":
+            newPart.color=newPart.ORANGE
+        else:
+            newPart.color=newPart.PURPLE
+        orderCondition.part_place_condition.part=newPart
+        orderCondition.part_place_condition.agv=int(orderValsArr[5].get())
+    elif orderValsArr[3].get()==conditionTypes[2]:
+        orderCondition.submission_condition.order_id=orderValsArr[8].get()
+    orderConditions.append(orderCondition)
+    kittingParts.clear()
+    assemblyParts.clear()
 
 def kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr):
     prodType=tk.StringVar()
@@ -216,7 +346,7 @@ def kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr):
     kitWidgetsArr.append(prodQuadLabel)
     kitWidgetsArr.append(prodQuadMenu)
     #save button
-    save_kit_prod=partial(saveKittingProd, kitValsArr, kitWidgetsArr)
+    save_kit_prod=partial(saveKittingProd, kitValsArr, kitWidgetsArr, kittingParts)
     saveKitButton=tk.Button(orderFrame, text="Save product", command=save_kit_prod)
     saveKitButton.grid_forget()
     kitWidgetsArr.append(saveKitButton)
@@ -327,7 +457,7 @@ def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidg
     assemblyWidgetsArr.append(z_dir_label)
     assemblyWidgetsArr.append(z_dir_entry)
     #save button
-    save_assemb_prod=partial(saveKittingProd, assemblyValsArr, assemblyWidgetsArr)
+    save_assemb_prod=partial(saveAssemblyProd, assemblyValsArr, assemblyWidgetsArr, assemblyParts)
     saveAssembButton=tk.Button(orderFrame, text="Save product", command=save_assemb_prod)
     saveAssembButton.grid_forget()
     assemblyWidgetsArr.append(saveAssembButton)
@@ -344,7 +474,6 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     for id in usedIDs:
         tempIDs.append(id)
     tempIDs.append(" ")
-    orderID=generateOrderId(usedIDs)
     orderCategory=tk.StringVar()
     orderCategory.set(orderCategories[0])
     orderCategoryLabel=tk.Label(orderFrame, text="Select the category of the order")
@@ -465,11 +594,13 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     orderValsArr.append(assemblyStation)
     orderWidgetsArr.append(assemblyStationLabel)
     orderWidgetsArr.append(assemblyStationMenu)
+    orderID=tk.StringVar()
+    orderValsArr.append(orderID)
     #Build the menus for kitting and assembly products
     kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr)
     assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidgetsArr)
     #Add order button
-    show_new_order_menu=partial(showNewOrderMenu,orderWidgetsArr, orderValsArr)
+    show_new_order_menu=partial(showNewOrderMenu,orderWidgetsArr, orderValsArr,usedIDs)
     addOrderButton=tk.Button(orderFrame, text="Add order", command=show_new_order_menu)
     addOrderButton.grid(column=1, row=5)
     #add product button
@@ -478,7 +609,7 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     addProdButton.grid_forget()
     orderWidgetsArr.append(addProdButton)
     #save and cancel buttons
-    save_order=partial(saveOrder, orderWidgetsArr)
+    save_order=partial(saveOrder, orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderMSGS, orderConditions)
     saveOrdButton=tk.Button(orderFrame, text="Save order", command=save_order)
     saveOrdButton.grid_forget()
     orderWidgetsArr.append(saveOrdButton)

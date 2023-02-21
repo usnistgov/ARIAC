@@ -243,8 +243,9 @@ def runGUI(): # runs the entire gui
     #Orders frame
     orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts)
     #Challenges frame
-    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr)
     chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets)
+    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets)
+    
     mainSaveButton=tk.Button(mainWind, text="Save and Exit", command=mainWind.destroy)
     mainSaveButton.pack()
     mainWind.mainloop()

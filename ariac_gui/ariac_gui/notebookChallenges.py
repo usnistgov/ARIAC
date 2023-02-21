@@ -9,6 +9,72 @@ agvOptions=["1","2","3","4"]
 sensBOCategories=["time-based","during kitting", "during assembly","after kitting", "after assembly"]
 conditionTypes=['time','partPlace','submission']
 
+def showCorrectMenu(condition, conditionMenu, time, timeLabel, timeEntry, agv, agvLabel, agvMenu, partType, partTypeLabel, partTypeMenu, partColor, partColorLabel, partColorMenu, annID, annIDLabel, annIDMenu,tempIDs,presentChallengeWidgets,a,b,c):
+    if condition.get()=="":
+        time.set('')
+        agv.set('')
+        partType.set('')
+        partColor.set('')
+        annID.set('')
+        timeLabel.grid_forget()
+        timeEntry.grid_forget()
+        agvLabel.grid_forget()
+        agvMenu.grid_forget()
+        partTypeLabel.grid_forget()
+        partTypeMenu.grid_forget()
+        partColorLabel.grid_forget()
+        partColorMenu.grid_forget()
+        annIDLabel.grid_forget()
+        annIDMenu.grid_forget()
+    elif condition.get()==conditionTypes[0]:
+        timeLabel.grid(column=2, row=len(presentChallengeWidgets)+1)
+        timeEntry.grid(column=2, row=len(presentChallengeWidgets)+2)
+        time.set('0')
+        agv.set('')
+        partType.set('')
+        partColor.set('')
+        annID.set('')
+        agvLabel.grid_forget()
+        agvMenu.grid_forget()
+        partTypeLabel.grid_forget()
+        partTypeMenu.grid_forget()
+        partColorLabel.grid_forget()
+        partColorMenu.grid_forget()
+        annIDLabel.grid_forget()
+        annIDMenu.grid_forget()
+    elif condition.get()==conditionTypes[1]:
+        agvLabel.grid(column=2, row=len(presentChallengeWidgets)+1)
+        agvMenu.grid(column=2, row=len(presentChallengeWidgets)+2)
+        agv.set(agvOptions[0])
+        partTypeLabel.grid(column=2, row=len(presentChallengeWidgets)+3)
+        partTypeMenu.grid(column=2, row=len(presentChallengeWidgets)+4)
+        partColorLabel.grid(column=2, row=len(presentChallengeWidgets)+5)
+        partColorMenu.grid(column=2, row=len(presentChallengeWidgets)+6)
+        partType.set(allPartTypes[0])
+        partColor.set(allPartColors[0])
+        time.set('')
+        timeLabel.grid_forget()
+        timeEntry.grid_forget()
+        annID.set('')
+        annIDLabel.grid_forget()
+        annIDMenu.grid_forget()
+    else:
+        annIDLabel.grid(column=2, row=len(presentChallengeWidgets)+1)
+        annIDMenu.grid(column=2, row=len(presentChallengeWidgets)+2)
+        annID.set(tempIDs[0])
+        time.set('')
+        agv.set('')
+        partType.set('')
+        partColor.set('')
+        timeLabel.grid_forget()
+        timeEntry.grid_forget()
+        agvLabel.grid_forget()
+        agvMenu.grid_forget()
+        partTypeLabel.grid_forget()
+        partTypeMenu.grid_forget()
+        partColorLabel.grid_forget()
+        partColorMenu.grid_forget()
+
 def robotMalfunctionMenu(allChallengeWidgetsArr,presentChallengeWidgets):
     for widget in presentChallengeWidgets:
         widget.grid_forget()
@@ -16,6 +82,14 @@ def robotMalfunctionMenu(allChallengeWidgetsArr,presentChallengeWidgets):
     for index in range(4): #how many widgets there are for robot malfunction
         allChallengeWidgetsArr[index].grid(column=2, row=1+index)
         presentChallengeWidgets.append(allChallengeWidgetsArr[index])
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=5)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3].grid(column=2, row=6)
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4])
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3])
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2].grid(column=2, row=7)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1].grid(column=2, row=8)
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2])
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1])
 
 def faultyPartMenu(allChallengeWidgetsArr,presentChallengeWidgets):
     for widget in presentChallengeWidgets:
@@ -40,6 +114,14 @@ def sensorBlackoutMenu(allChallengeWidgetsArr,presentChallengeWidgets):
     for index in range(10): #how many widgets there are for dropped part
         allChallengeWidgetsArr[index+20].grid(column=2, row=1+index)
         presentChallengeWidgets.append(allChallengeWidgetsArr[index+20])
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=11)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3].grid(column=2, row=12)
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4])
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3])
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2].grid(column=2, row=13)
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1].grid(column=2, row=14)
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2])
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1])
 
 
 def chooseChallenge(challengeFrame,allChallengeWidgetsArr,presentChallengeWidgets):
@@ -56,7 +138,7 @@ def chooseChallenge(challengeFrame,allChallengeWidgetsArr,presentChallengeWidget
     newSensorBlackoutButton=tk.Button(challengeFrame, text="Add new sensor blackout", command=new_sensor_blackout)
     newSensorBlackoutButton.grid(column=1)
 
-def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr):
+def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets):
     #robot malfunction
     rmDuration=tk.StringVar()
     rmDuration.set("0")
@@ -201,7 +283,7 @@ def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr):
     conditionMenu=tk.OptionMenu(challengesFrame, condition, *conditionTypes)
     conditionMenu.grid_forget()
     conTime=tk.StringVar()
-    conTime.set('')
+    conTime.set('0')
     conTimeLabel=tk.Label(challengesFrame, text="Enter the time")
     conTimeLabel.grid_forget()
     conTimeEntry=tk.Entry(challengesFrame, textvariable=conTime)
@@ -230,3 +312,9 @@ def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr):
     annIDLabel.grid_forget()
     annIDMenu=tk.OptionMenu(challengesFrame, annID, *usedIds)
     annIDMenu.grid_forget()
+    updateConditionMenu=partial(showCorrectMenu,condition, conditionMenu, conTime, conTimeLabel, conTimeEntry, conAgv, conAgvLabel, conAgvMenu, conPartType, conPartTypeLabel, conPartTypeMenu, conPartColor, conPartColorLabel, conPartColorMenu, annID, annIDLabel, annIDMenu,usedIds,presentChallengeWidgets)
+    condition.trace('w', updateConditionMenu)
+    allChallengeWidgetsArr.append(conditionLabel)
+    allChallengeWidgetsArr.append(conditionMenu)
+    allChallengeWidgetsArr.append(conTimeLabel)
+    allChallengeWidgetsArr.append(conTimeEntry)

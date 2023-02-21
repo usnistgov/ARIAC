@@ -190,7 +190,7 @@ def runGUI(): # runs the entire gui
     notebook.add(setupFrame, text='Setup')
     partsFrame = ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
     partsFrame.pack(fill='both', expand=True)
-    notebook.add(partsFrame, text='Parts')
+    notebook.add(partsFrame, text='AGV Parts')
 
     binFrame=ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
     binFrame.pack(fill='both', expand=True)
@@ -211,7 +211,7 @@ def runGUI(): # runs the entire gui
     #Parts frame
     partFlag=tk.StringVar()
     partFlag.set('0')
-    partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr)
+    partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts)
     agvTrayWidgets(partsFrame, agvTrayWidgetsArr, agvTrayValsArr)
 
     #Bins frame
@@ -232,7 +232,7 @@ def runGUI(): # runs the entire gui
         bin6Slots.append(str(i+1))
         bin7Slots.append(str(i+1))
         bin8Slots.append(str(i+1))
-    binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots)
+    binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,bins)
     
     #Conveyor fame
     convWidgets(convFrame)
@@ -242,6 +242,8 @@ def runGUI(): # runs the entire gui
     #Challenges frame
     allChallengeWidgets(challengesFrame,allChallengeWidgetsArr)
     chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets)
+    mainSaveButton=tk.Button(mainWind, text="Save and Exit", command=mainWind.destroy)
+    mainSaveButton.pack()
     mainWind.mainloop()
     check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
     # END OF MAIN WIND

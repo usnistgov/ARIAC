@@ -1,5 +1,6 @@
 import tkinter as tk
 from functools import partial
+
 LEFTCOLUMN=1
 MIDDLECOLUMN=2
 RIGHTCOLUMN=3

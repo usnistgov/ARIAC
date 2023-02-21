@@ -1,5 +1,7 @@
 import tkinter as tk
 from functools import partial
+from ariac_gui.newClasses import PartsClass
+from ariac_gui.validationFunctions import *
 agvTrayIds=["0","1","2","3","4","5","6"] # all options for tray ids for agvs
 agvList=["agv1", "agv2", "agv3", "agv4"]
 partTypes=["sensor", "pump", "regulator", "battery"]
@@ -74,7 +76,7 @@ def showAndHideButton(switchPartMenuButton, saveButton, val, partOptionFlag,a,b,
         partOptionFlag.set('1')
         
 
-def savePartOption(agvSelection,partWidgets, partFlag, partVals, currentQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr):
+def saveAgvPart(agvSelection,partWidgets, partFlag, partVals, currentQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts):
     if agvSelection.get()=='agv1':
         agv1Quadrants.remove(currentQuadrant.get())
     elif agvSelection.get()=='agv2':
@@ -83,9 +85,21 @@ def savePartOption(agvSelection,partWidgets, partFlag, partVals, currentQuadrant
         agv3Quadrants.remove(currentQuadrant.get())
     else:
         agv4Quadrants.remove(currentQuadrant.get())
+    add_quotes(partVals[1])
+    add_quotes(partVals[2])
+    if 'pi' in partVals[4].get():
+        add_quotes(partVals[4])
+    if agvSelection.get()=='agv1': # saves the part to the correct agv
+        agv1Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+    elif agvSelection.get()=='agv2':
+        agv2Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+    elif agvSelection.get()=='agv3':
+        agv3Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+    else:
+        agv4Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))  
     switchPartMenu(agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
 
-def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr):
+def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts):
     partOptionFlag=tk.StringVar()
     partOptionFlag.set('0')
     partVals=[]
@@ -143,7 +157,7 @@ def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants
     show_option_menu=partial(switchPartMenu,agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
     switchPartMenuButton=tk.Button(partsFrame, text="Add Part", command=show_option_menu)
     switchPartMenuButton.pack(side = tk.BOTTOM)
-    save_option=partial(savePartOption, agvSelection,partWidgets, partFlag, partVals, partQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr)
+    save_option=partial(saveAgvPart, agvSelection,partWidgets, partFlag, partVals, partQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts)
     saveOptionButton=tk.Button(partsFrame, text="Save Part", command=save_option)
     saveOptionButton.pack_forget()
     switch_buttons=partial(showAndHideButton,switchPartMenuButton, saveOptionButton, partVals[0], partOptionFlag)

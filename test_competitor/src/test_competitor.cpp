@@ -46,10 +46,16 @@ TestCompetitor::TestCompetitor()
     "/ariac/floor_robot_gripper_state", rclcpp::SensorDataQoS(), 
     std::bind(&TestCompetitor::floor_gripper_state_cb, this, std::placeholders::_1), options);
 
+  ceiling_gripper_state_sub_ = this->create_subscription<ariac_msgs::msg::VacuumGripperState>(
+    "/ariac/ceiling_robot_gripper_state", rclcpp::SensorDataQoS(), 
+    std::bind(&TestCompetitor::ceiling_gripper_state_cb, this, std::placeholders::_1), options);
+
   // Initialize service clients 
   quality_checker_ = this->create_client<ariac_msgs::srv::PerformQualityCheck>("/ariac/perform_quality_check");
+  pre_assembly_poses_getter_ = this->create_client<ariac_msgs::srv::GetPreAssemblyPoses>("/ariac/get_pre_assembly_poses");
   floor_robot_tool_changer_ = this->create_client<ariac_msgs::srv::ChangeGripper>("/ariac/floor_robot_change_gripper");
   floor_robot_gripper_enable_ = this->create_client<ariac_msgs::srv::VacuumGripperControl>("/ariac/floor_robot_enable_gripper");
+  ceiling_robot_gripper_enable_ = this->create_client<ariac_msgs::srv::VacuumGripperControl>("/ariac/ceiling_robot_enable_gripper");
 
   AddModelsToPlanningScene();
 
@@ -126,6 +132,12 @@ void TestCompetitor::floor_gripper_state_cb(
   const ariac_msgs::msg::VacuumGripperState::ConstSharedPtr msg) 
 {
   floor_gripper_state_ = *msg;
+}
+
+void TestCompetitor::ceiling_gripper_state_cb(
+  const ariac_msgs::msg::VacuumGripperState::ConstSharedPtr msg) 
+{
+  ceiling_gripper_state_ = *msg;
 }
 
 geometry_msgs::msg::Pose TestCompetitor::MultiplyPose(
@@ -280,6 +292,21 @@ void TestCompetitor::AddModelsToPlanningScene()
   AddModelToPlanningScene("kts2_table", "kit_tray_table.stl", kts2_table_pose);
 }
 
+geometry_msgs::msg::Quaternion TestCompetitor::SetRobotOrientation(double rotation)
+{
+  tf2::Quaternion tf_q;
+  tf_q.setRPY(0, 3.14159, rotation);
+  
+  geometry_msgs::msg::Quaternion q;
+
+  q.x = tf_q.x();
+  q.y = tf_q.y();
+  q.z = tf_q.z();
+  q.w = tf_q.w();
+
+  return q; 
+}
+
 bool TestCompetitor::FloorRobotMovetoTarget()
 {
   moveit::planning_interface::MoveGroupInterface::Plan plan;
@@ -315,20 +342,7 @@ bool TestCompetitor::FloorRobotMoveCartesian(
   return static_cast<bool>(floor_robot_.execute(trajectory));
 }
 
-geometry_msgs::msg::Quaternion TestCompetitor::FloorRobotSetOrientation(double rotation)
-{
-  tf2::Quaternion tf_q;
-  tf_q.setRPY(0, 3.14159, rotation);
-  
-  geometry_msgs::msg::Quaternion q;
 
-  q.x = tf_q.x();
-  q.y = tf_q.y();
-  q.z = tf_q.z();
-  q.w = tf_q.w();
-
-  return q; 
-}
 
 void TestCompetitor::FloorRobotWaitForAttach(double timeout){
   // Wait for part to be attached
@@ -394,10 +408,10 @@ bool TestCompetitor::FloorRobotChangeGripper(std::string station, std::string gr
 
   std::vector<geometry_msgs::msg::Pose> waypoints;
   waypoints.push_back(BuildPose(tc_pose.position.x, tc_pose.position.y, 
-    tc_pose.position.z + 0.4, FloorRobotSetOrientation(0.0)));
+    tc_pose.position.z + 0.4, SetRobotOrientation(0.0)));
   
   waypoints.push_back(BuildPose(tc_pose.position.x, tc_pose.position.y, 
-    tc_pose.position.z, FloorRobotSetOrientation(0.0)));
+    tc_pose.position.z, SetRobotOrientation(0.0)));
 
   if (!FloorRobotMoveCartesian(waypoints, 0.2, 0.1)) 
     return false;
@@ -420,7 +434,7 @@ bool TestCompetitor::FloorRobotChangeGripper(std::string station, std::string gr
 
   waypoints.clear();
   waypoints.push_back(BuildPose(tc_pose.position.x, tc_pose.position.y, 
-    tc_pose.position.z + 0.4, FloorRobotSetOrientation(0.0)));
+    tc_pose.position.z + 0.4, SetRobotOrientation(0.0)));
 
   if (!FloorRobotMoveCartesian(waypoints, 0.2, 0.1)) 
     return false;
@@ -478,9 +492,9 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
   std::vector<geometry_msgs::msg::Pose> waypoints;
   
   waypoints.push_back(BuildPose(tray_pose.position.x, tray_pose.position.y, 
-    tray_pose.position.z + 0.2, FloorRobotSetOrientation(tray_rotation)));
+    tray_pose.position.z + 0.2, SetRobotOrientation(tray_rotation)));
   waypoints.push_back(BuildPose(tray_pose.position.x, tray_pose.position.y, 
-    tray_pose.position.z + pick_offset_, FloorRobotSetOrientation(tray_rotation)));
+    tray_pose.position.z + pick_offset_, SetRobotOrientation(tray_rotation)));
   FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
 
   FloorRobotSetGripperState(true);
@@ -495,7 +509,7 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
   // Move up slightly
   waypoints.clear();
   waypoints.push_back(BuildPose(tray_pose.position.x, tray_pose.position.y, 
-    tray_pose.position.z + 0.2, FloorRobotSetOrientation(tray_rotation)));
+    tray_pose.position.z + 0.2, SetRobotOrientation(tray_rotation)));
   FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
 
   floor_robot_.setJointValueTarget("linear_actuator_joint", rail_positions_["agv" + std::to_string(agv_num)]);
@@ -508,10 +522,10 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
 
   waypoints.clear();
   waypoints.push_back(BuildPose(agv_tray_pose.position.x, agv_tray_pose.position.y, 
-    agv_tray_pose.position.z + 0.3, FloorRobotSetOrientation(agv_rotation)));
+    agv_tray_pose.position.z + 0.3, SetRobotOrientation(agv_rotation)));
  
   waypoints.push_back(BuildPose(agv_tray_pose.position.x, agv_tray_pose.position.y, 
-    agv_tray_pose.position.z + kit_tray_thickness_ + drop_height_, FloorRobotSetOrientation(agv_rotation)));
+    agv_tray_pose.position.z + kit_tray_thickness_ + drop_height_, SetRobotOrientation(agv_rotation)));
   
   FloorRobotMoveCartesian(waypoints, 0.2, 0.1);
 
@@ -523,7 +537,7 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
 
   waypoints.clear();
   waypoints.push_back(BuildPose(agv_tray_pose.position.x, agv_tray_pose.position.y, 
-    agv_tray_pose.position.z + 0.3, FloorRobotSetOrientation(0)));
+    agv_tray_pose.position.z + 0.3, SetRobotOrientation(0)));
   
   FloorRobotMoveCartesian(waypoints, 0.2, 0.1);
 
@@ -593,10 +607,10 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
 
   std::vector<geometry_msgs::msg::Pose> waypoints;
   waypoints.push_back(BuildPose(part_pose.position.x, part_pose.position.y, 
-    part_pose.position.z + 0.5, FloorRobotSetOrientation(part_rotation)));
+    part_pose.position.z + 0.5, SetRobotOrientation(part_rotation)));
   
   waypoints.push_back(BuildPose(part_pose.position.x, part_pose.position.y, 
-    part_pose.position.z + part_heights_[part_to_pick.type] + pick_offset_, FloorRobotSetOrientation(part_rotation)));
+    part_pose.position.z + part_heights_[part_to_pick.type] + pick_offset_, SetRobotOrientation(part_rotation)));
   
   FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
 
@@ -613,7 +627,7 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
   // Move up slightly
   waypoints.clear();
   waypoints.push_back(BuildPose(part_pose.position.x, part_pose.position.y, 
-    part_pose.position.z + 0.3, FloorRobotSetOrientation(0)));
+    part_pose.position.z + 0.3, SetRobotOrientation(0)));
 
   FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
 
@@ -643,11 +657,11 @@ bool TestCompetitor::FloorRobotPlacePartOnKitTray(int agv_num, int quadrant)
   std::vector<geometry_msgs::msg::Pose> waypoints;
   
   waypoints.push_back(BuildPose(part_drop_pose.position.x, part_drop_pose.position.y,
-    part_drop_pose.position.z + 0.3, FloorRobotSetOrientation(0)));
+    part_drop_pose.position.z + 0.3, SetRobotOrientation(0)));
 
   waypoints.push_back(BuildPose(part_drop_pose.position.x, part_drop_pose.position.y,
     part_drop_pose.position.z + part_heights_[floor_robot_attached_part_.type] + drop_height_,
-    FloorRobotSetOrientation(0)));
+    SetRobotOrientation(0)));
   
   FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
 
@@ -661,7 +675,7 @@ bool TestCompetitor::FloorRobotPlacePartOnKitTray(int agv_num, int quadrant)
   waypoints.clear();
   waypoints.push_back(BuildPose(part_drop_pose.position.x, part_drop_pose.position.y,
     part_drop_pose.position.z + 0.3,
-    FloorRobotSetOrientation(0)));
+    SetRobotOrientation(0)));
   
   
   FloorRobotMoveCartesian(waypoints, 0.2, 0.1);
@@ -672,9 +686,60 @@ bool TestCompetitor::FloorRobotPlacePartOnKitTray(int agv_num, int quadrant)
 
 void TestCompetitor::CeilingRobotSendHome()
 {
-  // Move floor robot to home joint state
+  // Move ceiling robot to home joint state
   ceiling_robot_.setNamedTarget("home");
   CeilingRobotMovetoTarget();
+}
+
+bool TestCompetitor::CeilingRobotSetGripperState(bool enable)
+{
+  if (ceiling_gripper_state_.enabled == enable) {
+    if (ceiling_gripper_state_.enabled)
+      RCLCPP_INFO(get_logger(), "Already enabled");
+    else 
+      RCLCPP_INFO(get_logger(), "Already disabled");
+    
+    return false;
+  }
+
+  // Call enable service
+  auto request = std::make_shared<ariac_msgs::srv::VacuumGripperControl::Request>();
+  request->enable = enable;
+
+  auto result = ceiling_robot_gripper_enable_->async_send_request(request);
+  result.wait();
+
+  if (!result.get()->success) {
+    RCLCPP_ERROR(get_logger(), "Error calling gripper enable service");
+    return false;
+  }
+
+  return true;
+}
+
+void TestCompetitor::CeilingRobotWaitForAttach(double timeout)
+{
+ // Wait for part to be attached
+  rclcpp::Time start = now();
+  std::vector<geometry_msgs::msg::Pose> waypoints;
+  geometry_msgs::msg::Pose starting_pose = ceiling_robot_.getCurrentPose().pose;
+
+  while (!ceiling_gripper_state_.attached) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Waiting for gripper attach");
+
+    waypoints.clear();
+    starting_pose.position.z -= 0.001;
+    waypoints.push_back(starting_pose);
+
+    CeilingRobotMoveCartesian(waypoints, 0.1, 0.1);
+
+    usleep(200);
+
+    if (now() - start > rclcpp::Duration::from_seconds(timeout)){
+      RCLCPP_ERROR(get_logger(), "Unable to pick up object");
+      return;
+    }
+  } 
 }
 
 bool TestCompetitor::CeilingRobotMovetoTarget()
@@ -688,9 +753,94 @@ bool TestCompetitor::CeilingRobotMovetoTarget()
     RCLCPP_ERROR(get_logger(), "Unable to generate plan");
     return false;
   }
+}
+
+bool TestCompetitor::CeilingRobotMoveCartesian(
+  std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf)
+{
+  moveit_msgs::msg::RobotTrajectory trajectory;
+
+  double path_fraction = ceiling_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory);
+
+  if (path_fraction < 0.9) {
+    RCLCPP_ERROR(get_logger(), "Unable to generate trajectory through waypoints");
+    return false;
+  }
+    
+  // Retime trajectory 
+  robot_trajectory::RobotTrajectory rt(ceiling_robot_.getCurrentState()->getRobotModel(), "ceiling_robot");
+  rt.setRobotTrajectoryMsg(*ceiling_robot_.getCurrentState(), trajectory);
+  totg_.computeTimeStamps(rt, vsf, asf);
+  rt.getRobotTrajectoryMsg(trajectory);
+
+  return static_cast<bool>(ceiling_robot_.execute(trajectory));
+}
+
+bool TestCompetitor::CeilingRobotMoveToAssemblyStation(int station)
+{
+  switch (station) {
+    case 1:
+      ceiling_robot_.setJointValueTarget(ceiling_as1_js);
+      break;
+    case 2:
+      ceiling_robot_.setJointValueTarget(ceiling_as2_js);
+      break;
+    case 3:
+      ceiling_robot_.setJointValueTarget(ceiling_as3_js);
+      break;
+    case 4:
+      ceiling_robot_.setJointValueTarget(ceiling_as4_js);
+      break;
+    default:
+      RCLCPP_WARN(get_logger(), "Not a valid assembly station");
+      return false;
+  }
+
+  return CeilingRobotMovetoTarget();
+}
+
+bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
+{
+  double part_rotation = GetYaw(part.pose);
+  std::vector<geometry_msgs::msg::Pose> waypoints;
+  waypoints.push_back(BuildPose(part.pose.position.x, part.pose.position.y, 
+    part.pose.position.z + 0.4, SetRobotOrientation(part_rotation)));
+  
+  waypoints.push_back(BuildPose(part.pose.position.x, part.pose.position.y, 
+    part.pose.position.z + part_heights_[part.part.type] + pick_offset_, SetRobotOrientation(part_rotation)));
+  
+  CeilingRobotMoveCartesian(waypoints, 0.3, 0.3);
+
+  CeilingRobotSetGripperState(true);
+
+  CeilingRobotWaitForAttach(3.0);
+
+  // Add part to planning scene
+  std::string part_name = part_colors_[part.part.color] + "_" + part_types_[part.part.type];
+  AddModelToPlanningScene(part_name, part_types_[part.part.type] + ".stl", part.pose);
+  ceiling_robot_.attachObject(part_name);
+  ceiling_robot_attached_part_ = part.part;
+
+  // Move up slightly
+  waypoints.clear();
+  waypoints.push_back(BuildPose(part.pose.position.x, part.pose.position.y, 
+    part.pose.position.z + 0.3, SetRobotOrientation(0)));
+
+  CeilingRobotMoveCartesian(waypoints, 0.3, 0.3);
 
 }
 
+bool TestCompetitor::CeilingRobotAssemblePart(ariac_msgs::msg::AssemblyPart part)
+{
+  // Check that part is attached and matches part to assemble
+  if (!ceiling_gripper_state_.attached)
+    return false;  
+  if (part.part != ceiling_robot_attached_part_)
+    return false;
+
+  // Move part to correct pose for assembly
+
+}
 
 bool TestCompetitor::CompleteOrders(){
   // Wait for first order to be published
@@ -760,12 +910,69 @@ bool TestCompetitor::CompleteKittingTask(ariac_msgs::msg::KittingTask task)
 
 bool TestCompetitor::CompleteAssemblyTask(ariac_msgs::msg::AssemblyTask task)
 {
-  if (task.agv_numbers.front() == 1){
+  // Send AGVs to assembly station
+  for (auto const &agv : task.agv_numbers){
+    int destination;
+    if (task.station == ariac_msgs::msg::AssemblyTask::AS1 || task.station == ariac_msgs::msg::AssemblyTask::AS3) {
+      destination = ariac_msgs::srv::MoveAGV::Request::ASSEMBLY_FRONT;
+    } else if (task.station == ariac_msgs::msg::AssemblyTask::AS2 || task.station == ariac_msgs::msg::AssemblyTask::AS4) {
+      destination = ariac_msgs::srv::MoveAGV::Request::ASSEMBLY_BACK;
+    }
+
+    LockAGVTray(agv);
+    MoveAGV(agv, destination);
+  }
+  
+  CeilingRobotMoveToAssemblyStation(task.station);
+
+  // Get Assembly Poses
+  auto request = std::make_shared<ariac_msgs::srv::GetPreAssemblyPoses::Request>();
+  request->order_id = current_order_.id;
+  auto result = pre_assembly_poses_getter_->async_send_request(request);
+  
+  result.wait();
+
+  std::vector<ariac_msgs::msg::PartPose> agv_part_poses; 
+  if (result.get()->valid_id) {
+    agv_part_poses = result.get()->parts;
+
+    if (agv_part_poses.size() == 0) {
+      RCLCPP_WARN(get_logger(), "No part poses recieved");
+      return false;
+    }
+  } else {
+    RCLCPP_WARN(get_logger(), "Not a valid order ID");
+    return false;
+  }
+  
+  for (auto const &part_to_assemble : task.parts) {
+    // Check if matching part exists in agv_parts
+    bool part_exists = false;
+    ariac_msgs::msg::PartPose part_to_pick;
+    part_to_pick.part = part_to_assemble.part;
+    for (auto const &agv_part: agv_part_poses) {
+      if (agv_part.part.type == part_to_assemble.part.type && agv_part.part.color == part_to_assemble.part.color) {
+        part_exists = true;
+        part_to_pick.pose = agv_part.pose;
+        break;
+      }
+    }
+
+    if (!part_exists) {
+      RCLCPP_WARN_STREAM(get_logger(), "Part with type: " << part_to_assemble.part.type << 
+        " and color: " << part_to_assemble.part.color << " not found on tray");
+      continue;
+    }
+
+    // Pick up part
+    CeilingRobotPickAGVPart(part_to_pick);
+
+    // Assemble Part to insert
+    CeilingRobotAssemblePart(part_to_assemble);
 
   }
 
-  RCLCPP_WARN(get_logger(), "Assembly tasks not yet implemented");
-  return false;
+  return true;
 }
 
 bool TestCompetitor::CompleteCombinedTask(ariac_msgs::msg::CombinedTask task)

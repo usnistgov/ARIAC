@@ -1,4 +1,5 @@
 import os
+import rclpy.logging
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
@@ -9,6 +10,8 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+
+from ament_index_python.packages import get_package_share_directory, PackageNotFoundError
 
 def launch_setup(context, *args, **kwargs):    
     # Set the path to this package.
@@ -27,11 +30,26 @@ def launch_setup(context, *args, **kwargs):
         ]
     )
 
-    trial_config_name = LaunchConfiguration("trial_config").perform(context)
-    trial_config_path = os.path.join(pkg_share, 'config', 'trial_configuration', trial_config_name)
+    trial_name = LaunchConfiguration("trial_name").perform(context)
+    trial_config_path = os.path.join(pkg_share, 'config', 'trials', trial_name + ".yaml")
 
-    user_config_name = LaunchConfiguration("user_config").perform(context)
-    user_config_path = os.path.join(pkg_share, 'config', 'user_configuration', user_config_name)
+    if not os.path.exists(trial_config_path):
+        rclpy.logging.get_logger('Launch File').fatal(f"Trial configuration '{trial_name}' not found in {pkg_share}/config/trials/")
+        exit()
+
+    try:
+        competitor_pkg_share = get_package_share_directory(LaunchConfiguration("competitor_pkg").perform(context))
+    except PackageNotFoundError:
+        rclpy.logging.get_logger('Launch File').fatal("Competitor package not found")
+        exit()
+        
+    
+    sensor_config = LaunchConfiguration("sensor_config").perform(context)
+    user_config_path = os.path.join(competitor_pkg_share, 'config', sensor_config + ".yaml")
+
+    if not os.path.exists(user_config_path):
+        rclpy.logging.get_logger('Launch File').fatal(f"Sensor configuration '{sensor_config}.yaml' not found in {competitor_pkg_share}/config/")
+        exit()
 
     # Gazebo node
     gazebo = IncludeLaunchDescription(
@@ -139,11 +157,15 @@ def generate_launch_description():
     declared_arguments = []
 
     declared_arguments.append(
-        DeclareLaunchArgument("trial_config", default_value="sample.yaml", description="trial_configuration")
+        DeclareLaunchArgument("trial_name", default_value="kitting", description="name of trial")
     )
 
     declared_arguments.append(
-        DeclareLaunchArgument("user_config", default_value="sample.yaml", description="user_configuration")
+        DeclareLaunchArgument("competitor_pkg", default_value="test_competitor", description="name of competitor package")
+    )
+
+    declared_arguments.append(
+        DeclareLaunchArgument("sensor_config", default_value="sensors", description="name of user configuration file")
     )
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

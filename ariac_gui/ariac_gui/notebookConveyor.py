@@ -71,7 +71,7 @@ def switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
             widget.pack()
         convFlag.set('0')
 
-def convWidgets(convFrame, convParts, partOrdCounter):
+def convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals):
     convFlag=tk.StringVar()
     convFlag.set('0')
     convOptionFlag=tk.StringVar()
@@ -137,6 +137,9 @@ def convWidgets(convFrame, convParts, partOrdCounter):
     convOrder.set(convOrders[0])
     convActive=tk.StringVar()
     convActive.set('0')
+    convSettingsVals.append(convActive)
+    convSettingsVals.append(spawnRate)
+    convSettingsVals.append(convOrder)
     conveyorBeltLabel=tk.Label(convFrame, text="Conveyor Belt Settings")
     conveyorBeltLabel.pack()
     activeCheck=tk.Checkbutton(convFrame, text="Active", variable=convActive, onvalue="1", offvalue="0", height=3, width=20)

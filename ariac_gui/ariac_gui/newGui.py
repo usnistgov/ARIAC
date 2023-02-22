@@ -27,6 +27,7 @@ from ariac_msgs.msg import *
 from ament_index_python.packages import get_package_share_directory
 FRAMEWIDTH=1000
 FRAMEHEIGHT=750
+WINDOWMEASURE="900x800"
 def updatePartOrdLabel(agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts, orderMSGS,partOrdLabel,a,b,c):
     newText="Parts:\nAGV Parts present:\n"
     for part in agv1Parts:
@@ -213,7 +214,7 @@ def runGUI(): # runs the entire gui
     # ----------------------------------------------------------------------------------------------
     # START OF GUI
     getFileName = tk.Tk() #window to create and get the file
-    getFileName.geometry('1200x1000')
+    getFileName.geometry(WINDOWMEASURE)
     getFileName.title("NIST ARIAC CONFIG GUI")
 
     frame = tk.Frame(getFileName)
@@ -276,12 +277,13 @@ def runGUI(): # runs the entire gui
     agvTrayValsArr = []
     kittingParts=[] 
     assemblyParts=[]
+    convSettingsVals=[]
     mainWind=tk.Tk()
     partOrdCounter=tk.StringVar()
     partOrdCounter.set("0")
     challengeCounter=tk.StringVar()
     challengeCounter.set("0")
-    mainWind.geometry('1200x1000')
+    mainWind.geometry(WINDOWMEASURE)
     mainWind.title('notebook testing')
 
     notebook=ttk.Notebook(mainWind)
@@ -346,7 +348,7 @@ def runGUI(): # runs the entire gui
     binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,bins, partOrdCounter)
     
     #Conveyor fame
-    convWidgets(convFrame, convParts, partOrdCounter)
+    convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals)
     
     #Orders frame
     orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter)
@@ -454,12 +456,12 @@ def runGUI(): # runs the entire gui
         writeBinsToFile("bin8", bins, saveFileName)
     with open(saveFileName, "a") as o:
         o.write("\n  conveyor_belt: #population params for conveyor belt\n")
-        if convActiveVal=="1":
+        if convSettingsVals[0].get()=="1":
             o.write("    active: true\n")
         else:
             o.write("    active: false\n")
-        o.write("    spawn_rate: "+spawnRateVal+" # seconds between spawn\n")
-        o.write("    order: "+convOrderVal+" # random or sequential\n")
+        o.write("    spawn_rate: "+convSettingsVals[1].get()+" # seconds between spawn\n")
+        o.write("    order: "+convSettingsVals[2].get()+" # random or sequential\n")
         if len(convParts)>0:
             o.write("    parts_to_spawn:\n")
             for part in convParts:

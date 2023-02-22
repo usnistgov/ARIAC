@@ -74,13 +74,13 @@ def updateChallengeLabel(robotMalfunctions, faultyParts, droppedParts, sensorBla
     newText="Challenges:\nRobot Malfunction challenges:\n"
     for rm in robotMalfunctions:
         robotsToDisable=[]
-        newText+="Robots:"
+        newText+="Robots: "
         if rm.robots_to_disable.floor_robot:
             robotsToDisable.append("\'floor_robot\'")
         if rm.robots_to_disable.ceiling_robot:
             robotsToDisable.append("\'ceiling_robot\'")
         newText+=",".join(robotsToDisable)
-        newText+="duration: "+str(rm.duration)+"\n"
+        newText+=" Duration: "+str(rm.duration)+"\n"
     if len(robotMalfunctions)==0:
         newText+="NONE\n"
     newText+="\nFaulty Part challenges:\n"
@@ -427,13 +427,13 @@ def runGUI(): # runs the entire gui
         o.write("\nparts:\n")
         o.write("  agvs:\n")
     if len(agv1Parts)>0:
-        writePartsToFile("agv1", agv1TrayIdVal, agv1Parts, saveFileName)
+        writePartsToFile("agv1", agvTrayValsArr[0].get(), agv1Parts, saveFileName)
     if len(agv2Parts)>0:
-        writePartsToFile("agv2", agv2TrayIdVal, agv2Parts, saveFileName)
+        writePartsToFile("agv2", agvTrayValsArr[1].get(), agv2Parts, saveFileName)
     if len(agv3Parts)>0:
-        writePartsToFile("agv3", agv3TrayIdVal, agv3Parts, saveFileName)
+        writePartsToFile("agv3", agvTrayValsArr[2].get(), agv3Parts, saveFileName)
     if len(agv4Parts)>0:
-        writePartsToFile("agv4", agv4TrayIdVal, agv4Parts, saveFileName)
+        writePartsToFile("agv4", agvTrayValsArr[3].get(), agv4Parts, saveFileName)
     with open(saveFileName, "a") as o:
         o.write("\n  bins: # bin params - 8 total bins each bin has nine total slots (1-9)\n")
     if binPresentFlags[0]==1:

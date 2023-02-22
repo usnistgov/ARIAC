@@ -10,7 +10,7 @@ agvOptions=["1","2","3","4"]
 sensBOCategories=["time-based","during kitting", "during assembly","after kitting", "after assembly"]
 conditionTypes=['time','partPlace','submission']
 
-def saveRobotMalfunction(allChallengeWidgetsArr, floorRobot, ceilRobot, duration, condition, time, partType, partColor, agv, annID, robotMalfunctions):
+def saveRobotMalfunction(allChallengeWidgetsArr, floorRobot, ceilRobot, duration, condition, time, partType, partColor, agv, annID, robotMalfunctions, challengeCounter):
     for widget in allChallengeWidgetsArr:
         widget.grid_forget()
     bothRobots=Robots()
@@ -55,8 +55,10 @@ def saveRobotMalfunction(allChallengeWidgetsArr, floorRobot, ceilRobot, duration
         newRobotMalfCondition.submission_condition.order_id=annID.get()
     newRobotMalf.condition=newRobotMalfCondition
     robotMalfunctions.append(newRobotMalf)
+    currVal=int(challengeCounter.get())
+    challengeCounter.set(currVal+1)
 
-def saveFaultyPart(currentOrderID, q1,q2,q3,q4,faultyParts, allChallengeWidgetsArr):
+def saveFaultyPart(currentOrderID, q1,q2,q3,q4,faultyParts, allChallengeWidgetsArr, challengeCounter):
     for widget in allChallengeWidgetsArr:
         widget.grid_forget()
     faultyPartMSG=FaultyPartChallenge()
@@ -78,8 +80,10 @@ def saveFaultyPart(currentOrderID, q1,q2,q3,q4,faultyParts, allChallengeWidgetsA
     else:
         faultyPartMSG.quadrant4 = False
     faultyParts.append(faultyPartMSG)
+    currVal=int(challengeCounter.get())
+    challengeCounter.set(currVal+1)
 
-def saveDroppedPart(robotType, partType, partColor, dropAfterNum, dropAfterTime, droppedParts, allChallengeWidgetsArr):
+def saveDroppedPart(robotType, partType, partColor, dropAfterNum, dropAfterTime, droppedParts, allChallengeWidgetsArr, challengeCounter):
     for widget in allChallengeWidgetsArr:
         widget.grid_forget()
     droppedPartMSG=DroppedPartChallenge()
@@ -107,8 +111,10 @@ def saveDroppedPart(robotType, partType, partColor, dropAfterNum, dropAfterTime,
     droppedPartMSG.drop_after_num=int(dropAfterNum.get())
     droppedPartMSG.drop_after_time=float(dropAfterTime.get())
     droppedParts.append(droppedPartMSG)
+    currVal=int(challengeCounter.get())
+    challengeCounter.set(currVal+1)
 
-def saveSensorBlackout(duration, sensor1, sensor2,sensor3,sensor4,sensor5, sensor6, condition, time, partType, partColor, agv, annID, sensorBlackouts, allChallengeWidgetsArr):
+def saveSensorBlackout(duration, sensor1, sensor2,sensor3,sensor4,sensor5, sensor6, condition, time, partType, partColor, agv, annID, sensorBlackouts, allChallengeWidgetsArr, challengeCounter):
     for widget in allChallengeWidgetsArr:
         widget.grid_forget()
     newSensorBO=SensorBlackoutChallenge()
@@ -170,6 +176,8 @@ def saveSensorBlackout(duration, sensor1, sensor2,sensor3,sensor4,sensor5, senso
             newSensorBOCond.submission_condition.order_id=annID.get()
     newSensorBO.condition=newSensorBOCond
     sensorBlackouts.append(newSensorBO)
+    currVal=int(challengeCounter.get())
+    challengeCounter.set(currVal+1)
 
 def showCorrectMenu(condition, conditionMenu, time, timeLabel, timeEntry, agv, agvLabel, agvMenu, partType, partTypeLabel, partTypeMenu, partColor, partColorLabel, partColorMenu, annID, annIDLabel, annIDMenu,tempIDs,presentChallengeWidgets,a,b,c):
     if condition.get()=="":
@@ -323,7 +331,7 @@ def chooseChallenge(challengeFrame,allChallengeWidgetsArr,presentChallengeWidget
     newSensorBlackoutButton=tk.Button(challengeFrame, text="Add new sensor blackout", command=new_sensor_blackout)
     newSensorBlackoutButton.grid(column=1)
 
-def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals):
+def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals, challengeCounter):
     #robot malfunction
     rmDuration=tk.StringVar()
     rmDuration.set("0")
@@ -522,16 +530,16 @@ def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeW
     updateConditionMenu=partial(showCorrectMenu,condition, conditionMenu, conTime, conTimeLabel, conTimeEntry, conAgv, conAgvLabel, conAgvMenu, conPartType, conPartTypeLabel, conPartTypeMenu, conPartColor, conPartColorLabel, conPartColorMenu, annID, annIDLabel, annIDMenu,usedIds,presentChallengeWidgets)
     condition.trace('w', updateConditionMenu)
     #Save buttons
-    save_robot_breakdown=partial(saveRobotMalfunction,allChallengeWidgetsArr, floorRobot, ceilRobot, rmDuration, condition, conTime, conPartType, conPartColor, conAgv, annID, robotMalfunctions)
+    save_robot_breakdown=partial(saveRobotMalfunction,allChallengeWidgetsArr, floorRobot, ceilRobot, rmDuration, condition, conTime, conPartType, conPartColor, conAgv, annID, robotMalfunctions, challengeCounter)
     rmSaveButton=tk.Button(challengesFrame, text="Save robot malfunction", command=save_robot_breakdown)
     rmSaveButton.grid_forget()
-    save_faulty_part=partial(saveFaultyPart,currentOrderID, q1,q2,q3,q4,faultyParts, allChallengeWidgetsArr)
+    save_faulty_part=partial(saveFaultyPart,currentOrderID, q1,q2,q3,q4,faultyParts, allChallengeWidgetsArr, challengeCounter)
     saveFaultyPartButton=tk.Button(challengesFrame, text="Save faulty part", command=save_faulty_part)
     saveFaultyPartButton.grid_forget()
-    save_dropped_part=partial(saveDroppedPart,robotType, partType, partColor, dropAfterNum, dropAfterTime, droppedParts, allChallengeWidgetsArr)
+    save_dropped_part=partial(saveDroppedPart,robotType, partType, partColor, dropAfterNum, dropAfterTime, droppedParts, allChallengeWidgetsArr, challengeCounter)
     saveDroppedPartButton=tk.Button(challengesFrame, text="Save dropped part", command=save_dropped_part)
     saveDroppedPartButton.grid_forget()
-    save_sensor_blackout=partial(saveSensorBlackout, sbDuration, sensor1, sensor2,sensor3,sensor4,sensor5, sensor6, condition, conTime, conPartType, conPartColor, conAgv, annID, sensorBlackouts, allChallengeWidgetsArr)
+    save_sensor_blackout=partial(saveSensorBlackout, sbDuration, sensor1, sensor2,sensor3,sensor4,sensor5, sensor6, condition, conTime, conPartType, conPartColor, conAgv, annID, sensorBlackouts, allChallengeWidgetsArr, challengeCounter)
     saveSensorBlackoutButton=tk.Button(challengesFrame, text="Save sensor blackout", command=save_sensor_blackout)
     saveSensorBlackoutButton.grid_forget()
 

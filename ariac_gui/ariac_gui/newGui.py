@@ -69,6 +69,64 @@ def updatePartOrdLabel(agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts
             newText+="\n"
             c+=1
     partOrdLabel.config(text=newText)
+
+def updateChallengeLabel(robotMalfunctions, faultyParts, droppedParts, sensorBlackouts,challengesLabel, a,b,c):
+    newText="Challenges:\nRobot Malfunction challenges:\n"
+    for rm in robotMalfunctions:
+        robotsToDisable=[]
+        newText+="Robots:"
+        if rm.robots_to_disable.floor_robot:
+            robotsToDisable.append("\'floor_robot\'")
+        if rm.robots_to_disable.ceiling_robot:
+            robotsToDisable.append("\'ceiling_robot\'")
+        newText+=",".join(robotsToDisable)
+        newText+="duration: "+str(rm.duration)+"\n"
+    if len(robotMalfunctions)==0:
+        newText+="NONE\n"
+    newText+="\nFaulty Part challenges:\n"
+    for fp in faultyParts:
+        newText+="order_id: \'"+fp.order_id+"\'"
+        faultyPartQuadrants=[]
+        if fp.quadrant1:
+            faultyPartQuadrants.append("1")
+        if fp.quadrant2:
+            faultyPartQuadrants.append("2")
+        if fp.quadrant3:
+            faultyPartQuadrants.append("3")
+        if fp.quadrant4:
+            faultyPartQuadrants.append("4")
+        newText+=" Quadrants: "+",".join(faultyPartQuadrants)+"\n"
+    if len(faultyParts)==0:
+        newText+="NONE\n"
+    newText+="\nDropped Part challenges:\n"
+    for dp in droppedParts:
+        newText+=dp.robot+" type: \'"+getPartName(dp.part_to_drop.type)+" color: \'"+getPartColor(dp.part_to_drop.color)+"\n"
+    if len(droppedParts)==0:
+        newText+="NONE\n"
+    newText+="\nSensor Blackout challenges:\n"
+    for sb in sensorBlackouts:
+        sensorsToDisable=[]
+        newText+="Duration: "+str(sb.duration)
+        #gets the list of sensors to disable
+        if sb.sensors_to_disable.break_beam:
+            sensorsToDisable.append("break_beam")
+        if sb.sensors_to_disable.proximity:
+            sensorsToDisable.append("proximity")
+        if sb.sensors_to_disable.laser_profiler:
+            sensorsToDisable.append("laser_profiler")
+        if sb.sensors_to_disable.lidar:
+            sensorsToDisable.append("lidar")
+        if sb.sensors_to_disable.camera:
+            sensorsToDisable.append("camera")
+        if sb.sensors_to_disable.logical_camera:
+            sensorsToDisable.append("logical_camera")
+        newText+=" Sensors: "+", ".join(sensorsToDisable)+"\n"
+    if len(sensorBlackouts)==0:
+        newText+="NONE\n"
+    challengesLabel.config(text=newText)
+
+
+
 def runGUI(): # runs the entire gui
 
     pathIncrement = []  # gives the full path for recursive deletion
@@ -294,7 +352,7 @@ def runGUI(): # runs the entire gui
     orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter)
     #Challenges frame
     chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, chCondVals)
-    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals)
+    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals, challengeCounter)
     
     partOrdText="Parts:\nAGV Parts present:\nNONE\nBin Parts presents:\nNONE\nConveyor Parts present:\nNONE\n\n"
     partOrdText+="Orders Present:\nNONE"
@@ -313,6 +371,8 @@ def runGUI(): # runs the entire gui
     #Trace functions
     update_part_ord_label=partial(updatePartOrdLabel,agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts, orderMSGS,partOrdLabel)
     partOrdCounter.trace('w',update_part_ord_label)
+    update_challenge_label=partial(updateChallengeLabel,robotMalfunctions, faultyParts, droppedParts, sensorBlackouts,challengesLabel)
+    challengeCounter.trace('w', update_challenge_label)
     mainWind.mainloop()
     check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
     # END OF MAIN WIND

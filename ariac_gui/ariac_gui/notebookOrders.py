@@ -237,7 +237,8 @@ def generateOrderId(usedId):
     usedId.append(newId)
     return newId
 
-def saveOrder(orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderMSGS, orderConditions):
+def saveOrder(orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderMSGS, orderConditions, partOrdCounter):
+    currVal=int(partOrdCounter.get())
     for widget in orderWidgetsArr:
         widget.grid_forget()
     tempKittingParts=[]
@@ -314,6 +315,7 @@ def saveOrder(orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderM
     orderConditions.append(orderCondition)
     kittingParts.clear()
     assemblyParts.clear()
+    partOrdCounter.set(str(currVal+1))
 
 def kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr):
     prodType=tk.StringVar()
@@ -462,7 +464,7 @@ def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidg
     saveAssembButton.grid_forget()
     assemblyWidgetsArr.append(saveAssembButton)
 
-def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts):
+def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter):
     kitWidgetsArr=[]
     kitValsArr=[]
     assemblyWidgetsArr=[]
@@ -609,7 +611,7 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     addProdButton.grid_forget()
     orderWidgetsArr.append(addProdButton)
     #save and cancel buttons
-    save_order=partial(saveOrder, orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderMSGS, orderConditions)
+    save_order=partial(saveOrder, orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderMSGS, orderConditions, partOrdCounter)
     saveOrdButton=tk.Button(orderFrame, text="Save order", command=save_order)
     saveOrdButton.grid_forget()
     orderWidgetsArr.append(saveOrdButton)

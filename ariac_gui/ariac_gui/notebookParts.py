@@ -76,7 +76,8 @@ def showAndHideButton(switchPartMenuButton, saveButton, val, partOptionFlag,a,b,
         partOptionFlag.set('1')
         
 
-def saveAgvPart(agvSelection,partWidgets, partFlag, partVals, currentQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts):
+def saveAgvPart(agvSelection,partWidgets, partFlag, partVals, currentQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts, partOrdCounter):
+    currVal=int(partOrdCounter.get())
     if agvSelection.get()=='agv1':
         agv1Quadrants.remove(currentQuadrant.get())
     elif agvSelection.get()=='agv2':
@@ -96,10 +97,11 @@ def saveAgvPart(agvSelection,partWidgets, partFlag, partVals, currentQuadrant, a
     elif agvSelection.get()=='agv3':
         agv3Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
     else:
-        agv4Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))  
+        agv4Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+    partOrdCounter.set(str(currVal+1))
     switchPartMenu(agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
 
-def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts):
+def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts,partOrdCounter):
     partOptionFlag=tk.StringVar()
     partOptionFlag.set('0')
     partVals=[]
@@ -157,7 +159,7 @@ def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants
     show_option_menu=partial(switchPartMenu,agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
     switchPartMenuButton=tk.Button(partsFrame, text="Add Part", command=show_option_menu)
     switchPartMenuButton.pack(side = tk.BOTTOM)
-    save_option=partial(saveAgvPart, agvSelection,partWidgets, partFlag, partVals, partQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts)
+    save_option=partial(saveAgvPart, agvSelection,partWidgets, partFlag, partVals, partQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts, partOrdCounter)
     saveOptionButton=tk.Button(partsFrame, text="Save Part", command=save_option)
     saveOptionButton.pack_forget()
     switch_buttons=partial(showAndHideButton,switchPartMenuButton, saveOptionButton, partVals[0], partOptionFlag)

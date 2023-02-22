@@ -44,8 +44,10 @@ def showAndHideConvButton(addConvButton, val, convOptionFlag, saveNewConvButton,
         addConvButton.pack_forget()
         convOptionFlag.set('1')
 
-def saveConv(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts):
+def saveConv(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts, partOrdCounter):
     convParts.append(PartConv(convValsArr[0].get(), convValsArr[1].get(),convValsArr[2].get(),convValsArr[3].get(), convValsArr[4].get()))
+    currVal=int(partOrdCounter.get())
+    partOrdCounter.set(currVal+1)
     switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets)
 
 def switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
@@ -69,7 +71,7 @@ def switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
             widget.pack()
         convFlag.set('0')
 
-def convWidgets(convFrame, convParts):
+def convWidgets(convFrame, convParts, partOrdCounter):
     convFlag=tk.StringVar()
     convFlag.set('0')
     convOptionFlag=tk.StringVar()
@@ -155,7 +157,7 @@ def convWidgets(convFrame, convParts):
     convSettingsWidgets.append(convOrderMenu)
 
     #save conveyor button
-    save_and_exit_conv=partial(saveConv, convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts)
+    save_and_exit_conv=partial(saveConv, convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts, partOrdCounter)
     saveConvButton=tk.Button(convFrame, text="Save and Exit", command=save_and_exit_conv)
     saveConvButton.pack_forget()
     #add conv button

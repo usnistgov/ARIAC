@@ -27,7 +27,48 @@ from ariac_msgs.msg import *
 from ament_index_python.packages import get_package_share_directory
 FRAMEWIDTH=1000
 FRAMEHEIGHT=750
-
+def updatePartOrdLabel(agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts, orderMSGS,partOrdLabel,a,b,c):
+    newText="Parts:\nAGV Parts present:\n"
+    for part in agv1Parts:
+        newText+=part.color+" "+part.pType+" on AGV 1\n"
+    for part in agv2Parts:
+        newText+=part.color+" "+part.pType+" on AGV 2\n"
+    for part in agv3Parts:
+        newText+=part.color+" "+part.pType+" on AGV 3\n"
+    for part in agv4Parts:
+        newText+=part.color+" "+part.pType+" on AGV 4\n"
+    if len(agv1Parts)+len(agv2Parts)+len(agv3Parts)+len(agv4Parts)==0:
+        newText+="NONE\n"
+    
+    newText+="\nBin Parts present:\n"
+    for bin in bins:
+        newText+=bin.binName+" "+bin.color+" "+bin.type+"\n"
+    if len(bins)==0:
+        newText+="NONE\n"
+    
+    newText+="\nConveyor Parts present:\n"
+    for convPart in convParts:
+        newText+=convPart.color+" "+convPart.type+"\n"
+    if len(convParts)==0:
+        newText+="NONE\n"
+    newText+="\nOrders Present:\n"
+    if len(orderMSGS)==0:
+        newText+="NONE"
+    else:
+        c=0
+        for order in orderMSGS:
+            newText+="Order "+str(c)+":\n"
+            newText+="ID: "+order.id+"  Type: "+getOrderType(order.type)+"\n"
+            newText+="Number of parts: "
+            if order.type==0:
+                newText+=str(len(order.kitting_task.parts))
+            elif order.type==1:
+                newText+=str(len(order.assembly_task.parts))
+            else:
+                newText+=str(len(order.combined_task.parts))
+            newText+="\n"
+            c+=1
+    partOrdLabel.config(text=newText)
 def runGUI(): # runs the entire gui
 
     pathIncrement = []  # gives the full path for recursive deletion
@@ -178,11 +219,15 @@ def runGUI(): # runs the entire gui
     kittingParts=[] 
     assemblyParts=[]
     mainWind=tk.Tk()
+    partOrdCounter=tk.StringVar()
+    partOrdCounter.set("0")
+    challengeCounter=tk.StringVar()
+    challengeCounter.set("0")
     mainWind.geometry('1200x1000')
     mainWind.title('notebook testing')
 
     notebook=ttk.Notebook(mainWind)
-    notebook.pack(pady=10, expand=True)
+    notebook.grid(pady=10, column=LEFTCOLUMN)
 
     setupFrame = ttk.Frame(notebook, width=800, height=600)
     
@@ -219,7 +264,7 @@ def runGUI(): # runs the entire gui
     #Parts frame
     partFlag=tk.StringVar()
     partFlag.set('0')
-    partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts)
+    partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts, partOrdCounter)
     agvTrayWidgets(partsFrame, agvTrayWidgetsArr, agvTrayValsArr)
 
     #Bins frame
@@ -240,19 +285,34 @@ def runGUI(): # runs the entire gui
         bin6Slots.append(str(i+1))
         bin7Slots.append(str(i+1))
         bin8Slots.append(str(i+1))
-    binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,bins)
+    binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,bins, partOrdCounter)
     
     #Conveyor fame
-    convWidgets(convFrame, convParts)
+    convWidgets(convFrame, convParts, partOrdCounter)
     
     #Orders frame
-    orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts)
+    orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter)
     #Challenges frame
     chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, chCondVals)
     allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals)
+    
+    partOrdText="Parts:\nAGV Parts present:\nNONE\nBin Parts presents:\nNONE\nConveyor Parts present:\nNONE\n\n"
+    partOrdText+="Orders Present:\nNONE"
+    partOrdLabel=tk.Label(mainWind, text=partOrdText)
+    partOrdLabel.grid(column=MIDDLECOLUMN, row=0)
 
+    challengesText="Challenges:\nRobot Malfunction challenges:\nNONE\nFaulty Part challenges:\nNONE\nDropped Part challenges:\nNONE\nSensor Blackout challenges:\nNONE"
+    challengesLabel=tk.Label(mainWind, text=challengesText)
+    challengesLabel.grid(column=RIGHTCOLUMN, row=0)
+    cancel_main_command=partial(cancel_wind, mainWind, cancelFlag)
+    cancelMainButton=tk.Button(mainWind, text="Cancel and Exit", command=cancel_main_command)
+    cancelMainButton.grid(column=LEFTCOLUMN)
     mainSaveButton=tk.Button(mainWind, text="Save and Exit", command=mainWind.destroy)
-    mainSaveButton.pack()
+    mainSaveButton.grid(column=RIGHTCOLUMN, row=1)
+
+    #Trace functions
+    update_part_ord_label=partial(updatePartOrdLabel,agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts, orderMSGS,partOrdLabel)
+    partOrdCounter.trace('w',update_part_ord_label)
     mainWind.mainloop()
     check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
     # END OF MAIN WIND

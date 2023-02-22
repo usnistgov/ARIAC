@@ -193,7 +193,7 @@ def showAndHideBinButton(addBinButton, val, binOptionFlag,bin1Slots, binFrame, s
         addBinButton.pack_forget()
         binOptionFlag.set('1')
 
-def saveBin(currentBin, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9,binWidgetsArr, binValsArr,binFlag, bins):
+def saveBin(currentBin, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9,binWidgetsArr, binValsArr,binFlag, bins, partOrdCounter):
     allSlots=[slot1.get(),slot2.get(),slot3.get(),slot4.get(),slot5.get(),slot6.get(),slot7.get(),slot8.get(),slot9.get()]
     counter=1
     if currentBin.get()=="bin1":
@@ -248,8 +248,10 @@ def saveBin(currentBin, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     slotsString=",".join(selectedSlots)
     bins.append(Bin(binValsArr[0].get(),binValsArr[1].get(), binValsArr[2].get(),"["+slotsString+"]",binValsArr[12].get(), binValsArr[13].get()))
     switchBinMenu(binWidgetsArr, binValsArr,binFlag)
+    currVal=int(partOrdCounter.get())
+    partOrdCounter.set(currVal+1)
 
-def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, bins):
+def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, bins, partOrdCounter):
     binWidgetsArr=[]
     binValsArr=[]
     binFlag=tk.StringVar()
@@ -330,7 +332,7 @@ def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     flippedCheck.pack_forget()
     binValsArr.append(flippedFlag)
     binWidgetsArr.append(flippedCheck)
-    save_new_bin=partial(saveBin,binID, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9,binWidgetsArr, binValsArr,binFlag,bins)
+    save_new_bin=partial(saveBin,binID, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9,binWidgetsArr, binValsArr,binFlag,bins, partOrdCounter)
     saveNewBinButton=tk.Button(binFrame, text="Save", command=save_new_bin)
     saveNewBinButton.pack_forget()
     show_add_button=partial(switchBinMenu,binWidgetsArr, binValsArr,binFlag)

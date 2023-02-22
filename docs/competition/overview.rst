@@ -1,7 +1,7 @@
 Overview of the Competition
 ===========================
 
-.. figure:: ../images/ARIAC2023Flowchart.png
+.. figure:: ../images/ARIAC2023Flowchart.jpg
    :scale: 100 %
    :alt: flowchart
    :align: center

@@ -69,7 +69,6 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
         
         To submit a kitting order, the CCS first has to move the AGV to the warehouse with the service ``/ariac/move_agv{n}`` (see :ref:`MoveAGVSrv`). Once the AGV is at the warehouse, then the submission service should be called. To know the location of an AGV in the workcell, the CCS has to subscribe to the topic ``/ariac/agv{n}_status``, which uses ``AGVStatus.msg`` (see :ref:`AGVSTATUSMSG`).
 
-
     .. code-block:: bash
         :caption: MoveAGV.srv
         :name: MoveAGVSrv
@@ -98,25 +97,5 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
         float64 position
         float64 velocity
 
+    Once all orders have been submitted, the CCS calls the service ``/ariac/end_competition``. This service is hosted by the AM and is of type ``std_srvs/srv/Trigger``. The result of the call will set the state of the competition to ``ENDED``. The CCS can then exit. The AM will then compute the scoring for the current trial (see :ref:`SCORING` section), end the trial, and save the results. Before calling the service to end the competition, the CCS needs to ensure that all orders have been announced. The state of competition is set to ``ORDER_ANNOUNCEMENTS_DONE`` when all orders from the trial have been announced. 
 
-3. **announce order(s)**: The AM will announce orders on the topic ``/ariac/orders``. The CCS will  need to subscribe to the topic to receive the orders. If all orders have been announced, the AM will set the state of the competition to ``ORDER_ANNOUNCEMENTS_DONE``. This state does not mean that the competition is over. The CCS may still be working on orders that were announced earlier.
-
-4. **work on order(s)**: During this phase, the CCS will perform different activities in order to fulfill the orders. The AM may announce new orders or start agility challenges based on the state of the workcell.
-
-5. **submit order(s)**: After orders are completed they are submitted by the CCS. Order submission may announce new orders and/or start agility challenges.  
-
-    .. warning:: 
-        
-        To submit a kitting order, the CCS needs to ensure the AGV is at the warehouse before calling the service to submit an order.
-        The AGV status can be retrieved by subscribing to the topic ``/ariac/agv{n}_status`` (see :ref:`COMMUNICATIONS` for more information).
-
-6. **end competition**: Once the CCS have submitted all orders, they need to call the following service to end the competition.
-
-    .. code-block:: bash
-
-        ros2 service call /ariac/end_competition std_srvs/srv/Trigger
-
-
-    The result of the call will set the state of the competition to ``ENDED``.
-
-7. **calculate scoring**: The last phase of a trial is the computation of the score for the trial. The score is computed using the formulas described in the :ref:`SCORING` section. The score is thendisplayed in the terminal.

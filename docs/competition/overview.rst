@@ -34,22 +34,23 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
     
     This command starts the Gazebo simulation environment and the ARIAC manager (AM), the latter handles the communications between the competitor's control system (CCS) and the ARIAC software. The state of the competition changes multiple times during a trial. The state of the competition is published to the topic ``ariac/competition_state`` which uses  ``CompetitionState.msg`` (see :ref:`COMPETITIONSTATEMSG`). The CCS needs to subscribe to this topic to properly implement the programming logic.
 
-    .. COMPETITIONSTATEMSG:
-    
-    .. code-block:: bash
 
-        uint8 IDLE=0   # Competition cannot be started yet by the competitor
-        uint8 READY=1  # Competition can be started by the competitor
-        uint8 STARTED=2 # Competition has been started
-        uint8 ORDER_ANNOUNCEMENTS_DONE=3 # All order announcements have been made
-        uint8 ENDED=4 # Competition has ended
+    .. code-block:: bash
+        :caption: CompetitionState.msg
+        :name: CompetitionStateMsg
+
+        uint8 IDLE=0    # competition cannot be started yet by the competitor
+        uint8 READY=1   # competition can be started by the competitor
+        uint8 STARTED=2 # competition has been started
+        uint8 ORDER_ANNOUNCEMENTS_DONE=3 # all order announcements have been announced
+        uint8 ENDED=4   # competition has ended
 
         uint8 competition_state # IDLE, READY, STARTED, ORDER_ANNOUNCEMENTS_DONE, ENDED
 
 
 
 
-2. **terminal 2**: This command starts the competitor's control system (CCS), which is the software implemented by the competitor to compete in ARIAC. This command can be a ``ros2 run`` or 11ros2 launch`` command. The first task of the CCS is to start the competition with the following service call:
+2. **terminal 2**: This command starts the competitor's control system (CCS), which is the software implemented by the competitor to compete in ARIAC. This command can be a ``ros2 run`` or ``ros2 launch`` command. The first task of the CCS is to start the competition with the following service call:
 
     .. code-block:: bash
 

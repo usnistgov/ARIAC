@@ -2,7 +2,7 @@ Overview of the Competition
 ===========================
 
 .. figure:: ../images/ARIAC2023Flowchart.jpg
-   :scale: 60 %
+   :scale: 50 %
    :alt: flowchart
    :align: center
    :figclass: align-center
@@ -18,26 +18,31 @@ Overview of the Competition
 :numref:`flowchart` provides an overview of the competition. 
 The competition consists of two main actors, the :term:`CCS<Competitor Control System (CCS)>` and the :term:`AM<ARIAC Manager (AM)>`. 
 The competition is set to different states while it is running and the CCS needs to subscribe to the topic ``/ariac/competition_state`` to properly implement the programming logic. 
-A description of :numref:`flowchart` is provided below.
 
-1. **start environment**: Competitors start the environment with the following command:
+Start Commands
+--------------
+
+To compete in ARIAC, competitors have to issue two commands in two different terminals.
+
+1. **terminal 1**: In the first terminal, competitors **start the trial** with the following command:
 
     .. code-block:: bash
 
-        ros2 launch ariac_gazebo ariac.launch.py trial_config:=<yaml_file> user_config:=<yaml_file>
+        ros2 launch ariac_gazebo ariac.launch.py trial_config:=<trial_yaml_file> sensor_config:=<sensor_yaml_file>
+
+    If ``trial_yaml_file`` and ``sensor_yaml_file`` are yaml file names without the ``.yaml`` suffix. If ``trial_yaml_file`` is not provided, it defaults to ``kitting.yaml``. If ``sensor_yaml_file`` is not provided, it defaults to ``sensors.yaml``
+    
+    This command starts the Gazebo simulation environment and the ARIAC manager (AM), the latter handles the communications between the competitor's control system (CCS) and the ARIAC software. The state of the competition changes multiple times during a trial. The state of the competition is published to the topic ``ariac/competition_state`` which uses  ``CompetitionState.msg``. The CCS needs to subscribe to this topic to properly implement the programming logic.
 
 
-    The Gazebo simulation environment will start and many ARIAC processes will start in the background. The competition is in the ``IDLE`` state. 
-    Once all the required processes have been loaded in the background, the AM will set the competition state to ``READY``. 
 
-2. **start competition**: Once the state of the competition is set to ``READY``, 
-the CCS can call the following service to start the competition:
+2. **terminal 2**: This command starts the competitor's control system (CCS), which is the software implemented by the competitor to compete in ARIAC. This command can be a ``ros2 run`` or 11ros2 launch`` command. The first task of the CCS is to start the competition with the following service call:
 
     .. code-block:: bash
 
         ros2 service call /ariac/start_competition std_srvs/srv/Trigger
 
-    The call to this service will start the robot controllers, the conveyor belt, and will activate all sensors. Orders will be announced on the topic ``/ariac/orders``. The result of the call will set the state of the competition to ``STARTED``.
+    The state of the competition must be in the state ``READY`` before this service can be called. The call to this service starts the robot controllers, activates all sensors, start the conveyor belt (if part of the trial), and starts the global challenges (if part of the trial). Orders will be announced on the topic ``/ariac/orders``. The result of the call will set the state of the competition to ``STARTED``.
 
 3. **announce order(s)**: The AM will announce orders on the topic ``/ariac/orders``. The CCS will  need to subscribe to the topic to receive the orders. If all orders have been announced, the AM will set the state of the competition to ``ORDER_ANNOUNCEMENTS_DONE``. This state does not mean that the competition is over. The CCS may still be working on orders that were announced earlier.
 

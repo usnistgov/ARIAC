@@ -10,7 +10,7 @@ Overview of the Competition
    :class: no-border
    
 
-   Flowchart showing the interactions between the :term:`CCS<Competitor Control System (CCS)>` and the :term:`AM<ARIAC Manager (AM)>`.
+   Flowchart showing the interactions between the :term:`Competitor Control System (CCS)<Competitor Control System (CCS)>` and the :term:`ARIAC Manager (AM)<ARIAC Manager (AM)>`.
 
    
 

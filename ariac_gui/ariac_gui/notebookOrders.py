@@ -464,18 +464,26 @@ def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidg
     saveAssembButton.grid_forget()
     assemblyWidgetsArr.append(saveAssembButton)
 
+def updateConditionMenus(usedIDs, annID, conditionMenu, condition, annIDMenu,a,b,c):
+    if len(usedIDs):
+        annID.set(usedIDs[0])
+        conMen=conditionMenu['menu']
+        conMen.delete(0, 'end')
+        for option in conditionTypes:
+            conMen.add_command(label=option, command=lambda option=option: condition.set(option))
+        annIDMen=annIDMenu['menu']
+        annIDMen.delete(0,'end')
+        for id in usedIDs:
+            annIDMen.add_command(label=id, command=lambda id=id: annID.set(id))
+
 def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter):
     kitWidgetsArr=[]
     kitValsArr=[]
     assemblyWidgetsArr=[]
     assemblyValsArr=[]
     #generate the order id
-    tempIDs=[]
     orderWidgetsArr=[]
     orderValsArr=[]
-    for id in usedIDs:
-        tempIDs.append(id)
-    tempIDs.append(" ")
     orderCategory=tk.StringVar()
     orderCategory.set(orderCategories[0])
     orderCategoryLabel=tk.Label(orderFrame, text="Select the category of the order")
@@ -507,7 +515,7 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     condition.set(conditionTypes[0])
     conditionLabel=tk.Label(orderFrame, text="Select a condition for the order")
     conditionLabel.grid_forget()
-    conditionMenu=tk.OptionMenu(orderFrame, condition, *conditionTypes)
+    conditionMenu=tk.OptionMenu(orderFrame, condition, *conditionTypes[:-1])
     conditionMenu.grid_forget()
     orderValsArr.append(condition)
     orderWidgetsArr.append(conditionLabel)
@@ -552,7 +560,7 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     annID.set("")
     annIDLabel=tk.Label(orderFrame, text="Select the order ID")
     annIDLabel.grid_forget()
-    annIDMenu=tk.OptionMenu(orderFrame, annID, *tempIDs)
+    annIDMenu=tk.OptionMenu(orderFrame, annID, *allProdColors)
     annIDMenu.grid_forget()
     orderValsArr.append(annID)
     orderWidgetsArr.append(annIDLabel)
@@ -618,5 +626,7 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     #update menu functions
     update_task_options=partial(updateTaskOptions, orderType, kitTrayId, taskAgvMenu,kitTrayIdLabel, kitTrayIdMenu, kittingDestination, kittingDestinationLabel, kittingDestinationMenu, assemblyStation, assemblyStationLabel, assemblyStationMenu)
     orderType.trace('w', update_task_options)
-    updateConditionMenu=partial(showCorrectMenu,orderValsArr, orderWidgetsArr,tempIDs)
-    condition.trace('w', updateConditionMenu)
+    show_correct_cond_menu=partial(showCorrectMenu,orderValsArr, orderWidgetsArr,usedIDs)
+    condition.trace('w', show_correct_cond_menu)
+    update_condition_menus=partial(updateConditionMenus,usedIDs, annID, conditionMenu, condition, annIDMenu)
+    partOrdCounter.trace('w', update_condition_menus)

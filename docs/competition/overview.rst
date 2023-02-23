@@ -58,6 +58,8 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
 
     The state of the competition must be in the state ``READY`` before this service can be called. The call to this service starts the robot controllers, activates all sensors, start the conveyor belt (if part of the trial), and starts the global challenges (if part of the trial). Orders will be announced on the topic ``/ariac/orders``. The result of the call will set the state of the competition to ``STARTED``.
 
+    Once orders are announced, the CCS fulfills the orders and submits them. Order announcements can be time based, part placement based, or order submission based. More information on these conditions can be found in :ref:`_CONDITIONS`. Agility challenges can also be announced with these conditions. More information on agility challenges can be found in :ref:`_AGILITYCHALLENGES`.
+
 3. **announce order(s)**: The AM will announce orders on the topic ``/ariac/orders``. The CCS will  need to subscribe to the topic to receive the orders. If all orders have been announced, the AM will set the state of the competition to ``ORDER_ANNOUNCEMENTS_DONE``. This state does not mean that the competition is over. The CCS may still be working on orders that were announced earlier.
 
 4. **work on order(s)**: During this phase, the CCS will perform different activities in order to fulfill the orders. The AM may announce new orders or start agility challenges based on the state of the workcell.

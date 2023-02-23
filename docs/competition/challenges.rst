@@ -1,4 +1,6 @@
 
+.. _AGILITY_CHALLENGES:
+
 ========
 Agility Challenges
 ========

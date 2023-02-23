@@ -81,8 +81,10 @@ void AssemblyLock::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
   impl_->gznode_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
   impl_->gznode_->Init(impl_->model_->GetWorld()->Name());
 
-  std::string link_name = "insert_link";
+  
   std::string part_type = sdf->GetElement("assembly_part_type")->Get<std::string>();
+  std::string link_name = part_type + "_contact";
+
   std::string model_name = model->GetName();
   impl_->assembly_surface_link_ = impl_->model_->GetLink(link_name);
   impl_->assembly_part_type_ = part_type;

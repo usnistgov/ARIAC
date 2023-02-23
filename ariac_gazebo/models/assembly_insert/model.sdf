@@ -129,7 +129,7 @@
         </contact>
       </sensor>
 
-      <collision name="regulator_contact">
+      <!-- <collision name="regulator_contact">
         <geometry>
           <mesh>
             <uri>model://assembly_insert/meshes/regulator_contact.stl</uri>
@@ -150,7 +150,7 @@
         <contact>
           <collision>regulator_contact</collision>
         </contact>
-      </sensor>      
+      </sensor>       -->
 
       <collision name="sensor_contact">
         <geometry>
@@ -198,6 +198,33 @@
         </contact>
       </sensor>
     </link>
+
+    <link name="regulator_contact">
+      <pose frame=''>0 0 0 0 0 0</pose>
+      <collision name="regulator_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/regulator_contact.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <max_vel>0.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+      <sensor type="contact" name="regulator_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>regulator_contact</collision>
+        </contact>
+      </sensor> 
+    </link>     
+
     <plugin filename="libassembly_lock_plugin.so" name="assembly_lock_pump">
       <assembly_part_type>pump</assembly_part_type>
     </plugin>

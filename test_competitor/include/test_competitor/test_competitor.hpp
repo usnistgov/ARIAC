@@ -3,6 +3,8 @@
 
 #include <unistd.h>
 
+#include <cmath>
+
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include <moveit/move_group_interface/move_group_interface.h>
@@ -29,6 +31,7 @@
 #include <ariac_msgs/msg/kitting_task.hpp>
 #include <ariac_msgs/msg/kit_tray_pose.hpp>
 #include <ariac_msgs/msg/vacuum_gripper_state.hpp>
+#include <ariac_msgs/msg/assembly_state.hpp>
 
 #include <ariac_msgs/srv/change_gripper.hpp>
 #include <ariac_msgs/srv/vacuum_gripper_control.hpp>
@@ -79,15 +82,17 @@ private:
   void FloorRobotWaitForAttach(double timeout);
 
   bool CeilingRobotMovetoTarget();
-  bool CeilingRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf);
+  bool CeilingRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
   void CeilingRobotWaitForAttach(double timeout);
+  bool CeilingRobotWaitForAssemble(int station, ariac_msgs::msg::AssemblyPart part, double timeout);
   bool CeilingRobotMoveToAssemblyStation(int station);
   bool CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part);
-  bool CeilingRobotAssemblePart(ariac_msgs::msg::AssemblyPart part);
+  bool CeilingRobotAssemblePart(int station, ariac_msgs::msg::AssemblyPart part);
 
   geometry_msgs::msg::Quaternion SetRobotOrientation(double rotation);
 
   // Helper Functions
+  void LogPose(geometry_msgs::msg::Pose p);
   geometry_msgs::msg::Pose MultiplyPose(geometry_msgs::msg::Pose p1, geometry_msgs::msg::Pose p2);
   geometry_msgs::msg::Pose BuildPose(double x, double y, double z, geometry_msgs::msg::Quaternion orientation);
   geometry_msgs::msg::Pose FrameWorldPose(std::string frame_id);
@@ -123,6 +128,14 @@ private:
 
   rclcpp::Subscription<ariac_msgs::msg::VacuumGripperState>::SharedPtr floor_gripper_state_sub_;
   rclcpp::Subscription<ariac_msgs::msg::VacuumGripperState>::SharedPtr ceiling_gripper_state_sub_;
+
+  rclcpp::Subscription<ariac_msgs::msg::AssemblyState>::SharedPtr as1_state_sub_;
+  rclcpp::Subscription<ariac_msgs::msg::AssemblyState>::SharedPtr as2_state_sub_;
+  rclcpp::Subscription<ariac_msgs::msg::AssemblyState>::SharedPtr as3_state_sub_;
+  rclcpp::Subscription<ariac_msgs::msg::AssemblyState>::SharedPtr as4_state_sub_;
+
+  // Assembly States
+  std::map<int, ariac_msgs::msg::AssemblyState> assembly_station_states_;
 
   // Orders List
   ariac_msgs::msg::Order current_order_;
@@ -164,6 +177,12 @@ private:
   // Gripper State Callback
   void floor_gripper_state_cb(const ariac_msgs::msg::VacuumGripperState::ConstSharedPtr msg);
   void ceiling_gripper_state_cb(const ariac_msgs::msg::VacuumGripperState::ConstSharedPtr msg);
+
+  // Assembly Station State Callbacks
+  void as1_state_cb(const ariac_msgs::msg::AssemblyState::ConstSharedPtr msg);
+  void as2_state_cb(const ariac_msgs::msg::AssemblyState::ConstSharedPtr msg);
+  void as3_state_cb(const ariac_msgs::msg::AssemblyState::ConstSharedPtr msg);
+  void as4_state_cb(const ariac_msgs::msg::AssemblyState::ConstSharedPtr msg);
 
   // Orders Callback
   void orders_cb(const ariac_msgs::msg::Order::ConstSharedPtr msg);
@@ -244,7 +263,31 @@ private:
     {"floor_wrist_3_joint", 0.0}
   };
 
-  std::map<std::string, double> ceiling_as1_js = {
+  std::map<std::string, double> ceiling_as1_js_ = {
+    {"gantry_x_axis_joint", 1},
+    {"gantry_y_axis_joint", -3},
+    {"gantry_rotation_joint", 1.571},
+    {"ceiling_shoulder_pan_joint", 0},
+    {"ceiling_shoulder_lift_joint", -2.37},
+    {"ceiling_elbow_joint", 2.37},
+    {"ceiling_wrist_1_joint", 3.14},
+    {"ceiling_wrist_2_joint", -1.57},
+    {"ceiling_wrist_3_joint", 0}
+  };
+
+  std::map<std::string, double> ceiling_as2_js_ = {
+    {"gantry_x_axis_joint", -2},
+    {"gantry_y_axis_joint", -3},
+    {"gantry_rotation_joint", 1.571},
+    {"ceiling_shoulder_pan_joint", 0},
+    {"ceiling_shoulder_lift_joint", -1.57},
+    {"ceiling_elbow_joint", 1.57},
+    {"ceiling_wrist_1_joint", 3.14},
+    {"ceiling_wrist_2_joint", -1.57},
+    {"ceiling_wrist_3_joint", 0}
+  };
+
+  std::map<std::string, double> ceiling_as3_js_ = {
     {"gantry_x_axis_joint", 2},
     {"gantry_y_axis_joint", 3},
     {"gantry_rotation_joint", 1.571},
@@ -256,33 +299,9 @@ private:
     {"ceiling_wrist_3_joint", 0}
   };
 
-  std::map<std::string, double> ceiling_as2_js = {
+  std::map<std::string, double> ceiling_as4_js_ = {
     {"gantry_x_axis_joint", -2},
     {"gantry_y_axis_joint", 3},
-    {"gantry_rotation_joint", 1.571},
-    {"ceiling_shoulder_pan_joint", 0},
-    {"ceiling_shoulder_lift_joint", -1.57},
-    {"ceiling_elbow_joint", 1.57},
-    {"ceiling_wrist_1_joint", 3.14},
-    {"ceiling_wrist_2_joint", -1.57},
-    {"ceiling_wrist_3_joint", 0}
-  };
-
-  std::map<std::string, double> ceiling_as3_js = {
-    {"gantry_x_axis_joint", 2},
-    {"gantry_y_axis_joint", -3},
-    {"gantry_rotation_joint", 1.571},
-    {"ceiling_shoulder_pan_joint", 0},
-    {"ceiling_shoulder_lift_joint", -1.57},
-    {"ceiling_elbow_joint", 1.57},
-    {"ceiling_wrist_1_joint", 3.14},
-    {"ceiling_wrist_2_joint", -1.57},
-    {"ceiling_wrist_3_joint", 0}
-  };
-
-  std::map<std::string, double> ceiling_as4_js = {
-    {"gantry_x_axis_joint", -2},
-    {"gantry_y_axis_joint", -3},
     {"gantry_rotation_joint", 1.571},
     {"ceiling_shoulder_pan_joint", 0},
     {"ceiling_shoulder_lift_joint", -1.57},

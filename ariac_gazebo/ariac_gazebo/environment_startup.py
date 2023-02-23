@@ -666,10 +666,10 @@ class EnvironmentStartup(Node):
                 yaw = convert_pi_string_to_float(yaw)
 
             orientation = quaternion_from_euler(roll, pitch, yaw)
-            assembly_part_msg.assembled_pose.pose.orientation.x = orientation[0]
-            assembly_part_msg.assembled_pose.pose.orientation.y = orientation[1]
-            assembly_part_msg.assembled_pose.pose.orientation.z = orientation[2]
-            assembly_part_msg.assembled_pose.pose.orientation.w = orientation[3]
+            assembly_part_msg.assembled_pose.pose.orientation.w = orientation[0]
+            assembly_part_msg.assembled_pose.pose.orientation.x = orientation[1]
+            assembly_part_msg.assembled_pose.pose.orientation.y = orientation[2]
+            assembly_part_msg.assembled_pose.pose.orientation.z = orientation[3]
 
             vector3 = Vector3()
             vector3.x = float(product['assembly_direction'][0])
@@ -718,10 +718,10 @@ class EnvironmentStartup(Node):
                 yaw = convert_pi_string_to_float(yaw)
 
             orientation = quaternion_from_euler(roll, pitch, yaw)
-            assembly_part_msg.assembled_pose.pose.orientation.x = orientation[0]
-            assembly_part_msg.assembled_pose.pose.orientation.y = orientation[1]
-            assembly_part_msg.assembled_pose.pose.orientation.z = orientation[2]
-            assembly_part_msg.assembled_pose.pose.orientation.w = orientation[3]
+            assembly_part_msg.assembled_pose.pose.orientation.w = orientation[0]
+            assembly_part_msg.assembled_pose.pose.orientation.x = orientation[1]
+            assembly_part_msg.assembled_pose.pose.orientation.y = orientation[2]
+            assembly_part_msg.assembled_pose.pose.orientation.z = orientation[3]
 
             vector3 = Vector3()
             vector3.x = float(product['assembly_direction'][0])

@@ -30,9 +30,22 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
 
         ros2 launch ariac_gazebo ariac.launch.py trial_config:=<trial_yaml_file> sensor_config:=<sensor_yaml_file>
 
-    If ``trial_yaml_file`` and ``sensor_yaml_file`` are yaml file names without the ``.yaml`` suffix. If ``trial_yaml_file`` is not provided, it defaults to ``kitting.yaml``. If ``sensor_yaml_file`` is not provided, it defaults to ``sensors.yaml``
+    ``trial_yaml_file`` and ``sensor_yaml_file`` are yaml file names without the ``.yaml`` suffix. If ``trial_yaml_file`` is not provided, it defaults to ``kitting.yaml``. If ``sensor_yaml_file`` is not provided, it defaults to ``sensors.yaml``
     
-    This command starts the Gazebo simulation environment and the ARIAC manager (AM), the latter handles the communications between the competitor's control system (CCS) and the ARIAC software. The state of the competition changes multiple times during a trial. The state of the competition is published to the topic ``ariac/competition_state`` which uses  ``CompetitionState.msg``. The CCS needs to subscribe to this topic to properly implement the programming logic.
+    This command starts the Gazebo simulation environment and the ARIAC manager (AM), the latter handles the communications between the competitor's control system (CCS) and the ARIAC software. The state of the competition changes multiple times during a trial. The state of the competition is published to the topic ``ariac/competition_state`` which uses  ``CompetitionState.msg`` (see :ref:`COMPETITIONSTATEMSG`). The CCS needs to subscribe to this topic to properly implement the programming logic.
+
+    .. COMPETITIONSTATEMSG:
+    
+    .. code-block:: bash
+
+        uint8 IDLE=0   # Competition cannot be started yet by the competitor
+        uint8 READY=1  # Competition can be started by the competitor
+        uint8 STARTED=2 # Competition has been started
+        uint8 ORDER_ANNOUNCEMENTS_DONE=3 # All order announcements have been made
+        uint8 ENDED=4 # Competition has ended
+
+        uint8 competition_state # IDLE, READY, STARTED, ORDER_ANNOUNCEMENTS_DONE, ENDED
+
 
 
 

@@ -50,15 +50,20 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
 
 
 
-2. **terminal 2**: This command starts the competitor's control system (CCS), which is the software implemented by the competitor to compete in ARIAC. This command can be a ``ros2 run`` or ``ros2 launch`` command. The first task of the CCS is to start the competition with the following service call:
+2. **terminal 2**: Once the trial is started, competitors start their control system (CCS), which will handle orders and challenges during the competition. Starting the CCS can be a ``ros2 run`` or ``ros2 launch`` command. The first task of the CCS is to start the competition with the service ``/ariac/start_competition``. This service is hosted by the AM and is of type ``std_srvs/srv/Trigger``. 
+
+    The state of the competition must be ``READY`` before this service can be called. The call to this service starts the robot controllers, activates all sensors, starts the conveyor belt (if used in the trial), and starts the global challenges (if used in the trial). Orders will be announced on the topic ``/ariac/orders``. The result of the call will set the state of the competition to ``STARTED``.
+
+    Once orders are announced, the CCS fulfills and submits orders. Order announcements can be time based, part placement based, or order submission based. More information on these conditions can be found in :ref:`CONDITIONS`. Agility challenges can also be announced with these conditions. More information on agility challenges can be found in :ref:`AGILITY_CHALLENGES`. To submit orders, the CCS needs to use the service ``/ariac/submit_order`` which uses the ID of the order as an argument (see :ref:`SubmitOrderSrv`).
 
     .. code-block:: bash
+        :caption: SubmitOrder.srv
+        :name: SubmitOrderSrv
 
-        ros2 service call /ariac/start_competition std_srvs/srv/Trigger
-
-    The state of the competition must be in the state ``READY`` before this service can be called. The call to this service starts the robot controllers, activates all sensors, start the conveyor belt (if part of the trial), and starts the global challenges (if part of the trial). Orders will be announced on the topic ``/ariac/orders``. The result of the call will set the state of the competition to ``STARTED``.
-
-    Once orders are announced, the CCS fulfills the orders and submits them. Order announcements can be time based, part placement based, or order submission based. More information on these conditions can be found in :ref:`CONDITIONS`. Agility challenges can also be announced with these conditions. More information on agility challenges can be found in :ref:`AGILITY_CHALLENGES`.
+        string order_id
+        ---
+        bool success
+        string message
 
 3. **announce order(s)**: The AM will announce orders on the topic ``/ariac/orders``. The CCS will  need to subscribe to the topic to receive the orders. If all orders have been announced, the AM will set the state of the competition to ``ORDER_ANNOUNCEMENTS_DONE``. This state does not mean that the competition is over. The CCS may still be working on orders that were announced earlier.
 

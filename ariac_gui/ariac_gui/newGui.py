@@ -546,7 +546,7 @@ def runGUI(): # runs the entire gui
                 elif malf.condition.type==1:
                     o.write("      part_type: \'"+getPartName(malf.condition.part_place_condition.part.type)+"\'\n")
                     o.write("      part_color: \'"+getPartColor(malf.condition.part_place_condition.part.color)+"\'\n")
-                    o.write("      agv: "+str(malf.condition.part_place_condition.agv))
+                    o.write("      agv: "+str(malf.condition.part_place_condition.agv)+"\n")
                 elif malf.condition.type==2:
                     o.write("      order_id: \'"+malf.condition.submission_condition.order_id+"\'\n")
             #faulty parts

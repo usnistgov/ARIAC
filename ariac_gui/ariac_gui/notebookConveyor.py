@@ -1,6 +1,7 @@
 import tkinter as tk
 from functools import partial
 from ariac_gui.newClasses import PartConv
+from ariac_gui.validationFunctions import *
 acceptedNum = "0123456789.-"  # for requiring number input for offset value
 partTypes=["sensor", "pump", "regulator", "battery"]
 partColors=['green', 'red', 'purple','blue','orange']
@@ -170,5 +171,9 @@ def convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals):
     switch_buttons=partial(showAndHideConvButton, addConvButton, convValsArr[0], convOptionFlag, saveConvButton)
     convValsArr[0].trace('w', switch_buttons)
     #entry validation
+    validate_num_parts=partial(require_num, numberParts)
+    numberParts.trace('w', validate_num_parts)
+    validate_rotation=partial(validateRotationValue, partRotation, saveConvButton)
+    partRotation.trace('w', validate_rotation)
     validate_offset=partial(validateOffset, offsetParts)
     offsetParts.trace('w', validate_offset)

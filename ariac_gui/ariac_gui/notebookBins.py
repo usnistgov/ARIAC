@@ -1,6 +1,7 @@
 import tkinter as tk
 from functools import partial
 from ariac_gui.newClasses import Bin
+from ariac_gui.validationFunctions import validateRotationValue
 partTypes=["sensor", "pump", "regulator", "battery"]
 partColors=['green', 'red', 'purple','blue','orange']
 allBins=[]
@@ -338,6 +339,8 @@ def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     show_add_button=partial(switchBinMenu,binWidgetsArr, binValsArr,binFlag)
     addBinButton=tk.Button(binFrame,text="Add bin", command=show_add_button)
     addBinButton.pack(side=tk.BOTTOM)
+    validate_rotation=partial(validateRotationValue, partRotation, saveNewBinButton)
+    partRotation.trace('w', validate_rotation)
     switch_buttons=partial(showAndHideBinButton,addBinButton, binValsArr[0], binOptionFlag,bin1Slots, binFrame, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, saveNewBinButton)
     binValsArr[0].trace('w', switch_buttons)
     update_checkboxes=partial(runSlotChecks,binFrame, binID,slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, checkBoxes,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,saveNewBinButton,binOptionFlag)

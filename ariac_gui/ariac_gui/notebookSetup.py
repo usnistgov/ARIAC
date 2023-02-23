@@ -1,6 +1,6 @@
 import tkinter as tk
 from functools import partial
-
+from ariac_gui.timeFunctions import *
 LEFTCOLUMN=1
 MIDDLECOLUMN=2
 RIGHTCOLUMN=3
@@ -280,3 +280,4 @@ def timeEntry(timeFrame, timeVar, timeVal):
     timeLabel.grid(column=MIDDLECOLUMN)
     timeEntry=tk.Entry(timeFrame, textvariable=timeVar)
     timeEntry.grid(column=MIDDLECOLUMN)
+    timeVal.trace('w', validateTime)

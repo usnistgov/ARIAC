@@ -65,6 +65,40 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
         bool success
         string message
 
+    .. warning:: 
+        
+        To submit a kitting order, the CCS first has to move the AGV to the warehouse with the service ``/ariac/move_agv{n}`` (see :ref:`MoveAGVSrv`). Once the AGV is at the warehouse, then the submission service should be called. To know the location of an AGV in the workcell, the CCS has to subscribe to the topic ``/ariac/agv{n}_status``, which uses ``AGVStatus.msg`` (see :ref:`AGVSTATUSMSG`).
+
+
+    .. code-block:: bash
+        :caption: MoveAGV.srv
+        :name: MoveAGVSrv
+
+        int8 KITTING=0
+        int8 ASSEMBLY_FRONT=1
+        int8 ASSEMBLY_BACK=2 
+        int8 WAREHOUSE=3 
+
+        int8 location # KITTING, ASSEMBLY_FRONT, ASSEMBLY_BACK, WAREHOUSE
+        ---
+        bool success
+        string message
+
+    .. code-block:: bash
+        :caption: AGVStatus.msg
+        :name: AGVStatusMsg
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location # KITTING, ASSEMBLY_FRONT, ASSEMBLY_BACK, WAREHOUSE, UNKNOWN
+        float64 position
+        float64 velocity
+
+
 3. **announce order(s)**: The AM will announce orders on the topic ``/ariac/orders``. The CCS will  need to subscribe to the topic to receive the orders. If all orders have been announced, the AM will set the state of the competition to ``ORDER_ANNOUNCEMENTS_DONE``. This state does not mean that the competition is over. The CCS may still be working on orders that were announced earlier.
 
 4. **work on order(s)**: During this phase, the CCS will perform different activities in order to fulfill the orders. The AM may announce new orders or start agility challenges based on the state of the workcell.

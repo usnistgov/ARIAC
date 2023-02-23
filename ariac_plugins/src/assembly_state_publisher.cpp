@@ -82,10 +82,10 @@ void AssemblyStatePublisher::Load(gazebo::physics::ModelPtr model, sdf::ElementP
 
   impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
 
-  std::string bat_topic = "/gazebo/world/" + model_name + "/" + link_name + "/battery_attached";
-  std::string pum_topic = "/gazebo/world/" + model_name + "/" + link_name + "/pump_attached";
-  std::string reg_topic = "/gazebo/world/" + model_name + "/" + link_name + "/regulator_attached";
-  std::string sen_topic = "/gazebo/world/" + model_name + "/" + link_name + "/sensor_attached";
+  std::string bat_topic = "/gazebo/world/" + model_name + "/battery_contact/battery_attached";
+  std::string pum_topic = "/gazebo/world/" + model_name + "/pump_contact/pump_attached";
+  std::string reg_topic = "/gazebo/world/" + model_name + "/regulator_contact/regulator_attached";
+  std::string sen_topic = "/gazebo/world/" + model_name + "/sensor_contact/sensor_attached";
 
   // Initialize a gazebo node and subscribe to each assembly topic
   impl_->gznode_ = gazebo::transport::NodePtr(new gazebo::transport::Node());

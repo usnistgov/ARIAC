@@ -42,12 +42,12 @@ orders:
       agv_number: [1]
       station: 'as1'
       products:
-        # - type: 'pump'
-        #   color: 'red'
-        #   assembled_pose: 
-        #     xyz: [0.14, 0.0, 0.02]
-        #     rpy: [0, 0, '-pi/2']
-        #   assembly_direction: [0, 0, -1]
+        - type: 'pump'
+          color: 'red'
+          assembled_pose: 
+            xyz: [0.14, 0.0, 0.02]
+            rpy: [0, 0, '-pi/2']
+          assembly_direction: [0, 0, -1]
         - type: 'regulator'
           color: 'red'
           assembled_pose: 
@@ -60,9 +60,9 @@ orders:
             xyz: [-0.1, 0.395, 0.045]
             rpy: [0, 0, '-pi/2']
           assembly_direction: [0, -1, 0]
-        # - type: 'battery'
-        #   color: 'red'
-        #   assembled_pose: 
-        #     xyz: [-0.15, 0.033, 0.04]
-        #     rpy: [0, 0, 'pi']
-        #   assembly_direction: [0, 1, 0]
+        - type: 'battery'
+          color: 'red'
+          assembled_pose: 
+            xyz: [-0.15, 0.033, 0.04]
+            rpy: [0, 0, 'pi/2']
+          assembly_direction: [0, 1, 0]

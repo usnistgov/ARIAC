@@ -951,10 +951,20 @@ bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
 {
   double part_rotation = GetYaw(part.pose);
   std::vector<geometry_msgs::msg::Pose> waypoints;
-  waypoints.push_back(BuildPose(part.pose.position.x, part.pose.position.y, 
+
+  double dx = 0;
+  double dy = 0;
+
+  if (part.part.type == ariac_msgs::msg::Part::BATTERY) {
+    double grip_offset = -0.05;
+    dx = grip_offset*cos(part_rotation);
+    dy = grip_offset*sin(part_rotation);
+  }
+
+  waypoints.push_back(BuildPose(part.pose.position.x + dx, part.pose.position.y + dy, 
     part.pose.position.z + 0.4, SetRobotOrientation(part_rotation)));
   
-  waypoints.push_back(BuildPose(part.pose.position.x, part.pose.position.y, 
+  waypoints.push_back(BuildPose(part.pose.position.x + dx, part.pose.position.y + dy, 
     part.pose.position.z + part_heights_[part.part.type] + pick_offset_, SetRobotOrientation(part_rotation)));
   
   CeilingRobotMoveCartesian(waypoints, 0.3, 0.3, true);
@@ -1025,17 +1035,32 @@ bool TestCompetitor::CeilingRobotAssemblePart(int station, ariac_msgs::msg::Asse
   tf2::fromMsg(part.assembled_pose.pose, part_assemble);
 
   KDL::Frame part_to_gripper;
-  tf2::fromMsg(BuildPose(0, 0, part_heights_[part.part.type], QuaternionFromRPY(0, M_PI, M_PI)), part_to_gripper);
 
-  // Move to approach
   std::vector<geometry_msgs::msg::Pose> waypoints;
-  waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.15) * part_assemble * part_to_gripper));
-  CeilingRobotMoveCartesian(waypoints, 0.3, 0.3, true);
+  if (part.part.type == ariac_msgs::msg::Part::BATTERY) {
+    tf2::fromMsg(BuildPose(-.05, 0, part_heights_[part.part.type], QuaternionFromRPY(0, M_PI, M_PI)), part_to_gripper);
 
-  // Move to just before assembly pose
-  waypoints.clear();
-  waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.003) * part_assemble * part_to_gripper));
-  CeilingRobotMoveCartesian(waypoints, 0.1, 0.1, true);
+    KDL::Vector up(0, 0, 0.1);
+    waypoints.push_back(tf2::toMsg(insert * KDL::Frame(up) * KDL::Frame(install * -0.06) * part_assemble * part_to_gripper));
+    waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.06) * part_assemble * part_to_gripper));
+    CeilingRobotMoveCartesian(waypoints, 0.3, 0.3, false);
+
+    waypoints.clear();
+    waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.003) * part_assemble * part_to_gripper));
+    CeilingRobotMoveCartesian(waypoints, 0.1, 0.1, false);
+
+  } else {
+    tf2::fromMsg(BuildPose(0, 0, part_heights_[part.part.type], QuaternionFromRPY(0, M_PI, M_PI)), part_to_gripper);
+
+    // Move to approach
+    waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.1) * part_assemble * part_to_gripper));
+    CeilingRobotMoveCartesian(waypoints, 0.3, 0.3, true);
+
+    // Move to just before assembly pose
+    waypoints.clear();
+    waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.003) * part_assemble * part_to_gripper));
+    CeilingRobotMoveCartesian(waypoints, 0.1, 0.1, true);
+  }
 
   CeilingRobotWaitForAssemble(station, part, 5.0);
 

@@ -18,7 +18,7 @@
     </inertial>
 
     <link name="insert_link">
-      <!-- <visual name="base">
+      <visual name="base">
         <geometry>
           <mesh>
             <uri>model://assembly_insert/meshes/insert_base.stl</uri>
@@ -88,9 +88,9 @@
           <ambient>1.0 1.0 1.0 1.0</ambient>
           <diffuse>1.0 1.0 1.0 1.0</diffuse>
         </material>
-      </visual> -->
+      </visual>
 
-      <!-- <collision name="base_collision">
+      <collision name="base_collision">
         <geometry>
           <mesh>
             <uri>model://assembly_insert/meshes/insert_collision.stl</uri>
@@ -104,99 +104,7 @@
             </ode>
           </contact>
         </surface>
-      </collision> -->
-
-      <collision name="pump_contact">
-        <geometry>
-          <mesh>
-            <uri>model://assembly_insert/meshes/pump_contact.stl</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode>
-              <max_vel>0.0</max_vel>
-              <min_depth>0.001</min_depth>
-            </ode>
-          </contact>
-        </surface>
       </collision>
-
-      <sensor type="contact" name="pump_contact_sensor">
-        <update_rate>10</update_rate>
-        <contact>
-          <collision>pump_contact</collision>
-        </contact>
-      </sensor>
-
-      <!-- <collision name="regulator_contact">
-        <geometry>
-          <mesh>
-            <uri>model://assembly_insert/meshes/regulator_contact.stl</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode>
-              <max_vel>0.0</max_vel>
-              <min_depth>0.001</min_depth>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-
-      <sensor type="contact" name="regulator_contact_sensor">
-        <update_rate>10</update_rate>
-        <contact>
-          <collision>regulator_contact</collision>
-        </contact>
-      </sensor>       -->
-
-      <collision name="sensor_contact">
-        <geometry>
-          <mesh>
-            <uri>model://assembly_insert/meshes/sensor_contact.stl</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode>
-              <max_vel>0.0</max_vel>
-              <min_depth>0.001</min_depth>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-
-      <sensor type="contact" name="sensor_contact_sensor">
-        <update_rate>10</update_rate>
-        <contact>
-          <collision>sensor_contact</collision>
-        </contact>
-      </sensor>
-
-      <collision name="battery_contact">
-        <geometry>
-          <mesh>
-            <uri>model://assembly_insert/meshes/battery_contact.stl</uri>
-          </mesh>
-        </geometry>
-        <surface>
-          <contact>
-            <ode>
-              <max_vel>0.0</max_vel>
-              <min_depth>0.001</min_depth>
-            </ode>
-          </contact>
-        </surface>
-      </collision>
-
-      <sensor type="contact" name="battery_contact_sensor">
-        <update_rate>10</update_rate>
-        <contact>
-          <collision>battery_contact</collision>
-        </contact>
-      </sensor>
     </link>
 
     <link name="regulator_contact">
@@ -223,7 +131,82 @@
           <collision>regulator_contact</collision>
         </contact>
       </sensor> 
-    </link>     
+    </link>
+
+    <link name="battery_contact">
+      <collision name="battery_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/battery_contact.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <max_vel>0.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+      <sensor type="contact" name="battery_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>battery_contact</collision>
+        </contact>
+      </sensor>
+    </link>  
+
+    <link name="pump_contact">
+      <collision name="pump_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/pump_contact.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <max_vel>0.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+      <sensor type="contact" name="pump_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>pump_contact</collision>
+        </contact>
+      </sensor>
+    </link> 
+
+    <link name="sensor_contact">
+      <collision name="sensor_contact">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_insert/meshes/sensor_contact.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode>
+              <max_vel>0.0</max_vel>
+              <min_depth>0.001</min_depth>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+
+      <sensor type="contact" name="sensor_contact_sensor">
+        <update_rate>10</update_rate>
+        <contact>
+          <collision>sensor_contact</collision>
+        </contact>
+      </sensor>
+    </link>  
 
     <plugin filename="libassembly_lock_plugin.so" name="assembly_lock_pump">
       <assembly_part_type>pump</assembly_part_type>

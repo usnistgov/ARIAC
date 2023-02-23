@@ -353,8 +353,9 @@ def runGUI(): # runs the entire gui
     #Orders frame
     orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter)
     #Challenges frame
-    chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, chCondVals)
-    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals, challengeCounter)
+    conditionVal=[]
+    chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, chCondVals,usedIDs, partOrdCounter, conditionVal)
+    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals, challengeCounter, partOrdCounter, orderMSGS,usedIDs, conditionVal)
     
     partOrdText="Parts:\nAGV Parts present:\nNONE\nBin Parts presents:\nNONE\nConveyor Parts present:\nNONE\n\n"
     partOrdText+="Orders Present:\nNONE"

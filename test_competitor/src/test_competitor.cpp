@@ -1102,13 +1102,16 @@ bool TestCompetitor::CompleteOrders(){
 
     if (current_order_.type == ariac_msgs::msg::Order::KITTING) {
       TestCompetitor::CompleteKittingTask(current_order_.kitting_task);
-      // Submit order
-      TestCompetitor::SubmitOrder(current_order_.id);
+      
+      
     } else if (current_order_.type == ariac_msgs::msg::Order::ASSEMBLY) {
       TestCompetitor::CompleteAssemblyTask(current_order_.assembly_task);
     } else if (current_order_.type == ariac_msgs::msg::Order::COMBINED) {
       TestCompetitor::CompleteCombinedTask(current_order_.combined_task);
     }
+
+    // Submit order
+    TestCompetitor::SubmitOrder(current_order_.id);
   }
 
   return success;

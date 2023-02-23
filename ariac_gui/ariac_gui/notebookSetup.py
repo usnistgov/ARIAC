@@ -280,4 +280,4 @@ def timeEntry(timeFrame, timeVar, timeVal):
     timeLabel.grid(column=MIDDLECOLUMN)
     timeEntry=tk.Entry(timeFrame, textvariable=timeVar)
     timeEntry.grid(column=MIDDLECOLUMN)
-    timeVal.trace('w', validateTime)
+    timeVar.trace('w', validateTime)

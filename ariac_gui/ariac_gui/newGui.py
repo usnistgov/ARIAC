@@ -178,6 +178,7 @@ def runGUI(): # runs the entire gui
     faultyParts=[] # holds all faulty parts
     droppedParts=[] # holds all dropped parts
     sensorBlackouts=[] # holds all sensor blackouts
+    humanChallenges=[]
     robotsToDisable=[] # holds robots to be disabled
     faultyPartQuadrants=[] # holds quadrants for dropped parts
     sensorsToDisable=[] # holds sensors for sensor blackout
@@ -185,7 +186,9 @@ def runGUI(): # runs the entire gui
     fpVals=[]
     dpVals=[]
     sbVals=[]
+    huVals=[]
     chCondVals=[]
+    behaviorOptions=["antagonistic", "indifferent","helpful"]
 
     availableTrays=["Tray 0","Tray 1","Tray 2","Tray 3","Tray 4","Tray 5","Tray 6","Tray 7","Tray 8","Tray 9"] #list of trays to hold available trays for kitting trays
     availableSlots=["Slot 1", "Slot 2", "Slot 3", "Slot 4", "Slot 5", "Slot 6"] #list of slots to hold available slots for kitting trays
@@ -354,8 +357,8 @@ def runGUI(): # runs the entire gui
     orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter)
     #Challenges frame
     conditionVal=[]
-    chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, chCondVals,usedIDs, partOrdCounter, conditionVal)
-    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals, challengeCounter, partOrdCounter, orderMSGS,usedIDs, conditionVal)
+    chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals,dpVals, sbVals,huVals, chCondVals,usedIDs, partOrdCounter, conditionVal)
+    allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,humanChallenges,rmVals,fpVals, dpVals, sbVals,huVals, chCondVals, challengeCounter, partOrdCounter, orderMSGS,usedIDs, conditionVal)
     
     partOrdText="Parts:\nAGV Parts present:\nNONE\nBin Parts presents:\nNONE\nConveyor Parts present:\nNONE\n\n"
     partOrdText+="Orders Present:\nNONE"
@@ -528,7 +531,7 @@ def runGUI(): # runs the entire gui
         #end of order writing to file
         
         #writes challenges to file
-        if len(robotMalfunctions)+len(faultyParts)+len(droppedParts)+len(sensorBlackouts)>0:
+        if len(robotMalfunctions)+len(faultyParts)+len(droppedParts)+len(sensorBlackouts)+len(humanChallenges)>0:
             o.write("\n# GLOBAL CHALLENGES\n")
             o.write("challenges:\n")
             #robot malfunctions
@@ -597,3 +600,14 @@ def runGUI(): # runs the entire gui
                     o.write("      agv: "+str(blackout.condition.part_place_condition.agv))
                 elif blackout.condition.type==2:
                     o.write("      order_id: \'"+blackout.condition.submission_condition.order_id+"\'\n")
+            for human in humanChallenges:
+                o.write("  - human:\n")
+                o.write("      behavior \'"+behaviorOptions[human.behavior]+"\'\n")
+                if human.condition.type==0:
+                    o.write("      time: "+str(human.condition.time_condition.seconds)+"\n")
+                elif human.condition.type==1:
+                    o.write("      part_type: \'"+getPartName(human.condition.part_place_condition.part.type)+"\'\n")
+                    o.write("      part_color: \'"+getPartColor(human.condition.part_place_condition.part.color)+"\'\n")
+                    o.write("      agv: "+str(human.condition.part_place_condition.agv))
+                elif human.condition.type==2:
+                    o.write("      order_id: \'"+human.condition.submission_condition.order_id+"\'\n")

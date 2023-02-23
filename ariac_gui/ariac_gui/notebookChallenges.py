@@ -8,6 +8,7 @@ robotTypes=["ceiling_robot","floor_robot"]
 agvOptions=["1","2","3","4"]
 sensBOCategories=["time-based","during kitting", "during assembly","after kitting", "after assembly"]
 conditionTypes=['time','partPlace','submission']
+behaviorOptions=["antagonistic", "indifferent","helpful"]
 
 def saveRobotMalfunction(allChallengeWidgetsArr, floorRobot, ceilRobot, duration, condition, time, partType, partColor, agv, annID, robotMalfunctions, challengeCounter):
     for widget in allChallengeWidgetsArr:
@@ -178,6 +179,45 @@ def saveSensorBlackout(duration, sensor1, sensor2,sensor3,sensor4,sensor5, senso
     currVal=int(challengeCounter.get())
     challengeCounter.set(currVal+1)
 
+def saveHumanChallenge(chosenBehavior, condition,time, partType, partColor, agv, annID, humanChallenges, allChallengeWidgetsArr, challengeCounter):
+    for widget in allChallengeWidgetsArr:
+        widget.grid_forget()
+    newHumanChallenge=HumanChallenge()
+    newHumanCond=Condition()
+    if condition.get()!="":
+        newHumanCond.type=conditionTypes.index(condition.get())
+        if condition.get()==conditionTypes[1]:
+            newHumanCond.time_condition.seconds=float(time.get())
+        elif condition.get()==conditionTypes[2]:
+            newPart=Part()
+            if partType.get()=="sensor":
+                newPart.type=newPart.SENSOR
+            elif partType.get()=="pump":
+                newPart.type=newPart.PUMP
+            elif partType.get()=="battery":
+                newPart.type=newPart.BATTERY
+            else:
+                newPart.type=newPart.REGULATOR
+            if partColor.get()=="red":
+                newPart.color=newPart.RED
+            elif partColor.get()=="green":
+                newPart.color=newPart.GREEN
+            elif partColor.get()=="blue":
+                newPart.color=newPart.BLUE
+            elif partColor.get()=="orange":
+                newPart.color=newPart.ORANGE
+            else:
+                newPart.color=newPart.PURPLE
+            newHumanCond.part_place_condition.part=newPart
+            newHumanCond.part_place_condition.agv=int(agv.get())
+        elif condition.get()==conditionTypes[2]:
+            newHumanCond.submission_condition.order_id=annID.get()
+    newHumanChallenge.condition=newHumanCond
+    newHumanChallenge.behavior=behaviorOptions.index(chosenBehavior.get())
+    humanChallenges.append(newHumanChallenge)
+    currVal=int(challengeCounter.get())
+    challengeCounter.set(currVal+1)
+
 def showCorrectMenu(condition, conditionMenu, time, timeLabel, timeEntry, agv, agvLabel, agvMenu, partType, partTypeLabel, partTypeMenu, partColor, partColorLabel, partColorMenu, annID, annIDLabel, annIDMenu,tempIDs,presentChallengeWidgets,a,b,c):
     if condition.get()=="":
         time.set('')
@@ -327,12 +367,33 @@ def sensorBlackoutMenu(allChallengeWidgetsArr, presentChallengeWidgets,sbVals, c
     allChallengeWidgetsArr[len(allChallengeWidgetsArr)-5].grid(column=2,row=24)
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-5])
 
+def humanChallengeMenu(allChallengeWidgetsArr, presentChallengeWidgets, huVals,chCondVals, conditionVal):
+    conditionVal[0].set(conditionTypes[0])
+    for widget in presentChallengeWidgets:
+        widget.grid_forget()
+    presentChallengeWidgets.clear()
+    huVals[0].set(behaviorOptions[0])
+    chCondVals[0].set('0')
+    for index in range(2):
+        allChallengeWidgetsArr[index+30].grid(column=2, row=1+index)
+        presentChallengeWidgets.append(allChallengeWidgetsArr[index+30])
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=3) #condition menu
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3].grid(column=2, row=4)
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4])
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3])
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2].grid(column=2, row=5) #time entrys
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1].grid(column=2, row=6)
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-2])
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-1])
+    allChallengeWidgetsArr[len(allChallengeWidgetsArr)-9].grid(column=2,row=24)
+    presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-9])
+
 
 def activateFaultyPart(usedIds, faultyPartButton,a,b,c):
     if len(usedIds)>0:
         faultyPartButton.config(state=tk.NORMAL)
 
-def chooseChallenge(challengeFrame,allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, chCondVals,usedIds, partOrdCounter, conditionVal):
+def chooseChallenge(challengeFrame,allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals, dpVals, sbVals, huVals, chCondVals,usedIds, partOrdCounter, conditionVal):
     new_robot_malfunction=partial(robotMalfunctionMenu, allChallengeWidgetsArr,presentChallengeWidgets,rmVals, chCondVals, conditionVal)
     newRobotMalfunctionButton=tk.Button(challengeFrame, text="Add new robot malfunction", command=new_robot_malfunction)
     newRobotMalfunctionButton.grid(column=1)
@@ -345,6 +406,9 @@ def chooseChallenge(challengeFrame,allChallengeWidgetsArr,presentChallengeWidget
     new_sensor_blackout=partial(sensorBlackoutMenu, allChallengeWidgetsArr, presentChallengeWidgets,sbVals, chCondVals, conditionVal)
     newSensorBlackoutButton=tk.Button(challengeFrame, text="Add new sensor blackout", command=new_sensor_blackout)
     newSensorBlackoutButton.grid(column=1)
+    new_human_challenge=partial(humanChallengeMenu,allChallengeWidgetsArr, presentChallengeWidgets, huVals,chCondVals, conditionVal)
+    newHumanChallengeButton=tk.Button(challengeFrame, text="Add new human challenge", command=new_human_challenge)
+    newHumanChallengeButton.grid(column=1)
     activate_faulty_part=partial(activateFaultyPart, usedIds, newFaultyPartButton)
     partOrdCounter.trace('w', activate_faulty_part)
 
@@ -365,7 +429,7 @@ def updateConditionMenu(orderMSGS, conditionMenu, condition, annIDMenu, annID, u
         for id in usedIDs:
             ordIDMen.add_command(label=id, command=lambda id=id: currentOrderID.set(id))
 
-def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,rmVals,fpVals, dpVals, sbVals, chCondVals, challengeCounter, partOrdCounter, orderMSGS,usedIds, conditionVal):
+def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeWidgets,robotMalfunctions,faultyParts, droppedParts, sensorBlackouts,humanChallenges,rmVals,fpVals, dpVals, sbVals, huVals, chCondVals, challengeCounter, partOrdCounter, orderMSGS,usedIds, conditionVal):
     #robot malfunction
     rmDuration=tk.StringVar()
     rmDuration.set("0")
@@ -523,6 +587,16 @@ def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeW
     sbVals.append(sensor4)
     sbVals.append(sensor5)
     sbVals.append(sensor6)
+    #human challenge
+    chosenBehavior=tk.StringVar()
+    chosenBehavior.set(behaviorOptions[0])
+    humanLabel=tk.Label(challengesFrame, text="Select the behavior for the humans")
+    humanLabel.grid_forget()
+    humanMenu=tk.OptionMenu(challengesFrame, chosenBehavior, *behaviorOptions)
+    humanMenu.grid_forget()
+    allChallengeWidgetsArr.append(humanLabel)
+    allChallengeWidgetsArr.append(humanMenu)
+    huVals.append(chosenBehavior)
     #condition
     condition=tk.StringVar()
     condition.set(conditionTypes[0])
@@ -579,6 +653,9 @@ def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeW
     save_sensor_blackout=partial(saveSensorBlackout, sbDuration, sensor1, sensor2,sensor3,sensor4,sensor5, sensor6, condition, conTime, conPartType, conPartColor, conAgv, annID, sensorBlackouts, allChallengeWidgetsArr, challengeCounter)
     saveSensorBlackoutButton=tk.Button(challengesFrame, text="Save sensor blackout", command=save_sensor_blackout)
     saveSensorBlackoutButton.grid_forget()
+    save_human_challenge=partial(saveHumanChallenge,chosenBehavior, condition,conTime, conPartType, conPartColor, conAgv, annID, humanChallenges, allChallengeWidgetsArr, challengeCounter)
+    saveHumanChallengeButton=tk.Button(challengesFrame, text="Save human challenge", command=save_human_challenge)
+    saveHumanChallengeButton.grid_forget()
     allChallengeWidgetsArr.append(conAgvLabel)
     allChallengeWidgetsArr.append(conAgvMenu)
     allChallengeWidgetsArr.append(conPartTypeLabel)
@@ -587,6 +664,7 @@ def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeW
     allChallengeWidgetsArr.append(conPartColorMenu)
     allChallengeWidgetsArr.append(annIDLabel)
     allChallengeWidgetsArr.append(annIDMenu)
+    allChallengeWidgetsArr.append(saveHumanChallengeButton)
     allChallengeWidgetsArr.append(rmSaveButton)
     allChallengeWidgetsArr.append(saveFaultyPartButton)
     allChallengeWidgetsArr.append(saveDroppedPartButton)

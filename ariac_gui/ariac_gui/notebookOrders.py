@@ -47,11 +47,17 @@ def showNewOrderMenu(orderWidgetsArr, orderValsArr, usedIDs):
     orderWidgetsArr[20].grid(column=2, row=17)
     orderWidgetsArr[21].grid(column=2, row=18)
     orderWidgetsArr[22].grid(column=2, row=19)
-    orderWidgetsArr[23].grid(column=2, row=20)
+    #orderWidgetsArr[23].grid(column=2, row=20)
     #orderWidgetsArr[24].grid(column=2, row=21)
     orderWidgetsArr[25].grid(column=2, row=22)
     orderWidgetsArr[26].grid(column=2, row=23)
-    
+    orderWidgetsArr[27].grid(column=2, row=24)
+
+def backOrder(orderWidgetsArr, orderValsArr):
+    for widget in orderWidgetsArr:
+        widget.grid_forget()
+    for val in orderValsArr:
+        val.set("")
 
 def showCorrectMenu(orderValsArr, orderWidgetsArr,tempIDs,a,b,c):
     if orderValsArr[3].get()=="":
@@ -216,7 +222,7 @@ def updateTaskOptions(orderType, kitTrayId, taskAgvMenu,kitTrayIdLabel, kitTrayI
         kittingDestinationMenu.grid(column=2, row=17)
         assemblyStationLabel.grid_forget()
         assemblyStationMenu.grid_forget()
-    elif orderType.get()!="kitting" and len(taskPresentFlag)==0:
+    elif (orderType.get()=="assembly" or orderType.get()=="combined") and len(taskPresentFlag)==0:
         taskPresentFlag.append(0)
         kitTrayId.set("")
         kittingDestination.set("")
@@ -618,11 +624,15 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     addProdButton=tk.Button(orderFrame, text="Add product", command=type_of_prod_select)
     addProdButton.grid_forget()
     orderWidgetsArr.append(addProdButton)
-    #save and cancel buttons
+    #save and back buttons
     save_order=partial(saveOrder, orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderMSGS, orderConditions, partOrdCounter)
     saveOrdButton=tk.Button(orderFrame, text="Save order", command=save_order)
     saveOrdButton.grid_forget()
     orderWidgetsArr.append(saveOrdButton)
+    back_order=partial(backOrder, orderWidgetsArr, orderValsArr)
+    orderBackButton=tk.Button(orderFrame, text="Back", command=back_order)
+    orderBackButton.grid_forget()
+    orderWidgetsArr.append(orderBackButton)
     #update menu functions
     update_task_options=partial(updateTaskOptions, orderType, kitTrayId, taskAgvMenu,kitTrayIdLabel, kitTrayIdMenu, kittingDestination, kittingDestinationLabel, kittingDestinationMenu, assemblyStation, assemblyStationLabel, assemblyStationMenu)
     orderType.trace('w', update_task_options)

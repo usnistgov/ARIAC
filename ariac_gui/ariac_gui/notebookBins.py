@@ -183,13 +183,15 @@ def switchBinMenu(binWidgetsArr, binValsArr,binFlag):
         checkBoxes.clear()
         binFlag.set('0')
 
-def showAndHideBinButton(addBinButton, val, binOptionFlag,bin1Slots, binFrame, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, saveNewBinButton,a,b,c):
+def showAndHideBinButton(addBinButton, val, binOptionFlag,bin1Slots, binFrame, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, saveNewBinButton,backButton,a,b,c):
     if val.get()=="":
         addBinButton.pack(side = tk.BOTTOM)
         saveNewBinButton.pack_forget()
+        backButton.pack_forget()
         binOptionFlag.set('0')
     elif binOptionFlag.get()=="0":
         saveNewBinButton.pack(side = tk.BOTTOM)
+        backButton.pack(side=tk.BOTTOM)
         slotChecks(bin1Slots, binFrame, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, checkBoxes, saveNewBinButton)
         addBinButton.pack_forget()
         binOptionFlag.set('1')
@@ -251,6 +253,9 @@ def saveBin(currentBin, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     switchBinMenu(binWidgetsArr, binValsArr,binFlag)
     currVal=int(partOrdCounter.get())
     partOrdCounter.set(currVal+1)
+
+def backBin(binWidgetsArr, binValsArr, binFlag):
+    switchBinMenu(binWidgetsArr, binValsArr,binFlag)
 
 def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, bins, partOrdCounter):
     binWidgetsArr=[]
@@ -336,12 +341,13 @@ def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     save_new_bin=partial(saveBin,binID, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9,binWidgetsArr, binValsArr,binFlag,bins, partOrdCounter)
     saveNewBinButton=tk.Button(binFrame, text="Save", command=save_new_bin)
     saveNewBinButton.pack_forget()
+    back_bin=partial(backBin,binWidgetsArr, binValsArr,binFlag)
+    backBinButton=tk.Button(binFrame, text="Back", command=back_bin)
+    backBinButton.pack_forget()
     show_add_button=partial(switchBinMenu,binWidgetsArr, binValsArr,binFlag)
     addBinButton=tk.Button(binFrame,text="Add bin", command=show_add_button)
     addBinButton.pack(side=tk.BOTTOM)
-    validate_rotation=partial(validateRotationValue, partRotation, saveNewBinButton)
-    partRotation.trace('w', validate_rotation)
-    switch_buttons=partial(showAndHideBinButton,addBinButton, binValsArr[0], binOptionFlag,bin1Slots, binFrame, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, saveNewBinButton)
+    switch_buttons=partial(showAndHideBinButton,addBinButton, binValsArr[0], binOptionFlag,bin1Slots, binFrame, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, saveNewBinButton, backBinButton)
     binValsArr[0].trace('w', switch_buttons)
     update_checkboxes=partial(runSlotChecks,binFrame, binID,slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, checkBoxes,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,saveNewBinButton,binOptionFlag)
     binID.trace('w', update_checkboxes)

@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 from functools import partial
 from ariac_msgs.msg import *
+from ariac_gui.timeFunctions import validateTime
 allPartTypes=["sensor", "pump", "regulator", "battery"]
 allPartColors=['green', 'red', 'purple','blue','orange']
 robotTypes=["ceiling_robot","floor_robot"]
@@ -640,6 +641,13 @@ def allChallengeWidgets(challengesFrame,allChallengeWidgetsArr,presentChallengeW
     updateAnnIDMenu=partial(updateConditionMenu,orderMSGS, conditionMenu, condition, annIDMenu, annID, usedIds, orderIDMenu,currentOrderID)
     partOrdCounter.trace('w', updateAnnIDMenu)
     conditionVal.append(condition)
+    #Value validations
+    validate_con_time=partial(validateTime, conTime)
+    conTime.trace('w', validate_con_time)
+    validate_rm_duration=partial(validateTime, rmDuration)
+    rmDuration.trace('w', validate_rm_duration)
+    validate_sb_duration=partial(validateTime, sbDuration)
+    sbDuration.trace('w', validate_sb_duration)
     #Save buttons
     save_robot_breakdown=partial(saveRobotMalfunction,allChallengeWidgetsArr, floorRobot, ceilRobot, rmDuration, condition, conTime, conPartType, conPartColor, conAgv, annID, robotMalfunctions, challengeCounter)
     rmSaveButton=tk.Button(challengesFrame, text="Save robot malfunction", command=save_robot_breakdown)

@@ -287,10 +287,11 @@ def runGUI(): # runs the entire gui
     challengeCounter=tk.StringVar()
     challengeCounter.set("0")
     mainWind.geometry(WINDOWMEASURE)
-    mainWind.title('notebook testing')
-
-    notebook=ttk.Notebook(mainWind)
-    notebook.grid(pady=10, column=LEFTCOLUMN)
+    mainWind.title('Main Window')
+    mainFrame=ttk.Frame(mainWind)
+    mainFrame.grid(row=0, column=1, columnspan=3, padx=10, pady=10, sticky=tk.E+tk.W+tk.N+tk.S)
+    notebook=ttk.Notebook(mainFrame)
+    notebook.grid(pady=10, column=LEFTCOLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
 
     setupFrame = ttk.Frame(notebook, width=800, height=600)
     
@@ -362,23 +363,29 @@ def runGUI(): # runs the entire gui
     
     partOrdText="Parts:\nAGV Parts present:\nNONE\nBin Parts presents:\nNONE\nConveyor Parts present:\nNONE\n\n"
     partOrdText+="Orders Present:\nNONE"
-    partOrdLabel=tk.Label(mainWind, text=partOrdText)
-    partOrdLabel.grid(column=MIDDLECOLUMN, row=0)
+    partOrdLabel=tk.Label(mainFrame, text=partOrdText)
+    partOrdLabel.grid(column=2, row=0,sticky=tk.E+tk.W+tk.N+tk.S)
 
     challengesText="Challenges:\nRobot Malfunction challenges:\nNONE\nFaulty Part challenges:\nNONE\nDropped Part challenges:\nNONE\nSensor Blackout challenges:\nNONE"
-    challengesLabel=tk.Label(mainWind, text=challengesText)
-    challengesLabel.grid(column=RIGHTCOLUMN, row=0)
+    challengesLabel=tk.Label(mainFrame, text=challengesText)
+    challengesLabel.grid(column=3, row=0,sticky=tk.E+tk.W+tk.N+tk.S)
     cancel_main_command=partial(cancel_wind, mainWind, cancelFlag)
-    cancelMainButton=tk.Button(mainWind, text="Cancel and Exit", command=cancel_main_command)
-    cancelMainButton.grid(column=LEFTCOLUMN)
-    mainSaveButton=tk.Button(mainWind, text="Save and Exit", command=mainWind.destroy)
-    mainSaveButton.grid(column=RIGHTCOLUMN, row=1)
+    cancelMainButton=tk.Button(mainFrame, text="Cancel and Exit", command=cancel_main_command)
+    cancelMainButton.grid(column=1)
+    mainSaveButton=tk.Button(mainFrame, text="Save and Exit", command=mainWind.destroy)
+    mainSaveButton.grid(column=3, row=1)
 
     #Trace functions
     update_part_ord_label=partial(updatePartOrdLabel,agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts, orderMSGS,partOrdLabel)
     partOrdCounter.trace('w',update_part_ord_label)
     update_challenge_label=partial(updateChallengeLabel,robotMalfunctions, faultyParts, droppedParts, sensorBlackouts,challengesLabel)
     challengeCounter.trace('w', update_challenge_label)
+    
+    #Formatting
+    mainWind.columnconfigure(0, weight=1)
+    mainWind.columnconfigure(4, weight=1)
+    mainFrame.rowconfigure(0, weight=1)
+    mainFrame.columnconfigure(0, weight=1)
     mainWind.mainloop()
     check_cancel(cancelFlag.get(), pathIncrement, fileName, createdDir)
     # END OF MAIN WIND

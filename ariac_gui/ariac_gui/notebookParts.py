@@ -44,6 +44,10 @@ def agvTrayWidgets(partsFrame, agvTrayWidgetsArr, agvTrayValsArr):
     agvTrayWidgetsArr.append(agv4TrayLabel)
     agvTrayWidgetsArr.append(agv4TrayIdSelect)
 
+def backPart(agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr):
+    switchPartMenu(agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
+
+
 def switchPartMenu(agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr):
     if partFlag.get()=="0":
         partVals[0].set(agvList[0])
@@ -65,13 +69,15 @@ def switchPartMenu(agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgets
             widget.pack()
         partFlag.set('0')
 
-def showAndHideButton(switchPartMenuButton, saveButton, val, partOptionFlag,a,b,c):
+def showAndHideButton(switchPartMenuButton, saveButton, val, partOptionFlag,backPartButton,a,b,c):
     if val.get()=="":
         switchPartMenuButton.pack(side = tk.BOTTOM)
+        backPartButton.pack_forget()
         saveButton.pack_forget()
         partOptionFlag.set('0')
     elif partOptionFlag.get()=="0":
         saveButton.pack(side = tk.BOTTOM)
+        backPartButton.pack(side=tk.BOTTOM)
         switchPartMenuButton.pack_forget()
         partOptionFlag.set('1')
         
@@ -162,11 +168,12 @@ def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants
     save_option=partial(saveAgvPart, agvSelection,partWidgets, partFlag, partVals, partQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts, partOrdCounter)
     saveOptionButton=tk.Button(partsFrame, text="Save Part", command=save_option)
     saveOptionButton.pack_forget()
-    switch_buttons=partial(showAndHideButton,switchPartMenuButton, saveOptionButton, partVals[0], partOptionFlag)
+    back_part=partial(backPart, agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
+    backPartButton=tk.Button(partsFrame, text="Back", command=back_part)
+    backPartButton.pack_forget()
+    switch_buttons=partial(showAndHideButton,switchPartMenuButton, saveOptionButton, partVals[0], partOptionFlag, backPartButton)
     agv_update_menu=partial(updateAgvQudrants,agvSelection, partQuadrantSelectMenu, partQuadrant, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants)
     agvSelection.trace('w', agv_update_menu)
-    validate_rotation=partial(validateRotationValue, partRotation, saveOptionButton)
-    partRotation.trace('w', validate_rotation)
     partVals[0].trace('w',switch_buttons)
 
 def updateAgvQudrants(agvSelection, quadrantMenu, currentQuadrant, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,a,b,c):

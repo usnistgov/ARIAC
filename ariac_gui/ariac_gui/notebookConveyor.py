@@ -35,13 +35,15 @@ def validateOffset(offsetVal, a,b,c):
             tempStr="-1"
     offsetVal.set(tempStr)
 
-def showAndHideConvButton(addConvButton, val, convOptionFlag, saveNewConvButton,a,b,c):
+def showAndHideConvButton(addConvButton, val, convOptionFlag, saveNewConvButton,backButton,a,b,c):
     if val.get()=="":
         addConvButton.pack(side = tk.BOTTOM)
         saveNewConvButton.pack_forget()
+        backButton.pack_forget()
         convOptionFlag.set('0')
     elif convOptionFlag.get()=="0":
         saveNewConvButton.pack(side = tk.BOTTOM)
+        backButton.pack(side=tk.BOTTOM)
         addConvButton.pack_forget()
         convOptionFlag.set('1')
 
@@ -71,6 +73,9 @@ def switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
         for widget in convSettingsWidgets:
             widget.pack()
         convFlag.set('0')
+
+def backConv(convWidgetsArr, convValsArr, convFlag, convSettingsWidgets):
+    switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets)
 
 def convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals):
     convFlag=tk.StringVar()
@@ -160,20 +165,23 @@ def convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals):
     convSettingsWidgets.append(convOrderLabel)
     convSettingsWidgets.append(convOrderMenu)
 
-    #save conveyor button
+    #save conveyor and back buttons
     save_and_exit_conv=partial(saveConv, convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts, partOrdCounter)
     saveConvButton=tk.Button(convFrame, text="Save and Exit", command=save_and_exit_conv)
     saveConvButton.pack_forget()
+    back_conv=partial(backConv, convWidgetsArr, convValsArr, convFlag, convSettingsWidgets)
+    backConvButton=tk.Button(convFrame, text="Back", command=back_conv)
+    backConvButton.pack_forget()
     #add conv button
     show_add_button=partial(switchConvMenu,convValsArr, convWidgetsArr,convFlag, convSettingsWidgets)
     addConvButton=tk.Button(convFrame,text="Add conveyor part", command=show_add_button)
     addConvButton.pack(side=tk.BOTTOM)
-    switch_buttons=partial(showAndHideConvButton, addConvButton, convValsArr[0], convOptionFlag, saveConvButton)
+    switch_buttons=partial(showAndHideConvButton, addConvButton, convValsArr[0], convOptionFlag, saveConvButton, backConvButton)
     convValsArr[0].trace('w', switch_buttons)
     #entry validation
     validate_num_parts=partial(require_num, numberParts)
     numberParts.trace('w', validate_num_parts)
-    validate_rotation=partial(validateRotationValue, partRotation, saveConvButton)
-    partRotation.trace('w', validate_rotation)
+    '''validate_rotation=partial(validateRotationValue, partRotation, saveConvButton)
+    partRotation.trace('w', validate_rotation)'''
     validate_offset=partial(validateOffset, offsetParts)
     offsetParts.trace('w', validate_offset)

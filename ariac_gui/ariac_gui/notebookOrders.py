@@ -65,6 +65,18 @@ def backOrder(orderWidgetsArr, orderValsArr, usedIDs):
     for id in tempIDs:
         usedIDs.append(id)
 
+def backKitProd(kitWidgetsArr, kitValsArr):
+    for widget in kitWidgetsArr:
+        widget.grid_forget()
+    for val in kitValsArr:
+        val.set("")
+
+def backAssemblyProd(assemblyWidgetsArr, assemblyValsArr):
+    for widget in assemblyWidgetsArr:
+        widget.grid_forget()
+    for val in assemblyValsArr:
+        val.set("")
+
 def showCorrectMenu(orderValsArr, orderWidgetsArr,tempIDs,a,b,c):
     if orderValsArr[3].get()=="":
         orderValsArr[4].set('')#time
@@ -359,11 +371,15 @@ def kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr):
     kitValsArr.append(prodQuad)
     kitWidgetsArr.append(prodQuadLabel)
     kitWidgetsArr.append(prodQuadMenu)
-    #save button
+    #save  and back buttons
     save_kit_prod=partial(saveKittingProd, kitValsArr, kitWidgetsArr, kittingParts)
     saveKitButton=tk.Button(orderFrame, text="Save product", command=save_kit_prod)
     saveKitButton.grid_forget()
     kitWidgetsArr.append(saveKitButton)
+    back_kit_prod=partial(backKitProd, kitWidgetsArr, kitValsArr)
+    backKitButton=tk.Button(orderFrame, text="Back", command=back_kit_prod)
+    backKitButton.grid_forget()
+    kitWidgetsArr.append(backKitButton)
 
 def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidgetsArr):
     prodType=tk.StringVar()
@@ -470,11 +486,15 @@ def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidg
     assemblyWidgetsArr.append(y_dir_entry)
     assemblyWidgetsArr.append(z_dir_label)
     assemblyWidgetsArr.append(z_dir_entry)
-    #save button
+    #save and back buttons
     save_assemb_prod=partial(saveAssemblyProd, assemblyValsArr, assemblyWidgetsArr, assemblyParts)
     saveAssembButton=tk.Button(orderFrame, text="Save product", command=save_assemb_prod)
     saveAssembButton.grid_forget()
     assemblyWidgetsArr.append(saveAssembButton)
+    back_assemb_prod=partial(backAssemblyProd, assemblyWidgetsArr, assemblyValsArr)
+    backAssembButton=tk.Button(orderFrame, text="Back", command=back_assemb_prod)
+    backAssembButton.grid_forget()
+    assemblyWidgetsArr.append(backAssembButton)
 
 def updateConditionMenus(usedIDs, annID, conditionMenu, condition, annIDMenu,a,b,c):
     if len(usedIDs):

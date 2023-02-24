@@ -22,6 +22,20 @@ def validateTime(val,a,b,c):
             tempStr="0"
     val.set(tempStr)
 
+def validateSetupTime(val,a,b,c):
+    tempStr=val.get()
+    for i in tempStr:
+        if i not in acceptedNum+"-":
+            tempStr=tempStr.replace(i, "")
+    if tempStr.count("-")>0:
+        if (tempStr[0]=="-"):
+            tempStr=tempStr[1:]
+            tempStr=tempStr.replace("-","")
+            tempStr="-"+tempStr
+        else:
+            tempStr=tempStr.replace("-","")
+    val.set(tempStr)
+
 def guiTimeWindow(timeList, mainWind):
     timeWind=tk.Toplevel()
     timeWind.title("Time limit")

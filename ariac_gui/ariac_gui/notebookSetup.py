@@ -1,6 +1,7 @@
 import tkinter as tk
 from functools import partial
 from ariac_gui.timeFunctions import *
+from ariac_gui.timeFunctions import validateSetupTime
 LEFTCOLUMN=1
 MIDDLECOLUMN=2
 RIGHTCOLUMN=3
@@ -280,4 +281,5 @@ def timeEntry(timeFrame, timeVar, timeVal):
     timeLabel.grid(column=MIDDLECOLUMN)
     timeEntry=tk.Entry(timeFrame, textvariable=timeVar)
     timeEntry.grid(column=MIDDLECOLUMN)
-    timeVar.trace('w', validateTime)
+    validate_setup_time=partial(validateSetupTime, timeVar)
+    timeVar.trace('w', validate_setup_time)

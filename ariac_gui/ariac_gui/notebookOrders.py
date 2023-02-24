@@ -53,11 +53,17 @@ def showNewOrderMenu(orderWidgetsArr, orderValsArr, usedIDs):
     orderWidgetsArr[26].grid(column=2, row=23)
     orderWidgetsArr[27].grid(column=2, row=24)
 
-def backOrder(orderWidgetsArr, orderValsArr):
+def backOrder(orderWidgetsArr, orderValsArr, usedIDs):
     for widget in orderWidgetsArr:
         widget.grid_forget()
     for val in orderValsArr:
         val.set("")
+    tempIDs=[]
+    for id in usedIDs[:-1]:
+        tempIDs.append(id)
+    usedIDs.clear()
+    for id in tempIDs:
+        usedIDs.append(id)
 
 def showCorrectMenu(orderValsArr, orderWidgetsArr,tempIDs,a,b,c):
     if orderValsArr[3].get()=="":
@@ -629,7 +635,7 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     saveOrdButton=tk.Button(orderFrame, text="Save order", command=save_order)
     saveOrdButton.grid_forget()
     orderWidgetsArr.append(saveOrdButton)
-    back_order=partial(backOrder, orderWidgetsArr, orderValsArr)
+    back_order=partial(backOrder, orderWidgetsArr, orderValsArr, usedIDs)
     orderBackButton=tk.Button(orderFrame, text="Back", command=back_order)
     orderBackButton.grid_forget()
     orderWidgetsArr.append(orderBackButton)

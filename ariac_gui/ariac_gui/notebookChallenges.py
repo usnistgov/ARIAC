@@ -427,6 +427,7 @@ def updateConditionMenu(orderMSGS, conditionMenu, condition, annIDMenu, annID, u
             annIDMen.add_command(label=id, command=lambda id=id: annID.set(id))
         currentOrderID.set(usedIDs[0])
         ordIDMen=orderIDMenu['menu']
+        ordIDMen.delete(0,'end')
         for id in usedIDs:
             ordIDMen.add_command(label=id, command=lambda id=id: currentOrderID.set(id))
 

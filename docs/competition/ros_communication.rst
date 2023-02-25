@@ -18,8 +18,20 @@ Topics
      - Description 
    * - ``/ariac/orders`` 
      - ``ariac_msgs/msg/Order``
-     - :ref:`Order <OrderMsg>`
+     - :ref:`Order.msg <OrderMsg>`
      - Orders that the CCS should submit
+   * - ``/ariac/competition_state``
+     - ``ariac_msgs/msg/CompetitionState`` 
+     - :ref:`CompatitionState.msg <CompetitionStateMsg>`
+     - Current state of the competition 
+   * - ``/ariac/bin_parts``
+     - ``ariac_msgs/msg/BinParts`` 
+     - :ref:`BinParts.msg <BinPartsMsg>`
+     - Part information in each bin at program start-up 
+   * - ``/ariac/conveyor_parts``
+     - ``ariac_msgs/msg/ConveyorParts`` 
+     - :ref:`ConveyorParts.msg <ConveyorPartsMsg>`
+     - Parts that will come on the conveyor belt 
 
 .. .. list-table:: List of topics with message types.
 ..    :widths: 25 25 25 50
@@ -88,6 +100,73 @@ Message Definitions
     ariac_msgs/KittingTask kitting_task 
     ariac_msgs/AssemblyTask assembly_task
     ariac_msgs/CombinedTask combined_task
+
+.. code-block:: bash
+    :caption: CompetitionState.msg
+    :name: CompetitionStateMsg
+
+    uint8 IDLE=0    # competition cannot be started yet by the competitor
+    uint8 READY=1   # competition can be started by the competitor
+    uint8 STARTED=2 # competition has been started
+    uint8 ORDER_ANNOUNCEMENTS_DONE=3 # all order announcements have been announced
+    uint8 ENDED=4   # competition has ended
+
+    uint8 competition_state # IDLE, READY, STARTED, ORDER_ANNOUNCEMENTS_DONE, ENDED
+
+.. code-block:: bash
+    :caption: BinParts.msg
+    :name: BinPartsMsg
+
+    ariac_msgs/BinInfo[] bins
+
+.. code-block:: bash
+    :caption: BinInfo.msg
+    :name: BinInfoMsg
+
+    uint8 BIN1=1
+    uint8 BIN2=2
+    uint8 BIN3=3
+    uint8 BIN4=4
+    uint8 BIN5=5
+    uint8 BIN6=6
+    uint8 BIN7=7
+    uint8 BIN8=8
+
+    uint8 bin_number
+    ariac_msgs/PartLot[] parts
+
+.. code-block:: bash
+    :caption: PartLot.msg
+    :name: PartLotMsg
+
+    ariac_msgs/Part part
+    uint8 quantity
+
+.. code-block:: bash
+    :caption: Part.msg
+    :name: PartMsg
+
+    # Constants for part color
+    uint8 RED=0
+    uint8 GREEN=1
+    uint8 BLUE=2
+    uint8 ORANGE=3
+    uint8 PURPLE=4
+
+    # Constants for part type
+    uint8 BATTERY=10
+    uint8 PUMP=11
+    uint8 SENSOR=12
+    uint8 REGULATOR=13
+
+    uint8 color # RED, GREEN, BLUE, ORANGE, PURPLE
+    uint8 type # BATTERY, PUMP, SENSOR, REGULATOR
+
+.. code-block:: bash
+    :caption: ConveyorParts.msg
+    :name: ConveyorPartsMsg
+
+    ariac_msgs/PartLot[] parts
 
 
 .. code-block:: bash

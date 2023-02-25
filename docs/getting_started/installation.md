@@ -68,7 +68,7 @@ For this to work properly:
     ```
 - The yaml file for your sensors `name_of_sensor_config.yaml` needs to be located in the config directory of the `competitor_pkg`
 
-## Moving the robots 
+## Moving the Robots
 
 To verify that the robots can be controlled properly you will need three terminals
 
@@ -90,7 +90,7 @@ ros2 launch test_competitor moveit_test.launch.py
 This should start the competition and move each of the robots to the home position. It will also open an RVIZ window showing the robot's planning scene. 
 
 
-## Running the test competitor
+## Running the Test Competitor
 
 A test competitor has been created to demonstrate how to complete some of the basic functions of working with the ARIAC environment. To run the test competitor you will need three terminals. 
 

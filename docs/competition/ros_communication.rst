@@ -12,20 +12,20 @@ Topics
    :name: communications-topics
 
    * - Topic Name
-     - Message type
+     - Message Type
+     - Message Definition
      - Description 
-     - Message file 
-   * - ``/ariac/orders``
+   * - ``/ariac/orders`` 
      - ``ariac_msgs/msg/Order``
-     - Orders that the CCS should submit 
-     - t
-   * - ``/ariac/competition_state``
-     - ``ariac_msgs/msg/CompetitionState`` 
-     - Current state of the competition 
-     - t
-   * - ``/ariac/bin_parts``
-     - ``ariac_msgs/msg/BinParts`` 
-     - Parts in each bin at program start-up 
+     - :ref:`Order <OrderMsg>`
+     - Orders that the CCS should submit
+  ..  * - ``/ariac/competition_state``
+  ..    - ``ariac_msgs/msg/CompetitionState`` 
+  ..    - Current state of the competition 
+  ..    - t
+  ..  * - ``/ariac/bin_parts``
+  ..    - ``ariac_msgs/msg/BinParts`` 
+  ..    - Parts in each bin at program start-up 
      - t
    * - ``/ariac/conveyor_parts``
      - ``ariac_msgs/msg/ConveyorParts`` 
@@ -58,6 +58,22 @@ Topics
 
 Message Definitions
 ^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+    :caption: Order.msg
+    :name: OrderMsg
+
+    uint8 KITTING=0
+    uint8 ASSEMBLY=1
+    uint8 COMBINED=2
+
+    string id
+    uint8 type
+    bool priority
+    ariac_msgs/KittingTask kitting_task 
+    ariac_msgs/AssemblyTask assembly_task
+    ariac_msgs/CombinedTask combined_task
+
 
 .. code-block:: bash
     :caption: HumanState.msg
@@ -96,10 +112,10 @@ Services
      - Service type
      - Description  
    * - ``/ariac/start_competition``
-     - ``std_srvs/srv/Trigger```
+     - ``std_srvs/srv/Trigger``
      - Start the competition   
    * - ``/ariac/end_competition``
-     - ``std_srvs/srv/Trigger```
+     - ``std_srvs/srv/Trigger``
      - End the competition
    * - ``/ariac/submit_order``
      - ``ariac_msgs/srv/SubmitOrder``

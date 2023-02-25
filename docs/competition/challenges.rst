@@ -600,7 +600,7 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
 Detection
 -----------------------------
 
-The pose of the human operator is published to the topic ``/ariac_human/state`` (:ref:`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
+The pose of the human is published to the topic ``/ariac_human/state`` (:ref:`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash
     :caption: Message published on the topic ``/ariac_human/state``.

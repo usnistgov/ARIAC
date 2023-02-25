@@ -10,8 +10,8 @@ Conditions
 
 Orders and challenges are announced under some conditions. There are 3 types of conditions in ARIAC 2023:
   * **Time-based condition**: This condition is used to announce an order when the competition time has reached the time provided in the condition. 
+
     .. note:: 
-        
         The competition time is set when the competitor starts the competition with the service call ``/ariac/start_competition``. This is different from the simulation time which is set when Gazebo starts.
 
    

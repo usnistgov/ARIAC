@@ -13,34 +13,60 @@ Topics
 
    * - Topic Name
      - Message type
-     - Description  
+     - Description 
+     - Message file 
    * - ``/ariac/orders``
      - ``ariac_msgs/msg/Order``
      - Orders that the CCS should submit 
+     - t
    * - ``/ariac/competition_state``
      - ``ariac_msgs/msg/CompetitionState`` 
      - Current state of the competition 
+     - t
    * - ``/ariac/bin_parts``
      - ``ariac_msgs/msg/BinParts`` 
      - Parts in each bin at program start-up 
+     - t
    * - ``/ariac/conveyor_parts``
      - ``ariac_msgs/msg/ConveyorParts`` 
      - Parts that will come on the conveyor belt 
+     - t
    * - ``/ariac/agv{n}_status``
      - ``ariac_msgs/msg/AGVStatus``
      - State of the AGV {n} (location, position, velocity)
+     - t
    * - ``/ariac/{robot}_gripper_state``
      - ``ariac_msgs/msg/VacuumGripperState``
      - State of {robot}'s gripper (enabled, attached, type)
+     - t
    * - ``/ariac/conveyor_state``
      - ``ariac_msgs/msg/ConveyorBeltState``
      - State of the conveyor (enabled, power)
+     - t
    * - ``/ariac/robot_health``
      - ``ariac_msgs/msg/Robots``
      - Health of the robots
+     - t
    * - ``/ariac/sensor_health```
      - ``ariac_msgs/msg/Sensors``
      - Health of the sensors
+     - t
+   * - ``/ariac_human/state```
+     - ``ariac_msgs/msg/HumanState``
+     - Position and velocity of the human and the ceiling robot
+     - :numref:`HumanState.msg<HumanStateMsg>`
+
+Message Definitions
+^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: bash
+    :caption: HumanState.msg
+    :name: HumanStateMsg
+
+    geometry_msgs/Point human_position
+    geometry_msgs/Point robot_position
+    geometry_msgs/Vector3 human_velocity
+    geometry_msgs/Vector3 robot_velocity
 
 
 ..

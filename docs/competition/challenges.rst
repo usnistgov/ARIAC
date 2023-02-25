@@ -554,16 +554,19 @@ The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information 
 
 .. _HUMANS:
 
-Human Operator
+Human
 ==============
 
-.. warning::
-  This section is under construction...
 
-The human operator challenge consists of a simulated human operator navigating the workcell. The simulated human will have one of the three following behaviors: 
+The human challenge consists of a simulated human navigating the workcell. 
+
+  The goal of this challenge is to test whether or not the CCS is capable of ensuring the safety of humans on the shop floor. The ceiling robot has to keep a safe distance from the human at any time. If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 1) The human is teleported to a safe location and 2) The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS.
+
+
+When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
 
   * **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
-  * **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot’s current task.
+  * **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
   * **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
 .. note::
@@ -571,29 +574,52 @@ The human operator challenge consists of a simulated human operator navigating t
 
 
 
-..
-  The goal of this challenge is to test the ability of the CCS to avoid collisions with the human operator. The pose of the human operator is published to a Topic and this information can also be retrieved from the `/tf` Topic.
+Setup
+---------------------------
 
-  Human Operator Example
-  -----------------------
 
-  The human operator challenge is specified in the trial configuration file using the following fields:
+The subfield ``human`` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+  * `behavior`: The behavior of the human operator. The possible values are:
+    * ``'indifferent'``
+    * ``'antagonistic'``
+    * ``'helpful'``
+  * :ref:`CONDITIONS` to trigger the challenge.
 
-  * `behavior`: The behavior of the human operator:
-    * `'indifferent'`
-    * `'antagonistic'`
-    * `'helpful'`
-  * Conditions that can trigger the human operator behavior:
-    * `part_place_condition`: The challenge starts when a part of a specific type and color is placed on a specific AGV.
-    * `time_condition`: The challenge starts after a specific time.
-    * `submission_condition`: The challenge starts when a specific order is submitted.
 
-    Below is an example of the human operator challenge with the behavior set to `'antagonistic'` and the challenge starting when the order with the order ID `MMB30H57` is submitted.
+.. code-block:: yaml
+  :caption: Human challenge setup in a trial file.
+  :name: human-yaml
 
-  ```yaml
   challenges:
-    - human_operator:
-        behavior: 'antagonistic'
-        submission_condition:
-          order_id: 'MMB30H57'
-  ```
+    - human:
+        time_condition: 10
+
+
+Detection
+-----------------------------
+
+The pose of the human operator is published to the topic ``/ariac_human/state`` (**HumanState.msg**). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
+
+  .. code-block:: bash
+    :caption: Message published on the topic ``/ariac_human/state``.
+    :name: human-state-outputs
+
+    ---
+    human_position:
+      x: -14.993921250341705
+      y: -9.99998557033615
+      z: 0.010023161632176515
+    robot_position:
+      x: -7.0000003262450905
+      y: 8.445047061655941e-08
+      z: 0.7000000000000002
+    human_velocity:
+      x: 5.6589307392557084e-05
+      y: -1.1679465760540981e-06
+      z: 2.8776304097214153e-05
+    robot_velocity:
+      x: -9.607729520546026e-10
+      y: 1.325746825962516e-10
+      z: 0.0
+    ---
+

@@ -22,7 +22,7 @@ Topics
      - Orders that the CCS should submit
    * - ``/ariac/competition_state``
      - ``ariac_msgs/msg/CompetitionState`` 
-     - :ref:`CompatitionState.msg <CompetitionStateMsg>`
+     - :ref:`CompetitionState.msg <CompetitionStateMsg>`
      - Current state of the competition 
    * - ``/ariac/bin_parts``
      - ``ariac_msgs/msg/BinParts`` 
@@ -32,6 +32,18 @@ Topics
      - ``ariac_msgs/msg/ConveyorParts`` 
      - :ref:`ConveyorParts.msg <ConveyorPartsMsg>`
      - Parts that will come on the conveyor belt 
+   * - ``/ariac/agv{n}_status``
+     - ``ariac_msgs/msg/AGVStatus``
+     - :ref:`AGVStatus.msg <AGVStatusMsg>`
+     - State of the AGV {n} (location, position, velocity)
+   * - ``/ariac/{robot}_gripper_state``
+     - ``ariac_msgs/msg/VacuumGripperState``
+     - :ref:`VacuumGripperState.msg <VacuumGripperStateMsg>`
+     - State of {robot}'s gripper (enabled, attached, type)
+   * - ``/ariac/conveyor_state``
+     - ``ariac_msgs/msg/ConveyorBeltState``
+     - :ref:`ConveyorBeltState.msg <ConveyorBeltStateMsg>`
+     - State of the conveyor (enabled, power)
 
 .. .. list-table:: List of topics with message types.
 ..    :widths: 25 25 25 50
@@ -168,6 +180,34 @@ Message Definitions
 
     ariac_msgs/PartLot[] parts
 
+.. code-block:: bash
+    :caption: AGVStatus.msg
+    :name: AGVStatusMsg
+
+    uint8 KITTING=0
+    uint8 ASSEMBLY_FRONT=1
+    uint8 ASSEMBLY_BACK=2
+    uint8 WAREHOUSE=3
+    uint8 UNKNOWN=99
+
+    int8 location # KITTING, ASSEMBLY_FRONT, ASSEMBLY_BACK, WAREHOUSE, UNKNOWN
+    float64 position
+    float64 velocity
+
+.. code-block:: bash
+    :caption: VacuumGripperState.msg
+    :name: VacuumGripperStateMsg
+
+    bool enabled # is the suction enabled?
+    bool attached # is an object attached to the gripper?
+    string type # type of the gripper
+
+.. code-block:: bash
+    :caption: ConveyorBeltState.msg
+    :name: ConveyorBeltStateMsg
+
+    float64 power  # power of the belt (percentage, in +Y direction of belt frame)
+    bool enabled   # true if the power of the belt can be modified; false if the belt is stopped
 
 .. code-block:: bash
     :caption: HumanState.msg

@@ -11,6 +11,6 @@ uint8 PUMP=11
 uint8 SENSOR=12
 uint8 REGULATOR=13
 
-uint8 color
-uint8 type
+uint8 color # RED, GREEN, BLUE, ORANGE, PURPLE
+uint8 type # BATTERY, PUMP, SENSOR, REGULATOR
 

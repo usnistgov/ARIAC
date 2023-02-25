@@ -4,6 +4,6 @@ uint8 ASSEMBLY_BACK=2
 uint8 WAREHOUSE=3
 uint8 UNKNOWN=99
 
-int8 location
+int8 location # KITTING, ASSEMBLY_FRONT, ASSEMBLY_BACK, WAREHOUSE, UNKNOWN
 float64 position
 float64 velocity

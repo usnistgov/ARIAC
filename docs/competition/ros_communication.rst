@@ -121,7 +121,7 @@ Message Definitions
     uint8 COMBINED=2
 
     string id
-    uint8 type
+    uint8 type # KITTING, ASSEMBLY, COMBINED
     bool priority
     ariac_msgs/KittingTask kitting_task 
     ariac_msgs/AssemblyTask assembly_task
@@ -158,7 +158,7 @@ Message Definitions
     uint8 BIN7=7
     uint8 BIN8=8
 
-    uint8 bin_number
+    uint8 bin_number # BIN1, BIN2, BIN3, BIN4, BIN5, BIN6, BIN7, BIN8
     ariac_msgs/PartLot[] parts
 
 .. code-block:: bash

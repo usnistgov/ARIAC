@@ -579,7 +579,8 @@ Setup
 
 
 The subfield ``human`` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
-  * `behavior`: The behavior of the human operator. The possible values are:
+  * ``behavior``: The behavior of the human operator. The possible values are:
+  
     - ``'indifferent'``
     - ``'antagonistic'``
     - ``'helpful'``
@@ -592,6 +593,7 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
 
   challenges:
     - human:
+        behavior: 'antagonistic'
         time_condition: 10 # starts 10 s after the start of the competition
 
 

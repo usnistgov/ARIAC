@@ -46,6 +46,18 @@ Topics
      - ``ariac_msgs/msg/ConveyorBeltState``
      - :ref:`ConveyorBeltState.msg <ConveyorBeltStateMsg>`
      - State of the conveyor (enabled, power)
+   * - ``/ariac/robot_health``
+     - ``ariac_msgs/msg/Robots``
+     - :ref:`Robots.msg <RobotsMsg>`
+     - Health of the robots (enabled or disabled)
+   * - ``/ariac/sensor_health```
+     - ``ariac_msgs/msg/Sensors``
+     - :ref:`Sensors.msg <SensorsMsg>`
+     - Health of the sensors (enabled or disabled)
+   * - ``/ariac_human/state```
+     - ``ariac_msgs/msg/HumanState``
+     - :ref:`Humanstate.msg <HumanStateMsg>`
+     - Position and velocity of the human and the ceiling robot
 
 .. .. list-table:: List of topics with message types.
 ..    :widths: 25 25 25 50
@@ -210,6 +222,25 @@ Message Definitions
 
     float64 power  # power of the belt (percentage, in +Y direction of belt frame)
     bool enabled   # true if the power of the belt can be modified; false if the belt is stopped
+
+.. code-block:: bash
+    :caption: Robots.msg
+    :name: RobotsMsg
+
+    bool floor_robot    # status if the floor robot
+    bool ceiling_robot  # status of the ceiling robot
+
+.. code-block:: bash
+    :caption: Sensors.msg
+    :name: SensorsMsg
+
+    bool break_beam     # status of the break beam sensor
+    bool proximity      # status of the proximity sensor
+    bool laser_profiler # status of the laser profiler sensor
+    bool lidar          # status of the lidar sensor
+    bool camera         # status of the camera sensor
+    bool logical_camera # status of the logical camera sensor
+
 
 .. code-block:: bash
     :caption: HumanState.msg

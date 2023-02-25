@@ -592,13 +592,13 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
 
   challenges:
     - human:
-        time_condition: 10
+        time_condition: 10 # starts 10 s after the start of the competition
 
 
 Detection
 -----------------------------
 
-The pose of the human operator is published to the topic ``/ariac_human/state`` (**HumanState.msg**). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
+The pose of the human operator is published to the topic ``/ariac_human/state`` (`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash
     :caption: Message published on the topic ``/ariac_human/state``.

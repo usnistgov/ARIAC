@@ -3,12 +3,14 @@
 ROS Communication Overview
 ==========================
 
+This section shows the ROS topics and services that are used to communicate between the CCS and the ARIAC system. The definition of each message and service type is also provided.
+
 Topics
 ------
 
 
 .. list-table:: List of topics with message types.
-   :widths: 25 50 25 50
+   :widths: 50 60 25 50
    :header-rows: 1
    :name: communications-topics
 

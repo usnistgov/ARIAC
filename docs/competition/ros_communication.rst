@@ -54,7 +54,7 @@ Topics
    * - ``/ariac_human/state```
      - ``ariac_msgs/msg/HumanState``
      - Position and velocity of the human and the ceiling robot
-     - :numref:`HumanState.msg<HumanStateMsg>`
+     - t
 
 Message Definitions
 ^^^^^^^^^^^^^^^^^^^

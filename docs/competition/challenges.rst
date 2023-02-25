@@ -565,7 +565,7 @@ The human challenge consists of a simulated human navigating the workcell.
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
 
-  * **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
+ **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
   * **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
   * **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
@@ -580,9 +580,9 @@ Setup
 
 The subfield ``human`` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
   * `behavior`: The behavior of the human operator. The possible values are:
-    * ``'indifferent'``
-    * ``'antagonistic'``
-    * ``'helpful'``
+    - ``'indifferent'``
+    - ``'antagonistic'``
+    - ``'helpful'``
   * :ref:`CONDITIONS` to trigger the challenge.
 
 

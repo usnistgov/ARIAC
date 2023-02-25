@@ -6,6 +6,7 @@ ROS Communication Overview
 Topics
 ------
 
+
 .. list-table:: List of topics with message types.
    :widths: 25 25 25 50
    :header-rows: 1
@@ -19,6 +20,20 @@ Topics
      - ``ariac_msgs/msg/Order``
      - :ref:`Order <OrderMsg>`
      - Orders that the CCS should submit
+
+.. .. list-table:: List of topics with message types.
+..    :widths: 25 25 25 50
+..    :header-rows: 1
+..    :name: communications-topics
+
+..    * - Topic Name
+..      - Message Type
+..      - Message Definition
+..      - Description 
+  ..  * - ``/ariac/orders`` 
+  ..    - ``ariac_msgs/msg/Order``
+  ..    - :ref:`Order <OrderMsg>`
+  ..    - Orders that the CCS should submit
   ..  * - ``/ariac/competition_state``
   ..    - ``ariac_msgs/msg/CompetitionState`` 
   ..    - Current state of the competition 

@@ -4,25 +4,30 @@
   <name>ariac_plugins</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="justin.albrecht@nist.gov">justin</maintainer>
+  <maintainer email="justin.albrecht@nist.gov">justin albrecht</maintainer>
+  <maintainer email="zeid.kootbally@nist.gov">zeid kootbally</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>ariac_msgs</depend>
+  <depend>example_interfaces</depend>
 
   <build_depend>gazebo_dev</build_depend>
   <build_depend>gazebo_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
-  <build_depend>controller_manager_msgs</build_depend>
+  <build_depend>
+    controller_manager_msgs</build_depend>
   <build_depend>gazebo_ros</build_depend>
   <build_depend>rclcpp</build_depend>
 
   <exec_depend>gazebo_dev</exec_depend>
-  <exec_depend>gazebo_msgs</exec_depend>
+  <exec_depend>
+    gazebo_msgs</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>controller_manager_msgs</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>
+    gazebo_ros</exec_depend>
   <exec_depend>rclcpp</exec_depend>
 
   <test_depend>

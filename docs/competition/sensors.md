@@ -63,9 +63,11 @@ The advanced logical camera reports the pose, the type, and the color of a detec
 
 ![](../images/AdvancedLogicalCamera.png)
 
-### Example of a sensor configuration
+## Sensor Configuration File
 
-Competitors should create a configuration file similar to the one below for all sensors they want to place in the environment. Each sensor has the ability to show the FOV for testing by setting the `visualize_fov` item to `true`.
+ Sensors are configured using a YAML file. See the [Configuration Files](trials.md) page for more information on how to configure the competition environment with sensors.
+
+<!--Competitors should create a configuration file similar to the one below for all sensors they want to place in the environment. Each sensor has the ability to show the FOV for testing by setting the `visualize_fov` item to `true`.
 
 > NOTE: the RGB and RGBD camera FOV is not displayed properly. Use a tool like RVIZ or RQT to see the output of the sensor
 
@@ -120,7 +122,7 @@ sensors:
     pose:
       xyz: [-2.286, -2.96, 1.8]
       rpy: [pi, pi/2, 0]
-```
+``` -->
   
 
 

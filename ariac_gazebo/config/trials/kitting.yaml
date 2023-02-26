@@ -20,6 +20,13 @@ parts:
         color: 'blue'
         slots: [1, 3, 7, 9]
 
+# GLOBAL CHALLENGES
+challenges:
+  - faulty_part:
+      order_id: 'MMB30H56'
+      quadrant1: true
+
+
 orders:
   - id: 'MMB30H56'
     type: 'kitting'
@@ -31,9 +38,9 @@ orders:
       tray_id: 3
       destination: 'warehouse'
       products:
-        - type: 'battery'
-          color: 'blue'
-          quadrant: 1
+        # - type: 'battery'
+        #   color: 'blue'
+        #   quadrant: 3
         - type: 'pump'
           color: 'purple'
-          quadrant: 2
+          quadrant: 1

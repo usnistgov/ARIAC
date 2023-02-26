@@ -1,3 +1,11 @@
+/*
+This software was developed by employees of the National Institute of Standards and Technology (NIST), an agency of the Federal Government. Pursuant to title 17 United States Code Section 105, works of NIST employees are not subject to copyright protection in the United States and are considered to be in the public domain. Permission to freely use, copy, modify, and distribute this software and its documentation without fee is hereby granted, provided that this notice and disclaimer of warranty appears in all copies.
+
+The software is provided 'as is' without any warranty of any kind, either expressed, implied, or statutory, including, but not limited to, any warranty that the software will conform to specifications, any implied warranties of merchantability, fitness for a particular purpose, and freedom from infringement, and any warranty that the documentation will conform to the software, or any warranty that the software will be error free. In no event shall NIST be liable for any damages, including, but not limited to, direct, indirect, special or consequential damages, arising out of, resulting from, or in any way connected with this software, whether or not based upon warranty, contract, tort, or otherwise, whether or not injury was sustained by persons or property or otherwise, and whether or not loss was sustained from, or arose out of the results of, or use of, the software or services provided hereunder.
+
+Distributions of NIST software should also include copyright and licensing statements of any third-party software that are legally bundled with the code in compliance with the conditions of those licenses.
+*/
+
 #ifndef ARIAC_PLUGINS__ARIAC_COMMON_HPP_
 #define ARIAC_PLUGINS__ARIAC_COMMON_HPP_
 
@@ -28,6 +36,10 @@
 #include <ariac_msgs/msg/kitting_part.hpp>
 #include <ariac_msgs/msg/assembly_part.hpp>
 
+/**
+ * @brief Namespace for common functions and classes
+ *
+ */
 namespace ariac_common
 {
 
@@ -38,61 +50,86 @@ namespace ariac_common
     class Quadrant;
 
     //==============================================================================
-    std::string static ConvertPartTypeToString(unsigned int _part_type)
+    /**
+     * @brief Helper function to convert a part type to a string
+     *
+     * @param part_type  Part type as an unsigned int
+     * @return std::string  Part type as a string
+     */
+    std::string static ConvertPartTypeToString(unsigned int part_type)
     {
-        if (_part_type == ariac_msgs::msg::Part::BATTERY)
+        if (part_type == ariac_msgs::msg::Part::BATTERY)
             return "battery";
-        else if (_part_type == ariac_msgs::msg::Part::PUMP)
+        else if (part_type == ariac_msgs::msg::Part::PUMP)
             return "pump";
-        else if (_part_type == ariac_msgs::msg::Part::REGULATOR)
+        else if (part_type == ariac_msgs::msg::Part::REGULATOR)
             return "regulator";
-        else if (_part_type == ariac_msgs::msg::Part::SENSOR)
+        else if (part_type == ariac_msgs::msg::Part::SENSOR)
             return "sensor";
         else
             return "unknown";
     }
 
     //==============================================================================
-    std::string static ConvertAssemblyStationToString(unsigned int _station_id)
+    /**
+     * @brief Helper function to convert an assembly station to a string
+     *
+     * @param station_id  Assembly station as an unsigned int
+     * @return std::string  Assembly station as a string
+     */
+    std::string static ConvertAssemblyStationToString(unsigned int station_id)
     {
-        if (_station_id == ariac_msgs::msg::AssemblyTask::AS1)
+        if (station_id == ariac_msgs::msg::AssemblyTask::AS1)
             return "as1";
-        else if (_station_id == ariac_msgs::msg::AssemblyTask::AS2)
+        else if (station_id == ariac_msgs::msg::AssemblyTask::AS2)
             return "as2";
-        else if (_station_id == ariac_msgs::msg::AssemblyTask::AS3)
+        else if (station_id == ariac_msgs::msg::AssemblyTask::AS3)
             return "as3";
-        else if (_station_id == ariac_msgs::msg::AssemblyTask::AS4)
+        else if (station_id == ariac_msgs::msg::AssemblyTask::AS4)
             return "as4";
         else
             return "unknown";
     }
 
     //==============================================================================
-    std::string static ConvertDestinationToString(unsigned int _destination, unsigned int _agv_id)
+    /**
+     * @brief Helper function to convert a destination to a string
+     *
+     * @param destination  Destination as an unsigned int
+     * @param agv_number  AGV number as an unsigned int
+     * @return std::string  Destination as a string
+     */
+    std::string static ConvertDestinationToString(unsigned int destination, unsigned int agv_number)
     {
-        if (_agv_id == 1 || _agv_id == 2)
+        if (agv_number == 1 || agv_number == 2)
         {
-            if (_destination == ariac_msgs::msg::KittingTask::ASSEMBLY_FRONT)
+            if (destination == ariac_msgs::msg::KittingTask::ASSEMBLY_FRONT)
                 return "as1";
-            else if (_destination == ariac_msgs::msg::KittingTask::ASSEMBLY_BACK)
+            else if (destination == ariac_msgs::msg::KittingTask::ASSEMBLY_BACK)
                 return "as2";
         }
-        else if (_agv_id == 3 || _agv_id == 4)
+        else if (agv_number == 3 || agv_number == 4)
         {
-            if (_destination == ariac_msgs::msg::KittingTask::ASSEMBLY_FRONT)
+            if (destination == ariac_msgs::msg::KittingTask::ASSEMBLY_FRONT)
                 return "as3";
-            else if (_destination == ariac_msgs::msg::KittingTask::ASSEMBLY_BACK)
+            else if (destination == ariac_msgs::msg::KittingTask::ASSEMBLY_BACK)
                 return "as4";
         }
-        if (_destination == ariac_msgs::msg::KittingTask::KITTING)
+        if (destination == ariac_msgs::msg::KittingTask::KITTING)
             return "kitting";
-        else if (_destination == ariac_msgs::msg::KittingTask::WAREHOUSE)
+        else if (destination == ariac_msgs::msg::KittingTask::WAREHOUSE)
             return "warehouse";
         else
             return "unknown";
     }
 
     //==============================================================================
+    /**
+     * @brief Helper function to convert a part color to a string
+     *
+     * @param part_color  Part color as an unsigned int
+     * @return std::string  Part color as a string
+     */
     std::string static ConvertPartColorToString(unsigned int part_color)
     {
         if (part_color == ariac_msgs::msg::Part::RED)
@@ -116,87 +153,181 @@ namespace ariac_common
      * @param order_type Integer representing the order type
      * @return std::string Type of order as a string
      */
-    std::string static ConvertOrderTypeToString(unsigned int _order_type)
+    std::string static ConvertOrderTypeToString(unsigned int order_type)
     {
-        if (_order_type == ariac_msgs::msg::Order::ASSEMBLY)
+        if (order_type == ariac_msgs::msg::Order::ASSEMBLY)
             return "assembly";
-        else if (_order_type == ariac_msgs::msg::Order::KITTING)
+        else if (order_type == ariac_msgs::msg::Order::KITTING)
             return "kitting";
-        else if (_order_type == ariac_msgs::msg::Order::COMBINED)
+        else if (order_type == ariac_msgs::msg::Order::COMBINED)
             return "combined";
         else
             return "unknown";
     }
 
+    //==============================================================================
+    /**
+     * @brief Class to store the score and penalty for an order
+     *
+     */
     class Score
     {
     public:
         Score() : score_(0), penalty_(0) {}
 
-        void AddScore(double _score) { score_ += _score; }
-        void AddPenalty(double _penalty) { penalty_ += _penalty; }
+        /**
+         * @brief Increase the score for an order
+         *
+         * @param score  Score to add to the order
+         */
+        void AddScore(double score) { score_ += score; }
+        /**
+         * @brief Increase the penalty for an order
+         *
+         * @param penalty  Penalty to add to the order
+         */
+        void AddPenalty(double penalty) { penalty_ += penalty; }
 
+        /**
+         * @brief Get the score for an order
+         *
+         * @return double  Score for the order
+         */
         double GetScore() const { return score_; }
+        /**
+         * @brief Get the penalty for an order
+         *
+         * @return double  Penalty for the order
+         */
         double GetPenalty() const { return penalty_; }
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const Score &_obj)
+        /**
+         * @brief Overload the << operator to print the score and penalty
+         *
+         * @param out  Output stream
+         * @param obj  Score object
+         * @return std::ostream&  Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const Score &obj)
         {
-            _out << "Score: " << _obj.score_ << " Penalty: " << _obj.penalty_;
+            out << "Score: " << obj.score_ << " Penalty: " << obj.penalty_;
 
-            return _out;
+            return out;
         }
 
     private:
+        //! Score of the order
         double score_;
+        //! Penalty for having extra parts in the order
         double penalty_;
     };
 
     //==============================================================================
+    /**
+     * @brief Class to store the part information
+     *
+     */
     class Part
     {
     public:
-        Part(unsigned int _color, unsigned int _type) : color_(_color), type_(_type) {}
+        /**
+         * @brief Construct a new Part object
+         *
+         * @param color Color of the part
+         * @param type Type of the part
+         */
+        Part(unsigned int color, unsigned int type) : color_(color), type_(type) {}
 
+        // void Print() const
+        // {
+        //     std::cout << "[" << ConvertPartTypeToString(type_) << "," << ConvertPartColorToString(color_) << "]" << std::endl;
+        // }
+        /**
+         * @brief Get the color of the part
+         *
+         * @return unsigned int  Color of the part
+         */
         unsigned int GetColor() const { return color_; }
+        /**
+         * @brief Get the type of the part
+         *
+         * @return unsigned int  Type of the part
+         */
         unsigned int GetType() const { return type_; }
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const Part &_obj)
+        /**
+         * @brief Overload the << operator to print the part information
+         *
+         * @param out  Output stream
+         * @param obj  Part object
+         * @return std::ostream&  Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const Part &obj)
         {
-            _out << "[" << ConvertPartTypeToString(_obj.type_) << "," << ConvertPartColorToString(_obj.color_) << "]";
+            out << "[" << ConvertPartTypeToString(obj.type_) << "," << ConvertPartColorToString(obj.color_) << "]";
 
-            return _out;
+            return out;
         }
 
     private:
+        //! Color of the part
         unsigned int color_;
+        //! Type of the part
         unsigned int type_;
     };
 
     //==============================================================================
+    /**
+     * @brief Class to store the part information for a kitting task
+     *
+     */
     class KittingPart
     {
     public:
-        KittingPart(unsigned _quadrant, const Part &_part) : quadrant_(_quadrant), part_(_part) {}
+        /**
+         * @brief Construct a new KittingPart object
+         *
+         * @param quadrant Quadrant of the part on the AGV
+         * @param part  Part object
+         */
+        KittingPart(unsigned quadrant, const Part &part) : quadrant_(quadrant), part_(part) {}
 
-        //====================
-        // GETTERS & SETTERS
-        //====================
+        /**
+         * @brief Get the Quadrant object
+         *
+         * @return unsigned int  Quadrant of the part on the AGV
+         */
         unsigned int GetQuadrant() const { return quadrant_; }
+
+        /**
+         * @brief Get the Part object
+         *
+         * @return Part  Part object
+         */
         Part GetPart() const { return part_; }
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const KittingPart &_obj)
+        /**
+         * @brief Overload the << operator to print the part information
+         *
+         * @param out  Output stream
+         * @param obj  KittingPart object
+         * @return std::ostream&  Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const KittingPart &obj)
         {
-            _out << "   ------" << std::endl;
-            _out << "   Part: " << _obj.part_ << std::endl;
-            _out << "   Quadrant: " << _obj.quadrant_;
-            return _out;
+            out << "   ------" << std::endl;
+            out << "   Part: " << obj.part_ << std::endl;
+            out << "   Quadrant: " << obj.quadrant_;
+            return out;
         }
 
     private:
+        //! Quadrant of the part on the AGV
         unsigned int quadrant_;
+        //! Part object
         Part part_;
     };
 
@@ -204,181 +335,502 @@ namespace ariac_common
     class AssemblyPart
     {
     public:
-        AssemblyPart(const Part &_part,
-                     const ignition::math::Pose3d &_part_pose,
-                     const ignition::math::Vector3<double> &_part_direction) : part_(_part),
-                                                                               part_pose_(_part_pose),
-                                                                               part_direction_(_part_direction) {}
+        /**
+         * @brief Construct a new Assembly Part object
+         *
+         * @param part  Part object
+         * @param part_pose  Pose of the part in the insert
+         * @param part_direction  Direction of the part in the insert
+         */
+        AssemblyPart(const Part &part,
+                     const ignition::math::Pose3d &part_pose,
+                     const ignition::math::Vector3<double> &part_direction) : part_(part),
+                                                                              part_pose_(part_pose),
+                                                                              part_direction_(part_direction) {}
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const AssemblyPart &_obj)
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const AssemblyPart &obj)
         {
-            _out << "   ------" << std::endl;
-            _out << "   Part: " << _obj.part_ << std::endl;
-            _out << "   Assembled Pose: [" << _obj.part_pose_.Pos().X() << ","
-                 << _obj.part_pose_.Pos().Y() << "," << _obj.part_pose_.Pos().Z() << "]"
-                 << "[" << _obj.part_pose_.Rot().X() << "," << _obj.part_pose_.Rot().Y() << ","
-                 << _obj.part_pose_.Rot().Z() << "," << _obj.part_pose_.Rot().W() << "]" << std::endl;
-            _out << "   Assembled Direction: [" << _obj.part_direction_[0] << ","
-                 << _obj.part_direction_[1] << "," << _obj.part_direction_[2] << "]";
+            out << "   ------" << std::endl;
+            out << "   Part: " << obj.part_ << std::endl;
+            out << "   Assembled Pose: [" << obj.part_pose_.Pos().X() << ","
+                << obj.part_pose_.Pos().Y() << "," << obj.part_pose_.Pos().Z() << "]"
+                << "[" << obj.part_pose_.Rot().X() << "," << obj.part_pose_.Rot().Y() << ","
+                << obj.part_pose_.Rot().Z() << "," << obj.part_pose_.Rot().W() << "]" << std::endl;
+            out << "   Assembled Direction: [" << obj.part_direction_[0] << ","
+                << obj.part_direction_[1] << "," << obj.part_direction_[2] << "]";
 
-            return _out;
+            return out;
         }
 
+        /**
+         * @brief Get the Part object
+         *
+         * @return Part
+         */
         Part GetPart() const { return part_; }
+        /**
+         * @brief Get the Part Pose object
+         *
+         * @return ignition::math::Pose3d
+         */
         ignition::math::Pose3d GetPartPose() const { return part_pose_; }
+        /**
+         * @brief Get the Part Direction object
+         *
+         * @return ignition::math::Vector3<double>
+         */
         ignition::math::Vector3<double> GetPartDirection() const { return part_direction_; }
 
     private:
+        /**
+         * @brief Part object
+         *
+         */
         Part part_;
+        /**
+         * @brief Pose of the part in the insert
+         *
+         */
         ignition::math::Pose3d part_pose_;
+        /**
+         * @brief Direction of the part in the insert
+         *
+         */
         ignition::math::Vector3<double> part_direction_;
     };
 
     //==============================================================================
+    /**
+     * @brief Class to represent an Assemly Task
+     *
+     */
     class AssemblyTask
     {
     public:
-        AssemblyTask(std::vector<unsigned int> _agv_numbers,
-                     unsigned int _station,
-                     const std::vector<AssemblyPart> &_products) : agv_numbers_(_agv_numbers),
-                                                                   station_(_station),
-                                                                   products_(_products) {}
+        /**
+         * @brief Construct a new Assembly Task object
+         *
+         * @param agv_numbers  AGV(s) where parts can be found to do assembly
+         * @param station  Assembly where assembly will be done
+         * @param products  Products to be assembled
+         */
+        AssemblyTask(std::vector<unsigned int> agv_numbers,
+                     unsigned int station,
+                     const std::vector<AssemblyPart> &products) : agv_numbers_(agv_numbers),
+                                                                  station_(station),
+                                                                  products_(products) {}
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const AssemblyTask &_obj)
+        /**
+         * @brief Overload of the << operator to print the Assembly Task object
+         *
+         * @param out  Output stream
+         * @param obj  Assembly Task object
+         * @return std::ostream&  Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const AssemblyTask &obj)
         {
-            _out << "   Assembly Task" << std::endl;
-            _out << "   ================" << std::endl;
+            out << "   Assembly Task" << std::endl;
+            out << "   ================" << std::endl;
 
-            if (_obj.agv_numbers_.size() == 1)
-                _out << "   AGV: [" << _obj.agv_numbers_[0] << "]" << std::endl;
+            if (obj.agv_numbers_.size() == 1)
+                out << "   AGV: [" << obj.agv_numbers_[0] << "]" << std::endl;
             else
             {
-                int counter = _obj.agv_numbers_.size();
+                int counter = obj.agv_numbers_.size();
 
-                _out << "   AGV: [";
-                for (auto agv_number : _obj.agv_numbers_)
+                out << "   AGV: [";
+                for (auto agv_number : obj.agv_numbers_)
                 {
                     counter--;
-                    _out << agv_number;
+                    out << agv_number;
                     if (counter > 0)
-                        _out << ",";
+                        out << ",";
                 }
 
-                _out << "]" << std::endl;
+                out << "]" << std::endl;
             }
 
             // stations
-            _out << "   Station: " << ConvertAssemblyStationToString(_obj.station_) << std::endl;
+            out << "   Station: " << ConvertAssemblyStationToString(obj.station_) << std::endl;
 
             // Products
-            _out << "   ================" << std::endl;
-            _out << "   Products: " << std::endl;
-            for (const auto &product : _obj.products_)
+            out << "   ================" << std::endl;
+            out << "   Products: " << std::endl;
+            for (const auto &product : obj.products_)
             {
-                _out << product << std::endl;
+                out << product << std::endl;
             }
 
-            return _out;
+            return out;
         }
 
+        /**
+         * @brief Get the Agv Numbers object
+         *
+         * @return const std::vector<unsigned int>&
+         */
         const std::vector<unsigned int> &GetAgvNumbers() const { return agv_numbers_; }
+        /**
+         * @brief Get the Station object
+         *
+         * @return unsigned int
+         */
         unsigned int GetStation() const { return station_; }
+        /**
+         * @brief Get the Products object
+         *
+         * @return const std::vector<AssemblyPart>&
+         */
         const std::vector<AssemblyPart> &GetProducts() const { return products_; }
 
     private:
+        /**
+         * @brief AGV(s) where parts can be found to do assembly
+         *
+         */
         std::vector<unsigned int> agv_numbers_;
+        /**
+         * @brief Assembly where assembly will be done
+         *
+         */
         unsigned int station_;
+        /**
+         * @brief Products to be assembled
+         *
+         */
         std::vector<AssemblyPart> products_;
     };
 
     //==============================================================================
     /**
-     * @brief Class to represent the fields for a kitting task
+     * @brief Class to represent a Kitting task
      */
     class KittingTask
     {
     public:
-        KittingTask(unsigned int _agv_number,
-                    unsigned int _tray_id,
-                    unsigned int _destination,
-                    const std::vector<KittingPart> &_products) : agv_number_(_agv_number),
-                                                                 tray_id_(_tray_id),
-                                                                 destination_(_destination),
-                                                                 products_(_products) {}
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const KittingTask &_obj)
-        {
-            _out << "   Kitting Task" << std::endl;
-            _out << "   ================" << std::endl;
+        KittingTask(unsigned int agv_number,
+                    unsigned int tray_id,
+                    unsigned int destination,
+                    const std::vector<KittingPart> &products) : agv_number_(agv_number),
+                                                                tray_id_(tray_id),
+                                                                destination_(destination),
+                                                                products_(products) {}
 
-            _out << "   AGV: " << _obj.agv_number_ << std::endl;
-            _out << "   Tray ID: " << _obj.tray_id_ << std::endl;
+        /**
+         * @brief Overload of the << operator to print the Kitting Task object
+         *
+         * @param out  Output stream
+         * @param obj  Kitting Task object
+         * @return std::ostream& Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const KittingTask &obj)
+        {
+            out << "   Kitting Task" << std::endl;
+            out << "   ================" << std::endl;
+
+            out << "   AGV: " << obj.agv_number_ << std::endl;
+            out << "   Tray ID: " << obj.tray_id_ << std::endl;
 
             // Destination
-            _out << "   Destination: " << ConvertDestinationToString(_obj.destination_, _obj.agv_number_) << std::endl;
+            out << "   Destination: " << ConvertDestinationToString(obj.destination_, obj.agv_number_) << std::endl;
 
             // Products
-            _out << "   ================" << std::endl;
-            _out << "   Products: " << std::endl;
-            for (const auto &product : _obj.products_)
+            out << "   ================" << std::endl;
+            out << "   Products: " << std::endl;
+            for (const auto &product : obj.products_)
             {
-                _out << product << std::endl;
+                out << product << std::endl;
             }
 
-            return _out;
+            return out;
         }
 
+        /**
+         * @brief Get the Agv Number
+         *
+         * @return unsigned int
+         */
         unsigned int GetAgvNumber() const { return agv_number_; }
+        /**
+         * @brief Get the Tray Id
+         *
+         * @return unsigned int
+         */
         unsigned int GetTrayId() const { return tray_id_; }
+        /**
+         * @brief Get the Destination
+         *
+         * @return unsigned int
+         */
         unsigned int GetDestination() const { return destination_; }
+        /**
+         * @brief Get the Products
+         *
+         * @return const std::vector<KittingPart>&
+         */
         const std::vector<KittingPart> &GetProducts() const { return products_; }
 
     private:
+        /**
+         * @brief AGV where parts can be found to do kitting
+         *
+         */
         unsigned int agv_number_;
+        /**
+         * @brief Tray ID where parts can be found to do kitting
+         *
+         */
         unsigned int tray_id_;
+        /**
+         * @brief Destination where kitting will be done
+         *
+         */
         unsigned int destination_;
+        /**
+         * @brief Products to be kitted
+         *
+         */
         std::vector<KittingPart> products_;
     };
 
     //==============================================================================
     /**
-     * @brief Class to represent the fields for a combined task
+     * @brief Class to represent a Combined task
      */
     class CombinedTask
     {
     public:
-        CombinedTask(unsigned int _station,
-                     const std::vector<AssemblyPart> &_products) : station_(_station),
-                                                                   products_(_products) {}
+        /**
+         * @brief Construct a new Combined Task object
+         *
+         * @param station  Assembly station where assembly will be done
+         * @param products  Products to be assembled
+         */
+        CombinedTask(unsigned int station,
+                     const std::vector<AssemblyPart> &products) : station_(station),
+                                                                  products_(products) {}
 
+        /**
+         * @brief Get the Station object
+         *
+         * @return unsigned int
+         */
         unsigned int GetStation() const { return station_; }
+        /**
+         * @brief Get the Products object
+         *
+         * @return const std::vector<AssemblyPart>&
+         */
         const std::vector<AssemblyPart> &GetProducts() const { return products_; }
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const CombinedTask &_obj)
+        /**
+         * @brief Overload of the << operator to print the Combined Task object
+         *
+         * @param out  Output stream
+         * @param obj  Combined Task object
+         * @return std::ostream& Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const CombinedTask &obj)
         {
-            _out << "   Combined Task" << std::endl;
-            _out << "   ================" << std::endl;
+            out << "   Combined Task" << std::endl;
+            out << "   ================" << std::endl;
 
             // stations
-            _out << "   Station: " << ConvertAssemblyStationToString(_obj.station_) << std::endl;
+            out << "   Station: " << ConvertAssemblyStationToString(obj.station_) << std::endl;
 
             // Products
-            _out << "   ================" << std::endl;
-            _out << "   Products: " << std::endl;
-            for (const auto &product : _obj.products_)
+            out << "   ================" << std::endl;
+            out << "   Products: " << std::endl;
+            for (const auto &product : obj.products_)
             {
-                _out << product << std::endl;
+                out << product << std::endl;
             }
 
-            return _out;
+            return out;
         }
 
     private:
+        /**
+         * @brief Assembly station where assembly will be done
+         *
+         */
         unsigned int station_;
+        /**
+         * @brief Products to be assembled
+         *
+         */
         std::vector<AssemblyPart> products_;
+    };
+
+    //==============================================================================
+    /**
+     * @brief Base class for the human challenge.
+     *
+     */
+    class HumanChallenge
+    {
+    public:
+        /**
+         * @brief Construct a new Human challenge object
+         *
+         * @param behavior The behavior of the human during the trial
+         */
+        HumanChallenge(unsigned behavior) : behavior_(behavior) {}
+
+        /**
+         * @brief Get the type of the challenge
+         *
+         * @return unsigned int
+         */
+        unsigned int GetType() const { return type_; }
+
+        /**
+         * @brief Get the behavior of the human during the trial
+         *
+         * @return unsigned int
+         */
+        unsigned int GetBehavior() const { return behavior_; }
+
+        /**
+         * @brief Get the time penalty for the ceiling robot
+         *
+         * @return double
+         */
+        double GetRobotTimePenalty() const { return robot_time_penalty_; }
+        /**
+         * @brief Set the start time of this challenge for logging purposes
+         *
+         * @param _start_time
+         */
+        void SetStartTime(double start_time) { start_time_ = start_time; }
+
+        /**
+         * @brief Check if the challenge has started
+         *
+         * @return bool True if the challenge has started and false otherwise
+         */
+        bool HasStarted() const { return started_; }
+
+        /**
+         * @brief Set the started flag to true
+         *
+         */
+        void SetStarted() { started_ = true; }
+
+    protected:
+        // Behavior of the human during the trial
+        unsigned int behavior_;
+        // Time penalty for the ceiling robot
+        double robot_time_penalty_{15};
+        const unsigned int type_ = ariac_msgs::msg::Challenge::HUMAN;
+        // Whether the challenge has started
+        bool started_ = false;
+        // simulation time when the challenge started
+        double start_time_;
+    };
+
+    //==============================================================================
+    /**
+     * @brief Class which derives HumanChallenge
+     *
+     * This challenge is triggered at a specific simulation time.
+     */
+    class HumanChallengeTemporal : public HumanChallenge
+    {
+    public:
+        /**
+         * @brief Construct a new Human challenge object
+         *
+         * @param behavior The behavior of the human during the trial
+         * @param trigger_time Time at which the challenge should be triggered
+         */
+        HumanChallengeTemporal(unsigned behavior, double _trigger_time) : HumanChallenge(behavior),
+                                                                          trigger_time_(_trigger_time) {}
+
+        /**
+         * @brief Get the time at which the challenge should be triggered
+         * @return double Time at which the challenge should be triggered
+         */
+        double GetTriggerTime() const { return trigger_time_; }
+
+    private:
+        //! Simulation time at which the challenge should be triggered
+        double trigger_time_;
+    };
+
+    //==============================================================================
+    /**
+     * @brief Class which derives HumanChallenge
+     *
+     * This challenge is triggered when a part is placed on a specific AGV.
+     */
+    class HumanChallengeOnPartPlacement : public HumanChallenge
+    {
+    public:
+        /**
+         * @brief Construct a new Human challenge object
+         *
+         * @param behavior The behavior of the human during the trial
+         * @param _part Part to trigger the challenge
+         * @param _agv AGV on which the part is placed
+         */
+        HumanChallengeOnPartPlacement(unsigned behavior,
+                                      std::shared_ptr<Part> part,
+                                      unsigned int agv) : HumanChallenge(behavior),
+                                                          part_(part), agv_(agv) {}
+
+        /**
+         * @brief Get the part to trigger the challenge
+         * @return std::shared_ptr<Part> Part to trigger the challenge
+         */
+        std::shared_ptr<Part> GetPart() const { return part_; }
+
+        /**
+         * @brief Get the AGV on which the part is placed
+         * @return unsigned int AGV on which the part is placed
+         */
+        unsigned int GetAgv() const { return agv_; }
+
+    private:
+        //! Part to trigger the challenge
+        std::shared_ptr<Part> part_;
+        //! AGV on which the part is placed
+        unsigned int agv_;
+    };
+
+    //==============================================================================
+    /**
+     * @brief Class which derives HumanChallenge
+     *
+     * This challenge is triggered when an order is submitted.
+     */
+    class HumanChallengeOnSubmission : public HumanChallenge
+    {
+    public:
+        /**
+         * @brief Construct a new Human challenge object
+         *
+         * @param behavior The behavior of the human during the trial
+         * @param robot_time_penalty Time penalty for the ceiling robot
+         * @param trigger_order_id ID of a submitted order
+         */
+        HumanChallengeOnSubmission(unsigned behavior,
+                                   std::string trigger_order_id) : HumanChallenge(behavior),
+                                                                   trigger_order_id_(trigger_order_id) {}
+
+        /**
+         * @brief Get the ID of a submitted order
+         * @return std::string ID of a submitted order
+         */
+        std::string GetTriggerOrderId() const { return trigger_order_id_; }
+
+    private:
+        //! ID of a submitted order
+        std::string trigger_order_id_;
     };
 
     //==============================================================================
@@ -392,40 +844,98 @@ namespace ariac_common
         /**
          * @brief Construct a new SensorBlackout object
          *
-         * @param _duration The duration of the blackout in seconds
-         * @param _sensors_to_disable List of sensors to disable
+         * @param duration The duration of the blackout in seconds
+         * @param sensors_to_disable List of sensors to disable
          */
-        SensorBlackout(double _duration,
-                       const std::vector<std::string> &_sensors_to_disable) : duration_(_duration),
-                                                                              sensors_to_disable_(_sensors_to_disable) {}
+        SensorBlackout(double duration,
+                       const std::vector<std::string> &sensors_to_disable) : duration_(duration),
+                                                                             sensors_to_disable_(sensors_to_disable) {}
 
+        /**
+         * @brief Get the duration of the challenge
+         *
+         * @return double
+         */
         double GetDuration() const { return duration_; }
+        /**
+         * @brief Get the list of sensors to disable
+         *
+         * @return const std::vector<std::string>&
+         */
         const std::vector<std::string> &GetSensorsToDisable() const { return sensors_to_disable_; }
+        /**
+         * @brief Get the type of the challenge
+         *
+         * @return unsigned int
+         */
         unsigned int GetType() const { return type_; }
-
+        /**
+         * @brief Get the Start Time
+         *
+         * @return double
+         */
         double GetStartTime() const { return start_time_; }
-        void SetStartTime(double _start_time) { start_time_ = _start_time; }
+        /**
+         * @brief Set the Start Time
+         *
+         * @param _start_time
+         */
+        void SetStartTime(double start_time) { start_time_ = start_time; }
 
+        /**
+         * @brief Check if the challenge has started
+         *
+         * @return bool True if the challenge has started and false otherwise
+         */
         bool HasStarted() const { return started_; }
+
+        /**
+         * @brief Set the started flag to true
+         *
+         */
         void SetStarted() { started_ = true; }
 
+        /**
+         * @brief Check if the challenge has been completed
+         *
+         * @return bool True if the challenge has been completed and false otherwise
+         */
         bool HasCompleted() const { return completed_; }
+
+        /**
+         * @brief Set the completed flag to true
+         *
+         */
         void SetCompleted() { completed_ = true; }
 
-        void SetStopTime(double _stop_time) { stop_time_ = _stop_time; }
+        /**
+         * @brief Set the Stop Time
+         *
+         * @param stop_time
+         */
+        void SetStopTime(double stop_time) { stop_time_ = stop_time; }
+
+        /**
+         * @brief Get the Stop Time
+         *
+         * @return double
+         */
         double GetStopTime() const { return stop_time_; }
 
     protected:
+        //! Type of the challenge
         const unsigned int type_ = ariac_msgs::msg::Challenge::SENSOR_BLACKOUT;
         //! Duration of the challenge
         double duration_;
         //! List of sensors to disable
         std::vector<std::string> sensors_to_disable_;
-
+        //! Flag to check if the challenge has started
         bool started_ = false;
+        //! Flag to check if the challenge has been completed
         bool completed_ = false;
-
+        //! Start time of the challenge
         double start_time_;
+        //! Stop time of the challenge
         double stop_time_;
     };
 
@@ -441,14 +951,14 @@ namespace ariac_common
         /**
          * @brief Construct a new SensorBlackoutTemporal object
          *
-         * @param _duration Duration of the blackout in seconds
-         * @param _sensors_to_disable List of sensors to disable
-         * @param _trigger_time Time at which the challenge should be triggered
+         * @param duration Duration of the blackout in seconds
+         * @param sensors_to_disable List of sensors to disable
+         * @param trigger_time Time at which the challenge should be triggered
          */
-        SensorBlackoutTemporal(double _duration,
-                               const std::vector<std::string> &_sensors_to_disable,
-                               double _trigger_time) : SensorBlackout(_duration, _sensors_to_disable),
-                                                       trigger_time_(_trigger_time) {}
+        SensorBlackoutTemporal(double duration,
+                               const std::vector<std::string> &sensors_to_disable,
+                               double trigger_time) : SensorBlackout(duration, sensors_to_disable),
+                                                      trigger_time_(trigger_time) {}
 
         /**
          * @brief Get the time at which the challenge should be triggered
@@ -473,20 +983,30 @@ namespace ariac_common
         /**
          * @brief Construct a new SensorBlackoutKittingAction object
          *
-         * @param _duration Duration of the blackout
-         * @param _sensors_to_disable List of sensors to disable
-         * @param _part Part to trigger the challenge
-         * @param _agv AGV on which the part is placed
+         * @param duration Duration of the blackout
+         * @param sensors_to_disable List of sensors to disable
+         * @param part Part to trigger the challenge
+         * @param agv AGV on which the part is placed
          */
 
-        SensorBlackoutOnPartPlacement(double _duration,
-                                      const std::vector<std::string> &_sensors_to_disable,
-                                      std::shared_ptr<Part> _part,
-                                      unsigned int _agv) : SensorBlackout(_duration, _sensors_to_disable),
-                                                           part_(_part),
-                                                           agv_(_agv) {}
+        SensorBlackoutOnPartPlacement(double duration,
+                                      const std::vector<std::string> &sensors_to_disable,
+                                      std::shared_ptr<Part> part,
+                                      unsigned int agv) : SensorBlackout(duration, sensors_to_disable),
+                                                          part_(part),
+                                                          agv_(agv) {}
 
+        /**
+         * @brief Get the Part object
+         *
+         * @return std::shared_ptr<Part>
+         */
         std::shared_ptr<Part> GetPart() const { return part_; }
+        /**
+         * @brief Get the AGV on which the part is placed
+         *
+         * @return unsigned int
+         */
         unsigned int GetAgv() const { return agv_; }
 
     private:
@@ -508,16 +1028,21 @@ namespace ariac_common
         /**
          * @brief Construct a new SensorBlackoutKittingSubmission object
          *
-         * @param _duration Duration of the blackout
-         * @param _sensors_to_disable List of sensors to disable
-         * @param _trigger_order_id ID of a submitted order
+         * @param duration Duration of the blackout
+         * @param sensors_to_disable List of sensors to disable
+         * @param trigger_order_id ID of a submitted order
          */
 
-        SensorBlackoutOnSubmission(double _duration,
-                                   const std::vector<std::string> &_sensors_to_disable,
-                                   std::string _trigger_order_id) : SensorBlackout(_duration, _sensors_to_disable),
-                                                                    trigger_order_id_(_trigger_order_id) {}
+        SensorBlackoutOnSubmission(double duration,
+                                   const std::vector<std::string> &sensors_to_disable,
+                                   std::string trigger_order_id) : SensorBlackout(duration, sensors_to_disable),
+                                                                   trigger_order_id_(trigger_order_id) {}
 
+        /**
+         * @brief Get the ID of a submitted order
+         *
+         * @return std::string
+         */
         std::string GetTriggerOrderId() const { return trigger_order_id_; }
 
     private:
@@ -528,143 +1053,195 @@ namespace ariac_common
     class Quadrant
     {
     public:
-        Quadrant(int _quadrant_number,
-                 bool _is_correct_part_type,
-                 bool _is_correct_part_color,
-                 bool _is_faulty,
-                 bool _is_flipped,
-                 int _score) : quadrant_number_(_quadrant_number),
-                               is_correct_part_type_(_is_correct_part_type),
-                               is_correct_part_color_(_is_correct_part_color),
-                               is_faulty_(_is_faulty),
-                               is_flipped_(_is_flipped),
-                               score_(_score)
+        /**
+         * @brief Construct a new Quadrant object
+         *
+         * @param quadrant_number Quadrant number
+         * @param is_correct_part_type  True if the part type is correct
+         * @param is_correct_part_color True if the part color is correct
+         * @param is_faulty True if the part is faulty
+         * @param is_flipped True if the part is flipped
+         * @param score Score for the quadrant
+         */
+        Quadrant(int quadrant_number,
+                 bool is_correct_part_type,
+                 bool is_correct_part_color,
+                 bool is_faulty,
+                 bool is_flipped,
+                 int score) : quadrant_number_(quadrant_number),
+                              is_correct_part_type_(is_correct_part_type),
+                              is_correct_part_color_(is_correct_part_color),
+                              is_faulty_(is_faulty),
+                              is_flipped_(is_flipped),
+                              score_(score)
         {
         }
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const Quadrant &_obj)
+        /**
+         * @brief Get the Quadrant Number object
+         *
+         * @return int Quadrant number
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const Quadrant &obj)
         {
             int quadrant_num = 0;
-            if (_obj.quadrant_number_ == 1)
+            if (obj.quadrant_number_ == 1)
                 quadrant_num = 1;
-            else if (_obj.quadrant_number_ == 2)
+            else if (obj.quadrant_number_ == 2)
                 quadrant_num = 2;
-            else if (_obj.quadrant_number_ == 3)
+            else if (obj.quadrant_number_ == 3)
                 quadrant_num = 3;
-            else if (_obj.quadrant_number_ == 4)
+            else if (obj.quadrant_number_ == 4)
                 quadrant_num = 4;
-            _out << "-----------" << std::endl;
-            _out << "   Quadrant" << quadrant_num << " score: " << _obj.score_ << std::endl;
-            _out << "   -----------" << std::endl;
-            _out << "   Correct part type: " << std::boolalpha << _obj.is_correct_part_type_ << std::endl;
-            _out << "   Correct part color: " << std::boolalpha << _obj.is_correct_part_color_ << std::endl;
-            _out << "   Faulty Part: " << std::boolalpha << _obj.is_faulty_ << std::endl;
-            _out << "   Flipped Part: " << std::boolalpha << _obj.is_flipped_ << std::endl;
+            out << "-----------" << std::endl;
+            out << "   Quadrant" << quadrant_num << " score: " << obj.score_ << std::endl;
+            out << "   -----------" << std::endl;
+            out << "   Correct part type: " << std::boolalpha << obj.is_correct_part_type_ << std::endl;
+            out << "   Correct part color: " << std::boolalpha << obj.is_correct_part_color_ << std::endl;
+            out << "   Faulty Part: " << std::boolalpha << obj.is_faulty_ << std::endl;
+            out << "   Flipped Part: " << std::boolalpha << obj.is_flipped_ << std::endl;
 
-            return _out;
+            return out;
         }
 
     protected:
+        //! Quadrant number
         int quadrant_number_;
+        //! True if the part type is correct
         bool is_correct_part_type_;
+        //! True if the part color is correct
         bool is_correct_part_color_;
+        //! True if the part is faulty
         bool is_faulty_;
+        //! True if the part is flipped
         bool is_flipped_;
+        //! Score for the quadrant
         int score_;
     };
 
     //==============================================================================
+    /**
+     * @brief Class to represent the score for a kitting order
+     *
+     */
     class KittingScore
     {
     public:
-        KittingScore(std::string _order_id,
-                     int _kit_score,
-                     int _tray_score,
-                     std::shared_ptr<Quadrant> _quadrant1,
-                     std::shared_ptr<Quadrant> _quadrant2,
-                     std::shared_ptr<Quadrant> _quadrant3,
-                     std::shared_ptr<Quadrant> _quadrant4,
-                     int _bonus,
-                     int _penalty) : order_id_(_order_id),
-                                     kit_score_(_kit_score),
-                                     tray_score_(_tray_score),
-                                     quadrant1_(_quadrant1),
-                                     quadrant2_(_quadrant2),
-                                     quadrant3_(_quadrant3),
-                                     quadrant4_(_quadrant4),
-                                     bonus_(_bonus),
-                                     penalty_(_penalty) {}
+        /**
+         * @brief Construct a new Kitting Score object
+         *
+         * @param order_id  ID of the order
+         * @param kit_score  Score for the kit
+         * @param tray_score  Score for the tray
+         * @param quadrant1 Quadrant 1 object
+         * @param quadrant2  Quadrant 2 object
+         * @param quadrant3  Quadrant 3 object
+         * @param quadrant4  Quadrant 4 object
+         * @param bonus  Bonus score
+         * @param penalty  Penalty score
+         */
+        KittingScore(std::string order_id,
+                     int kit_score,
+                     int tray_score,
+                     std::shared_ptr<Quadrant> quadrant1,
+                     std::shared_ptr<Quadrant> quadrant2,
+                     std::shared_ptr<Quadrant> quadrant3,
+                     std::shared_ptr<Quadrant> quadrant4,
+                     int bonus,
+                     int penalty) : order_id_(order_id),
+                                    kit_score_(kit_score),
+                                    tray_score_(tray_score),
+                                    quadrant1_(quadrant1),
+                                    quadrant2_(quadrant2),
+                                    quadrant3_(quadrant3),
+                                    quadrant4_(quadrant4),
+                                    bonus_(bonus),
+                                    penalty_(penalty) {}
 
         /**
          * @brief Overload the << operator to print the score
          *
-         * @param _out  Output stream
-         * @param _obj  KittingScore object
+         * @param out  Output stream
+         * @param obj  KittingScore object
          * @return std::ostream& Output stream
          */
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const KittingScore &_obj)
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const KittingScore &obj)
         {
-            _out << "\n================" << std::endl;
-            _out << "Score for Order " << _obj.order_id_ << ": " << _obj.kit_score_ << std::endl;
-            _out << "================" << std::endl;
+            out << "\n================" << std::endl;
+            out << "Score for Order " << obj.order_id_ << ": " << obj.kit_score_ << std::endl;
+            out << "================" << std::endl;
 
-            auto quad1 = _obj.quadrant1_;
-            auto quad2 = _obj.quadrant2_;
-            auto quad3 = _obj.quadrant3_;
-            auto quad4 = _obj.quadrant4_;
+            auto quad1 = obj.quadrant1_;
+            auto quad2 = obj.quadrant2_;
+            auto quad3 = obj.quadrant3_;
+            auto quad4 = obj.quadrant4_;
 
-            _out << "   Correct tray score: " << _obj.tray_score_ << std::endl;
-            if (_obj.quadrant1_)
-                _out << "   " << *_obj.quadrant1_ << std::endl;
+            out << "   Correct tray score: " << obj.tray_score_ << std::endl;
+            if (obj.quadrant1_)
+                out << "   " << *obj.quadrant1_ << std::endl;
             else
             {
-                _out << "   -----------" << std::endl;
-                _out << "   Quadrant 1: Not used" << std::endl;
+                out << "   -----------" << std::endl;
+                out << "   Quadrant 1: Not used" << std::endl;
             }
 
-            if (_obj.quadrant2_)
-                _out << "   " << *_obj.quadrant2_ << std::endl;
+            if (obj.quadrant2_)
+                out << "   " << *obj.quadrant2_ << std::endl;
             else
             {
-                _out << "   -----------" << std::endl;
-                _out << "   Quadrant 2: Not used" << std::endl;
+                out << "   -----------" << std::endl;
+                out << "   Quadrant 2: Not used" << std::endl;
             }
-            if (_obj.quadrant3_)
-                _out << "   " << *_obj.quadrant3_ << std::endl;
-
-            else
-            {
-                _out << "   -----------" << std::endl;
-                _out << "   Quadrant 3: Not used" << std::endl;
-            }
-            if (_obj.quadrant4_)
-                _out << "   " << *_obj.quadrant4_ << std::endl;
+            if (obj.quadrant3_)
+                out << "   " << *obj.quadrant3_ << std::endl;
 
             else
             {
-                _out << "   -----------" << std::endl;
-                _out << "   Quadrant 4: Not used" << std::endl;
+                out << "   -----------" << std::endl;
+                out << "   Quadrant 3: Not used" << std::endl;
             }
-            _out << "   -----------" << std::endl;
-            _out << "   Bonus: " << _obj.bonus_ << std::endl;
-            _out << "   Extra Parts Penalty: " << _obj.penalty_ << std::endl;
+            if (obj.quadrant4_)
+                out << "   " << *obj.quadrant4_ << std::endl;
 
-            return _out;
+            else
+            {
+                out << "   -----------" << std::endl;
+                out << "   Quadrant 4: Not used" << std::endl;
+            }
+            out << "   -----------" << std::endl;
+            out << "   Bonus: " << obj.bonus_ << std::endl;
+            out << "   Extra Parts Penalty: " << obj.penalty_ << std::endl;
+
+            return out;
         }
 
+        /**
+         * @brief Get the Order Id object
+         *
+         * @return std::string Order ID
+         */
         int GetKitScore() const { return kit_score_; }
 
     protected:
+        //! Order ID
         std::string order_id_;
+        //! Kit score
         int kit_score_;
+        //! Tray score
         int tray_score_;
+        //! Quadrant 1
         std::shared_ptr<Quadrant> quadrant1_ = nullptr;
+        //! Quadrant 2
         std::shared_ptr<Quadrant> quadrant2_ = nullptr;
+        //! Quadrant 3
         std::shared_ptr<Quadrant> quadrant3_ = nullptr;
+        //! Quadrant 4
         std::shared_ptr<Quadrant> quadrant4_ = nullptr;
+        //! Bonus score
         int bonus_;
+        //! Penalty score
         int penalty_;
 
     }; // class KittingScore
@@ -676,42 +1253,49 @@ namespace ariac_common
         /**
          * @brief Construct a new Order object
          *
-         * @param _order_id Unique id of the order
-         * @param _order_type  Type of the order.
-         * @param _high_priority Priority of the order (true or false)
-         * @param _trial_time_limit  Time limit for the trial
+         * @param order_id Unique id of the order
+         * @param order_type  Type of the order.
+         * @param high_priority Priority of the order (true or false)
+         * @param trial_time_limit  Time limit for the trial
          */
-        Order(std::string _id,
-              unsigned int _type,
-              bool _priority,
-              double _trial_time_limit) : announced_(false),
-                                          submitted_(false),
-                                          id_(_id),
-                                          type_(_type),
-                                          priority_(_priority),
-                                          trial_time_limit_(_trial_time_limit) {}
+        Order(std::string id,
+              unsigned int type,
+              bool priority,
+              double trial_time_limit) : announced_(false),
+                                         submitted_(false),
+                                         id_(id),
+                                         type_(type),
+                                         priority_(priority),
+                                         trial_time_limit_(trial_time_limit) {}
         ~Order() = default;
 
-        friend std::ostream &operator<<(std::ostream &_out,
-                                        const Order &_obj)
+        /**
+         * @brief Overload the << operator to print the order
+         *
+         * @param out  Output stream
+         * @param obj  Order object
+         * @return std::ostream& Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const Order &obj)
         {
-            _out << "=================" << std::endl;
-            _out << "Announcing Order " << _obj.id_ << std::endl;
-            _out << "=================" << std::endl;
-            if (_obj.type_ == ariac_msgs::msg::Order::KITTING)
-                _out << "Type: Kitting" << std::endl;
-            else if (_obj.type_ == ariac_msgs::msg::Order::ASSEMBLY)
-                _out << "Type: Assembly" << std::endl;
-            else if (_obj.type_ == ariac_msgs::msg::Order::COMBINED)
-                _out << "Type: Combined" << std::endl;
-            _out << "Priority: " << _obj.priority_ << std::endl;
-            if (_obj.type_ == ariac_msgs::msg::Order::KITTING)
-                _out << *_obj.kitting_task_;
-            else if (_obj.type_ == ariac_msgs::msg::Order::ASSEMBLY)
-                _out << *_obj.assembly_task_;
-            else if (_obj.type_ == ariac_msgs::msg::Order::COMBINED)
-                _out << *_obj.combined_task_;
-            return _out;
+            out << "=================" << std::endl;
+            out << "Announcing Order " << obj.id_ << std::endl;
+            out << "=================" << std::endl;
+            if (obj.type_ == ariac_msgs::msg::Order::KITTING)
+                out << "Type: Kitting" << std::endl;
+            else if (obj.type_ == ariac_msgs::msg::Order::ASSEMBLY)
+                out << "Type: Assembly" << std::endl;
+            else if (obj.type_ == ariac_msgs::msg::Order::COMBINED)
+                out << "Type: Combined" << std::endl;
+            out << "Priority: " << obj.priority_ << std::endl;
+            if (obj.type_ == ariac_msgs::msg::Order::KITTING)
+                out << *obj.kitting_task_;
+            else if (obj.type_ == ariac_msgs::msg::Order::ASSEMBLY)
+                out << *obj.assembly_task_;
+            else if (obj.type_ == ariac_msgs::msg::Order::COMBINED)
+                out << *obj.combined_task_;
+            return out;
         }
 
         /**
@@ -818,6 +1402,18 @@ namespace ariac_common
         double GetSubmittedTime() const { return submitted_time_; }
 
         /**
+         * @brief Check whether or not the service has been called for this order
+         * @return true  Service has been called
+         * @return false  Service has not been called
+         */
+        bool WasPreAssemblyServiceCalled() { return pre_assembly_service_called_; }
+
+        /**
+         * @brief Set this order as called
+         */
+        void SetPreAssemblyServiceCalled() { pre_assembly_service_called_ = true; }
+
+        /**
          * @brief Set the KittingScore object for the order
          *
          * @param _kitting_score Pointer to the KittingScore object for the order
@@ -843,6 +1439,11 @@ namespace ariac_common
          * @brief Whether or not this order has already been submitted
          */
         bool submitted_;
+
+        /**
+         * @brief Whether or not the pre assembly pose service was called
+         */
+        bool pre_assembly_service_called_ = false;
 
         /**
          * @brief id of the order
@@ -910,20 +1511,20 @@ namespace ariac_common
         /**
          * @brief Construct a new OrderTemporal object
          *
-         * @param _id Unique id of the order
-         * @param _type Type of the order
-         * @param _priority Priority of the order (true or false)
-         * @param _trial_time_limit Time limit for the trial
-         * @param _announcement_time Time at which the order should be announced
+         * @param id Unique id of the order
+         * @param type Type of the order
+         * @param priority Priority of the order (true or false)
+         * @param trial_time_limit Time limit for the trial
+         * @param announcement_time Time at which the order should be announced
          */
         ~OrderTemporal() = default;
 
-        OrderTemporal(std::string _id,
-                      unsigned int _type,
-                      bool _priority,
-                      double _trial_time_limit,
-                      double _announcement_time) : Order(_id, _type, _priority, _trial_time_limit),
-                                                   announcement_time_(_announcement_time) {}
+        OrderTemporal(std::string id,
+                      unsigned int type,
+                      bool priority,
+                      double trial_time_limit,
+                      double announcement_time) : Order(id, type, priority, trial_time_limit),
+                                                  announcement_time_(announcement_time) {}
 
         /**
          * @brief Get the announcement time for the order
@@ -950,25 +1551,35 @@ namespace ariac_common
         /**
          * @brief Construct a new OrderDuringKitting object
          *
-         * @param _id Unique id of the order
-         * @param _type Type of the order
-         * @param _priority Priority of the order (true or false)
-         * @param _trial_time_limit Time limit for the trial
-         * @param _agv Announcement: AGV on which the part is placed
+         * @param id Unique id of the order
+         * @param type Type of the order
+         * @param priority Priority of the order (true or false)
+         * @param trial_time_limit Time limit for the trial
+         * @param agv Announcement: AGV on which the part is placed
          */
-        OrderOnPartPlacement(std::string _id,
-                             unsigned int _type,
-                             bool _priority,
-                             double _trial_time_limit,
-                             unsigned int _agv,
-                             std::shared_ptr<Part> _part) : Order(_id, _type, _priority, _trial_time_limit),
-                                                            agv_(_agv), part_(_part) {}
+        OrderOnPartPlacement(std::string id,
+                             unsigned int type,
+                             bool priority,
+                             double trial_time_limit,
+                             unsigned int agv,
+                             std::shared_ptr<Part> part) : Order(id, type, priority, trial_time_limit),
+                                                           agv_(agv), part_(part) {}
 
+        /**
+         * @brief Get the Agv
+         *
+         * @return unsigned int
+         */
         unsigned int GetAgv() const
         {
             return agv_;
         }
 
+        /**
+         * @brief Get the Part
+         *
+         * @return std::shared_ptr<Part>
+         */
         std::shared_ptr<Part> GetPart() const
         {
             return part_;
@@ -992,19 +1603,24 @@ namespace ariac_common
         /**
          * @brief Construct a new OrderAfterKitting object
          *
-         * @param _id Unique id of the order
-         * @param _type Type of the order
-         * @param _priority Priority of the order (true or false)
-         * @param _trial_time_limit Time limit for the trial
-         * @param _order_id Id of the order submitted by the competitor
+         * @param id Unique id of the order
+         * @param type Type of the order
+         * @param priority Priority of the order (true or false)
+         * @param trial_time_limit Time limit for the trial
+         * @param order_id Id of the order submitted by the competitor
          */
-        OrderOnSubmission(std::string _id,
-                          unsigned int _type,
-                          bool _priority,
-                          double _trial_time_limit,
-                          std::string _order_id) : Order(_id, _type, _priority, _trial_time_limit),
-                                                   order_id_(_order_id) {}
+        OrderOnSubmission(std::string id,
+                          unsigned int type,
+                          bool priority,
+                          double trial_time_limit,
+                          std::string order_id) : Order(id, type, priority, trial_time_limit),
+                                                  order_id_(order_id) {}
 
+        /**
+         * @brief Get the Order Id object
+         *
+         * @return std::string
+         */
         std::string GetOrderId() const
         {
             return order_id_;
@@ -1026,12 +1642,12 @@ namespace ariac_common
         /**
          * @brief Construct a new RobotMalfunction object
          *
-         * @param _duration Duration of the challenge
-         * @param _robots_to_disable  List of robots to disable
+         * @param duration Duration of the challenge
+         * @param robots_to_disable  List of robots to disable
          */
-        RobotMalfunction(double _duration,
-                         const std::vector<std::string> &_robots_to_disable) : duration_(_duration),
-                                                                               robots_to_disable_(_robots_to_disable) {}
+        RobotMalfunction(double duration,
+                         const std::vector<std::string> &robots_to_disable) : duration_(duration),
+                                                                              robots_to_disable_(robots_to_disable) {}
 
         //===================
         //--- Getters ---
@@ -1136,14 +1752,14 @@ namespace ariac_common
         /**
          * @brief Construct a new RobotMalfunctionTemporal object
          *
-         * @param _duration Duration of the challenge
-         * @param _robots_to_disable  List of robots to disable
-         * @param _trigger_time Competition time at which the challenge is triggered
+         * @param duration Duration of the challenge
+         * @param robots_to_disable  List of robots to disable
+         * @param trigger_time Competition time at which the challenge is triggered
          */
-        RobotMalfunctionTemporal(double _duration,
-                                 const std::vector<std::string> &_robots_to_disable,
-                                 double _trigger_time) : RobotMalfunction(_duration, _robots_to_disable),
-                                                         trigger_time_(_trigger_time) {}
+        RobotMalfunctionTemporal(double duration,
+                                 const std::vector<std::string> &robots_to_disable,
+                                 double trigger_time) : RobotMalfunction(duration, robots_to_disable),
+                                                        trigger_time_(trigger_time) {}
         /**
          * @brief Get the time at which the challenge should be triggered
          * @return double Time at which the challenge should be triggered
@@ -1173,18 +1789,18 @@ namespace ariac_common
         /**
          * @brief Construct a new RobotMalfunctionOnPartPlacement object
          *
-         * @param _duration Duration of the blackout
-         * @param _robots_to_disable  List of robots to disable
-         * @param _part Part to trigger the challenge
-         * @param _agv AGV on which the part is placed
+         * @param duration Duration of the blackout
+         * @param robots_to_disable  List of robots to disable
+         * @param part Part to trigger the challenge
+         * @param agv AGV on which the part is placed
          */
 
-        RobotMalfunctionOnPartPlacement(double _duration,
-                                        const std::vector<std::string> &_robots_to_disable,
-                                        std::shared_ptr<Part> _part,
-                                        unsigned int _agv) : RobotMalfunction(_duration, _robots_to_disable),
-                                                             part_(_part),
-                                                             agv_(_agv) {}
+        RobotMalfunctionOnPartPlacement(double duration,
+                                        const std::vector<std::string> &robots_to_disable,
+                                        std::shared_ptr<Part> part,
+                                        unsigned int agv) : RobotMalfunction(duration, robots_to_disable),
+                                                            part_(part),
+                                                            agv_(agv) {}
 
         std::shared_ptr<Part> GetPart() const { return part_; }
         unsigned int GetAgv() const { return agv_; }
@@ -1208,16 +1824,21 @@ namespace ariac_common
         /**
          * @brief Construct a new RobotMalfunctionOnSubmission object
          *
-         * @param _duration Duration of the challenge
-         * @param _robots_to_disable  List of robots to disable
-         * @param _trigger_order_id ID of the submitted order to trigger the challenge
+         * @param duration Duration of the challenge
+         * @param robots_to_disable  List of robots to disable
+         * @param trigger_order_id ID of the submitted order to trigger the challenge
          */
 
-        RobotMalfunctionOnSubmission(double _duration,
-                                     const std::vector<std::string> &_sensors_to_disable,
-                                     std::string _trigger_order_id) : RobotMalfunction(_duration, _sensors_to_disable),
-                                                                      trigger_order_id_(_trigger_order_id) {}
+        RobotMalfunctionOnSubmission(double duration,
+                                     const std::vector<std::string> &sensors_to_disable,
+                                     std::string trigger_order_id) : RobotMalfunction(duration, sensors_to_disable),
+                                                                     trigger_order_id_(trigger_order_id) {}
 
+        /**
+         * @brief Get the Trigger Order Id object
+         *
+         * @return std::string
+         */
         std::string GetTriggerOrderId() const { return trigger_order_id_; }
 
     private:
@@ -1226,7 +1847,6 @@ namespace ariac_common
     }; // class RobotMalfunctionOnSubmission
 
     //==============================================================================
-
     /**
      * @brief Class to represent the fields for the faulty part challenge
      */
@@ -1251,9 +1871,25 @@ namespace ariac_common
                                  {4, false}};
         }
 
+        /**
+         * @brief Get the ID of the order
+         * @return std::string ID of the order
+         */
         std::string GetOrderId() const { return order_id_; }
+        /**
+         * @brief Get whether a quadrant is faulty
+         * @return bool True if the quadrant is faulty
+         */
         bool IsQuadrantFaulty(int q) { return faulty_quadrants_[q]; }
+        /**
+         * @brief Get whether a quadrant has been checked
+         * @return bool True if the quadrant has been checked
+         */
         bool WasQuadrantChecked(int q) { return quadrant_checked_[q]; }
+        /**
+         * @brief Set whether a quadrant has been checked
+         * @param q Quadrant to set
+         */
         void SetQuadrantChecked(int q) { quadrant_checked_[q] = true; }
 
     protected:
@@ -1263,35 +1899,77 @@ namespace ariac_common
         std::map<int, bool> quadrant_checked_;
     };
 
+    //==============================================================================
     class KitTrayPart
     {
     public:
-        KitTrayPart(const Part &_part,
-                    std::string _model_name,
-                    geometry_msgs::msg::Pose _pose_on_tray) : part_(_part),
-                                                              model_name_(_model_name),
-                                                              pose_on_tray_(_pose_on_tray)
+        KitTrayPart(const Part &part,
+                    std::string model_name,
+                    geometry_msgs::msg::Pose pose_on_tray) : part_(part),
+                                                             model_name_(model_name),
+                                                             pose_on_tray_(pose_on_tray)
         {
             // Determine which quadrant based on pose
             double x = pose_on_tray_.position.x;
             double y = pose_on_tray_.position.y;
             if (x < 0.0 && y >= 0.0)
-                quadrant_ = 1;
-            else if (x >= 0.0 && y >= 0.0)
-                quadrant_ = 2;
-            else if (x < 0.0 && y < 0.0)
-                quadrant_ = 3;
-            else if (x >= 0.0 && y < 0.0)
                 quadrant_ = 4;
+            else if (x >= 0.0 && y >= 0.0)
+                quadrant_ = 3;
+            else if (x < 0.0 && y < 0.0)
+                quadrant_ = 2;
+            else if (x >= 0.0 && y < 0.0)
+                quadrant_ = 1;
         }
 
+        /**
+         * @brief Get the Quadrant
+         *
+         * @return unsigned int  Quadrant number
+         */
         unsigned int GetQuadrant() const { return quadrant_; }
+        /**
+         * @brief Get the Part
+         *
+         * @return Part Part object
+         */
         Part GetPart() const { return part_; }
+        /**
+         * @brief Get the Model Name
+         *
+         * @return std::string Model name
+         */
         std::string GetModelName() const { return model_name_; }
 
+        /**
+         * @brief Whether the part is of the correct type
+         *
+         * @param type  Type to check
+         * @return true  If the part is of the correct type
+         * @return false  If the part is not of the correct type
+         */
         bool isCorrectType(unsigned int type) { return type == part_.GetType(); }
+        /**
+         * @brief Whether the part is of the correct color
+         *
+         * @param color  Color to check
+         * @return true  If the part is of the correct color
+         * @return false  If the part is not of the correct color
+         */
         bool isCorrectColor(unsigned int color) { return color == part_.GetColor(); }
+        /**
+         * @brief Whether the part is faulty
+         *
+         * @return true  If the part is faulty
+         * @return false  If the part is not faulty
+         */
         bool isFaulty() { return model_name_.find("faulty") != std::string::npos; }
+        /**
+         * @brief Whether the part is flipped
+         *
+         * @return true  If the part is flipped
+         * @return false  If the part is not flipped
+         */
         bool isFlipped()
         {
             KDL::Frame part_on_tray;
@@ -1313,22 +1991,51 @@ namespace ariac_common
         }
 
     private:
+        //! The quadrant the part is in
         unsigned int quadrant_;
+        //! The part object
         Part part_;
+        //! The model name
         std::string model_name_;
+        //! The pose of the part on the tray
         geometry_msgs::msg::Pose pose_on_tray_;
     };
 
+    //==============================================================================
+    /**
+     * @brief Class to represent a kitting shipment
+     */
     class KittingShipment
     {
     public:
-        KittingShipment(unsigned int _tray_id,
-                        const std::vector<KitTrayPart> &_tray_parts) : tray_id_(_tray_id),
-                                                                       tray_parts_(_tray_parts) {}
+        /**
+         * @brief Construct a new Kitting Shipment object
+         *
+         * @param tray_id  ID of the tray
+         * @param tray_parts  Vector of KitTrayPart objects
+         */
+        KittingShipment(unsigned int tray_id,
+                        const std::vector<KitTrayPart> &tray_parts) : tray_id_(tray_id),
+                                                                      tray_parts_(tray_parts) {}
 
+        /**
+         * @brief Get the Tray Id
+         *
+         * @return unsigned int  Tray ID
+         */
         unsigned int GetTrayId() const { return tray_id_; }
+        /**
+         * @brief Get the Tray Parts
+         *
+         * @return const std::vector<KitTrayPart>&  Vector of KitTrayPart objects
+         */
         const std::vector<KitTrayPart> &GetTrayParts() const { return tray_parts_; }
 
+        /**
+         * @brief Helper function to print the contents of the shipment
+         *
+         * @return std::string  String representation of the shipment
+         */
         std::string DebugString()
         {
             std::string s = "Kit Tray ID: " + std::to_string(tray_id_);
@@ -1344,8 +2051,67 @@ namespace ariac_common
         }
 
     private:
+        //! The tray ID
+
         unsigned int tray_id_;
+        //! The parts on the tray
+
         std::vector<KitTrayPart> tray_parts_;
+    }; // class KittingShipment
+
+    //==============================================================================
+    /**
+     * @brief Class to represent an assembly shipment
+     */
+    class AssemblyShipment
+    {
+    public:
+        /**
+         * @brief Construct a new Assembly Shipment object
+         *
+         * @param station  ID of the tray
+         * @param assembly_parts  Vector of KitTrayPart objects
+         */
+        AssemblyShipment(unsigned int station,
+                         const std::vector<AssemblyPart> &assembly_parts) : station_(station),
+                                                                            assembly_parts_(assembly_parts) {}
+
+        /**
+         * @brief Get the station
+         *
+         * @return unsigned int  Station
+         */
+        unsigned int GetStation() const { return station_; }
+        /**
+         * @brief Get the assembly parts
+         *
+         * @return const std::vector<AssemblyPart>&  Vector of AssemblyPart objects
+         */
+        const std::vector<AssemblyPart> &GetAssemblyParts() const { return assembly_parts_; }
+
+        /**
+         * @brief Helper function to print the contents of the shipment
+         *
+         * @return std::string  String representation of the shipment
+         */
+        std::string DebugString()
+        {
+            std::string s = "Station: " + std::to_string(station_);
+
+            for (auto part : assembly_parts_)
+            {
+                s += "\n\tPart: (type: " + ConvertPartTypeToString(part.GetPart().GetType()) +
+                     ", color: " + ConvertPartColorToString(part.GetPart().GetColor()) + ")";
+            }
+
+            return s;
+        }
+
+    private:
+        //! Assembly station
+        unsigned int station_;
+        //! The parts in the insert
+        std::vector<AssemblyPart> assembly_parts_;
     };
 
 } // namespace ariac_common

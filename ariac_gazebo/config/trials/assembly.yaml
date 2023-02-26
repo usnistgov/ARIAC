@@ -1,0 +1,67 @@
+# Trial Name: assembly.yaml
+# ARIAC2023
+
+# ENVIRONMENT SETUP
+
+time_limit: -1 # options: -1 (no time limit) or number of seconds (max 500)
+
+kitting_trays: # Which kitting trays will be spawn
+  tray_ids: [1] 
+  slots: [1]
+
+parts:
+  agvs:
+    agv1:
+      tray_id: 0
+      parts:
+        - type: 'pump'
+          color: 'red'
+          quadrant: 1
+          rotation: 0
+        - type: 'regulator'
+          color: 'red'
+          quadrant: 2
+          rotation: 0
+        - type: 'sensor'
+          color: 'red'
+          quadrant: 3
+          rotation: 0
+        - type: 'battery'
+          color: 'red'
+          quadrant: 4
+          rotation: 0
+
+orders:
+  - id: '2IZJP127' #2IZJP127
+    type: 'assembly'
+    announcement:
+      time_condition: 0
+    priority: false
+    assembly_task:
+      agv_number: [1]
+      station: 'as1'
+      products:
+        - type: 'pump'
+          color: 'red'
+          assembled_pose: 
+            xyz: [0.14, 0.0, 0.02]
+            rpy: [0, 0, '-pi/2']
+          assembly_direction: [0, 0, -1]
+        # - type: 'regulator'
+        #   color: 'red'
+        #   assembled_pose: 
+        #     xyz: [0.175, -0.223, 0.215]
+        #     rpy: ['pi/2', 0, '-pi/2']
+        #   assembly_direction: [0, 0, -1]
+        # - type: 'sensor'
+        #   color: 'red'
+        #   assembled_pose: 
+        #     xyz: [-0.1, 0.395, 0.045]
+        #     rpy: [0, 0, '-pi/2']
+        #   assembly_direction: [0, -1, 0]
+        # - type: 'battery'
+        #   color: 'red'
+        #   assembled_pose: 
+        #     xyz: [-0.15, 0.033, 0.04]
+        #     rpy: [0, 0, 'pi/2']
+        #   assembly_direction: [0, 1, 0]

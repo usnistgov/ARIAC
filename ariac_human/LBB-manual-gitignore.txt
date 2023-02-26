@@ -1,0 +1,8 @@
+git update-index --skip-worktree ariac_gazebo/config/trials/human_test.yaml
+git update-index --skip-worktree ariac_human/logging.properties
+git update-index --skip-worktree ariac_human/ariac_human/human_control.py
+git update-index --skip-worktree ariac_human/agent/myscript.sh
+git update-index --skip-worktree ariac_human/LBB-manual-gitignore.txt
+
+git update-index --no-skip-worktree <file_path>
+

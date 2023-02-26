@@ -1,4 +1,5 @@
 import os
+import yaml
 import rclpy.logging
 from launch import LaunchDescription
 from launch.actions import (
@@ -10,13 +11,15 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+from launch.conditions import IfCondition
 
 from ament_index_python.packages import get_package_share_directory, PackageNotFoundError
 
-def launch_setup(context, *args, **kwargs):    
+
+def launch_setup(context, *args, **kwargs):
     # Set the path to this package.
     pkg_share = FindPackageShare(package='ariac_gazebo').find('ariac_gazebo')
-    
+
     # Set the path to the world file
     world_file_name = 'ariac.world'
     world_path = os.path.join(pkg_share, 'worlds', world_file_name)
@@ -25,7 +28,7 @@ def launch_setup(context, *args, **kwargs):
         [
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
-            PathJoinSubstitution([FindPackageShare("ariac_description"), "urdf/ariac_robots", "ariac_robots.urdf.xacro"]), 
+            PathJoinSubstitution([FindPackageShare("ariac_description"), "urdf/ariac_robots", "ariac_robots.urdf.xacro"]),
             " "
         ]
     )
@@ -34,7 +37,8 @@ def launch_setup(context, *args, **kwargs):
     trial_config_path = os.path.join(pkg_share, 'config', 'trials', trial_name + ".yaml")
 
     if not os.path.exists(trial_config_path):
-        rclpy.logging.get_logger('Launch File').fatal(f"Trial configuration '{trial_name}' not found in {pkg_share}/config/trials/")
+        rclpy.logging.get_logger('Launch File').fatal(
+            f"Trial configuration '{trial_name}' not found in {pkg_share}/config/trials/")
         exit()
 
     try:
@@ -42,13 +46,13 @@ def launch_setup(context, *args, **kwargs):
     except PackageNotFoundError:
         rclpy.logging.get_logger('Launch File').fatal("Competitor package not found")
         exit()
-        
-    
+
     sensor_config = LaunchConfiguration("sensor_config").perform(context)
     user_config_path = os.path.join(competitor_pkg_share, 'config', sensor_config + ".yaml")
 
     if not os.path.exists(user_config_path):
-        rclpy.logging.get_logger('Launch File').fatal(f"Sensor configuration '{sensor_config}.yaml' not found in {competitor_pkg_share}/config/")
+        rclpy.logging.get_logger('Launch File').fatal(
+            f"Sensor configuration '{sensor_config}.yaml' not found in {competitor_pkg_share}/config/")
         exit()
 
     # Gazebo node
@@ -58,7 +62,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         launch_arguments={
             'world': world_path,
-            }.items()
+        }.items()
     )
 
     # Sensor TF
@@ -98,12 +102,12 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # Robot State Publisher
-    robbot_state_publisher = Node(
+    robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="screen",
         parameters=[
-            {'robot_description':robot_description_content},
+            {'robot_description': robot_description_content},
             {"use_sim_time": True},
         ],
     )
@@ -140,14 +144,48 @@ def launch_setup(context, *args, **kwargs):
             )
         )
 
+    # Human
+    with open(trial_config_path, "r") as stream:
+        try:
+            config = yaml.safe_load(stream)
+        except yaml.YAMLError:
+            print("Unable to read configuration file")
+            config = None
+
+    human_behavior = ""
+    trial_has_human_challenge = 'false'
+    if config is not None:
+        try:
+            challenges = config["challenges"]
+            if not challenges:
+                pass
+
+            for challenge in challenges:
+                for key, value in challenge.items():
+                    if key == 'human':
+                        human_behavior = value['behavior']
+                        trial_has_human_challenge = 'true'
+        except KeyError:
+            pass
+
+    human = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [FindPackageShare("ariac_human"), "/launch", "/human.launch.py"]
+        ),
+        launch_arguments={
+            'human_behavior': human_behavior,
+        }.items(),
+        condition=IfCondition(trial_has_human_challenge)
+    )    
     nodes_to_start = [
         gazebo,
         sensor_tf_broadcaster,
         object_tf_broadcaster,
         environment_startup,
         robot_controller_switcher,
-        robbot_state_publisher,
+        robot_state_publisher,
         *controller_spawner_nodes,
+        human
     ]
 
     return nodes_to_start
@@ -161,8 +199,9 @@ def generate_launch_description():
     )
 
     declared_arguments.append(
-        DeclareLaunchArgument("competitor_pkg", default_value="test_competitor", description="name of competitor package")
-    )
+        DeclareLaunchArgument(
+            "competitor_pkg", default_value="test_competitor",
+            description="name of competitor package"))
 
     declared_arguments.append(
         DeclareLaunchArgument("sensor_config", default_value="sensors", description="name of user configuration file")

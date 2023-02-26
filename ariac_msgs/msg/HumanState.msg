@@ -1,0 +1,4 @@
+geometry_msgs/Point human_position
+geometry_msgs/Point robot_position
+geometry_msgs/Vector3 human_velocity
+geometry_msgs/Vector3 robot_velocity

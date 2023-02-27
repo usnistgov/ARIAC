@@ -229,10 +229,25 @@ Combined Task Score
 
 
 
+Completion Score
+^^^^^^^^^^^^^^^^^^^
+The final completion score :math:`CompletionScore` combines the kitting, assembly, and combined task scores present in that trial.
+
+
+.. admonition:: Completion Score
+  :class: caution
+  :name: completion-score
+
+   .. math::
+
+        CompletionScore = \sum_{i=0}^{n_k}{S_{k_i}} + \sum_{j=0}^{n_a}{S_{a_j}} + \sum_{k=0}^{n_c}{S_{c_k}}
+
+
+
 Trial Score
 -----------------------
 
-The trial score :math:`TrialScore` combines the completion scores present in that trial.
+The trial score :math:`TrialScore` combines the cost factor, efficiency factors and completion scores into a single score for ranking the teams.
 
 
 .. admonition:: Trial Score
@@ -241,4 +256,4 @@ The trial score :math:`TrialScore` combines the completion scores present in tha
 
    .. math::
 
-        TrialScore = \sum_{i=0}^{n_k}{S_{k_i}} + \sum_{j=0}^{n_a}{S_{a_j}} + \sum_{k=0}^{n_c}{S_{c_k}}
+        TrialScore = CF \times \sum_{i=0}^{n}{(h_i \times EF_i \times CS_i)}

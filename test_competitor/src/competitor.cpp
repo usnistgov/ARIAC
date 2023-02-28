@@ -10,9 +10,7 @@ int main(int argc, char *argv[])
 
   rclcpp::executors::MultiThreadedExecutor executor;
   executor.add_node(test_competitor);
-  std::thread([&executor]()
-              { executor.spin(); })
-      .detach();
+  std::thread([&executor]() { executor.spin(); }).detach();
 
   // Start Competition
   test_competitor->StartCompetition();

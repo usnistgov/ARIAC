@@ -259,9 +259,9 @@ namespace ariac_plugins
          */
         void StoreStationParts(int station, gazebo::msgs::LogicalCameraImage &_msg);
 
-        std::array<bool, 4> CheckFaultyParts(std::shared_ptr<ariac_common::FaultyPartChallenge> _challenge,
-                                             std::shared_ptr<ariac_common::KittingTask> _task,
-                                             ariac_common::KittingShipment _shipment);
+        std::array<bool, 4> HandleFaultyParts(std::shared_ptr<ariac_common::FaultyPartChallenge> _challenge,
+                                              ariac_common::KittingTask _task,
+                                              ariac_common::KittingShipment _shipment);
 
         int ScoreQuadrant(bool is_correct_part_type, bool is_correct_part_color, bool is_flipped_part, bool is_faulty_part);
 
@@ -272,7 +272,8 @@ namespace ariac_plugins
         ariac_common::AssemblyShipment ParseAssemblyStationImage(gazebo::msgs::LogicalCameraImage &_msg);
         ariac_msgs::msg::QualityIssue CheckQuadrantQuality(int quadrant,
                                                            ariac_common::KittingTask task,
-                                                           ariac_common::KittingShipment shipment);
+                                                           ariac_common::KittingShipment shipment,
+                                                           std::string order_id);
 
         void PerformQualityCheck(ariac_msgs::srv::PerformQualityCheck::Request::SharedPtr request,
                                  ariac_msgs::srv::PerformQualityCheck::Response::SharedPtr response);
@@ -1617,16 +1618,24 @@ namespace ariac_plugins
         quadrant_scores[3] = 0;
         quadrant_scores[4] = 0;
 
+        // If faulty part challenge is used in the trial
+        std::array<bool, 4> faulty_parts = {false, false, false, false};
+        if (faulty_part_challenges_.size() > 0)
+        {
+            for (auto &challenge : faulty_part_challenges_)
+            {
+                if (challenge->GetOrderId() == _submitted_order_id)
+                {
+                    faulty_parts = HandleFaultyParts(challenge, *kitting_task, shipment);
+                }
+            }
+        }
+
         // Parse the kitting task and get the parts
         for (auto product : kitting_task->GetProducts())
         {
             for (auto tray_part : shipment.GetTrayParts())
             {
-                // RCLCPP_ERROR_STREAM(ros_node_->get_logger(), "Part color: " << tray_part.GetPart().GetColor());
-                // RCLCPP_ERROR_STREAM(ros_node_->get_logger(), "Part type: " << tray_part.GetPart().GetType());
-                // RCLCPP_ERROR_STREAM(ros_node_->get_logger(), "Tray Quadrant: " << tray_part.GetQuadrant());
-                // RCLCPP_ERROR_STREAM(ros_node_->get_logger(), "Product Quadrant: " << product.GetQuadrant());
-
                 if (tray_part.GetQuadrant() == product.GetQuadrant())
                 {
                     auto quadrant = product.GetQuadrant();
@@ -1634,25 +1643,8 @@ namespace ariac_plugins
                     bool is_missing_part = false;
                     bool is_correct_part_type = tray_part.isCorrectType(product.GetPart().GetType());
                     bool is_correct_part_color = tray_part.isCorrectColor(product.GetPart().GetColor());
-                    bool is_faulty_part = tray_part.isFaulty();
-                    RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Faulty0: " << is_faulty_part);
+                    bool is_faulty_part = faulty_parts[quadrant - 1];
                     bool is_flipped_part = tray_part.isFlipped();
-
-                    // If faulty part challenge is used in the trial
-                    if (faulty_part_challenges_.size() > 0)
-                    {
-                        for (auto &challenge : faulty_part_challenges_)
-                        {
-                            // ID of the challenge matches the submitted order ID
-                            if (challenge->GetOrderId() == _submitted_order_id)
-                            {
-                                auto faulty_parts_result = CheckFaultyParts(challenge, kitting_task, shipment);
-                                is_faulty_part = faulty_parts_result.at(quadrant - 1);
-                                RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Faulty1: " << is_faulty_part);
-                            }
-                        }
-                    }
-                    RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Faulty2: " << is_faulty_part);
 
                     quadrant_scores[quadrant] = ScoreQuadrant(is_correct_part_type, is_correct_part_color, is_flipped_part, is_faulty_part);
 
@@ -2093,10 +2085,10 @@ namespace ariac_plugins
             response->incorrect_tray = true;
 
         // Fill a quality msg for the shipment given a task
-        response->quadrant1 = CheckQuadrantQuality(1, *task, shipment);
-        response->quadrant2 = CheckQuadrantQuality(2, *task, shipment);
-        response->quadrant3 = CheckQuadrantQuality(3, *task, shipment);
-        response->quadrant4 = CheckQuadrantQuality(4, *task, shipment);
+        response->quadrant1 = CheckQuadrantQuality(1, *task, shipment, request->order_id);
+        response->quadrant2 = CheckQuadrantQuality(2, *task, shipment, request->order_id);
+        response->quadrant3 = CheckQuadrantQuality(3, *task, shipment, request->order_id);
+        response->quadrant4 = CheckQuadrantQuality(4, *task, shipment, request->order_id);
 
         if (response->quadrant1.all_passed &&
             response->quadrant2.all_passed &&
@@ -2105,22 +2097,6 @@ namespace ariac_plugins
         {
 
             response->all_passed = true;
-        }
-
-        // Check if the order has a faulty part challenge
-        if (faulty_part_challenges_.size() > 0)
-        {
-            for (auto &challenge : faulty_part_challenges_)
-            {
-                if (challenge->GetOrderId() == request->order_id) // order has a faulty part challenge
-                {
-                    auto faulty_parts_result = CheckFaultyParts(challenge, task, shipment);
-                    response->quadrant1.faulty_part = faulty_parts_result.at(0);
-                    response->quadrant2.faulty_part = faulty_parts_result.at(1);
-                    response->quadrant3.faulty_part = faulty_parts_result.at(2);
-                    response->quadrant4.faulty_part = faulty_parts_result.at(3);
-                }
-            }
         }
     }
 
@@ -2263,9 +2239,9 @@ namespace ariac_plugins
     }
 
     //==============================================================================
-    std::array<bool, 4> TaskManagerPluginPrivate::CheckFaultyParts(std::shared_ptr<ariac_common::FaultyPartChallenge> _challenge,
-                                                                   std::shared_ptr<ariac_common::KittingTask> _task,
-                                                                   ariac_common::KittingShipment _shipment)
+    std::array<bool, 4> TaskManagerPluginPrivate::HandleFaultyParts(std::shared_ptr<ariac_common::FaultyPartChallenge> _challenge,
+                                                                    ariac_common::KittingTask _task,
+                                                                    ariac_common::KittingShipment _shipment)
     {
 
         // quadrant1, quadrant2, quadrant3, quadrant4
@@ -2280,7 +2256,7 @@ namespace ariac_plugins
                 {
                     // RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Quadrant was not checked");
                     // Rename part in gazebo
-                    for (auto &product : _task->GetProducts())
+                    for (auto &product : _task.GetProducts())
                     {
                         if (product.GetQuadrant() == i)
                         {
@@ -2291,7 +2267,7 @@ namespace ariac_plugins
                                 {
                                     // RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Quadrant " << i);
                                     if (tray_part.isCorrectType(product.GetPart().GetType()) &&
-                                        tray_part.isCorrectColor(product.GetPart().GetColor()))
+                                        tray_part.isCorrectColor(product.GetPart().GetColor())) 
                                     {
                                         std::string original_name = tray_part.GetModelName();
                                         // RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Changing name to (" + original_name + "_faulty)");
@@ -2301,17 +2277,17 @@ namespace ariac_plugins
                                         // Set faulty part for the quadrant
                                         RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Part in quadrant " << std::to_string(i) << " is faulty");
                                         faulty_parts[i - 1] = true;
-                                        // if (i == 1)
-                                        //     faulty_parts[0] = true;
-                                        // else if (i == 2)
-                                        //     faulty_parts[1] = true;
-                                        // else if (i == 3)
-                                        //     faulty_parts[2] = true;
-                                        // else if (i == 4)
-                                        //     faulty_parts[3] = true;
                                     }
                                 }
                             }
+                        }
+                    }
+                } else {
+                    for (auto tray_part : _shipment.GetTrayParts())
+                    {
+                        if (tray_part.GetQuadrant() == i)
+                        {
+                            faulty_parts[i - 1] = tray_part.isFaulty();
                         }
                     }
                 }
@@ -2606,11 +2582,25 @@ namespace ariac_plugins
     //==============================================================================
     ariac_msgs::msg::QualityIssue TaskManagerPluginPrivate::CheckQuadrantQuality(int quadrant,
                                                                                  ariac_common::KittingTask task,
-                                                                                 ariac_common::KittingShipment shipment)
+                                                                                 ariac_common::KittingShipment shipment,
+                                                                                 std::string order_id)
     {
         ariac_msgs::msg::QualityIssue issue;
 
         bool task_has_part_in_quadrant = false;
+
+        // // Check if the order has a faulty part challenge
+        std::array<bool, 4> faulty_parts = {false, false, false, false};
+        if (faulty_part_challenges_.size() > 0)
+        {
+            for (auto &challenge : faulty_part_challenges_)
+            {
+                if (challenge->GetOrderId() == order_id) // order has a faulty part challenge
+                {
+                    faulty_parts = HandleFaultyParts(challenge, task, shipment);
+                }
+            }
+        }
 
         for (auto product : task.GetProducts())
         {
@@ -2626,7 +2616,7 @@ namespace ariac_plugins
 
                         issue.incorrect_part_type = !tray_part.isCorrectType(product.GetPart().GetType());
                         issue.incorrect_part_color = !tray_part.isCorrectColor(product.GetPart().GetColor());
-                        issue.faulty_part = tray_part.isFaulty();
+                        issue.faulty_part = faulty_parts[quadrant - 1];
                         issue.flipped_part = tray_part.isFlipped();
                     }
                 }

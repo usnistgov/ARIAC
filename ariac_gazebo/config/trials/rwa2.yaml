@@ -1,0 +1,161 @@
+# Trial Name: assembly.yaml
+# ARIAC2023
+
+# ENVIRONMENT SETUP
+
+time_limit: -1 # options: -1 (no time limit) or number of seconds (max 500)
+
+kitting_trays: # Which kitting trays will be spawn
+  tray_ids: [1] 
+  slots: [1]
+
+
+
+parts:
+  conveyor_belt: # population params for conveyor belt
+    active: true
+    spawn_rate: 12.0 # seconds between spawn
+    order: 'random' # random or sequential
+    parts_to_spawn:
+      - type: 'regulator'
+        color: 'green'
+        number: 2
+        offset: 0.5 # between -1 and 1
+        flipped: false
+        rotation: 'pi/6'
+      - type: 'sensor'
+        color: 'red'
+        number: 2
+        offset: -0.25 # between -1 and 1
+        flipped: false
+        rotation: 'pi'
+  bins: 
+    bin2:
+      - type: 'pump'
+        color: 'purple'
+        slots: [1, 3, 7, 9]
+    bin6:
+      - type: 'pump'
+        color: 'blue'
+        slots: [1, 2]
+      - type: 'sensor'
+        color: 'blue'
+        slots: [3, 4]
+      - type: 'regulator'
+        color: 'orange'
+        slots: [5, 6]
+      - type: 'battery'
+        color: 'orange'
+        slots: [7, 8]
+  agvs:
+    agv1:
+      tray_id: 0
+      parts:
+        - type: 'pump'
+          color: 'red'
+          quadrant: 1
+          rotation: 0
+        - type: 'regulator'
+          color: 'red'
+          quadrant: 2
+          rotation: 0
+    agv2:
+      tray_id: 0
+      parts:
+        - type: 'sensor'
+          color: 'red'
+          quadrant: 3
+          rotation: 0
+        - type: 'battery'
+          color: 'red'
+          quadrant: 4
+          rotation: 0
+
+orders:
+  - id: 'KIT10H56'
+    type: 'kitting'
+    announcement:
+      time_condition: 0
+    priority: false
+    kitting_task:
+      agv_number: 4
+      tray_id: 3
+      destination: 'warehouse'
+      products:
+        - type: 'battery'
+          color: 'blue'
+          quadrant: 3
+        - type: 'pump'
+          color: 'purple'
+          quadrant: 1
+        - type: 'regulator'
+          color: 'green'
+          quadrant: 2
+        - type: 'sensor'
+          color: 'red'
+          quadrant: 4
+  - id: 'AS43HG32'
+    type: 'assembly'
+    announcement:
+      time_condition: 20
+    priority: false
+    assembly_task:
+      agv_number: [1, 2]
+      station: 'as1'
+      products:
+        - type: 'pump'
+          color: 'red'
+          assembled_pose: 
+            xyz: [0.14, 0.0, 0.02]
+            rpy: [0, 0, '-pi/2']
+          assembly_direction: [0, 0, -1]
+        - type: 'regulator'
+          color: 'red'
+          assembled_pose: 
+            xyz: [0.175, -0.223, 0.215]
+            rpy: ['pi/2', 0, '-pi/2']
+          assembly_direction: [0, 0, -1]
+        - type: 'sensor'
+          color: 'red'
+          assembled_pose: 
+            xyz: [-0.1, 0.395, 0.045]
+            rpy: [0, 0, '-pi/2']
+          assembly_direction: [0, -1, 0]
+        - type: 'battery'
+          color: 'red'
+          assembled_pose: 
+            xyz: [-0.15, 0.033, 0.04]
+            rpy: [0, 0, 'pi/2']
+          assembly_direction: [0, 1, 0]
+  - id: 'COMB2322'
+    type: 'combined'
+    announcement:
+      time_condition: 50
+    priority: false
+    combined_task:
+      station: 'as3'
+      products:
+        - type: 'pump'
+          color: 'blue'
+          assembled_pose: 
+            xyz: [0.14, 0.0, 0.02]
+            rpy: [0, 0, '-pi/2']
+          assembly_direction: [0, 0, -1]
+        - type: 'regulator'
+          color: 'orange'
+          assembled_pose: 
+            xyz: [0.175, -0.223, 0.215]
+            rpy: ['pi/2', 0, '-pi/2']
+          assembly_direction: [0, 0, -1]
+        - type: 'sensor'
+          color: 'blue'
+          assembled_pose: 
+            xyz: [-0.1, 0.395, 0.045]
+            rpy: [0, 0, '-pi/2']
+          assembly_direction: [0, -1, 0]
+        - type: 'battery'
+          color: 'orange'
+          assembled_pose: 
+            xyz: [-0.15, 0.033, 0.04]
+            rpy: [0, 0, 'pi/2']
+          assembly_direction: [0, 1, 0]

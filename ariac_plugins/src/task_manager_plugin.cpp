@@ -256,7 +256,7 @@ namespace ariac_plugins
         std::array<bool, 4> CheckFaultyParts(std::shared_ptr<ariac_common::FaultyPartChallenge> _challenge,
                                              std::shared_ptr<ariac_common::KittingTask> _task,
                                              ariac_common::KittingShipment _shipment);
-       
+
         int ScoreQuadrant(bool is_correct_part_type, bool is_correct_part_color, bool is_flipped_part, bool is_faulty_part);
 
         void ScoreKittingTask(std::shared_ptr<ariac_common::Order> _order, std::string _submitted_order_id);
@@ -1051,7 +1051,6 @@ namespace ariac_plugins
             impl_->StoreStationParts(3, impl_->assembly_station_images_[3]);
             impl_->StoreStationParts(4, impl_->assembly_station_images_[4]);
 
-
             ProcessOrdersToAnnounce();
             ProcessChallengesToAnnounce();
             ProcessInProgressSensorBlackouts();
@@ -1700,7 +1699,6 @@ namespace ariac_plugins
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), *kitting_score);
     }
 
-
     //==============================================================================
     void TaskManagerPluginPrivate::ScoreAssemblyTask(std::shared_ptr<ariac_common::Order> _order, std::string _submitted_order_id)
     {
@@ -1709,7 +1707,7 @@ namespace ariac_plugins
 
         // Bonus points for completing the order
         int bonus = 0;
-        
+
         // score for correct station
         int station_score = 1;
 
@@ -1822,7 +1820,6 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPluginPrivate::ScoreCombinedTask(std::shared_ptr<ariac_common::Order> _order, std::string _submitted_order_id)
     {
-
     }
 
     // ==================================== //
@@ -2225,7 +2222,7 @@ namespace ariac_plugins
 
                                         // Set faulty part for the quadrant
                                         RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Part in quadrant " << std::to_string(i) << " is faulty");
-                                        faulty_parts[i-1] = true;
+                                        faulty_parts[i - 1] = true;
                                         // if (i == 1)
                                         //     faulty_parts[0] = true;
                                         // else if (i == 2)
@@ -2246,12 +2243,19 @@ namespace ariac_plugins
         return faulty_parts;
     }
 
-    void TaskManagerPluginPrivate::StoreStationParts(int station, gazebo::msgs::LogicalCameraImage &_msg){
+    void TaskManagerPluginPrivate::StoreStationParts(int station, gazebo::msgs::LogicalCameraImage &_msg)
+    {
+        for (int i = 0; i < _msg.model_size(); i++)
+        {
+            const auto &lc_model = _msg.model(i);
 
+            std::string model_name = lc_model.name();
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Model name: " << model_name);
+        }
     }
 
-        //==============================================================================
-        void TaskManagerPluginPrivate::StoreAGVParts(int agv_id, gazebo::msgs::LogicalCameraImage &_msg)
+    //==============================================================================
+    void TaskManagerPluginPrivate::StoreAGVParts(int agv_id, gazebo::msgs::LogicalCameraImage &_msg)
     {
         agv_parts_.find(agv_id)->second.clear();
         std::vector<ariac_common::Part> kit_tray_parts;
@@ -2331,9 +2335,9 @@ namespace ariac_plugins
         }
     }
 
-        //==============================================================================
-        ariac_common::KittingShipment
-        TaskManagerPluginPrivate::ParseAGVTraySensorImage(gazebo::msgs::LogicalCameraImage &_msg)
+    //==============================================================================
+    ariac_common::KittingShipment
+    TaskManagerPluginPrivate::ParseAGVTraySensorImage(gazebo::msgs::LogicalCameraImage &_msg)
     {
         // Create a kitting shipment from data in the msg
         KDL::Frame sensor_to_tray;

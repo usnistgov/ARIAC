@@ -297,14 +297,17 @@ def runGUI(): # runs the entire gui
     
 
     setupFrame.pack(fill='both', expand=True)
-
+    notebook.add(setupFrame, text='Setup')
     timeVar=tk.StringVar()
     timeEntry(setupFrame, timeVar, timeVal[0])
     # add frames to notebook
 
     #kitting trays
-    kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, availableTrays, trayVals, slotVals,trayValsMain, slotValsMain)
-    notebook.add(setupFrame, text='Setup')
+    kittingTrayFrame=ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+    kittingTrayFrame.pack(fill='both', expand=True)
+    notebook.add(kittingTrayFrame, text='Kitting Trays')
+    kittingTrayWidgets(kittingTrayFrame, kittingTrayCounter, availableSlots, availableTrays, trayVals, slotVals,trayValsMain, slotValsMain)
+
     partsFrame = ttk.Frame(notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
     partsFrame.pack(fill='both', expand=True)
     notebook.add(partsFrame, text='AGV Parts')

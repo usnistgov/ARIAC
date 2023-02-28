@@ -250,55 +250,60 @@ private:
       {"floor_wrist_3_joint", 0.0}};
 
   std::map<std::string, double> floor_kts2_js_ = {
-      {"linear_actuator_joint", -4.0},
-      {"floor_shoulder_pan_joint", -1.57},
-      {"floor_shoulder_lift_joint", -1.57},
-      {"floor_elbow_joint", 1.57},
-      {"floor_wrist_1_joint", -1.57},
-      {"floor_wrist_2_joint", -1.57},
-      {"floor_wrist_3_joint", 0.0}};
+    {"linear_actuator_joint", -4.0},
+    {"floor_shoulder_pan_joint", -1.57},
+    {"floor_shoulder_lift_joint", -1.57},
+    {"floor_elbow_joint", 1.57},
+    {"floor_wrist_1_joint", -1.57},
+    {"floor_wrist_2_joint", -1.57},
+    {"floor_wrist_3_joint", 0.0}
+  };
 
   std::map<std::string, double> ceiling_as1_js_ = {
-      {"gantry_x_axis_joint", 1},
-      {"gantry_y_axis_joint", -3},
-      {"gantry_rotation_joint", 1.571},
-      {"ceiling_shoulder_pan_joint", 0},
-      {"ceiling_shoulder_lift_joint", -2.37},
-      {"ceiling_elbow_joint", 2.37},
-      {"ceiling_wrist_1_joint", 3.14},
-      {"ceiling_wrist_2_joint", -1.57},
-      {"ceiling_wrist_3_joint", 0}};
+    {"gantry_x_axis_joint", 1},
+    {"gantry_y_axis_joint", -3},
+    {"gantry_rotation_joint", 1.571},
+    {"ceiling_shoulder_pan_joint", 0},
+    {"ceiling_shoulder_lift_joint", -2.37},
+    {"ceiling_elbow_joint", 2.37},
+    {"ceiling_wrist_1_joint", 3.14},
+    {"ceiling_wrist_2_joint", -1.57},
+    {"ceiling_wrist_3_joint", 0}
+  };
 
   std::map<std::string, double> ceiling_as2_js_ = {
-      {"gantry_x_axis_joint", -5},
-      {"gantry_y_axis_joint", -3},
-      {"gantry_rotation_joint", 1.571},
-      {"ceiling_shoulder_pan_joint", 0},
-      {"ceiling_shoulder_lift_joint", -2.37},
-      {"ceiling_elbow_joint", 2.37},
-      {"ceiling_wrist_1_joint", 3.14},
-      {"ceiling_wrist_2_joint", -1.57},
-      {"ceiling_wrist_3_joint", 0}};
+    {"gantry_x_axis_joint", -5},
+    {"gantry_y_axis_joint", -3},
+    {"gantry_rotation_joint", 1.571},
+    {"ceiling_shoulder_pan_joint", 0},
+    {"ceiling_shoulder_lift_joint", -2.37},
+    {"ceiling_elbow_joint", 2.37},
+    {"ceiling_wrist_1_joint", 3.14},
+    {"ceiling_wrist_2_joint", -1.57},
+    {"ceiling_wrist_3_joint", 0}
+  };
 
   std::map<std::string, double> ceiling_as3_js_ = {
-      {"gantry_x_axis_joint", 1},
-      {"gantry_y_axis_joint", 3},
-      {"gantry_rotation_joint", 1.571},
-      {"ceiling_shoulder_pan_joint", 0},
-      {"ceiling_shoulder_lift_joint", -2.37},
-      {"ceiling_elbow_joint", 2.37},
-      {"ceiling_wrist_1_joint", 3.14},
-      {"ceiling_wrist_2_joint", -1.57},
-      {"ceiling_wrist_3_joint", 0}};
+    {"gantry_x_axis_joint", 1},
+    {"gantry_y_axis_joint", 3},
+    {"gantry_rotation_joint", 1.571},
+    {"ceiling_shoulder_pan_joint", 0},
+    {"ceiling_shoulder_lift_joint", -2.37},
+    {"ceiling_elbow_joint", 2.37},
+    {"ceiling_wrist_1_joint", 3.14},
+    {"ceiling_wrist_2_joint", -1.57},
+    {"ceiling_wrist_3_joint", 0}
+  };
 
   std::map<std::string, double> ceiling_as4_js_ = {
-      {"gantry_x_axis_joint", -2},
-      {"gantry_y_axis_joint", 3},
-      {"gantry_rotation_joint", 1.571},
-      {"ceiling_shoulder_pan_joint", 0},
-      {"ceiling_shoulder_lift_joint", -2.37},
-      {"ceiling_elbow_joint", 2.37},
-      {"ceiling_wrist_1_joint", 3.14},
-      {"ceiling_wrist_2_joint", -1.57},
-      {"ceiling_wrist_3_joint", 0}};
+    {"gantry_x_axis_joint", -2},
+    {"gantry_y_axis_joint", 3},
+    {"gantry_rotation_joint", 1.571},
+    {"ceiling_shoulder_pan_joint", 0},
+    {"ceiling_shoulder_lift_joint", -2.37},
+    {"ceiling_elbow_joint", 2.37},
+    {"ceiling_wrist_1_joint", 3.14},
+    {"ceiling_wrist_2_joint", -1.57},
+    {"ceiling_wrist_3_joint", 0}
+  };
 };

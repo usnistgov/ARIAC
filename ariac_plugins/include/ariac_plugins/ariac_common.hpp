@@ -35,6 +35,7 @@ Distributions of NIST software should also include copyright and licensing state
 #include <ariac_msgs/msg/combined_task.hpp>
 #include <ariac_msgs/msg/kitting_part.hpp>
 #include <ariac_msgs/msg/assembly_part.hpp>
+#include <geometry_msgs/msg/vector3.hpp>
 
 /**
  * @brief Namespace for common functions and classes
@@ -48,6 +49,10 @@ namespace ariac_common
     class OrderTemporal;
     class Part;
     class Quadrant;
+    class ScoredAssemblyPart;
+    class AssemblyScore;
+    class KittingScore;
+    
 
     //==============================================================================
     /**
@@ -1247,6 +1252,132 @@ namespace ariac_common
     }; // class KittingScore
 
     //==============================================================================
+    /**
+     * @brief Class to represent the score for a kitting order
+     *
+     */
+    class AssemblyScore
+    {
+    public:
+        /**
+         * @brief Construct a new Kitting Score object
+         *
+         * @param order_id  ID of the order
+         * @param insert_score  Score for the insert
+         * @param battery_ptr Share pointer to the battery
+         * @param pump_ptr  Share pointer to the pump
+         * @param regulator_ptr  Share pointer to the regulator
+         * @param sensor_ptr  Share pointer to the sensor
+         * @param bonus  Bonus score
+         */
+        AssemblyScore(std::string order_id,
+                      int insert_score,
+                      std::shared_ptr<ScoredAssemblyPart> battery_ptr,
+                      std::shared_ptr<ScoredAssemblyPart> pump_ptr,
+                      std::shared_ptr<ScoredAssemblyPart> regulator_ptr,
+                      std::shared_ptr<ScoredAssemblyPart> sensor_ptr,
+                      int bonus) : order_id_(order_id),
+                                   insert_score_(insert_score),
+                                   battery_ptr_(battery_ptr),
+                                   pump_ptr_(pump_ptr),
+                                   regulator_ptr_(regulator_ptr),
+                                   sensor_ptr_(sensor_ptr),
+                                   bonus_(bonus) {}
+
+        /**
+         * @brief Overload the << operator to print the score
+         *
+         * @param out  Output stream
+         * @param obj  AssemblyScore object
+         * @return std::ostream& Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const AssemblyScore &obj)
+        {
+            out << "\n================" << std::endl;
+            out << "Score for Order " << obj.order_id_ << ": " << obj.insert_score_ << std::endl;
+            out << "================" << std::endl;
+
+            auto battery_ptr = obj.battery_ptr_;
+            auto pump_ptr = obj.pump_ptr_;
+            auto regulator_ptr = obj.regulator_ptr_;
+            auto sensor_ptr = obj.sensor_ptr_;
+
+            out << "   Part information in the insert" << std::endl;
+            // if (obj.battery_ptr_)
+            // {
+            //     out << "     Correct color?" << obj.battery_ptr_->GetCorrectColor() << std::endl;
+            // }
+            // else
+            // {
+            //     out << "   -----------" << std::endl;
+            //     out << "   Battery: Not used" << std::endl;
+            // }
+
+            //     if (obj.quadrant1_)
+            //         out << "   " << *obj.quadrant1_ << std::endl;
+            //     else
+            //     {
+            //         out << "   -----------" << std::endl;
+            //         out << "   Quadrant 1: Not used" << std::endl;
+            //     }
+
+            //     if (obj.quadrant2_)
+            //         out << "   " << *obj.quadrant2_ << std::endl;
+            //     else
+            //     {
+            //         out << "   -----------" << std::endl;
+            //         out << "   Quadrant 2: Not used" << std::endl;
+            //     }
+            //     if (obj.quadrant3_)
+            //         out << "   " << *obj.quadrant3_ << std::endl;
+
+            //     else
+            //     {
+            //         out << "   -----------" << std::endl;
+            //         out << "   Quadrant 3: Not used" << std::endl;
+            //     }
+            //     if (obj.quadrant4_)
+            //         out << "   " << *obj.quadrant4_ << std::endl;
+
+            //     else
+            //     {
+            //         out << "   -----------" << std::endl;
+            //         out << "   Quadrant 4: Not used" << std::endl;
+            //     }
+            //     out << "   -----------" << std::endl;
+            //     out << "   Bonus: " << obj.bonus_ << std::endl;
+            //     out << "   Extra Parts Penalty: " << obj.penalty_ << std::endl;
+
+            return out;
+        }
+
+        /**
+         * @brief Get the Order Id object
+         *
+         * @return std::string Order ID
+         */
+        int GetScore() const { return insert_score_; }
+
+    protected:
+        //! Order ID
+        std::string order_id_;
+        //! Insert score
+        int insert_score_;
+        //! Quadrant 1
+        std::shared_ptr<ScoredAssemblyPart> battery_ptr_ = nullptr;
+        //! Quadrant 2
+        std::shared_ptr<ScoredAssemblyPart> pump_ptr_ = nullptr;
+        //! Quadrant 3
+        std::shared_ptr<ScoredAssemblyPart> regulator_ptr_ = nullptr;
+        //! Quadrant 4
+        std::shared_ptr<ScoredAssemblyPart> sensor_ptr_ = nullptr;
+        //! Bonus score
+        int bonus_;
+
+    }; // class AssemblyScore
+
+    //==============================================================================
     class Order
     {
     public:
@@ -1263,6 +1394,7 @@ namespace ariac_common
               bool priority,
               double trial_time_limit) : announced_(false),
                                          submitted_(false),
+                                         pre_assembly_service_called_(false),
                                          id_(id),
                                          type_(type),
                                          priority_(priority),
@@ -1422,12 +1554,28 @@ namespace ariac_common
         {
             kitting_score_ = _kitting_score;
         }
+
+        /**
+         * @brief Set the AssemblyScore object for the order
+         *
+         * @param assembly_score Pointer to the KittingScore object for the order
+         */
+        virtual void SetAssemblyScore(std::shared_ptr<AssemblyScore> assembly_score)
+        {
+            assembly_score_ = assembly_score;
+        }
+
         /**
          * @brief Get the KittingScore object for the order
-         *
          * @return std::shared_ptr<KittingScore> Pointer to the KittingScore object for the order
          */
         std::shared_ptr<KittingScore> GetKittingScore() const { return kitting_score_; }
+
+        /**
+         * @brief Get the AssemblyScore object for the order
+         * @return std::shared_ptr<AssemblyScore> Pointer to the AssemblyScore object for the order
+         */
+        std::shared_ptr<AssemblyScore> GetAssemblyScore() const { return assembly_score_; }
 
     protected:
         /**
@@ -1443,7 +1591,7 @@ namespace ariac_common
         /**
          * @brief Whether or not the pre assembly pose service was called
          */
-        bool pre_assembly_service_called_ = false;
+        bool pre_assembly_service_called_;
 
         /**
          * @brief id of the order
@@ -1494,10 +1642,15 @@ namespace ariac_common
         std::shared_ptr<CombinedTask> combined_task_ = nullptr;
 
         /**
-         * @brief Score computed for the current order
-         *
+         * @brief Score for the kitting task
          */
         std::shared_ptr<KittingScore> kitting_score_ = nullptr;
+
+        /**
+         * @brief Score for the assembly task
+         *
+         */
+        std::shared_ptr<AssemblyScore> assembly_score_ = nullptr;
     };
     //-- end class Order
 
@@ -1899,6 +2052,132 @@ namespace ariac_common
         std::map<int, bool> quadrant_checked_;
     };
 
+    class ScoredAssemblyPart
+    {
+    public:
+        ScoredAssemblyPart(const Part &part,
+                           bool correct_color,
+                           bool correct_pose,
+                           geometry_msgs::msg::Vector3 &position,
+                           geometry_msgs::msg::Vector3 &orientation,
+                           int score) : part_(part),
+                                        correct_color_(correct_color),
+                                        correct_pose_(correct_pose),
+                                        position_(position),
+                                        orientation_(orientation),
+                                        score_(score)
+        {
+        }
+
+        /**
+         * @brief Get the Part
+         *
+         * @return Part Part object
+         */
+        Part GetPart() const { return part_; }
+        /**
+         * @brief Get the Score
+         *
+         * @return int Score
+         */
+        int GetScore() const { return score_; }
+        /**
+         * @brief Get the Correct Color
+         *
+         * @return bool True if the color is correct
+         */
+        bool GetCorrectColor() const { return correct_color_; }
+        /**
+         * @brief Get the Correct Pose
+         *
+         * @return bool True if the pose is correct
+         */
+        bool GetCorrectPose() const { return correct_pose_; }
+        /**
+         * @brief Get the Position
+         *
+         * @return geometry_msgs::msg::Vector3 Position
+         */
+        geometry_msgs::msg::Vector3 GetPosition() const { return position_; }
+        /**
+         * @brief Get the Orientation
+         *
+         * @return geometry_msgs::msg::Vector3 Orientation
+         */
+        geometry_msgs::msg::Vector3 GetOrientation() const { return orientation_; }
+
+    private:
+        //! The part object
+        Part part_;
+        //! Position of the part in the insert
+        geometry_msgs::msg::Vector3 position_;
+        //! Orientation (r, p, y) of the part in the insert
+        geometry_msgs::msg::Vector3 orientation_;
+        //! Sore of the assembled part
+        int score_;
+        //! Boolean to indicate if the color is correct
+        bool correct_color_;
+        //! Boolean to indicate if the pose is correct
+        bool correct_pose_;
+    };
+    //==============================================================================
+    class InsertPart
+    {
+    public:
+        InsertPart(const Part &part,
+                   std::string model_name,
+                   geometry_msgs::msg::Pose pose_in_insert) : part_(part),
+                                                              model_name_(model_name),
+                                                              pose_in_insert_(pose_in_insert)
+        {
+        }
+
+        /**
+         * @brief Get the Part
+         *
+         * @return Part Part object
+         */
+        Part GetPart() const { return part_; }
+        /**
+         * @brief Get the Model Name
+         *
+         * @return std::string Model name
+         */
+        std::string GetModelName() const { return model_name_; }
+
+        /**
+         * @brief Get the Pose In Insert
+         *
+         * @return geometry_msgs::msg::Pose Pose in the insert
+         */
+        geometry_msgs::msg::Pose GetPoseInInsert() const { return pose_in_insert_; }
+
+        /**
+         * @brief Whether the part is of the correct type
+         *
+         * @param type  Type to check
+         * @return true  If the part is of the correct type
+         * @return false  If the part is not of the correct type
+         */
+        bool isCorrectType(unsigned int type) { return type == part_.GetType(); }
+        /**
+         * @brief Whether the part is of the correct color
+         *
+         * @param color  Color to check
+         * @return true  If the part is of the correct color
+         * @return false  If the part is not of the correct color
+         */
+        bool isCorrectColor(unsigned int color) { return color == part_.GetColor(); }
+
+    private:
+        //! The part object
+        Part part_;
+        //! The model name
+        std::string model_name_;
+        //! The pose of the part in the insert
+        geometry_msgs::msg::Pose pose_in_insert_;
+    };
+
     //==============================================================================
     class KitTrayPart
     {
@@ -1913,13 +2192,13 @@ namespace ariac_common
             double x = pose_on_tray_.position.x;
             double y = pose_on_tray_.position.y;
             if (x < 0.0 && y >= 0.0)
-                quadrant_ = 4;
-            else if (x >= 0.0 && y >= 0.0)
-                quadrant_ = 3;
-            else if (x < 0.0 && y < 0.0)
-                quadrant_ = 2;
-            else if (x >= 0.0 && y < 0.0)
                 quadrant_ = 1;
+            else if (x >= 0.0 && y >= 0.0)
+                quadrant_ = 2;
+            else if (x < 0.0 && y < 0.0)
+                quadrant_ = 3;
+            else if (x >= 0.0 && y < 0.0)
+                quadrant_ = 4;
         }
 
         /**
@@ -2073,8 +2352,8 @@ namespace ariac_common
          * @param assembly_parts  Vector of KitTrayPart objects
          */
         AssemblyShipment(unsigned int station,
-                         const std::vector<AssemblyPart> &assembly_parts) : station_(station),
-                                                                            assembly_parts_(assembly_parts) {}
+                         const std::vector<InsertPart> &insert_parts) : station_(station),
+                                                                        insert_parts_(insert_parts) {}
 
         /**
          * @brief Get the station
@@ -2087,7 +2366,7 @@ namespace ariac_common
          *
          * @return const std::vector<AssemblyPart>&  Vector of AssemblyPart objects
          */
-        const std::vector<AssemblyPart> &GetAssemblyParts() const { return assembly_parts_; }
+        const std::vector<InsertPart> &GetInsertParts() const { return insert_parts_; }
 
         /**
          * @brief Helper function to print the contents of the shipment
@@ -2098,7 +2377,7 @@ namespace ariac_common
         {
             std::string s = "Station: " + std::to_string(station_);
 
-            for (auto part : assembly_parts_)
+            for (auto part : insert_parts_)
             {
                 s += "\n\tPart: (type: " + ConvertPartTypeToString(part.GetPart().GetType()) +
                      ", color: " + ConvertPartColorToString(part.GetPart().GetColor()) + ")";
@@ -2111,7 +2390,7 @@ namespace ariac_common
         //! Assembly station
         unsigned int station_;
         //! The parts in the insert
-        std::vector<AssemblyPart> assembly_parts_;
+        std::vector<InsertPart> insert_parts_;
     };
 
 } // namespace ariac_common

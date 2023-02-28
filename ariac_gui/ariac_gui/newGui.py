@@ -484,11 +484,10 @@ def runGUI(): # runs the entire gui
                 o.write("\n        number: "+part.number)
                 o.write("\n        offset: "+part.offset+" # between -1 and 1")
                 o.write("\n        rotation: "+ part.rotation)
-                o.write("\n        # time_before_next_part: 2 # seconds\n")
         
         #Beginning of order writing to file
         counter=0
-        o.write("\n# ORDER SETUP\n")
+        o.write("\n\n# ORDER SETUP\n")
         o.write("orders:\n")
         for order in orderMSGS:
             o.write("  - id: \'"+order.id+"\'\n")

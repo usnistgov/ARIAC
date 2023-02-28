@@ -66,8 +66,7 @@ def switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets):
             widget.pack_forget()
         convFlag.set('1')
     else:
-        for val in convValsArr:
-            val.set('')
+        convValsArr[0].set("")
         for widget in convWidgetsArr:
             widget.pack_forget()
         for widget in convSettingsWidgets:
@@ -120,11 +119,14 @@ def convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals):
     offsetParts.set('0')
     offsetLabel=tk.Label(convFrame, text="Enter the offset for the part")
     offsetLabel.pack_forget()
-    offsetEntry=tk.Entry(convFrame, textvariable=offsetParts)
-    offsetEntry.pack_forget()
+    '''offsetEntry=tk.Entry(convFrame, textvariable=offsetParts)
+    offsetEntry.pack_forget()'''
+    offsetScale=tk.Scale(convFrame, from_=-1.0, to=1.0, resolution=0.05, variable=offsetParts, orient=tk.HORIZONTAL)
+    offsetScale.pack_forget()
     convValsArr.append(offsetParts)
     convWidgetsArr.append(offsetLabel)
-    convWidgetsArr.append(offsetEntry)
+    #convWidgetsArr.append(offsetEntry)
+    convWidgetsArr.append(offsetScale)
     #rotation entry
     partRotation=tk.StringVar()
     partRotation.set('0')
@@ -182,6 +184,6 @@ def convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals):
     validate_num_parts=partial(require_num, numberParts)
     numberParts.trace('w', validate_num_parts)
     '''validate_rotation=partial(validateRotationValue, partRotation, saveConvButton)
-    partRotation.trace('w', validate_rotation)'''
+    partRotation.trace('w', validate_rotation)
     validate_offset=partial(validateOffset, offsetParts)
-    offsetParts.trace('w', validate_offset)
+    offsetParts.trace('w', validate_offset)'''

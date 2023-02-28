@@ -521,9 +521,22 @@ def runGUI(): # runs the entire gui
                     o.write("        - type: \'"+getPartName(assemblyPart.part.type)+"\'\n")
                     o.write("          color: \'"+getPartColor(assemblyPart.part.color)+"\'\n")
                     o.write("          assembled_pose: # relative to briefcase frame\n")
-                    o.write("            xyz: FIXED\n")
-                    o.write("            rpy: FIXED\n")
-                    o.write("          assembly_direction: ["+str(assemblyPart.install_direction.x)+", "+str(assemblyPart.install_direction.y)+", "+str(assemblyPart.install_direction.z)+"]\n")
+                    if getPartName(assemblyPart.part.type)=="battery":
+                        o.write("            xyz: [-0.15, 0.035, 0.043]\n")
+                        o.write("            rpy: [0, 0, \'pi/2\']\n")
+                        o.write("          assembly_direction: [0, 1, 0]\n")
+                    elif getPartName(assemblyPart.part.type)=="pump":
+                        o.write("            xyz: [0.14, 0.0, 0.02]\n")
+                        o.write("            rpy: [0, 0, \'-pi/2\']\n")
+                        o.write("          assembly_direction: [0, 0, -1]\n")
+                    elif getPartName(assemblyPart.part.type)=="sensor":
+                        o.write("            xyz: [-0.1, 0.395, 0.045]\n")
+                        o.write("            rpy: [0, 0, \'-pi/2\']\n")
+                        o.write("          assembly_direction: [0, -1, 0]\n")
+                    else:
+                        o.write("            xyz: [0.175, -0.223, 0.215]\n")
+                        o.write("            rpy: [\'pi/2\', 0, \'-pi/2\']\n")
+                        o.write("          assembly_direction: [0, 0, -1]\n")
             else:
                 o.write("    combined_task:\n")
                 o.write("      station: \'as"+str(order.combined_task.station)+"\'\n")

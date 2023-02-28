@@ -2,7 +2,7 @@ import tkinter as tk
 from functools import partial
 from ariac_gui.newClasses import PartsClass
 from ariac_gui.validationFunctions import *
-agvTrayIds=["0","1","2","3","4","5","6"] # all options for tray ids for agvs
+agvTrayIds=["0","1","2","3","4","5","6", "7", "8", "9"] # all options for tray ids for agvs
 agvList=["agv1", "agv2", "agv3", "agv4"]
 partTypes=["sensor", "pump", "regulator", "battery"]
 partColors=['green', 'red', 'purple','blue','orange']

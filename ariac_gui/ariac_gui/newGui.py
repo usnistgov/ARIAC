@@ -58,8 +58,8 @@ def updatePartOrdLabel(agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts
     else:
         c=0
         for order in orderMSGS:
-            newText+="Order "+str(c)+":\n"
-            newText+="ID: "+order.id+"  Type: "+getOrderType(order.type)+"\n"
+            newText+="Order "+order.id+":\n"
+            newText+="Type: "+getOrderType(order.type)+"\n"
             newText+="Number of parts: "
             if order.type==0:
                 newText+=str(len(order.kitting_task.parts))

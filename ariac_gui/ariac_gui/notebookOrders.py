@@ -216,15 +216,6 @@ def saveAssemblyProd(assemblyValsArr, assemblyWidgetsArr, assemblyParts):
     else:
         newPart.color=newPart.PURPLE
     newAssembPart.part=newPart
-    newDirection=Vector3()
-    newDirection.x =float(assemblyValsArr[8].get())
-    newDirection.y=float(assemblyValsArr[9].get())
-    newDirection.z=float(assemblyValsArr[10].get())
-    newAssembPart.install_direction=newDirection
-    newPoint=Point()
-    newPoint.x=float(assemblyValsArr[2].get())
-    newPoint.y=float(assemblyValsArr[3].get())
-    newPoint.z=float(assemblyValsArr[4].get())
     assemblyParts.append(newAssembPart)
     
 def updateTaskOptions(orderType, kitTrayId, taskAgvMenu,kitTrayIdLabel, kitTrayIdMenu, kittingDestination, kittingDestinationLabel, kittingDestinationMenu, assemblyStation, assemblyStationLabel, assemblyStationMenu,a,b,c):
@@ -297,7 +288,7 @@ def saveOrder(orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderM
         agvNumList.append(int(orderValsArr[9].get()))
         newAssemblyTask=AssemblyTask()
         newAssemblyTask.agv_numbers=agvNumList
-        newAssemblyTask.station=assemblyStations.index(assemblyStation.get())+1
+        newAssemblyTask.station=assemblyStations.index(orderValsArr[12].get())+1
         newAssemblyTask.parts=tempAssemblyParts
         newOrder.assembly_task=newAssemblyTask
     else:

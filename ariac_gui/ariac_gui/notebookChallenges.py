@@ -149,9 +149,9 @@ def saveSensorBlackout(duration, sensor1, sensor2,sensor3,sensor4,sensor5, senso
     newSensorBOCond=Condition()
     if condition.get()!="":
         newSensorBOCond.type=conditionTypes.index(condition.get())
-        if condition.get()==conditionTypes[1]:
+        if condition.get()==conditionTypes[0]:
             newSensorBOCond.time_condition.seconds=float(time.get())
-        elif condition.get()==conditionTypes[2]:
+        elif condition.get()==conditionTypes[1]:
             newPart=Part()
             if partType.get()=="sensor":
                 newPart.type=newPart.SENSOR

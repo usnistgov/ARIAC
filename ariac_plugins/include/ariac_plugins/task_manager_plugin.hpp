@@ -213,6 +213,8 @@ namespace ariac_plugins
         
         void UpdateSensorsHealth();
         void UpdateRobotsHealth();
+        void DisableAllSensors();
+        void DisableAllRobots();
         void ProcessInProgressSensorBlackouts();
         void ProcessInProgressRobotMalfunctions();
         void ProcessTemporalRobotMalfunctions();

@@ -100,8 +100,7 @@ def launch_setup(context, *args, **kwargs):
     elif behavior == "indifferent":
         cmd += "runIndif "
         
-    # cmd += "-p " + pkg_share + "/agent/"
-    cmd += "-q --console=plain" + " -p " + pkg_share + "/agent/"
+    cmd += "-p " + pkg_share + "/agent/"
 
     subprocess.Popen([cmd], shell=True)
 

@@ -1001,6 +1001,13 @@ namespace ariac_plugins
         std::lock_guard<std::mutex> lock(impl_->lock_);
         auto current_sim_time = impl_->world_->SimTime();
 
+        // if the competition has ended, disable all sensors and robots
+        if (impl_->current_state_ == ariac_msgs::msg::CompetitionState::ENDED)
+        {
+            DisableAllSensors();
+            DisableAllRobots();
+        }
+
         if (impl_->total_orders_ == 0 && impl_->current_state_ == ariac_msgs::msg::CompetitionState::STARTED)
         {
             RCLCPP_INFO_STREAM_ONCE(impl_->ros_node_->get_logger(), "All orders have been announced.");
@@ -1042,6 +1049,8 @@ namespace ariac_plugins
         {
             RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Time limit reached. Ending competition.");
             this->impl_->current_state_ = ariac_msgs::msg::CompetitionState::ENDED;
+            // deactive robots, sensors, and submission service (de-register)
+            // destructor for the service
         }
 
         // current state was set to STARTED in start competition service callback
@@ -1094,6 +1103,32 @@ namespace ariac_plugins
         }
 
         impl_->last_on_update_time_ = current_sim_time;
+    }
+
+    //==============================================================================
+    void TaskManagerPlugin::DisableAllSensors()
+    {
+        RCLCPP_WARN_STREAM_ONCE(impl_->ros_node_->get_logger(), "Competition ended: All sensors are now disabled.");
+        auto sensor_message = ariac_msgs::msg::Sensors();
+        sensor_message.break_beam = false;
+        sensor_message.proximity = false;
+        sensor_message.laser_profiler = false;
+        sensor_message.lidar = false;
+        sensor_message.camera = false;
+        sensor_message.logical_camera = false;
+
+        impl_->sensor_health_pub_->publish(sensor_message);
+    }
+
+    //==============================================================================
+    void TaskManagerPlugin::DisableAllRobots()
+    {
+        RCLCPP_WARN_STREAM_ONCE(impl_->ros_node_->get_logger(), "Competition ended: All robots are now disabled.");
+        auto robots_message = ariac_msgs::msg::Robots();
+        robots_message.ceiling_robot = false;
+        robots_message.floor_robot = false;
+
+        impl_->robot_health_pub_->publish(robots_message);
     }
 
     //==============================================================================
@@ -2335,7 +2370,14 @@ namespace ariac_plugins
         const std::shared_ptr<ariac_msgs::srv::SubmitOrder::Request> request,
         std::shared_ptr<ariac_msgs::srv::SubmitOrder::Response> response)
     {
+
         std::lock_guard<std::mutex> lock(impl_->lock_);
+
+        if (this->impl_->current_state_ == ariac_msgs::msg::CompetitionState::ENDED)
+        {
+            RCLCPP_WARN(impl_->ros_node_->get_logger(), "Competition has ended. No more orders can be submitted.");
+            return true;
+        }
 
         auto submitted_order_id = request->order_id;
 
@@ -2480,7 +2522,7 @@ namespace ariac_plugins
         output += "Trial file: " + trial_name_ + "\n";
         output += "Trial time limit: " + std::to_string(time_limit_) + "\n";
         output += "Trial completion time: " + std::to_string(trial_completion_time) + "\n";
-        output += "Trial score: " + std::to_string((int) trial_score_) + "\n";
+        output += "Trial score: " + std::to_string((int)trial_score_) + "\n";
         output += "========================================\n";
         output += "ORDERS\n";
 

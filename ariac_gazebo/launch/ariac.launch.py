@@ -15,7 +15,6 @@ from launch.conditions import IfCondition
 
 from ament_index_python.packages import get_package_share_directory, PackageNotFoundError
 
-
 def launch_setup(context, *args, **kwargs):
     # Set the path to this package.
     pkg_share = FindPackageShare(package='ariac_gazebo').find('ariac_gazebo')
@@ -37,8 +36,7 @@ def launch_setup(context, *args, **kwargs):
     trial_config_path = os.path.join(pkg_share, 'config', 'trials', trial_name + ".yaml")
 
     if not os.path.exists(trial_config_path):
-        rclpy.logging.get_logger('Launch File').fatal(
-            f"Trial configuration '{trial_name}' not found in {pkg_share}/config/trials/")
+        rclpy.logging.get_logger('Launch File').fatal(f"Trial configuration '{trial_name}' not found in {pkg_share}/config/trials/")
         exit()
 
     try:
@@ -47,12 +45,12 @@ def launch_setup(context, *args, **kwargs):
         rclpy.logging.get_logger('Launch File').fatal("Competitor package not found")
         exit()
 
+    
     sensor_config = LaunchConfiguration("sensor_config").perform(context)
     user_config_path = os.path.join(competitor_pkg_share, 'config', sensor_config + ".yaml")
 
     if not os.path.exists(user_config_path):
-        rclpy.logging.get_logger('Launch File').fatal(
-            f"Sensor configuration '{sensor_config}.yaml' not found in {competitor_pkg_share}/config/")
+        rclpy.logging.get_logger('Launch File').fatal(f"Sensor configuration '{sensor_config}.yaml' not found in {competitor_pkg_share}/config/")
         exit()
 
     # Gazebo node
@@ -70,7 +68,10 @@ def launch_setup(context, *args, **kwargs):
         package='ariac_gazebo',
         executable='sensor_tf_broadcaster.py',
         output='screen',
-        arguments=[user_config_path]
+        arguments=[user_config_path],
+        parameters=[
+            {"use_sim_time": True},
+        ]
     )
 
     # Objects TF
@@ -78,7 +79,9 @@ def launch_setup(context, *args, **kwargs):
         package='ariac_gazebo',
         executable='object_tf_broadcaster.py',
         output='screen',
-        arguments=[],
+        parameters=[
+            {"use_sim_time": True},
+        ]
     )
 
     # Environment Startup
@@ -199,9 +202,7 @@ def generate_launch_description():
     )
 
     declared_arguments.append(
-        DeclareLaunchArgument(
-            "competitor_pkg", default_value="test_competitor",
-            description="name of competitor package"))
+        DeclareLaunchArgument("competitor_pkg", default_value="test_competitor", description="name of competitor package"))
 
     declared_arguments.append(
         DeclareLaunchArgument("sensor_config", default_value="sensors", description="name of user configuration file")

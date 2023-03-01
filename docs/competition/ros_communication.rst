@@ -102,6 +102,10 @@ Services
      - ``ariac_msgs/srv/PerformQualityCheck``
      - `PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_
      - Check the quality of a kitting order with the requested ``order_id``
+   * - ``/ariac/get_pre_assembly_poses``
+     - ``ariac_msgs/srv/GetPreAssemblyPoses``
+     - `GetPreAssemblyPoses.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/GetPreAssemblyPoses.srv>`_
+     - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with ``order_id``
    * - ``/ariac/move_agv{n}``  
      - ``ariac_msgs/srv/MoveAGV``
      - `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_
@@ -150,7 +154,7 @@ Sensor Topics
      - Topic Name
      - Message Type 
    * - 'break_beam'
-     - ``/ariac/sensors/{sensor_name}/status`` ``/ariac/sensors/{sensor_name}/status``
+     - ``/ariac/sensors/{sensor_name}/change`` ``/ariac/sensors/{sensor_name}/status``
      - ``ariac_msgs/BreakBeamStatus`` ``ariac_msgs/BreakBeamStatus``
    * - 'proximity`
      - ``/ariac/sensors/{sensor_name}/scan``

@@ -42,9 +42,6 @@ Detection
 
 The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service ``/ariac/perform_quality_check``. The argument passed to this service call is an order ID (see :numref:`perform-quality-check-srv`). When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
 
-.. caution::
-  This service can be called only once for each order ID. It is suggested to call this service after the order is completed but before it is submitted.
-
 .. code-block:: bash
   :caption: PerformQualityCheck.srv
   :name: perform-quality-check-srv

@@ -163,10 +163,14 @@ The CCS can place parts in an :term:`insert<Insert>` in any order.
 For a trial where assembly tasks are required, the ARIAC environment starts with parts already located on AGVs. 
 The CCS is expected to:
 
-  1. Move the AGVs to the correct assembly station.
-  2. Assemble the parts into an insert.
-  3. Submit the assembly for scoring.
+  1. Lock the AGV trays.
+  2. Move the AGVs to the correct assembly station.
+  3. Call the pre-assembly poses service. 
+  4. Assemble the parts into an insert.
+  5. Submit the assembly for scoring.
 
+.. caution::
+  This pre-assembly poses service can be called only once for each order ID. The AGVs need to be at the correct assembly station for the service to work.
 
 Setup
 ^^^^^

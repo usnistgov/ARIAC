@@ -1,3 +1,6 @@
+.. _OrderMsg: https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg
+
+
 .. _COMMUNICATIONS:
 
 ROS Communication Overview
@@ -112,20 +115,20 @@ Topics
 Message Definitions
 ^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: bash
-    :caption: Order.msg
-    :name: OrderMsg
+.. .. code-block:: bash
+..     :caption: Order.msg
+..     :name: OrderMsg
 
-    uint8 KITTING=0
-    uint8 ASSEMBLY=1
-    uint8 COMBINED=2
+..     uint8 KITTING=0
+..     uint8 ASSEMBLY=1
+..     uint8 COMBINED=2
 
-    string id
-    uint8 type # KITTING, ASSEMBLY, COMBINED
-    bool priority
-    ariac_msgs/KittingTask kitting_task 
-    ariac_msgs/AssemblyTask assembly_task
-    ariac_msgs/CombinedTask combined_task
+..     string id
+..     uint8 type # KITTING, ASSEMBLY, COMBINED
+..     bool priority
+..     ariac_msgs/KittingTask kitting_task 
+..     ariac_msgs/AssemblyTask assembly_task
+..     ariac_msgs/CombinedTask combined_task
 
 .. code-block:: bash
     :caption: CompetitionState.msg

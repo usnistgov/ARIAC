@@ -3,7 +3,7 @@
 | Dates | Major Milestones |
 |:-------------:| ------------- |
 | 23 January 2023 | Beta Software and Documentation Released to Competitors |
-| 24 February 2023| Competition(1.0) Software and Documentation Released to Competitors |
+| 01 March 2023   | Competition(1.0) Software and Documentation Released to Competitors |
 | 24 March 2023   | Docker Instructions ready for Competitors |
 | 10 April 2023   | Qualifiers Smoke Test |
 | 14 April 2023   | Team Signups Close |

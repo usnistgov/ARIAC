@@ -9,7 +9,7 @@ kitting_trays: # Which kitting trays will be spawn
   tray_ids: [3, 8] 
   slots: [1, 4]
 
-parts:  
+parts:
   bins: # bin params - 8 total bins each bin has nine total slots (1-9)
     bin2:
       - type: 'pump'
@@ -33,7 +33,7 @@ orders:
       products:
         - type: 'battery'
           color: 'blue'
-          quadrant: 1
+          quadrant: 3
         - type: 'pump'
           color: 'purple'
-          quadrant: 2
+          quadrant: 1

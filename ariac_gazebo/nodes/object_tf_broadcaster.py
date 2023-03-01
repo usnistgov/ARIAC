@@ -15,6 +15,8 @@ def main():
 
     objects_tf_broadcaster = TFBroadcaster("objects_tf_broadcaster")
 
+    objects_tf_broadcaster.generate_transform("world", "map", pose_info([0, 0, 0], [0, 0, 0]))
+    # objects_tf_broadcaster.generate_transform("map", "odom", pose_info([0, 0, 0], [0, 0, 0]))
     config = os.path.join(get_package_share_directory('ariac_gazebo'), 'config', "object_poses.yaml")
 
     with open(config, "r") as stream:

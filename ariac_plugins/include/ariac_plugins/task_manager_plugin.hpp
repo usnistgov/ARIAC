@@ -1,3 +1,11 @@
+/*
+This software was developed by employees of the National Institute of Standards and Technology (NIST), an agency of the Federal Government. Pursuant to title 17 United States Code Section 105, works of NIST employees are not subject to copyright protection in the United States and are considered to be in the public domain. Permission to freely use, copy, modify, and distribute this software and its documentation without fee is hereby granted, provided that this notice and disclaimer of warranty appears in all copies.
+
+The software is provided 'as is' without any warranty of any kind, either expressed, implied, or statutory, including, but not limited to, any warranty that the software will conform to specifications, any implied warranties of merchantability, fitness for a particular purpose, and freedom from infringement, and any warranty that the documentation will conform to the software, or any warranty that the software will be error free. In no event shall NIST be liable for any damages, including, but not limited to, direct, indirect, special or consequential damages, arising out of, resulting from, or in any way connected with this software, whether or not based upon warranty, contract, tort, or otherwise, whether or not injury was sustained by persons or property or otherwise, and whether or not loss was sustained from, or arose out of the results of, or use of, the software or services provided hereunder.
+
+Distributions of NIST software should also include copyright and licensing statements of any third-party software that are legally bundled with the code in compliance with the conditions of those licenses.
+*/
+
 #ifndef ARIAC_PLUGINS__TASK_MANAGER_PLUGIN_HPP_
 #define ARIAC_PLUGINS__TASK_MANAGER_PLUGIN_HPP_
 
@@ -113,13 +121,18 @@ namespace ariac_plugins
             const std::shared_ptr<std_srvs::srv::Trigger::Request> _request,
             std::shared_ptr<std_srvs::srv::Trigger::Response> _response);
 
+        bool SetHumanSafeZonePenaltyServiceCallback(
+            const std::shared_ptr<std_srvs::srv::Trigger::Request> _request,
+            std::shared_ptr<std_srvs::srv::Trigger::Response> _response);
+
         /**
          * @brief Build an Order ROS message from an ariac_common::Order
          *
          * @param _order Order to build the ROS message from
          * @return const ariac_msgs::msg::Order& ROS message
          */
-        const ariac_msgs::msg::Order BuildOrderMsg(std::shared_ptr<ariac_common::Order> _order);
+        const ariac_msgs::msg::Order
+        BuildOrderMsg(std::shared_ptr<ariac_common::Order> _order);
         /**
          * @brief Build ariac_common::SensorBlackoutChallenge from ROS message and store them in a list.
          *
@@ -129,8 +142,8 @@ namespace ariac_plugins
 
         void StoreFaultyPartChallenges(const ariac_msgs::msg::FaultyPartChallenge &_challenge);
         void StoreDroppedPartChallenges(const ariac_msgs::msg::DroppedPartChallenge &_challenge);
-        void StoreHumanChallenges(const ariac_msgs::msg::HumanChallenge &_challenge);
-
+        void StoreHumanChallenge(const ariac_msgs::msg::HumanChallenge &_challenge);
+        void HandleSafeZonePenalty();
         /**
          * @brief Build ariac_common::RobotMalfunctionChallenge from ROS message and store them in a list.
          *
@@ -192,8 +205,16 @@ namespace ariac_plugins
         void ProcessOnSubmissionSensorBlackouts();
         void ProcessOnSubmissionRobotMalfunctions();
 
+        // process the human challenge
+        void ProcessTemporalHumanChallenge();
+        void ProcessOnPartPlacementHumanChallenge();
+        void ProcessOnOrderSubmissionHumanChallenge();
+        void ProcessSafeZonePenalty();
+        
         void UpdateSensorsHealth();
         void UpdateRobotsHealth();
+        void DisableAllSensors();
+        void DisableAllRobots();
         void ProcessInProgressSensorBlackouts();
         void ProcessInProgressRobotMalfunctions();
         void ProcessTemporalRobotMalfunctions();

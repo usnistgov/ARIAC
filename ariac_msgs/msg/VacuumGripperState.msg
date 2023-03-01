@@ -1,11 +1,3 @@
-# Vacum gripper state message
-# This structure contains the state of the gripper.
-
-# Is the suction enabled?
-bool enabled
-
-# Is an object attached to the gripper?
-bool attached
-
-# Gripper Type
-string type
+bool enabled # is the suction enabled?
+bool attached # is an object attached to the gripper?
+string type # type of the gripper

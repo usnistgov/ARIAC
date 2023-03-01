@@ -1,0 +1,47 @@
+# Trial Name: qc.yaml
+# ARIAC2023
+
+# ENVIRONMENT SETUP
+
+time_limit: -1 # options: -1 (no time limit) or number of seconds (max 500)
+
+kitting_trays: # Which kitting trays will be spawn
+  tray_ids: [3, 8] 
+  slots: [1, 4]
+
+parts:
+  conveyor_belt: # population params for conveyor belt
+    active: true
+    spawn_rate: 3.0 # seconds between spawn
+    order: 'sequential' # random or sequential
+    parts_to_spawn:
+      - type: 'battery'
+        color: 'red'
+        number: 5
+        offset: 0.5 # between -1 and 1
+        flipped: false
+        rotation: 'pi/6'
+      - type: 'sensor'
+        color: 'green'
+        number: 5
+        offset: -0.25 # between -1 and 1
+        flipped: true
+        rotation: 'pi'
+
+orders:
+  - id: 'MMB30H56'
+    type: 'kitting'
+    announcement:
+      time_condition: 0
+    priority: false
+    kitting_task:
+      agv_number: 4
+      tray_id: 3
+      destination: 'warehouse'
+      products:
+        - type: 'battery'
+          color: 'blue'
+          quadrant: 3
+        - type: 'pump'
+          color: 'purple'
+          quadrant: 1

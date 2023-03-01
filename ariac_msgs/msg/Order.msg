@@ -3,7 +3,7 @@ uint8 ASSEMBLY=1
 uint8 COMBINED=2
 
 string id
-uint8 type
+uint8 type # KITTING, ASSEMBLY, or COMBINED
 bool priority
 ariac_msgs/KittingTask kitting_task 
 ariac_msgs/AssemblyTask assembly_task

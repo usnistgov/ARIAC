@@ -4,4 +4,4 @@ uint8 QUADRANT3=3
 uint8 QUADRANT4=4
 
 ariac_msgs/Part part
-uint8 quadrant
+uint8 quadrant # QUADRANT1, QUADRANT2, QUADRANT3, or QUADRANT4

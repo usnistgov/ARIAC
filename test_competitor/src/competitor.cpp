@@ -15,6 +15,10 @@ int main(int argc, char *argv[])
   // Start Competition
   test_competitor->StartCompetition();
 
+  // Move Robots to Home Poses
+  test_competitor->FloorRobotSendHome();
+  test_competitor->CeilingRobotSendHome();
+
   // Complete Orders
   test_competitor->CompleteOrders();
 

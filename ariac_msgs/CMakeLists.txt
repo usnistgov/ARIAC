@@ -18,6 +18,7 @@ set(msg_files
   "msg/AssemblyPart.msg"
   "msg/AssemblyStationState.msg"
   "msg/AssemblyTask.msg"
+  "msg/AssemblyState.msg"
   "msg/BasicLogicalCameraImage.msg"
   "msg/BinInfo.msg"
   "msg/BinParts.msg"
@@ -31,6 +32,7 @@ set(msg_files
   "msg/DroppedPartChallenge.msg"
   "msg/FaultyPartChallenge.msg"
   "msg/HumanChallenge.msg"
+  "msg/HumanState.msg"
   "msg/KittingPart.msg"
   "msg/KittingTask.msg"
   "msg/KitTrayPose.msg"
@@ -61,6 +63,7 @@ set(srv_files
   "srv/SubmitOrder.srv"
   "srv/VacuumGripperControl.srv"
   "srv/PerformQualityCheck.srv"
+  "srv/GetPreAssemblyPoses.srv"
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}

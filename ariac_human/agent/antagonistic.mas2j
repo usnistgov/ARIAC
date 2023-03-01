@@ -1,0 +1,15 @@
+MAS hello_ros {
+
+	infrastructure: Centralised
+
+	environment: RosEnv
+
+	agents:
+		human 
+//			  [beliefs="indifferent"];
+//			  [beliefs="helpful"];
+			  [beliefs="antagonistic"];
+
+	aslSourcePath:
+		"src/asl";
+}

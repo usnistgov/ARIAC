@@ -107,18 +107,18 @@ def saveAgvPart(agvSelection,partWidgets, partFlag, partVals, currentQuadrant, a
         agv3Quadrants.remove(currentQuadrant.get())
     else:
         agv4Quadrants.remove(currentQuadrant.get())
-    add_quotes(partVals[1])
-    add_quotes(partVals[2])
+    rotationVal=partVals[4].get()
     if 'pi' in partVals[4].get():
-        add_quotes(partVals[4])
+        rotationVal=rotationVal.replace('\'',"")
+        rotationVal='\''+rotationVal+'\''
     if agvSelection.get()=='agv1': # saves the part to the correct agv
-        agv1Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+        agv1Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), rotationVal))
     elif agvSelection.get()=='agv2':
-        agv2Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+        agv2Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), rotationVal))
     elif agvSelection.get()=='agv3':
-        agv3Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+        agv3Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), rotationVal))
     else:
-        agv4Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), partVals[4].get()))
+        agv4Parts.append(PartsClass(partVals[1].get(), partVals[2].get(), partVals[3].get(), rotationVal))
     partOrdCounter.set(str(currVal+1))
     switchPartMenu(agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
 

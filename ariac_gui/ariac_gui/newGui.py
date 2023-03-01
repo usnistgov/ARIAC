@@ -459,29 +459,31 @@ def runGUI(): # runs the entire gui
         writeBinsToFile("bin7", bins, saveFileName)
     if binPresentFlags[7]==1:
         writeBinsToFile("bin8", bins, saveFileName)
-    with open(saveFileName, "a") as o:
-        o.write("\n  conveyor_belt: #population params for conveyor belt\n")
-        if convSettingsVals[0].get()=="1":
-            o.write("    active: true\n")
-        else:
-            o.write("    active: false\n")
-        o.write("    spawn_rate: "+convSettingsVals[1].get()+" # seconds between spawn\n")
-        o.write("    order: "+convSettingsVals[2].get()+" # random or sequential\n")
-        if len(convParts)>0:
-            o.write("    parts_to_spawn:\n")
-            for part in convParts:
-                o.write("      - type: \'"+part.type+"\'")
-                o.write("\n        color: \'"+part.color+"\'")
-                o.write("\n        number: "+part.number)
-                o.write("\n        offset: "+part.offset+" # between -1 and 1")
-                try:
-                    val=float(part.rotation)
-                except:
-                    val=1
-                if val!=0:
-                    o.write("\n        rotation: "+ part.rotation)
+    if len(convParts)>0:
+        with open(saveFileName, "a") as o:
+            o.write("\n  conveyor_belt: #population params for conveyor belt\n")
+            if convSettingsVals[0].get()=="1":
+                o.write("    active: true\n")
+            else:
+                o.write("    active: false\n")
+            o.write("    spawn_rate: "+convSettingsVals[1].get()+" # seconds between spawn\n")
+            o.write("    order: \'"+convSettingsVals[2].get()+"\' # random or sequential\n")
+            if len(convParts)>0:
+                o.write("    parts_to_spawn:\n")
+                for part in convParts:
+                    o.write("      - type: \'"+part.type+"\'")
+                    o.write("\n        color: \'"+part.color+"\'")
+                    o.write("\n        number: "+part.number)
+                    o.write("\n        offset: "+part.offset+" # between -1 and 1")
+                    try:
+                        val=float(part.rotation)
+                    except:
+                        val=1
+                    if val!=0:
+                        o.write("\n        rotation: "+ part.rotation)
         
         #Beginning of order writing to file
+    with open(saveFileName, "a") as o:
         counter=0
         o.write("\n\n# ORDER SETUP\n")
         o.write("orders:\n")

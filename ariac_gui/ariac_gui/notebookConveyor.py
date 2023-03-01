@@ -48,9 +48,11 @@ def showAndHideConvButton(addConvButton, val, convOptionFlag, saveNewConvButton,
         convOptionFlag.set('1')
 
 def saveConv(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets, convParts, partOrdCounter):
+    rotationVal=convValsArr[4].get()
     if 'pi' in convValsArr[4].get():
-        add_quotes(convValsArr[4])
-    convParts.append(PartConv(convValsArr[0].get(), convValsArr[1].get(),convValsArr[2].get(),convValsArr[3].get(), convValsArr[4].get()))
+        rotationVal=rotationVal.replace('\'',"")
+        rotationVal='\''+rotationVal+'\''
+    convParts.append(PartConv(convValsArr[0].get(), convValsArr[1].get(),convValsArr[2].get(),convValsArr[3].get(), rotationVal))
     currVal=int(partOrdCounter.get())
     partOrdCounter.set(currVal+1)
     switchConvMenu(convValsArr, convWidgetsArr,convFlag, convSettingsWidgets)

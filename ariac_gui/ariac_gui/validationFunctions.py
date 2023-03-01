@@ -58,13 +58,12 @@ def add_quotes(strVar):
     """Formats the rpy values correctly"""
     tempStr=strVar.get()
     tempStr=tempStr.lower()
-    if 'pi' in tempStr:
-        tempStr=tempStr.replace("\"", "")
-        tempStr=tempStr.replace("\'", "")
-        if tempStr[0]!="\'":
-            tempStr="\'"+tempStr
-        if tempStr[len(tempStr)-1]!="\'":
-            tempStr=tempStr+"\'"
+    tempStr=tempStr.replace("\"", "")
+    tempStr=tempStr.replace("\'", "")
+    if tempStr[0]!="\'":
+        tempStr="\'"+tempStr
+    if tempStr[len(tempStr)-1]!="\'":
+        tempStr=tempStr+"\'"
     strVar.set(tempStr)
 
 def require_num(val, a, b , c):

@@ -249,7 +249,11 @@ def saveBin(currentBin, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
             selectedSlots.append(str(counter))
         counter+=1
     slotsString=",".join(selectedSlots)
-    bins.append(Bin(binValsArr[0].get(),binValsArr[1].get(), binValsArr[2].get(),"["+slotsString+"]",binValsArr[12].get(), binValsArr[13].get()))
+    rotationVal=binValsArr[12].get()
+    if 'pi' in binValsArr[12].get():
+        rotationVal=rotationVal.replace('\'',"")
+        rotationVal='\''+rotationVal+'\''
+    bins.append(Bin(binValsArr[0].get(),binValsArr[1].get(), binValsArr[2].get(),"["+slotsString+"]",rotationVal, binValsArr[13].get()))
     switchBinMenu(binWidgetsArr, binValsArr,binFlag)
     currVal=int(partOrdCounter.get())
     partOrdCounter.set(currVal+1)

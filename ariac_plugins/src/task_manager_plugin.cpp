@@ -2494,26 +2494,33 @@ namespace ariac_plugins
         std::shared_ptr<ariac_common::Order> assembly_order, std::shared_ptr<ariac_common::Order> combined_order)
     {
 
+        double kitting_submitted_time = 0.0;
+        double assembly_submitted_time = 0.0;
+        double combined_submitted_time = 0.0;
+
         double kitting_completion_time = 0.0;
         double assembly_completion_time = 0.0;
         double combined_completion_time = 0.0;
 
         if (kitting_order != nullptr)
         {
-            kitting_completion_time = kitting_order->GetSubmittedTime() - kitting_order->GetAnnouncedTime();
+            kitting_submitted_time = kitting_order->GetSubmittedTime();
+            kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
         }
 
         if (assembly_order != nullptr)
         {
-            assembly_completion_time = assembly_order->GetSubmittedTime() - assembly_order->GetAnnouncedTime();
+            assembly_submitted_time = assembly_order->GetSubmittedTime();
+            assembly_completion_time = assembly_submitted_time - assembly_order->GetAnnouncedTime();
         }
 
         if (combined_order != nullptr)
         {
-            combined_completion_time = combined_order->GetSubmittedTime() - combined_order->GetAnnouncedTime();
+            combined_submitted_time = combined_order->GetSubmittedTime();
+            combined_completion_time = combined_submitted_time - combined_order->GetAnnouncedTime();
         }
 
-        auto trial_completion_time = std::max({kitting_completion_time, assembly_completion_time, combined_completion_time});
+        auto trial_completion_time = std::max({kitting_submitted_time, assembly_submitted_time, combined_submitted_time});
 
         std::string output = "";
         output += "\n\n\n\n========================================\n";

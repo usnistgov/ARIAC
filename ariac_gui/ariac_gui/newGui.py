@@ -620,7 +620,7 @@ def runGUI(): # runs the entire gui
                     o.write("      order_id: \'"+blackout.condition.submission_condition.order_id+"\'\n")
             for human in humanChallenges:
                 o.write("  - human:\n")
-                o.write("      behavior \'"+behaviorOptions[human.behavior]+"\'\n")
+                o.write("      behavior: \'"+behaviorOptions[human.behavior]+"\'\n")
                 if human.condition.type==0:
                     o.write("      time: "+str(human.condition.time_condition.seconds)+"\n")
                 elif human.condition.type==1:

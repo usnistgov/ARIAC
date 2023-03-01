@@ -173,11 +173,11 @@ bins: # bin params - 8 total bins each bin has nine total slots (1-9)
 
 The `bins` field can have 8 subfields: `bin1`, `bin2`, `bin3`, `bin4`, `bin5`, `bin6`, `bin7`, `bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on bin slots). The `type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In the provided example, there are 3 pumps and 2 batteries in bin1. There are 6 purple regulators in bin3. The way part locations are defined in bin3 allows for the same part type and color with different orientations and flipped states to be placed in the same bin.
 
-The `color` field describes the part color in a bin. The `slots` field describes the slots in a bin where the part can be found. The `rotation` field describes the rotation of the part in a bin. The `flipped` field describes whether the parts are flipped in a bin. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. In the provided example, all red pumps in bin1 are flipped and all the blue batteries in bin1 are not flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
+The `color` field describes the part color in a bin. The `slots` field describes the slots in a bin where the part can be found. The `rotation` field describes the rotation of the part in a bin. The `flipped` field describes whether the parts are flipped in a bin. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. In the provided example, all red pumps in bin1 are flipped and all the blue batteries in bin1 are not flipped. See the [Challenges](challenges.rst) page for more information about flipped parts.
 
 ##### AGVs
 
-In trials where assembly is required, the environment starts with parts already located on the AGVs. The `agvs` field describes the parts on the AGVs. The subfields of `agvs` can be `agv1`, `agv2`, `agv3`, and `agv4`. Each one of these subfields contains a tray ID and a list of parts. The `tray_id` field describes the tray ID located on the AGV. By convention, tray IDs located on AGVs at the start of the environment are 0. The `parts` field describes the parts on the AGV. The `type` field describes the part type on the AGV. The `color` field describes the part color on the AGV. The `quadrant` field describes the quadrant of the AGV where the part is located. The `rotation` field describes the rotation of the part on the AGV. The `flipped` field describes whether the part is flipped on the AGV. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
+In trials where assembly is required, the environment starts with parts already located on the AGVs. The `agvs` field describes the parts on the AGVs. The subfields of `agvs` can be `agv1`, `agv2`, `agv3`, and `agv4`. Each one of these subfields contains a tray ID and a list of parts. The `tray_id` field describes the tray ID located on the AGV. By convention, tray IDs located on AGVs at the start of the environment are 0. The `parts` field describes the parts on the AGV. The `type` field describes the part type on the AGV. The `color` field describes the part color on the AGV. The `quadrant` field describes the quadrant of the AGV where the part is located. The `rotation` field describes the rotation of the part on the AGV. The `flipped` field describes whether the part is flipped on the AGV. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.rst) page for more information about flipped parts.
 
 It is important to note that AGVs are always located at their kitting station. Competitors have to move the AGVs to the assembly station to assemble the parts.
 
@@ -243,7 +243,7 @@ Some trials require parts to be spawned on the conveyor belt. It can happen that
     * The `color` field describes the part color on the conveyor belt. 
     * The `number` field describes the number of parts of the same type and color that will be spawned on the conveyor belt.
     * The `offset` field describes the offset between parts of the same type and color that will be spawned on the conveyor belt. The `offset` field is a float value in meters and must be between -1 and 1. 
-    * The `flipped` field describes whether the parts are flipped on the conveyor belt. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
+    * The `flipped` field describes whether the parts are flipped on the conveyor belt. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.rst) page for more information about flipped parts.
     * The `rotation` field describes the rotation of the parts on the conveyor belt.
 
 The Figure below shows an example of how parts are spawned on the conveyor belt from the snippet above.
@@ -252,8 +252,8 @@ The Figure below shows an example of how parts are spawned on the conveyor belt 
 
 ## Challenges
 
-The field `challenges` is used to define the challenges that will be used in the trial. See the [Challenges](challenges.md) page for more information on how to define challenges.
+The field `challenges` is used to define the challenges that will be used in the trial. See the [Challenges](challenges.rst) page for more information on how to define challenges.
 
 ## Orders
 
-The field `orders` is used to define the orders that will be used in the trial. See the [Orders and Tasks](orders.md) page for more information on how to define orders.
+The field `orders` is used to define the orders that will be used in the trial. See the [Orders and Tasks](orders.rst) page for more information on how to define orders.

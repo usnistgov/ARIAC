@@ -23,7 +23,7 @@ Topics
      - Description 
    * - ``/ariac/orders`` 
      - ``ariac_msgs/msg/Order``
-     - :ref:`Order.msg <ORDERMSG_>`
+     - `Order.msg <ORDERMSG_>`
      - Orders that the CCS should submit
    * - ``/ariac/competition_state``
      - ``ariac_msgs/msg/CompetitionState`` 

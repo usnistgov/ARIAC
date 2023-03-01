@@ -229,4 +229,9 @@ def writePartsToFile(name, id, partsList, saveFileName): # writes the part infor
             o.write("      - type: \'"+i.pType+"\'\n")
             o.write("        color: \'"+i.color+"\'\n")
             o.write("        quadrant: "+i.quadrant+"\n")
-            o.write("        rotation: "+i.rotation+"\n")
+            try:
+                val=float(i.rotation)
+            except:
+                val=1
+            if val!=0:
+                o.write("        rotation: "+i.rotation+"\n")

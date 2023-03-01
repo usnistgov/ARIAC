@@ -364,8 +364,11 @@ def writeBinsToFile(name, binsList, saveFileName):
                 o.write("      - type: \'"+i.type+"\'\n")
                 o.write("        color: \'"+i.color+"\'\n")
                 o.write("        slots: "+i.slots+"\n")
-                o.write("        rotation: "+i.rotation+"\n")
+                try:
+                    val=float(i.rotation)
+                except:
+                    val=1
+                if val!=0:
+                    o.write("        rotation: "+i.rotation+"\n")
                 if i.flipped=="1":
                     o.write("        flipped: true\n")
-                else:
-                    o.write("        flipped: false\n")

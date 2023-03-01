@@ -468,7 +468,12 @@ def runGUI(): # runs the entire gui
                 o.write("\n        color: \'"+part.color+"\'")
                 o.write("\n        number: "+part.number)
                 o.write("\n        offset: "+part.offset+" # between -1 and 1")
-                o.write("\n        rotation: "+ part.rotation)
+                try:
+                    val=float(part.rotation)
+                except:
+                    val=1
+                if val!=0:
+                    o.write("\n        rotation: "+ part.rotation)
         
         #Beginning of order writing to file
         counter=0

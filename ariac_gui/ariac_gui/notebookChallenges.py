@@ -356,7 +356,7 @@ def sensorBlackoutMenu(allChallengeWidgetsArr, presentChallengeWidgets,sbVals, c
     chCondVals[0].set('0')
     for index in range(8): #how many widgets there are for dropped part
         allChallengeWidgetsArr[index+22].grid(column=2, row=1+index)
-        presentChallengeWidgets.append(allChallengeWidgetsArr[index+20])
+        presentChallengeWidgets.append(allChallengeWidgetsArr[index+22])
     allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4].grid(column=2, row=11) #condition menu
     allChallengeWidgetsArr[len(allChallengeWidgetsArr)-3].grid(column=2, row=12)
     presentChallengeWidgets.append(allChallengeWidgetsArr[len(allChallengeWidgetsArr)-4])

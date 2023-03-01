@@ -1,6 +1,6 @@
 # Tutorial 2: Reading Data from a Sensor
 
-Please complete the steps in [Tutorial 1](./creating_a_competition_pkg.md) before this tutorial.
+Please complete the steps in [Tutorial 1](./tutorial_1.md) before this tutorial.
 
 This tutorial will add functionality to the competition interface to read data from a sensor and output that data to the terminal. 
 

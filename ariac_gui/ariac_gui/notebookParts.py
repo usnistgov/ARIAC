@@ -16,6 +16,7 @@ def updatePartAGVOptions(agvTrayValsArr, addPartButton,agvPartMenu,agvSelection,
         addPartButton.config(state=tk.DISABLED)
     else:
         addPartButton.config(state=tk.NORMAL)
+        agvSelection.set(availableAGVs[0])
         agvMen=agvPartMenu['menu']
         agvMen.delete(0, 'end')
         for agv in availableAGVs:

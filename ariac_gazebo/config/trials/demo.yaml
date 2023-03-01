@@ -1,51 +1,109 @@
 # Trial Name: demo.yaml
 # ARIAC2023
-# 2023-03-01 22:02:07
+# 2023-03-01 22:08:18
 
 # ENVIRONMENT SETUP
 time_limit: -1 # options: -1 (no time limit) or number of seconds
 
 kitting_trays: # Which kitting trays will be spawned
-  tray_ids: [4, 5, 3]
-  slots: [5, 3, 4]
+  tray_ids: [5, 6]
+  slots: [5, 4]
 
 parts:
   agvs:
     agv1:
-      tray_id: 5
+      tray_id: 3
       parts:
-      - type: 'battery'
-        color: 'blue'
+      - type: 'regulator'
+        color: 'orange'
         quadrant: 1
         rotation: 'pi'
     agv3:
-      tray_id: 7
+      tray_id: 5
       parts:
-      - type: 'battery'
+      - type: 'sensor'
         color: 'green'
-        quadrant: 3
-        rotation: 'pi/3'
+        quadrant: 1
+        rotation: 'pi/5'
 
   bins: # bin params - 8 total bins each bin has nine total slots (1-9)
     bin1:
-      - type: 'regulator'
+      - type: 'pump'
         color: 'orange'
-        slots: [2,4,6,8]
-        rotation: 'pi/4'
+        slots: [2,4,7]
+        rotation: 'pi/3'
         flipped: true
     bin4:
-      - type: 'sensor'
-        color: 'green'
-        slots: [2,5]
-        rotation: 0.9
+      - type: 'battery'
+        color: 'red'
+        slots: [3,6,9]
 
   conveyor_belt: #population params for conveyor belt
     active: true
-    spawn_rate: 15 # seconds between spawn
+    spawn_rate: 10 # seconds between spawn
     order: 'sequential' # random or sequential
     parts_to_spawn:
       - type: 'battery'
-        color: 'purple'
+        color: 'red'
         number: 10
-        offset: -0.6 # between -1 and 1
-        rotation: 'pi/5'
+        offset: -0.75 # between -1 and 1
+        rotation: 0.9
+
+# ORDER SETUP
+orders:
+  - id: '9V79M4S3'
+    type: 'kitting'
+    announcement:
+      time_condition: 15.0
+    priority: false
+    kitting_task:
+      agv_number: 3
+      tray_id: 4
+      destination: 'assembly_front'
+      products:
+        - type: 'sensor'
+          color: 'green'
+          quadrant: 1
+  - id: 'DCP6P7JY'
+    type: 'assembly'
+    announcement:
+      submission_condition:
+        order_id: '9V79M4S3'
+    priority: false
+    assembly_task:
+      agv_number: [3]
+      station: 'as3'
+      products:
+        - type: 'regulator'
+          color: 'orange'
+          assembled_pose: # relative to briefcase frame
+            xyz: [0.175, -0.223, 0.215]
+            rpy: ['pi/2', 0, '-pi/2']
+          assembly_direction: [0, 0, -1]
+
+# GLOBAL CHALLENGES
+challenges:
+  - robot_malfunction:
+      duration: 20.0
+      robots_to_disable: ['floor_robot', 'ceiling_robot']
+      part_type: 'regulator'
+      part_color: 'purple'
+      agv: 3
+  - faulty_part:
+      order_id: 'DCP6P7JY'
+      quadrant: [1, 3]
+  - dropped_part:
+      robot: 'floor_robot'
+      type: 'pump'
+      color: 'blue'
+      drop_after_num: 10 # first part the robot successfully picks
+      drop_after_time: 30.0 # secons
+  - sensor_blackout:
+    duration: 10.0
+    sensors_to_disable: [proximity, laser_profiler, camera]
+      order_id: 'DCP6P7JY'
+  - human:
+      behavior: 'indifferent'
+      part_type: 'pump'
+      part_color: 'blue'
+      agv: 3

@@ -41,4 +41,5 @@ Welcome to ARIAC 2023!
    :hidden:
 
    tutorials/creating_a_competition_pkg.md
+   tutorials/reading_data_from_a_sensor.md
  

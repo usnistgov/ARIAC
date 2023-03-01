@@ -1,5 +1,24 @@
 # Updates
 
+## Release 2023, March 2 -- Competition Version
+
+- The competition version of the software is now available. This release contains most of the features that were highlighted during the launch telecon. A list of the features that have been implemented since the previous release is provided below:
+  - Assembly tasks.
+  - Combined tasks.
+  - Faulty gripper challenge.
+  - Faulty part challenge.
+- The test competitor package has been updated to include:
+  - Kitting Task (kitting.yaml)
+  - Assembly Task (assembly.yaml)
+  - Combined Task (combined.yaml)
+- The documentation was updated to include:
+  - Tutorials
+  - More information on the competition interface.
+  - More information on the competition overview.
+  - More information on the trial configuration files.
+- A graphical user interface to generate trial configuration files (documentation is coming).
+- The human challenge will be added at a later date.
+
 ## Release 2023, Jan 23 -- Beta Version
 
 - This is the beta release of the software. This release contains the basic structure of the software and is missing some features that were highlighted during the launch telecon. These features will be added in the final release.

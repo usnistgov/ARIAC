@@ -46,13 +46,15 @@ namespace ariac_common
 
     // forward declarations
     class Order;
+    class Score;
     class OrderTemporal;
     class Part;
     class Quadrant;
-    class ScoredAssemblyPart;
-    class AssemblyScore;
-    class KittingScore;
     
+    class AssemblyScore;
+    class CombinedScore;
+    class KittingScore;
+    class ScoredAssemblyPart;
 
     //==============================================================================
     /**
@@ -244,6 +246,20 @@ namespace ariac_common
          */
         Part(unsigned int color, unsigned int type) : color_(color), type_(type) {}
 
+        /**
+         * @brief Overload the << operator to print the part information
+         *
+         * @param out  Output stream
+         * @param obj  Part object
+         * @return std::ostream&  Output stream
+         */
+        friend std::ostream &operator<<(std::ostream &out,
+                                        const Part &obj)
+        {
+            out << "[" << ConvertPartTypeToString(obj.type_) << "," << ConvertPartColorToString(obj.color_) << "]";
+
+            return out;
+        }
         // void Print() const
         // {
         //     std::cout << "[" << ConvertPartTypeToString(type_) << "," << ConvertPartColorToString(color_) << "]" << std::endl;
@@ -261,20 +277,7 @@ namespace ariac_common
          */
         unsigned int GetType() const { return type_; }
 
-        /**
-         * @brief Overload the << operator to print the part information
-         *
-         * @param out  Output stream
-         * @param obj  Part object
-         * @return std::ostream&  Output stream
-         */
-        friend std::ostream &operator<<(std::ostream &out,
-                                        const Part &obj)
-        {
-            out << "[" << ConvertPartTypeToString(obj.type_) << "," << ConvertPartColorToString(obj.color_) << "]";
-
-            return out;
-        }
+        
 
     private:
         //! Color of the part
@@ -1110,6 +1113,51 @@ namespace ariac_common
             return out;
         }
 
+        /**
+         * @brief Get the Quadrant Number object
+         *
+         * @return int Quadrant number
+         */
+        int GetQuadrantNumber() const { return quadrant_number_; }
+
+        /**
+         * @brief Get the Is Correct Part Type object
+         *
+         * @return true True if the part type is correct
+         * @return false False if the part type is incorrect
+         */
+        bool GetIsCorrectPartType() const { return is_correct_part_type_; }
+
+        /**
+         * @brief Get the Is Correct Part Color object
+         *
+         * @return true True if the part color is correct
+         * @return false False if the part color is incorrect
+         */
+        bool GetIsCorrectPartColor() const { return is_correct_part_color_; }
+
+        /**
+         * @brief Get the Is Faulty object
+         *
+         * @return true True if the part is faulty
+         * @return false False if the part is not faulty
+         */
+        bool GetIsFaulty() const { return is_faulty_; }
+
+        /**
+         * @brief Get the Is Flipped object
+         *
+         * @return true True if the part is flipped
+         * @return false False if the part is not flipped
+         */
+        bool GetIsFlipped() const { return is_flipped_; }
+
+        /**
+         * @brief Get the Score object
+         *
+         * @return int Score for the quadrant
+         */
+        int GetScore() const { return score_; }
     protected:
         //! Quadrant number
         int quadrant_number_;
@@ -1147,93 +1195,109 @@ namespace ariac_common
          * @param penalty  Penalty score
          */
         KittingScore(std::string order_id,
-                     int kit_score,
+                     int score,
                      int tray_score,
                      std::shared_ptr<Quadrant> quadrant1,
                      std::shared_ptr<Quadrant> quadrant2,
                      std::shared_ptr<Quadrant> quadrant3,
                      std::shared_ptr<Quadrant> quadrant4,
                      int bonus,
-                     int penalty) : order_id_(order_id),
-                                    kit_score_(kit_score),
-                                    tray_score_(tray_score),
-                                    quadrant1_(quadrant1),
-                                    quadrant2_(quadrant2),
-                                    quadrant3_(quadrant3),
-                                    quadrant4_(quadrant4),
-                                    bonus_(bonus),
-                                    penalty_(penalty) {}
-
-        /**
-         * @brief Overload the << operator to print the score
-         *
-         * @param out  Output stream
-         * @param obj  KittingScore object
-         * @return std::ostream& Output stream
-         */
-        friend std::ostream &operator<<(std::ostream &out,
-                                        const KittingScore &obj)
-        {
-            out << "\n================" << std::endl;
-            out << "Score for Order " << obj.order_id_ << ": " << obj.kit_score_ << std::endl;
-            out << "================" << std::endl;
-
-            auto quad1 = obj.quadrant1_;
-            auto quad2 = obj.quadrant2_;
-            auto quad3 = obj.quadrant3_;
-            auto quad4 = obj.quadrant4_;
-
-            out << "   Correct tray score: " << obj.tray_score_ << std::endl;
-            if (obj.quadrant1_)
-                out << "   " << *obj.quadrant1_ << std::endl;
-            else
-            {
-                out << "   -----------" << std::endl;
-                out << "   Quadrant 1: Not used" << std::endl;
-            }
-
-            if (obj.quadrant2_)
-                out << "   " << *obj.quadrant2_ << std::endl;
-            else
-            {
-                out << "   -----------" << std::endl;
-                out << "   Quadrant 2: Not used" << std::endl;
-            }
-            if (obj.quadrant3_)
-                out << "   " << *obj.quadrant3_ << std::endl;
-
-            else
-            {
-                out << "   -----------" << std::endl;
-                out << "   Quadrant 3: Not used" << std::endl;
-            }
-            if (obj.quadrant4_)
-                out << "   " << *obj.quadrant4_ << std::endl;
-
-            else
-            {
-                out << "   -----------" << std::endl;
-                out << "   Quadrant 4: Not used" << std::endl;
-            }
-            out << "   -----------" << std::endl;
-            out << "   Bonus: " << obj.bonus_ << std::endl;
-            out << "   Extra Parts Penalty: " << obj.penalty_ << std::endl;
-
-            return out;
-        }
+                     int penalty,
+                     int agv,
+                     int destination_score) : order_id_(order_id),
+                                              score_(score),
+                                              tray_score_(tray_score),
+                                              quadrant1_(quadrant1),
+                                              quadrant2_(quadrant2),
+                                              quadrant3_(quadrant3),
+                                              quadrant4_(quadrant4),
+                                              bonus_(bonus),
+                                              penalty_(penalty),
+                                              agv_(agv),
+                                              destination_score_(destination_score) {}
 
         /**
          * @brief Get the Order Id object
          *
          * @return std::string Order ID
          */
-        int GetKitScore() const { return kit_score_; }
+        std::string GetOrderId() const { return order_id_; }
+
+        /**
+         * @brief Get the Order Id object
+         *
+         * @return std::string Order ID
+         */
+        int GetScore() const { return score_; }
+
+        /**
+         * @brief Get the Tray Score object
+         *
+         * @return int Tray score
+         */
+        int GetTrayScore() const { return tray_score_; }
+
+        /**
+         * @brief Get the Quadrant 1 object
+         *
+         * @return std::shared_ptr<Quadrant> Quadrant 1 object
+         */ 
+        std::shared_ptr<Quadrant> GetQuadrant1() const { return quadrant1_; }
+
+        /**
+         * @brief Get the Quadrant 2 object
+         *
+         * @return std::shared_ptr<Quadrant> Quadrant 2 object
+         */
+        std::shared_ptr<Quadrant> GetQuadrant2() const { return quadrant2_; }
+
+        /**
+         * @brief Get the Quadrant 3 object
+         *
+         * @return std::shared_ptr<Quadrant> Quadrant 3 object
+         */
+        std::shared_ptr<Quadrant> GetQuadrant3() const { return quadrant3_; }
+
+        /**
+         * @brief Get the Quadrant 4 object
+         *
+         * @return std::shared_ptr<Quadrant> Quadrant 4 object
+         */
+        std::shared_ptr<Quadrant> GetQuadrant4() const { return quadrant4_; }
+
+        /**
+         * @brief Get the Bonus object
+         *
+         * @return int Bonus score
+         */
+        int GetBonus() const { return bonus_; }
+
+        /**
+         * @brief Get the Penalty object
+         *
+         * @return int Penalty score
+         */
+        int GetPenalty() const { return penalty_; }
+
+        /**
+         * @brief Get the AGV object
+         *
+         * @return int AGV
+         */
+        int GetAGV() const { return agv_; }
+
+        /**
+         * @brief Get the Destination object
+         *
+         * @return int Destination
+         */
+        int GetDestinationScore() const { return destination_score_; }
 
     protected:
         //! Order ID
         std::string order_id_;
         //! Kit score
-        int kit_score_;
+        int score_;
         //! Tray score
         int tray_score_;
         //! Quadrant 1
@@ -1248,8 +1312,93 @@ namespace ariac_common
         int bonus_;
         //! Penalty score
         int penalty_;
+        //! AGV
+        int agv_;
+        //! Destination
+        int destination_score_;
 
     }; // class KittingScore
+
+    class ScoredAssemblyPart
+    {
+    public:
+        ScoredAssemblyPart(const Part &part,
+                           bool is_correct_color,
+                           bool is_correct_pose,
+                           geometry_msgs::msg::Vector3 &position,
+                           geometry_msgs::msg::Vector3 &orientation,
+                           int score,
+                           bool is_faulty) : part_(part),
+                                              is_correct_color_(is_correct_color),
+                                              is_correct_pose_(is_correct_pose),
+                                              position_(position),
+                                              orientation_(orientation),
+                                              score_(score),
+                                              is_faulty_(is_faulty)
+        {
+        }
+
+
+        /**
+         * @brief Get the Part
+         *
+         * @return Part Part object
+         */
+        Part GetPart() const { return part_; }
+        /**
+         * @brief Get the Score
+         *
+         * @return int Score
+         */
+        int GetScore() const { return score_; }
+        /**
+         * @brief Get the Correct Color
+         *
+         * @return bool True if the color is correct
+         */
+        bool GetCorrectColor() const { return is_correct_color_; }
+        /**
+         * @brief Get the Correct Pose
+         *
+         * @return bool True if the pose is correct
+         */
+        bool GetCorrectPose() const { return is_correct_pose_; }
+        /**
+         * @brief Get the Position
+         *
+         * @return geometry_msgs::msg::Vector3 Position
+         */
+        geometry_msgs::msg::Vector3 GetPosition() const { return position_; }
+        /**
+         * @brief Get the Orientation
+         *
+         * @return geometry_msgs::msg::Vector3 Orientation
+         */
+        geometry_msgs::msg::Vector3 GetOrientation() const { return orientation_; }
+
+        /**
+         * @brief Get the Is Faulty
+         *
+         * @return bool True if the part is faulty
+         */
+        bool GetIsFaulty() const { return is_faulty_; }
+
+    protected:
+        //! The part object
+        Part part_;
+        //! Position of the part in the insert
+        geometry_msgs::msg::Vector3 position_;
+        //! Orientation (r, p, y) of the part in the insert
+        geometry_msgs::msg::Vector3 orientation_;
+        //! Sore of the assembled part
+        int score_;
+        //! Boolean to indicate if the color is correct
+        bool is_correct_color_;
+        //! Boolean to indicate if the pose is correct
+        bool is_correct_pose_;
+        //! Boolean to indicate if the part is faulty
+        bool is_faulty_;
+    };
 
     //==============================================================================
     /**
@@ -1272,11 +1421,90 @@ namespace ariac_common
          */
         AssemblyScore(std::string order_id,
                       int insert_score,
+                      int station,
                       std::shared_ptr<ScoredAssemblyPart> battery_ptr,
                       std::shared_ptr<ScoredAssemblyPart> pump_ptr,
                       std::shared_ptr<ScoredAssemblyPart> regulator_ptr,
                       std::shared_ptr<ScoredAssemblyPart> sensor_ptr,
                       int bonus) : order_id_(order_id),
+                      station_(station),
+                                   insert_score_(insert_score),
+                                   battery_ptr_(battery_ptr),
+                                   pump_ptr_(pump_ptr),
+                                   regulator_ptr_(regulator_ptr),
+                                   sensor_ptr_(sensor_ptr),
+                                   bonus_(bonus) {}
+
+        
+
+        /**
+         * @brief Get the Order Id object
+         * 
+         * @return std::string  Order ID
+         */
+        std::string GetOrderId() const { return order_id_; }
+        /**
+         * @brief Get the Order Id object
+         *
+         * @return std::string Order ID
+         */
+        int GetScore() const { return insert_score_; }
+
+        std::shared_ptr<ScoredAssemblyPart> GetBatteryPtr() const { return battery_ptr_; }
+        std::shared_ptr<ScoredAssemblyPart> GetPumpPtr() const { return pump_ptr_; }
+        std::shared_ptr<ScoredAssemblyPart> GetRegulatorPtr() const { return regulator_ptr_; }
+        std::shared_ptr<ScoredAssemblyPart> GetSensorPtr() const { return sensor_ptr_; }
+        int GetBonus() const { return bonus_; }
+        int GetStation() const { return station_; }
+
+    protected:
+        //! Order ID
+        std::string order_id_;
+        //! Insert score
+        int insert_score_;
+        //! Station
+        int station_;
+        //! Battery
+        std::shared_ptr<ScoredAssemblyPart> battery_ptr_ = nullptr;
+        //! Pump
+        std::shared_ptr<ScoredAssemblyPart> pump_ptr_ = nullptr;
+        //! Regulator
+        std::shared_ptr<ScoredAssemblyPart> regulator_ptr_ = nullptr;
+        //! Sensor
+        std::shared_ptr<ScoredAssemblyPart> sensor_ptr_ = nullptr;
+        //! Bonus score
+        int bonus_;
+
+    }; // class AssemblyScore
+
+    //==============================================================================
+    /**
+     * @brief Class to represent the score for a combined task
+     *
+     */
+    class CombinedScore
+    {
+    public:
+        /**
+         * @brief Construct a new Kitting Score object
+         *
+         * @param order_id  ID of the order
+         * @param insert_score  Score for the insert
+         * @param battery_ptr Share pointer to the battery
+         * @param pump_ptr  Share pointer to the pump
+         * @param regulator_ptr  Share pointer to the regulator
+         * @param sensor_ptr  Share pointer to the sensor
+         * @param bonus  Bonus score
+         */
+        CombinedScore(std::string order_id,
+                      int insert_score,
+                      int station,
+                      std::shared_ptr<ScoredAssemblyPart> battery_ptr,
+                      std::shared_ptr<ScoredAssemblyPart> pump_ptr,
+                      std::shared_ptr<ScoredAssemblyPart> regulator_ptr,
+                      std::shared_ptr<ScoredAssemblyPart> sensor_ptr,
+                      int bonus) : order_id_(order_id),
+                                   station_(station),
                                    insert_score_(insert_score),
                                    battery_ptr_(battery_ptr),
                                    pump_ptr_(pump_ptr),
@@ -1285,73 +1513,11 @@ namespace ariac_common
                                    bonus_(bonus) {}
 
         /**
-         * @brief Overload the << operator to print the score
+         * @brief Get the Order Id object
          *
-         * @param out  Output stream
-         * @param obj  AssemblyScore object
-         * @return std::ostream& Output stream
+         * @return std::string  Order ID
          */
-        friend std::ostream &operator<<(std::ostream &out,
-                                        const AssemblyScore &obj)
-        {
-            out << "\n================" << std::endl;
-            out << "Score for Order " << obj.order_id_ << ": " << obj.insert_score_ << std::endl;
-            out << "================" << std::endl;
-
-            auto battery_ptr = obj.battery_ptr_;
-            auto pump_ptr = obj.pump_ptr_;
-            auto regulator_ptr = obj.regulator_ptr_;
-            auto sensor_ptr = obj.sensor_ptr_;
-
-            out << "   Part information in the insert" << std::endl;
-            // if (obj.battery_ptr_)
-            // {
-            //     out << "     Correct color?" << obj.battery_ptr_->GetCorrectColor() << std::endl;
-            // }
-            // else
-            // {
-            //     out << "   -----------" << std::endl;
-            //     out << "   Battery: Not used" << std::endl;
-            // }
-
-            //     if (obj.quadrant1_)
-            //         out << "   " << *obj.quadrant1_ << std::endl;
-            //     else
-            //     {
-            //         out << "   -----------" << std::endl;
-            //         out << "   Quadrant 1: Not used" << std::endl;
-            //     }
-
-            //     if (obj.quadrant2_)
-            //         out << "   " << *obj.quadrant2_ << std::endl;
-            //     else
-            //     {
-            //         out << "   -----------" << std::endl;
-            //         out << "   Quadrant 2: Not used" << std::endl;
-            //     }
-            //     if (obj.quadrant3_)
-            //         out << "   " << *obj.quadrant3_ << std::endl;
-
-            //     else
-            //     {
-            //         out << "   -----------" << std::endl;
-            //         out << "   Quadrant 3: Not used" << std::endl;
-            //     }
-            //     if (obj.quadrant4_)
-            //         out << "   " << *obj.quadrant4_ << std::endl;
-
-            //     else
-            //     {
-            //         out << "   -----------" << std::endl;
-            //         out << "   Quadrant 4: Not used" << std::endl;
-            //     }
-            //     out << "   -----------" << std::endl;
-            //     out << "   Bonus: " << obj.bonus_ << std::endl;
-            //     out << "   Extra Parts Penalty: " << obj.penalty_ << std::endl;
-
-            return out;
-        }
-
+        std::string GetOrderId() const { return order_id_; }
         /**
          * @brief Get the Order Id object
          *
@@ -1359,23 +1525,62 @@ namespace ariac_common
          */
         int GetScore() const { return insert_score_; }
 
+        /**
+         * @brief Get the pointer to ScoredAssemblyPart for the battery
+         *
+         * @return std::shared_ptr<ScoredAssemblyPart>  Share pointer to ScoredAssemblyPart for the battery
+         */
+        std::shared_ptr<ScoredAssemblyPart> GetBatteryPtr() const { return battery_ptr_; }
+        /**
+         * @brief Get the pointer to ScoredAssemblyPart for the pump
+         *
+         * @return std::shared_ptr<ScoredAssemblyPart>  Share pointer to ScoredAssemblyPart for the pump
+         */
+        std::shared_ptr<ScoredAssemblyPart> GetPumpPtr() const { return pump_ptr_; }
+        /**
+         * @brief Get the pointer to ScoredAssemblyPart for the regulator
+         *
+         * @return std::shared_ptr<ScoredAssemblyPart>  Share pointer to ScoredAssemblyPart for the regulator
+         */
+        std::shared_ptr<ScoredAssemblyPart> GetRegulatorPtr() const { return regulator_ptr_; }
+        /**
+         * @brief Get the pointer to ScoredAssemblyPart for the sensor
+         *
+         * @return std::shared_ptr<ScoredAssemblyPart>  Share pointer to ScoredAssemblyPart for the sensor
+         */
+        std::shared_ptr<ScoredAssemblyPart> GetSensorPtr() const { return sensor_ptr_; }
+        /**
+         * @brief Get the bonus score for the task
+         *
+         * @return int  Bonus score
+         */
+        int GetBonus() const { return bonus_; }
+        /**
+         * @brief Get the station number
+         *
+         * @return int  Station number
+         */
+        int GetStation() const { return station_; }
+
     protected:
         //! Order ID
         std::string order_id_;
         //! Insert score
         int insert_score_;
-        //! Quadrant 1
+        //! Station
+        int station_;
+        //! Battery
         std::shared_ptr<ScoredAssemblyPart> battery_ptr_ = nullptr;
-        //! Quadrant 2
+        //! Pump
         std::shared_ptr<ScoredAssemblyPart> pump_ptr_ = nullptr;
-        //! Quadrant 3
+        //! Regulator
         std::shared_ptr<ScoredAssemblyPart> regulator_ptr_ = nullptr;
-        //! Quadrant 4
+        //! Sensor
         std::shared_ptr<ScoredAssemblyPart> sensor_ptr_ = nullptr;
         //! Bonus score
         int bonus_;
 
-    }; // class AssemblyScore
+    }; // class CombinedScore
 
     //==============================================================================
     class Order
@@ -1566,6 +1771,22 @@ namespace ariac_common
         }
 
         /**
+         * @brief Set the CombinedScore object for the order
+         *
+         * @param combined_score Pointer to the CombinedScore object for the order
+         */
+        virtual void SetCombinedScore(std::shared_ptr<CombinedScore> combined_score)
+        {
+            combined_score_ = combined_score;
+        }
+
+        /**
+         * @brief Get the CombinedScore object for the order
+         * @return std::shared_ptr<CombinedScore> Pointer to the CombinedScore object for the order
+         */
+        std::shared_ptr<CombinedScore> GetCombinedScore() const { return combined_score_; }
+
+        /**
          * @brief Get the KittingScore object for the order
          * @return std::shared_ptr<KittingScore> Pointer to the KittingScore object for the order
          */
@@ -1651,6 +1872,12 @@ namespace ariac_common
          *
          */
         std::shared_ptr<AssemblyScore> assembly_score_ = nullptr;
+
+        /**
+         * @brief Score for the assembly task
+         *
+         */
+        std::shared_ptr<CombinedScore> combined_score_ = nullptr;
     };
     //-- end class Order
 
@@ -2052,74 +2279,7 @@ namespace ariac_common
         std::map<int, bool> quadrant_checked_;
     };
 
-    class ScoredAssemblyPart
-    {
-    public:
-        ScoredAssemblyPart(const Part &part,
-                           bool correct_color,
-                           bool correct_pose,
-                           geometry_msgs::msg::Vector3 &position,
-                           geometry_msgs::msg::Vector3 &orientation,
-                           int score) : part_(part),
-                                        correct_color_(correct_color),
-                                        correct_pose_(correct_pose),
-                                        position_(position),
-                                        orientation_(orientation),
-                                        score_(score)
-        {
-        }
-
-        /**
-         * @brief Get the Part
-         *
-         * @return Part Part object
-         */
-        Part GetPart() const { return part_; }
-        /**
-         * @brief Get the Score
-         *
-         * @return int Score
-         */
-        int GetScore() const { return score_; }
-        /**
-         * @brief Get the Correct Color
-         *
-         * @return bool True if the color is correct
-         */
-        bool GetCorrectColor() const { return correct_color_; }
-        /**
-         * @brief Get the Correct Pose
-         *
-         * @return bool True if the pose is correct
-         */
-        bool GetCorrectPose() const { return correct_pose_; }
-        /**
-         * @brief Get the Position
-         *
-         * @return geometry_msgs::msg::Vector3 Position
-         */
-        geometry_msgs::msg::Vector3 GetPosition() const { return position_; }
-        /**
-         * @brief Get the Orientation
-         *
-         * @return geometry_msgs::msg::Vector3 Orientation
-         */
-        geometry_msgs::msg::Vector3 GetOrientation() const { return orientation_; }
-
-    private:
-        //! The part object
-        Part part_;
-        //! Position of the part in the insert
-        geometry_msgs::msg::Vector3 position_;
-        //! Orientation (r, p, y) of the part in the insert
-        geometry_msgs::msg::Vector3 orientation_;
-        //! Sore of the assembled part
-        int score_;
-        //! Boolean to indicate if the color is correct
-        bool correct_color_;
-        //! Boolean to indicate if the pose is correct
-        bool correct_pose_;
-    };
+    
     //==============================================================================
     class InsertPart
     {

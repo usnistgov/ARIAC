@@ -209,6 +209,7 @@ namespace ariac_plugins
         void ProcessTemporalHumanChallenge();
         void ProcessOnPartPlacementHumanChallenge();
         void ProcessOnOrderSubmissionHumanChallenge();
+        void ProcessSafeZonePenalty();
         
         void UpdateSensorsHealth();
         void UpdateRobotsHealth();

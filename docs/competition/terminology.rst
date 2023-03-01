@@ -10,25 +10,25 @@ Terminology
 
     Competitor Control System (CCS)
       The competitor control system (CCS) is the software that is provided by competitors. The CCS is responsible for communicating with the competition environment and executing the tasks. 
-    
+
     ARIAC Manager (AM)
       The ARIAC manager (AM) is the interface provided to competitors. The AM includes the simulation environment and ROS interfaces.
-    
+
     Competitor
       Person competing in ARIAC. Sometimes competitor is referred as "team" or "participant".
 
     Trial
       Each run of the competition is called a trial. The configuration for that trial is defined by a configuration file (YAML). Competitors do not and must not directly read trial files but needs to use topics and services provided by the competition environment. More information on how to use the competition environment can be found in the :ref:`Communication Overview`.
 
-.. _part:
     Part
       Parts are used during pick-and-place operations. There are four available parts (battery, pump, regulator, and sensor) and each part can be one of five possible colors (red, green, blue, orange, and purple).
 
     Order
       An order is an instruction containing information on a task (`target to kitting task_`, `target to assembly task_`, or `target to combined task_`). Each task consists of at least one part of a specific color and type.
-    
+
     Kitting Task
-      Kitting is the process which groups separate but related parts(see :ref:`part`) as one unit. For a kitting task, competitors are expected to: 
+      :term:`Part`
+      Kitting is the process which groups separate but related parts as one unit. For a kitting task, competitors are expected to: 
       
       1. Place a kit tray onto one of the four AGVs.
       2. Place parts onto that kit tray in a specific quadrant.

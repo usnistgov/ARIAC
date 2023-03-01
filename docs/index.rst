@@ -34,4 +34,15 @@ Welcome to ARIAC 2023!
    competition/challenges
    competition/tf_frames
    competition/scoring
+
+.. toctree::
+   :caption: Tutorials
+   :maxdepth: 3
+   :hidden:
+
+   tutorials/tutorial_1.md
+   tutorials/tutorial_2.md
+   tutorials/tutorial_3.md
+   tutorials/tutorial_4.md
+   tutorials/tutorial_5.md
  

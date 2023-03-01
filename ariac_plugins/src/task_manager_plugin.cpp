@@ -159,7 +159,7 @@ namespace ariac_plugins
         rclcpp::Service<ariac_msgs::srv::PerformQualityCheck>::SharedPtr quality_check_service_;
         /*!< Service to get pre-assembly poses. */
         rclcpp::Service<ariac_msgs::srv::GetPreAssemblyPoses>::SharedPtr pre_assembly_poses_service_;
-        /*!< Service to penalyze the ceiling robot. */
+        /*!< Service to penalize the ceiling robot. */
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr human_safe_zone_penalty_service_;
 
         //============== PUBLISHERS =================
@@ -643,7 +643,7 @@ namespace ariac_plugins
         {
             if (!order->IsAnnounced())
             {
-                // Get the id of the order which will trigger the annoucement of order_ins
+                // Get the id of the order which will trigger the announcement of order_ins
                 auto trigger_order = order->GetOrderId();
 
                 // parse the list of submitted orders to see if the trigger order has been submitted
@@ -838,7 +838,7 @@ namespace ariac_plugins
     {
         for (const auto &sb : impl_->on_submission_sensor_blackouts_)
         {
-            // Get the id of the order which will trigger the annoucement of order_ins
+            // Get the id of the order which will trigger the announcement of order_ins
             auto trigger_order = sb->GetTriggerOrderId();
 
             // parse the list of submitted orders to see if the trigger order has been submitted
@@ -1800,7 +1800,7 @@ namespace ariac_plugins
             output += "Quadrant score: " + std::to_string(quadrant2->GetScore()) + "\n";
             output += "----------------------------------------\n";
             quadrant2->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant2->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Corect part color: No\n";
+            quadrant2->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
             quadrant2->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
             quadrant2->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
         }
@@ -1811,7 +1811,7 @@ namespace ariac_plugins
             output += "Quadrant score: " + std::to_string(quadrant3->GetScore()) + "\n";
             output += "----------------------------------------\n";
             quadrant3->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant3->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Corect part color: No\n";
+            quadrant3->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
             quadrant3->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
             quadrant3->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
         }
@@ -1822,7 +1822,7 @@ namespace ariac_plugins
             output += "Quadrant score: " + std::to_string(quadrant4->GetScore()) + "\n";
             output += "----------------------------------------\n";
             quadrant4->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant4->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Corect part color: No\n";
+            quadrant4->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
             quadrant4->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
             quadrant4->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
         }

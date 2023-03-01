@@ -30,7 +30,7 @@
           </scan>
           <range>
             <min>0.0</min>
-            <max>1.0</max>
+            <max>0.35</max>
             <resolution>0.001</resolution>
           </range>
           <!-- Using gazebo's noise instead of plugin's -->

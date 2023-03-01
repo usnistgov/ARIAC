@@ -110,9 +110,11 @@ class CompetitionInterface(Node):
         self.starter = self.create_client(Trigger, '/ariac/start_competition')
     
     def competition_state_cb(self, msg: CompetitionState):
-        self.get_logger().info(
-            f'Competition state is: {self.states[msg.competition_state]}',
-            throttle_duration_sec=1.0)
+        # Log if competition state has changed
+        if self.competition_state != msg.competition_state:
+            self.get_logger().info(
+                f'Competition state is: {self.states[msg.competition_state]}',
+                throttle_duration_sec=1.0)
         self.competition_state = msg.competition_state
 
     def start_competition(self):
@@ -200,7 +202,7 @@ cd ~/ariac_ws
 . install/setup.bash
 ```
 ``` bash
-ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial_1
+ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 ```
 
 This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 

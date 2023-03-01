@@ -104,7 +104,7 @@ public:
 
     auto current_time = ros::Time::now();
     if (current_time.toSec() - this->kitting_lock_countdown_begin.toSec() < 10.0) {
-      // ROS_INFO_STREAM("Diff: " << current_time.toSec() - this->kitting_lock_countdown_begin.toSec());
+      ROS_INFO_STREAM(current_time.toSec() - this->kitting_lock_countdown_begin.toSec() << " seconds before deactivating the kitting robot controllers" << std::endl);
       return;
     }
       
@@ -124,7 +124,7 @@ public:
     {
       if (srv.response.ok)
       {
-        ROS_INFO_STREAM("Stopped kitting controllers");
+        // ROS_INFO_STREAM("Stopped kitting controllers");
         this->stopped_kitting_controllers = true;
       }
       else
@@ -150,7 +150,7 @@ public:
 
     auto current_time = ros::Time::now();
     if (current_time.toSec() - this->gantry_lock_countdown_begin.toSec() < 10.0) {
-      // ROS_INFO_STREAM("Diff gantry: " << current_time.toSec() - this->gantry_lock_countdown_begin.toSec());
+      ROS_INFO_STREAM(current_time.toSec() - this->gantry_lock_countdown_begin.toSec() << " seconds before deactivating the gantry robot controllers" << std::endl);
       return;
     }
 
@@ -169,7 +169,7 @@ public:
     {
       if (srv.response.ok)
       {
-        ROS_INFO_STREAM("Stopped gantry controllers");
+        // ROS_INFO_STREAM("Stopped gantry controllers");
         this->stopped_gantry_controllers = true;
       }
       else
@@ -208,7 +208,7 @@ public:
     {
       if (srv.response.ok)
       {
-        ROS_INFO_STREAM("Started kitting controllers");
+        // ROS_INFO_STREAM("Started kitting controllers");
         this->stopped_kitting_controllers = false;
       }
       else
@@ -240,7 +240,7 @@ public:
     {
       if (srv.response.ok)
       {
-        ROS_INFO_STREAM("Started gantry controllers");
+        // ROS_INFO_STREAM("Started gantry controllers");
         this->stopped_gantry_controllers = false;
       }
       else

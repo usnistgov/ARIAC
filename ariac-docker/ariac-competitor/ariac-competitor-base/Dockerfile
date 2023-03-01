@@ -53,7 +53,7 @@ RUN git clone \
       -b ariac-network-melodic
 RUN git clone \ 
     https://github.com/usnistgov/ARIAC.git /home/ariac-user/ariac_ws/src \
-    -b ariac2022
+    -b finals_version
 RUN /bin/bash -c "cp -rf /tmp/gazebo_ws /home/ariac-user/ariac_ws/src"
 
 RUN /bin/bash -c "source /opt/ros/melodic/setup.bash && \

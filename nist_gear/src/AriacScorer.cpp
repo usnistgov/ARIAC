@@ -828,7 +828,6 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
   // store non-faulty products in a vector
   std::vector<nist_gear::DetectedProduct> detected_non_faulty_products;
 
-  // gzerr << "1" << std::endl;
   for (const auto& actual_product : actual_shipment.products)
   {
     if (actual_product.is_faulty)
@@ -840,7 +839,16 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
       detected_non_faulty_products.push_back(actual_product);
     }
   }
-  // gzerr << "2" << std::endl;
+
+  // Check if the shipment contains missing products
+  if (detected_non_faulty_products.size() < desired_shipment.products.size()) {
+    scorer.hasMissingProduct = true;
+  }
+
+   if (!scorer.hasMissingProduct)
+  {
+    scorer.isShipmentComplete = true;
+  }
 
   // make a copy of non-faulty products
   std::vector<nist_gear::DetectedProduct> tmp_non_faulty_products;
@@ -849,7 +857,7 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
   // compare each desired product with actual product
   for (size_t d = 0; d < desired_shipment.products.size(); ++d)
   {
-    // gzerr << "loop1" << std::endl;
+    auto desired_product_pose = desired_shipment.products[d].pose;
     auto desired_product = desired_shipment.products[d].type;
     auto desired_product_name = desired_product;
 
@@ -859,36 +867,31 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
     std::string tmp = desired_product_type.substr(9);  // get from "assembly_" to the end
     auto pos = tmp.find("_");
     desired_product_type = tmp.substr(0, pos);
-    // gzerr << "desired product type: " << desired_product_type << std::endl;/
+    // gzerr << "desired product type: " << desired_product_type << std::endl;
 
-    // get the product color
-    //-- 1. Find the last occurrence of _
+
     std::size_t found = desired_product_name.find_last_of("_");
-    //-- 2. Grab the substring after the last occurrence of _
     auto desired_product_color = desired_product_name.substr(found + 1);
     // gzerr << "desired product color: " << desired_product_color << std::endl;
 
     for (size_t a = 0; a < tmp_non_faulty_products.size(); ++a)
     {
-      // gzerr << "loop2" << std::endl;
       ariac::BriefcaseProduct briefcaseProduct;
       auto actual_product = tmp_non_faulty_products[a].type;
       auto actual_product_name = actual_product;
+      auto actual_product_pose = tmp_non_faulty_products[a].pose;
       // in the case the actual_product_name has the following format: agv2::tray_2::assembly_battery_blue
       // auto pos = actual_product.rfind(':');
       // if (pos != std::string::npos) {
       //   actual_product_name.erase(0, pos + 1);
       // }
-      // gzerr << "loop2-1" << std::endl;
       // gzerr << "actual product name: " << actual_product_name << std::endl;
       std::size_t last_underscore_occurrence = actual_product_name.find_last_of("_");
-      // auto actual_product_color = actual_product_name.substr(found + 1);
       std::string actual_product_color = actual_product_name.substr(last_underscore_occurrence + 1);
       // gzerr << "actual product color: " << actual_product_color << std::endl;  // assembly_pump_blue
 
       std::size_t pos = actual_product_name.find("assembly_");  // position of "assembly_" in actual_product_name
       std::string tmp = actual_product_name.substr(9);          // get from "assembly_" to the end
-      // gzerr << "tmp: " << tmp << std::endl;
 
       pos = tmp.find("_");
       std::string actual_product_type = tmp.substr(0, pos);
@@ -900,122 +903,26 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
       // correct type
       if (desired_product_type.compare(actual_product_type) == 0)
       {
+        briefcaseProduct.isProductCorrectType = true;
+        scorer.numberOfProductsWithCorrectType++;
         // correct color
         if (desired_product_color.compare(actual_product_color) == 0)
         {
           briefcaseProduct.isProductCorrectColor = true;
           scorer.numberOfProductsWithCorrectColor++;
         }
-        briefcaseProduct.isProductCorrectType = true;
-        scorer.numberOfProductsWithCorrectType++;
-        // gzerr << "loop2-4" << std::endl;
-        mapOfBriefcaseProducts.insert(
-            std::pair<std::string, ariac::BriefcaseProduct>(actual_product, briefcaseProduct));
-        // gzerr << "loop2-5" << std::endl;
-        tmp_non_faulty_products.erase(tmp_non_faulty_products.begin() + a);
-        // gzerr << "loop2-6" << std::endl;
-        break;
-      }
-    }
-  }
-
-  // Map of product type to indexes in desired products (first) and indexes in non faulty actual products (second)
-  std::map<std::string, std::pair<std::vector<size_t>, std::vector<size_t>>> product_type_map;
-
-  for (size_t d = 0; d < desired_shipment.products.size(); ++d)
-  {
-    const auto& desired_product = desired_shipment.products[d];
-    auto& mapping = product_type_map[desired_product.type];
-    mapping.first.push_back(d);
-  }
-  // gzerr << "4" << std::endl;
-
-  for (size_t a = 0; a < detected_non_faulty_products.size(); ++a)
-  {
-    auto& actual_product = detected_non_faulty_products[a];
-
-    if (0u == product_type_map.count(actual_product.type))
-    {
-      // since desired products were put into the type map first, this product must be unwanted
-      scorer.hasUnwantedProduct = true;
-      continue;
-    }
-    auto& mapping = product_type_map.at(actual_product.type);
-    mapping.second.push_back(a);
-  }
-  // gzerr << "5" << std::endl;
-
-  for (const auto& type_pair : product_type_map)
-  {
-    const std::vector<size_t>& desired_indexes = type_pair.second.first;
-    const std::vector<size_t>& actual_indexes = type_pair.second.second;
-    auto desired_product_name = type_pair.first;
-    // ROS_WARN_STREAM("desired_indexes: "<< desired_indexes.size());
-    // ROS_WARN_STREAM("actual_indexes: "<< actual_indexes.size());
-
-    // products are missing
-    if (desired_indexes.size() > actual_indexes.size())
-    {
-      scorer.hasMissingProduct = true;
-    }
-    // more products than needed
-    else if (desired_indexes.size() < actual_indexes.size())
-    {
-      scorer.hasUnwantedProduct = true;
-    }
-
-    // no point in trying to score this type if there are none delivered
-    if (actual_indexes.empty())
-    {
-      continue;
-    }
-
-    double contributing_pose_score = 0;
-    size_t num_indices = std::max(desired_indexes.size(), actual_indexes.size());
-
-    std::vector<size_t> permutation(num_indices);
-    for (size_t i = 0; i < num_indices; ++i)
-    {
-      permutation[i] = i;
-    }
-
-    // Now iterate through all permutations of actual matched with desired to find the highest pose score
-    ////////////////////////////////////
-    // Check pose of desired vs. actual
-    ////////////////////////////////////
-    std::string briefcase_actual_product{};
-    do
-    {
-      double permutation_pose_score = 0;
-      for (size_t d = 0; d < desired_indexes.size(); ++d)
-      {
-        const size_t actual_index_index = permutation[d];
-        if (actual_index_index >= actual_indexes.size())
-        {
-          // There were fewer actual products than the order called for
-          continue;
+        else {
+          scorer.hasUnwantedProduct = true;
         }
-        const auto& desired_product = desired_shipment.products[desired_indexes[d]];
-        const auto& actual_product = detected_non_faulty_products[actual_indexes[actual_index_index]];
-        briefcase_actual_product = actual_product.type;
-        // ROS_WARN_STREAM("desired_product: " << desired_product.type);
 
-        //---------------------------------
-        std::size_t pos = actual_product.type.find("assembly_");  // position of "assembly_" in actual_product_name
-        std::string tmp = actual_product.type.substr(9);          // get from "assembly_" to the end
-        // gzerr << "tmp: " << tmp << std::endl;
-        pos = tmp.find("_");
-        std::string ACTUALPRODUCTTYPE = tmp.substr(0, pos);
-        //--------------------------------
 
-        // ROS_WARN_STREAM("actual_product: " << ACTUALPRODUCTTYPE);
-
+        //Check the pose of the actual product with the pose of the desired product
         // Add points for each product in the correct pose
         const double translation_target = 0.02;  // 2 cm
         const double orientation_target = 0.2;   // 0.1 rad
         // get translation distance
-        ignition::math::Vector3d posnDiff(desired_product.pose.position.x - actual_product.pose.position.x,
-                                          desired_product.pose.position.y - actual_product.pose.position.y, 0);
+        ignition::math::Vector3d posnDiff(desired_product_pose.position.x - actual_product_pose.position.x,
+                                          desired_product_pose.position.y - actual_product_pose.position.y, 0);
         // ROS_WARN_STREAM("Position -- desired_product.pose: " <<
         // desired_product.pose.position.x << ", " << desired_product.pose.position.y);
         // ROS_WARN_STREAM("Position -- actual_product.pose: " <<
@@ -1032,12 +939,12 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
         }
 
         ignition::math::Quaterniond orderOrientation(
-            desired_product.pose.orientation.w, desired_product.pose.orientation.x, desired_product.pose.orientation.y,
-            desired_product.pose.orientation.z);
+            desired_product_pose.orientation.w, desired_product_pose.orientation.x, desired_product_pose.orientation.y,
+            desired_product_pose.orientation.z);
 
-        ignition::math::Quaterniond objOrientation(actual_product.pose.orientation.w, actual_product.pose.orientation.x,
-                                                   actual_product.pose.orientation.y,
-                                                   actual_product.pose.orientation.z);
+        ignition::math::Quaterniond objOrientation(actual_product_pose.orientation.w, actual_product_pose.orientation.x,
+                                                   actual_product_pose.orientation.y,
+                                                   actual_product_pose.orientation.z);
 
         // Filter products that aren't in the appropriate orientation (loosely).
         // If the quaternions represent the same orientation, q1 = +-q2 => q1.dot(q2) = +-1
@@ -1062,87 +969,22 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
           continue;
         }
 
-        permutation_pose_score += 1.0;
+        // it->second.isProductCorrectPose = true;
 
-        // double angleDiff;
-        // // For sensors and regulators, check the roll only.
-        // if (ACTUALPRODUCTTYPE == "sensor" || ACTUALPRODUCTTYPE == "regulator")
-        // {
-        //   ROS_WARN_STREAM("----------------------------");
-        //   // Filter the yaw based on a threshold set in radians (more user-friendly).
-        //   // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
-        //   ROS_WARN_STREAM("current roll -- " << objOrientation.Roll());
-        //   ROS_WARN_STREAM("expected roll -- " << orderOrientation.Roll());
-        //   ROS_WARN_STREAM("-----------");
-        //   angleDiff = objOrientation.Roll() - orderOrientation.Roll();
-        //   ROS_WARN_STREAM("angleDiff -- " << angleDiff);
-        //   ROS_WARN_STREAM("angleDiff - 2PI -- " << std::abs(std::abs(angleDiff) - 2 * M_PI));
-        //   ROS_WARN_STREAM("orientation_target -- " << orientation_target);
-        //   // ROS_WARN_STREAM("-----------");
+        scorer.numberOfProductsWithCorrectPose++;
+        briefcaseProduct.isProductCorrectPose = true;
 
-        //   if ((std::abs(angleDiff) < orientation_target) ||
-        //       (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
-        //   {
-        //     permutation_pose_score += 1.0;
-        //     ROS_WARN_STREAM("GOOD ROLL");
-        //     ROS_WARN_STREAM("----------------------------");
-        //   }
-        //   else
-        //   {
-        //     ROS_WARN_STREAM("BAD ROLL");
-        //     ROS_WARN_STREAM("----------------------------");
-        //   }
-        // }
-        // else if (ACTUALPRODUCTTYPE == "battery" || ACTUALPRODUCTTYPE == "pump")
-        // {
-        //   ROS_WARN_STREAM("----------------------------");
-        // // Filter the yaw based on a threshold set in radians (more user-friendly).
-        // // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
-        // ROS_WARN_STREAM("current yaw -- " << objOrientation.Yaw());
-        // ROS_WARN_STREAM("expected yaw -- " << orderOrientation.Yaw());
-        // ROS_WARN_STREAM("-----------");
-        // angleDiff = objOrientation.Yaw() - orderOrientation.Yaw();
-        // ROS_WARN_STREAM("angleDiff -- " << angleDiff);
-        // ROS_WARN_STREAM("angleDiff - 2PI -- " << std::abs(std::abs(angleDiff) - 2 * M_PI));
-        // ROS_WARN_STREAM("orientation_target -- " << orientation_target);
-        // // ROS_WARN_STREAM("-----------");
-
-        // if ((std::abs(angleDiff) < orientation_target) ||
-        //     (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
-        // {
-        //   permutation_pose_score += 1.0;
-        //   ROS_WARN_STREAM("GOOD Yaw");
-        //   ROS_WARN_STREAM("----------------------------");
-        // }
-        // else
-        // {
-        //   ROS_WARN_STREAM("BAD Yaw");
-        //   ROS_WARN_STREAM("----------------------------");
-        // }
-        // }
+        mapOfBriefcaseProducts.insert(
+            std::pair<std::string, ariac::BriefcaseProduct>(actual_product, briefcaseProduct));
+        
+        tmp_non_faulty_products.erase(tmp_non_faulty_products.begin() + a);
+        
+        break;
       }
+    }
 
-      if (permutation_pose_score > contributing_pose_score)
-      {
-        contributing_pose_score = permutation_pose_score;
 
-        if (contributing_pose_score > 0)
-        {
-          // ROS_WARN_STREAM("Product type: " <<  briefcase_actual_product);
-          std::map<std::string, ariac::BriefcaseProduct>::iterator it =
-              mapOfBriefcaseProducts.find(briefcase_actual_product);
-          if (it != mapOfBriefcaseProducts.end())
-          {
-            it->second.isProductCorrectPose = true;
-            scorer.numberOfProductsWithCorrectPose++;
-          }
-        }
-      }
-    } while (std::next_permutation(permutation.begin(), permutation.end()));
-
-    // unsigned nbOfProductsInBriefcase = mapOfBriefcaseProducts.size();
-    // scoring for each product
-    for (auto& product : mapOfBriefcaseProducts)
+     for (auto& product : mapOfBriefcaseProducts)
     {
       // +2pts if correct pose AND correct type
       if (product.second.isProductCorrectPose && product.second.isProductCorrectType)
@@ -1167,19 +1009,288 @@ ariac::AssemblyShipmentScore AriacScorer::GetAssemblyShipmentScore(
       }
     }
 
-    if (nbOfSuccessfulProducts == desired_shipment.products.size())
+    if (nbOfSuccessfulProducts == desired_shipment.products.size()) {
       scorer.allProductsBonus = 4 * nbOfSuccessfulProducts;
-  }  // end processing each part
+    }
+    }  // end processing each part
 
-  // gzerr << "6" << std::endl;
 
-  if (!scorer.hasMissingProduct)
-  {
-    scorer.isShipmentComplete = true;
-  }
+  // // Map of product type to indexes in desired products (first) and indexes in non faulty actual products (second)
+  // std::map<std::string, std::pair<std::vector<size_t>, std::vector<size_t>>> product_type_map;
+
+  // for (size_t d = 0; d < desired_shipment.products.size(); ++d)
+  // {
+  //   const auto& desired_product = desired_shipment.products[d];
+  //   auto& mapping = product_type_map[desired_product.type];
+  //   mapping.first.push_back(d);
+  // }
+  // // gzerr << "4" << std::endl;
+
+  // for (size_t a = 0; a < detected_non_faulty_products.size(); ++a)
+  // {
+  //   auto& actual_product = detected_non_faulty_products[a];
+
+  //   if (0u == product_type_map.count(actual_product.type))
+  //   {
+  //     // since desired products were put into the type map first, this product must be unwanted
+  //     scorer.hasUnwantedProduct = true;
+  //     continue;
+  //   }
+  //   auto& mapping = product_type_map.at(actual_product.type);
+  //   mapping.second.push_back(a);
+  // }
+  // // gzerr << "5" << std::endl;
+
+  // for (const auto& type_pair : product_type_map)
+  // {
+  //   const std::vector<size_t>& desired_indexes = type_pair.second.first;
+  //   const std::vector<size_t>& actual_indexes = type_pair.second.second;
+  //   auto desired_product_name = type_pair.first;
+  //   // ROS_WARN_STREAM("desired_indexes: "<< desired_indexes.size());
+  //   // ROS_WARN_STREAM("actual_indexes: "<< actual_indexes.size());
+
+  //   // products are missing
+  //   if (desired_indexes.size() > actual_indexes.size())
+  //   {
+  //     scorer.hasMissingProduct = true;
+  //   }
+  //   // more products than needed
+  //   else if (desired_indexes.size() < actual_indexes.size())
+  //   {
+  //     scorer.hasUnwantedProduct = true;
+  //   }
+
+  //   // no point in trying to score this type if there are none delivered
+  //   if (actual_indexes.empty())
+  //   {
+  //     continue;
+  //   }
+
+  //   double contributing_pose_score = 0;
+  //   size_t num_indices = std::max(desired_indexes.size(), actual_indexes.size());
+
+  //   std::vector<size_t> permutation(num_indices);
+  //   for (size_t i = 0; i < num_indices; ++i)
+  //   {
+  //     permutation[i] = i;
+  //   }
+
+  //   // Now iterate through all permutations of actual matched with desired to find the highest pose score
+  //   ////////////////////////////////////
+  //   // Check pose of desired vs. actual
+  //   ////////////////////////////////////
+  //   std::string briefcase_actual_product{};
+  //   do
+  //   {
+  //     std::string ACTUAL_PRODUCT_TYPE;
+  //     double permutation_pose_score = 0;
+  //     for (size_t d = 0; d < desired_indexes.size(); ++d)
+  //     {
+  //       const size_t actual_index_index = permutation[d];
+  //       if (actual_index_index >= actual_indexes.size())
+  //       {
+  //         // There were fewer actual products than the order called for
+  //         continue;
+  //       }
+  //       const auto& desired_product = desired_shipment.products[desired_indexes[d]];
+  //       const auto& actual_product = detected_non_faulty_products[actual_indexes[actual_index_index]];
+  //       briefcase_actual_product = actual_product.type;
+  //       // ROS_WARN_STREAM("desired_product: " << desired_product.type);
+
+  //       //---------------------------------
+  //       std::size_t pos = actual_product.type.find("assembly_");  // position of "assembly_" in actual_product_name
+  //       // gzerr << "pos: " <<  pos << std::endl;
+  //       std::string tmp = actual_product.type.substr(9);          // get from "assembly_" to the end
+  //       // gzerr << "tmp: " <<  tmp << std::endl;
+  //       // gzerr << "tmp: " << tmp << std::endl;
+  //       pos = tmp.find("_");
+  //       // gzerr << "pos: " <<  pos << std::endl;
+  //       ACTUAL_PRODUCT_TYPE = tmp.substr(0, pos);
+  //       gzerr << "Actual product type: " <<  ACTUAL_PRODUCT_TYPE << std::endl;
+  //       //--------------------------------
+
+  //       // ROS_WARN_STREAM("actual_product: " << ACTUALPRODUCTTYPE);
+
+  //       // Add points for each product in the correct pose
+  //       const double translation_target = 0.02;  // 2 cm
+  //       const double orientation_target = 0.2;   // 0.1 rad
+  //       // get translation distance
+  //       ignition::math::Vector3d posnDiff(desired_product.pose.position.x - actual_product.pose.position.x,
+  //                                         desired_product.pose.position.y - actual_product.pose.position.y, 0);
+  //       // ROS_WARN_STREAM("Position -- desired_product.pose: " <<
+  //       // desired_product.pose.position.x << ", " << desired_product.pose.position.y);
+  //       // ROS_WARN_STREAM("Position -- actual_product.pose: " <<
+  //       // actual_product.pose.position.x << ", " << actual_product.pose.position.y);
+
+  //       const double distance = posnDiff.Length();
+  //       // ROS_WARN_STREAM("Position -- distance: " << distance);
+
+  //       if (distance > translation_target)
+  //       {
+  //         // Skipping product because translation error is too big
+  //         // ROS_WARN_STREAM("p -- SKIPPING PRODUCT ");
+  //         continue;
+  //       }
+
+  //       ignition::math::Quaterniond orderOrientation(
+  //           desired_product.pose.orientation.w, desired_product.pose.orientation.x, desired_product.pose.orientation.y,
+  //           desired_product.pose.orientation.z);
+
+  //       ignition::math::Quaterniond objOrientation(actual_product.pose.orientation.w, actual_product.pose.orientation.x,
+  //                                                  actual_product.pose.orientation.y,
+  //                                                  actual_product.pose.orientation.z);
+
+  //       // Filter products that aren't in the appropriate orientation (loosely).
+  //       // If the quaternions represent the same orientation, q1 = +-q2 => q1.dot(q2) = +-1
+  //       const double orientationDiff = objOrientation.Dot(orderOrientation);
+  //       // TODO(zeid): this value can probably be derived using relationships between
+  //       // euler angles and quaternions.
+  //       const double quaternionDiffThresh = 0.05;
+
+  //       // ROS_WARN_STREAM("Orientation -- desired_product: " <<
+  //       // desired_product.pose.positoriention.x << ", " << desired_product.pose.position.y);
+  //       // ROS_WARN_STREAM("Orientation -- actual_product: " <<
+  //       // actual_product.pose.position.x << ", " << actual_product.pose.position.y);
+
+  //       auto diff_orientation = std::abs(orientationDiff) < (1.0 - quaternionDiffThresh);
+  //       // ROS_WARN_STREAM("orientationDiff: " << std::abs(orientationDiff));
+  //       // ROS_WARN_STREAM("1.0 - quaternionDiffThresh: " << 1.0 - quaternionDiffThresh);
+
+  //       if (std::abs(orientationDiff) < (1.0 - quaternionDiffThresh))
+  //       {
+  //         // ROS_WARN_STREAM("o -- SKIPPING PRODUCT ");
+  //         // Skipping product because it is not in the correct orientation (roughly)
+  //         continue;
+  //       }
+
+  //       permutation_pose_score += 1.0;
+
+  //       // double angleDiff;
+  //       // // For sensors and regulators, check the roll only.
+  //       // if (ACTUALPRODUCTTYPE == "sensor" || ACTUALPRODUCTTYPE == "regulator")
+  //       // {
+  //       //   ROS_WARN_STREAM("----------------------------");
+  //       //   // Filter the yaw based on a threshold set in radians (more user-friendly).
+  //       //   // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
+  //       //   ROS_WARN_STREAM("current roll -- " << objOrientation.Roll());
+  //       //   ROS_WARN_STREAM("expected roll -- " << orderOrientation.Roll());
+  //       //   ROS_WARN_STREAM("-----------");
+  //       //   angleDiff = objOrientation.Roll() - orderOrientation.Roll();
+  //       //   ROS_WARN_STREAM("angleDiff -- " << angleDiff);
+  //       //   ROS_WARN_STREAM("angleDiff - 2PI -- " << std::abs(std::abs(angleDiff) - 2 * M_PI));
+  //       //   ROS_WARN_STREAM("orientation_target -- " << orientation_target);
+  //       //   // ROS_WARN_STREAM("-----------");
+
+  //       //   if ((std::abs(angleDiff) < orientation_target) ||
+  //       //       (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
+  //       //   {
+  //       //     permutation_pose_score += 1.0;
+  //       //     ROS_WARN_STREAM("GOOD ROLL");
+  //       //     ROS_WARN_STREAM("----------------------------");
+  //       //   }
+  //       //   else
+  //       //   {
+  //       //     ROS_WARN_STREAM("BAD ROLL");
+  //       //     ROS_WARN_STREAM("----------------------------");
+  //       //   }
+  //       // }
+  //       // else if (ACTUALPRODUCTTYPE == "battery" || ACTUALPRODUCTTYPE == "pump")
+  //       // {
+  //       //   ROS_WARN_STREAM("----------------------------");
+  //       // // Filter the yaw based on a threshold set in radians (more user-friendly).
+  //       // // Account for wrapping in angles. E.g. -pi compared with pi should "pass".
+  //       // ROS_WARN_STREAM("current yaw -- " << objOrientation.Yaw());
+  //       // ROS_WARN_STREAM("expected yaw -- " << orderOrientation.Yaw());
+  //       // ROS_WARN_STREAM("-----------");
+  //       // angleDiff = objOrientation.Yaw() - orderOrientation.Yaw();
+  //       // ROS_WARN_STREAM("angleDiff -- " << angleDiff);
+  //       // ROS_WARN_STREAM("angleDiff - 2PI -- " << std::abs(std::abs(angleDiff) - 2 * M_PI));
+  //       // ROS_WARN_STREAM("orientation_target -- " << orientation_target);
+  //       // // ROS_WARN_STREAM("-----------");
+
+  //       // if ((std::abs(angleDiff) < orientation_target) ||
+  //       //     (std::abs(std::abs(angleDiff) - 2 * M_PI) <= orientation_target))
+  //       // {
+  //       //   permutation_pose_score += 1.0;
+  //       //   ROS_WARN_STREAM("GOOD Yaw");
+  //       //   ROS_WARN_STREAM("----------------------------");
+  //       // }
+  //       // else
+  //       // {
+  //       //   ROS_WARN_STREAM("BAD Yaw");
+  //       //   ROS_WARN_STREAM("----------------------------");
+  //       // }
+  //       // }
+  //     }
+
+  //     if (permutation_pose_score > contributing_pose_score)
+  //     {
+  //       contributing_pose_score = permutation_pose_score;
+
+  //       if (contributing_pose_score > 0)
+  //       {
+          
+          
+  //         std::map<std::string, ariac::BriefcaseProduct>::iterator it =
+  //           mapOfBriefcaseProducts.find(briefcase_actual_product);
+
+  //         for (auto& product : mapOfBriefcaseProducts) {
+  //           gzerr << "Desired type: " << product.second.productType << std::endl;
+  //           if (product.second.productType == ACTUAL_PRODUCT_TYPE) {
+  //             scorer.numberOfProductsWithCorrectPose++;
+  //           }
+  //         }
+
+          
+  //         // if (it != mapOfBriefcaseProducts.end())
+  //         // {
+  //         //   it->second.isProductCorrectPose = true;
+  //         //   scorer.numberOfProductsWithCorrectPose++;
+  //         // }
+  //       }
+  //     }
+  //   } while (std::next_permutation(permutation.begin(), permutation.end()));
+
+  //   // unsigned nbOfProductsInBriefcase = mapOfBriefcaseProducts.size();
+  //   // scoring for each product
+  //   for (auto& product : mapOfBriefcaseProducts)
+  //   {
+  //     // +2pts if correct pose AND correct type
+  //     if (product.second.isProductCorrectPose && product.second.isProductCorrectType)
+  //     {
+  //       product.second.productSuccess = 2;
+  //       // +1pt if correct pose AND correct type AND correct color
+  //       if (product.second.isProductCorrectColor)
+  //       {
+  //         product.second.productSuccess++;
+  //       }
+  //     }
+  //   }
+
+  //   unsigned nbOfSuccessfulProducts{ 0 };
+  //   // scoring for all products bonus
+  //   for (auto& product : mapOfBriefcaseProducts)
+  //   {
+  //     // +2pts if correct pose AND correct type
+  //     if (product.second.productSuccess == 3)
+  //     {
+  //       nbOfSuccessfulProducts++;
+  //     }
+  //   }
+
+  //   if (nbOfSuccessfulProducts == desired_shipment.products.size())
+  //     scorer.allProductsBonus = 4 * nbOfSuccessfulProducts;
+  // }  // end processing each part
+
+  // // gzerr << "6" << std::endl;
+
+  // if (!scorer.hasMissingProduct)
+  // {
+  //   scorer.isShipmentComplete = true;
+  // }
 
   scorer.briefcaseProducts = mapOfBriefcaseProducts;
-  // gzerr << "7" << std::endl;
+  // // gzerr << "7" << std::endl;
 
   return scorer;
 }

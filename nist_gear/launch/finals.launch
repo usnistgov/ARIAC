@@ -1,0 +1,8 @@
+<launch>
+    <arg name="trial" default="kitting_a" />
+    <node name="ariac_sim" pkg="nist_gear" type="gear.py" args="
+          --development-mode
+          --load_moveit:=true
+          -f $(find nist_gear)/config/trial_config/finals/$(arg trial).yaml
+          $(find test_competitor)/config/sensors_config/assembly_sensors.yaml" required="true" output="screen" />
+</launch>

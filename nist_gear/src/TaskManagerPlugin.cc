@@ -2228,6 +2228,7 @@ void TaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time simTime)
 
   if (new_order.get_type().compare("unwanted_products") == 0)
   {
+    // gzerr << "Has Unwanted Products" << std::endl;
     has_unwanted_products = true;
     nb_of_parts_unwanted = new_order.get_part_number();
   }
@@ -2264,7 +2265,7 @@ void TaskManagerPlugin::ProcessOrdersToAnnounce(gazebo::common::Time simTime)
     //   gzdbg << "has_wanted_products\n";
     // }
     // if (has_unwanted_products) {
-    //   gzdbg << "has_unwanted_products\n";
+    //   // gzdbg << "has_unwanted_products\n";
     // }
     // if (has_on_kitting_submission) {
     //   gzdbg << "has_on_kitting_submission\n";

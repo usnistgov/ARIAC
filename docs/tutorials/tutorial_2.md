@@ -22,7 +22,7 @@ sensors:
     type: break_beam
     visualize_fov: true
     pose:
-      xyz: [-0.38, 3.5, 0.9]
+      xyz: [-0.36, 3.5, 0.88]
       rpy: [0, 0, pi]
 ```
 This will add a break beam sensor named `breakbeam_0` to a spot near the start of the conveyor belt. 

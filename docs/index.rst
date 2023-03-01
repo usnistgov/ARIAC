@@ -40,6 +40,9 @@ Welcome to ARIAC 2023!
    :maxdepth: 3
    :hidden:
 
-   tutorials/creating_a_competition_pkg.md
-   tutorials/reading_data_from_a_sensor.md
+   tutorials/tutorial_1.md
+   tutorials/tutorial_2.md
+   tutorials/tutorial_3.md
+   tutorials/tutorial_4.md
+   tutorials/tutorial_5.md
  

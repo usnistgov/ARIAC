@@ -331,8 +331,8 @@ def runGUI(): # runs the entire gui
     #Parts frame
     partFlag=tk.StringVar()
     partFlag.set('0')
-    partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts, partOrdCounter)
     agvTrayWidgets(partsFrame, agvTrayWidgetsArr, agvTrayValsArr)
+    partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts, partOrdCounter)
 
     #Bins frame
     bin1Slots=[] # holds the available slots for bin1

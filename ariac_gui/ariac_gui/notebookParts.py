@@ -2,10 +2,25 @@ import tkinter as tk
 from functools import partial
 from ariac_gui.newClasses import PartsClass
 from ariac_gui.validationFunctions import *
-agvTrayIds=["0","1","2","3","4","5","6", "7", "8", "9"] # all options for tray ids for agvs
+agvTrayIds=["","0","1","2","3","4","5","6", "7", "8", "9"] # all options for tray ids for agvs
 agvList=["agv1", "agv2", "agv3", "agv4"]
 partTypes=["sensor", "pump", "regulator", "battery"]
 partColors=['green', 'red', 'purple','blue','orange']
+
+def updatePartAGVOptions(agvTrayValsArr, addPartButton,agvPartMenu,agvSelection,a,b,c):
+    availableAGVs=[]
+    for i in range(4):
+        if agvTrayValsArr[i].get()!="":
+            availableAGVs.append(agvList[i])
+    if len(availableAGVs)==0:
+        addPartButton.config(state=tk.DISABLED)
+    else:
+        addPartButton.config(state=tk.NORMAL)
+        agvMen=agvPartMenu['menu']
+        agvMen.delete(0, 'end')
+        for agv in availableAGVs:
+            agvMen.add_command(label=agv, command=lambda agv=agv: agvSelection.set(agv))
+
 def agvTrayWidgets(partsFrame, agvTrayWidgetsArr, agvTrayValsArr):
     agv1TrayId=tk.StringVar()
     agv1TrayId.set(agvTrayIds[0])
@@ -163,7 +178,7 @@ def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants
     partWidgets.append(partRotationLabel)
     partWidgets.append(partRotationEntry)
     show_option_menu=partial(switchPartMenu,agv1Quadrants,partVals, partWidgets, partFlag, agvTrayWidgetsArr, agvTrayValsArr)
-    switchPartMenuButton=tk.Button(partsFrame, text="Add Part", command=show_option_menu)
+    switchPartMenuButton=tk.Button(partsFrame, text="Add Part", command=show_option_menu, state=tk.DISABLED)
     switchPartMenuButton.pack(side = tk.BOTTOM)
     save_option=partial(saveAgvPart, agvSelection,partWidgets, partFlag, partVals, partQuadrant, agv1Quadrants, agv2Quadrants, agv3Quadrants, agv4Quadrants, agvTrayWidgetsArr, agvTrayValsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts, partOrdCounter)
     saveOptionButton=tk.Button(partsFrame, text="Save Part", command=save_option)
@@ -175,6 +190,11 @@ def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants
     agv_update_menu=partial(updateAgvQudrants,agvSelection, partQuadrantSelectMenu, partQuadrant, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants)
     agvSelection.trace('w', agv_update_menu)
     partVals[0].trace('w',switch_buttons)
+    update_agv_menu=partial(updatePartAGVOptions,agvTrayValsArr, switchPartMenuButton,agvSelectMenu,agvSelection)
+    agvTrayValsArr[0].trace('w',update_agv_menu)
+    agvTrayValsArr[1].trace('w',update_agv_menu)
+    agvTrayValsArr[2].trace('w',update_agv_menu)
+    agvTrayValsArr[3].trace('w',update_agv_menu)
 
 def updateAgvQudrants(agvSelection, quadrantMenu, currentQuadrant, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,a,b,c):
     '''Updates the available quadrants for each agv'''

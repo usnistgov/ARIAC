@@ -65,7 +65,7 @@ def updatePartOrdLabel(agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts
             c+=1
     partOrdLabel.config(text=newText)
 
-def updateChallengeLabel(robotMalfunctions, faultyParts, droppedParts, sensorBlackouts,challengesLabel, a,b,c):
+def updateChallengeLabel(robotMalfunctions, faultyParts, droppedParts, sensorBlackouts,humanChallenges,challengesLabel, a,b,c):
     newText="Challenges:\nRobot Malfunction challenges:\n"
     for rm in robotMalfunctions:
         robotsToDisable=[]
@@ -117,6 +117,12 @@ def updateChallengeLabel(robotMalfunctions, faultyParts, droppedParts, sensorBla
             sensorsToDisable.append("logical_camera")
         newText+=" Sensors: "+", ".join(sensorsToDisable)+"\n"
     if len(sensorBlackouts)==0:
+        newText+="NONE\n"
+    behaviorOptions=["antagonistic", "indifferent","helpful"]
+    newText+="\nHuman challenges:\n"
+    for ch in humanChallenges:
+        newText+="Behavior: "+behaviorOptions[ch.behavior]+"\n"
+    if len(humanChallenges)==0:
         newText+="NONE\n"
     challengesLabel.config(text=newText)
 
@@ -354,7 +360,7 @@ def runGUI(): # runs the entire gui
     partOrdLabel=tk.Label(mainFrame, text=partOrdText)
     partOrdLabel.grid(column=2, row=0,sticky=tk.E+tk.W+tk.N+tk.S)
 
-    challengesText="Challenges:\nRobot Malfunction challenges:\nNONE\nFaulty Part challenges:\nNONE\nDropped Part challenges:\nNONE\nSensor Blackout challenges:\nNONE"
+    challengesText="Challenges:\nRobot Malfunction challenges:\nNONE\nFaulty Part challenges:\nNONE\nDropped Part challenges:\nNONE\nSensor Blackout challenges:\nNONE\nHuman challenges:\nNONE\n"
     challengesLabel=tk.Label(mainFrame, text=challengesText)
     challengesLabel.grid(column=3, row=0,sticky=tk.E+tk.W+tk.N+tk.S)
     cancel_main_command=partial(cancel_wind, mainWind, cancelFlag)
@@ -366,7 +372,7 @@ def runGUI(): # runs the entire gui
     #Trace functions
     update_part_ord_label=partial(updatePartOrdLabel,agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts, orderMSGS,partOrdLabel)
     partOrdCounter.trace('w',update_part_ord_label)
-    update_challenge_label=partial(updateChallengeLabel,robotMalfunctions, faultyParts, droppedParts, sensorBlackouts,challengesLabel)
+    update_challenge_label=partial(updateChallengeLabel,robotMalfunctions, faultyParts, droppedParts, sensorBlackouts,humanChallenges,challengesLabel)
     challengeCounter.trace('w', update_challenge_label)
     
     #Formatting
@@ -485,13 +491,13 @@ def runGUI(): # runs the entire gui
             o.write("    announcement:\n")
             if orderConditions[counter].type==0:
                 o.write("      time_condition: "+str(orderConditions[counter].time_condition.seconds)+"\n")
-            elif malf.condition.type==1:
-                o.write("      part_type: \'"+getPartName(orderConditions[counter].condition.part_place_condition.part.type)+"\'\n")
-                o.write("      part_color: \'"+getPartColor(orderConditions[counter].condition.part_place_condition.part.color)+"\'\n")
-                o.write("      agv: "+str(orderConditions[counter].condition.part_place_condition.agv))
-            elif malf.condition.type==2:
+            elif orderConditions[counter].type==1:
+                o.write("      part_type: \'"+getPartName(orderConditions[counter].part_place_condition.part.type)+"\'\n")
+                o.write("      part_color: \'"+getPartColor(orderConditions[counter].part_place_condition.part.color)+"\'\n")
+                o.write("      agv: "+str(orderConditions[counter].part_place_condition.agv))
+            elif orderConditions[counter].type==2:
                 o.write("      submission_condition:\n")
-                o.write("        order_id: \'"+orderConditions[counter].condition.submission_condition.order_id+"\'\n")
+                o.write("        order_id: \'"+orderConditions[counter].submission_condition.order_id+"\'\n")
             counter+=1
             o.write("    priority: " + str(order.priority).lower()+"\n")
             if order.type==0:

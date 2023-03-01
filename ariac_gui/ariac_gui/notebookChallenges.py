@@ -187,9 +187,9 @@ def saveHumanChallenge(chosenBehavior, condition,time, partType, partColor, agv,
     newHumanCond=Condition()
     if condition.get()!="":
         newHumanCond.type=conditionTypes.index(condition.get())
-        if condition.get()==conditionTypes[1]:
+        if condition.get()==conditionTypes[0]:
             newHumanCond.time_condition.seconds=float(time.get())
-        elif condition.get()==conditionTypes[2]:
+        elif condition.get()==conditionTypes[1]:
             newPart=Part()
             if partType.get()=="sensor":
                 newPart.type=newPart.SENSOR

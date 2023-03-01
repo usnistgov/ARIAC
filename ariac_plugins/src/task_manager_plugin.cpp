@@ -1004,6 +1004,7 @@ namespace ariac_plugins
         // if the competition has ended, disable all sensors and robots
         if (impl_->current_state_ == ariac_msgs::msg::CompetitionState::ENDED)
         {
+            // impl_->submit_order_service_->~Service();
             DisableAllSensors();
             DisableAllRobots();
         }
@@ -2376,6 +2377,8 @@ namespace ariac_plugins
         if (this->impl_->current_state_ == ariac_msgs::msg::CompetitionState::ENDED)
         {
             RCLCPP_WARN(impl_->ros_node_->get_logger(), "Competition has ended. No more orders can be submitted.");
+            response->success = false;
+            response->message = "Competition has ended. No more orders can be submitted.";
             return true;
         }
 

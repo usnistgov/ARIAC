@@ -190,7 +190,7 @@ def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants
     switch_buttons=partial(showAndHideButton,switchPartMenuButton, saveOptionButton, partVals[0], partOptionFlag, backPartButton)
     agv_update_menu=partial(updateAgvQudrants,agvSelection, partQuadrantSelectMenu, partQuadrant, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants)
     agvSelection.trace('w', agv_update_menu)
-    partVals[0].trace('w',switch_buttons)
+    partVals[1].trace('w',switch_buttons)
     update_agv_menu=partial(updatePartAGVOptions,agvTrayValsArr, switchPartMenuButton,agvSelectMenu,agvSelection)
     agvTrayValsArr[0].trace('w',update_agv_menu)
     agvTrayValsArr[1].trace('w',update_agv_menu)

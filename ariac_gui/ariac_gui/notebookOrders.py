@@ -302,7 +302,7 @@ def saveOrder(orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderM
         elif orderValsArr[11].get()=="assembly_front":
             newKittingTask.destination=newKittingTask.ASSEMBLY_FRONT
         else:
-            newKittingTask.destination=newKittingTask.ASSENBLY_BACK
+            newKittingTask.destination=newKittingTask.ASSEMBLY_BACK
         newKittingTask.parts=tempKittingParts
         newOrder.kitting_task=newKittingTask
     elif orderValsArr[1].get()=="assembly":

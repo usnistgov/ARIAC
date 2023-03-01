@@ -1,6 +1,6 @@
 # Updates
 
-## Release 2023, March 2 -- Competition Version
+## Release 2023, March 1 -- Competition Version
 
 - The competition version of the software is now available. This release contains most of the features that were highlighted during the launch telecon. A list of the features that have been implemented since the previous release is provided below:
   - Assembly tasks.

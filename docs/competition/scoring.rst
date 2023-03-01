@@ -186,7 +186,6 @@ Combined Task Score
       1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitely means that the part is of the correct type.
       2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in slot :math:`s` is of correct color.
       3. :math:`isCorrectPose_{s} \rightarrow C` is true if the part in slot :math:`s` has the correct pose.
-      4. :math:`isFaulty_{s} \rightarrow D` is true if the part in slot :math:`s` is faulty. To prevent faulty parts from being used in assembly, it is highly recommended to place them on an AGV and use the quality control sensor to check their status.
 
 
 
@@ -195,7 +194,7 @@ Combined Task Score
    .. math::
 
         \texttt{pt}_s = \begin{cases}
-        0, &\text{if} ~~ \lnot A \lor D \\5, &\text{if} ~~ A \land (B \land C)\\
+        0, &\text{if} ~~ \lnot A \\5, &\text{if} ~~ A \land (B \land C)\\
         4, &\text{if} ~~ A \land (B \lor C)\\
         3, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
         \end{cases}

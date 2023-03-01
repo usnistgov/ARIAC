@@ -20,15 +20,15 @@ Terminology
     Trial
       Each run of the competition is called a trial. The configuration for that trial is defined by a configuration file (YAML). Competitors do not and must not directly read trial files but needs to use topics and services provided by the competition environment. More information on how to use the competition environment can be found in the :ref:`Communication Overview`.
 
-.. _part
+.. _part:
     Part
       Parts are used during pick-and-place operations. There are four available parts (battery, pump, regulator, and sensor) and each part can be one of five possible colors (red, green, blue, orange, and purple).
 
     Order
-      An order is an intruction containing information on a task (`target to kitting task_`, `target to assembly task_`, or `target to combined task_`). Each task consists of at least one part of a specific color and type.
+      An order is an instruction containing information on a task (`target to kitting task_`, `target to assembly task_`, or `target to combined task_`). Each task consists of at least one part of a specific color and type.
     
     Kitting Task
-      Kitting is the process which groups separate but related parts(see part_) as one unit. For a kitting task, competitors are expected to: 
+      Kitting is the process which groups separate but related parts(see :ref:`part`) as one unit. For a kitting task, competitors are expected to: 
       
       1. Place a kit tray onto one of the four AGVs.
       2. Place parts onto that kit tray in a specific quadrant.

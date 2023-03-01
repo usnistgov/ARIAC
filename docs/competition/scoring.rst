@@ -130,7 +130,7 @@ Assembly Task Score
       1. :math:`isCorrectStation` is true if the assembly was done at the correct station (as1, as2, as3, or as4).
   * Each slot `s` in the insert has the following Boolean conditions:
 
-      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitely means that the part is of the correct type.
+      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitly means that the part is of the correct type.
       2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in slot :math:`s` is of correct color.
       3. :math:`isCorrectPose_{s} \rightarrow C` is true if the part in slot :math:`s` has the correct pose.
 
@@ -183,7 +183,7 @@ Combined Task Score
       1. :math:`isCorrectStation` is true if the assembly was done at the correct station (as1, as2, as3, or as4).
   * Each slot `s` in the insert has the following Boolean conditions:
   
-      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitely means that the part is of the correct type.
+      1. :math:`isAssembled_{s} \rightarrow A` is true if the part in slot :math:`s` is assembled. This implicitly means that the part is of the correct type.
       2. :math:`isCorrectColor_{s} \rightarrow B` is true if the part in slot :math:`s` is of correct color.
       3. :math:`isCorrectPose_{s} \rightarrow C` is true if the part in slot :math:`s` has the correct pose.
 
@@ -194,7 +194,8 @@ Combined Task Score
    .. math::
 
         \texttt{pt}_s = \begin{cases}
-        0, &\text{if} ~~ \lnot A \\5, &\text{if} ~~ A \land (B \land C)\\
+        0, &\text{if} ~~ \lnot A \\
+        5, &\text{if} ~~ A \land (B \land C)\\
         4, &\text{if} ~~ A \land (B \lor C)\\
         3, &\text{if} ~~ A \land (\lnot B \land \lnot C)\\
         \end{cases}

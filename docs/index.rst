@@ -3,7 +3,8 @@ ARIAC Documentation
 
 Welcome to ARIAC 2023!
 
-`Click here <https://www.github.com/usnistgov/ARIAC/>` to return to the ARIAC GitHub Repository.
+Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.com/usnistgov/ARIAC/>`_
+
 
 .. image:: images/environment.png
   :width: 900

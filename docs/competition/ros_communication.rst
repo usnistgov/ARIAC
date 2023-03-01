@@ -1,4 +1,4 @@
-.. _OrderMsg: https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg
+.. _ORDERMSG: https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg
 
 
 .. _COMMUNICATIONS:
@@ -23,7 +23,7 @@ Topics
      - Description 
    * - ``/ariac/orders`` 
      - ``ariac_msgs/msg/Order``
-     - :ref:`Order.msg <OrderMsg_>`
+     - :ref:`Order.msg <ORDERMSG_>`
      - Orders that the CCS should submit
    * - ``/ariac/competition_state``
      - ``ariac_msgs/msg/CompetitionState`` 

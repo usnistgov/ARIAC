@@ -351,3 +351,18 @@ def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     binValsArr[0].trace('w', switch_buttons)
     update_checkboxes=partial(runSlotChecks,binFrame, binID,slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, checkBoxes,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,saveNewBinButton,binOptionFlag)
     binID.trace('w', update_checkboxes)
+
+def writeBinsToFile(name, binsList, saveFileName):
+    '''Writes a given bin to the file'''
+    with open(saveFileName, "a") as o:
+        o.write("    "+name+":\n")
+        for i in binsList:
+            if i.binName==name:
+                o.write("      - type: \'"+i.type+"\'\n")
+                o.write("        color: \'"+i.color+"\'\n")
+                o.write("        slots: "+i.slots+"\n")
+                o.write("        rotation: "+i.rotation+"\n")
+                if i.flipped=="1":
+                    o.write("        flipped: true\n")
+                else:
+                    o.write("        flipped: false\n")

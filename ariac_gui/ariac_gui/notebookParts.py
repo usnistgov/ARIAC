@@ -216,3 +216,15 @@ def updateAgvQudrants(agvSelection, quadrantMenu, currentQuadrant, agv1Quadrants
         currentQuadrant.set(agv4Quadrants[0])
         for quadrant in agv4Quadrants:
             menu.add_command(label=quadrant, command=lambda quadrant=quadrant: currentQuadrant.set(quadrant))
+
+def writePartsToFile(name, id, partsList, saveFileName): # writes the part information to the file for a given agv
+    '''Writes agv info and parts on the agv to the file'''
+    with open(saveFileName, "a") as o:
+        o.write("    "+name+":\n")
+        o.write("      tray_id: "+ id+"\n")
+        o.write("      parts:\n")
+        for i in partsList:
+            o.write("      - type: \'"+i.pType+"\'\n")
+            o.write("        color: \'"+i.color+"\'\n")
+            o.write("        quadrant: "+i.quadrant+"\n")
+            o.write("        rotation: "+i.rotation+"\n")

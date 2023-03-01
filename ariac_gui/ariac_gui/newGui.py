@@ -4,8 +4,8 @@ from os import chdir
 from tkinter import ttk
 from functools import partial
 from ariac_gui.notebookSetup import timeEntry, kittingTrayWidgets
-from ariac_gui.notebookParts import partsWidgets, agvTrayWidgets
-from ariac_gui.notebookBins import binWidgets
+from ariac_gui.notebookParts import partsWidgets, agvTrayWidgets, writePartsToFile
+from ariac_gui.notebookBins import binWidgets, writeBinsToFile
 from ariac_gui.notebookConveyor import convWidgets
 from ariac_gui.notebookOrders import orderWidgets
 from ariac_gui.notebookChallenges import allChallengeWidgets, chooseChallenge
@@ -14,20 +14,15 @@ from ariac_gui.checkCancel import *
 from ariac_gui.updateRanges import *
 from ariac_gui.validationFunctions import *
 from ariac_gui.fileFunc import *
-from ariac_gui.buttonFuncs import *
 from ariac_gui.timeFunctions import *
-from ariac_gui.addPartFunc import *
 from ariac_gui.newClasses import *
-from ariac_gui.addNewBin import *
-from ariac_gui.orderFuncs import *
-from ariac_gui.challengesFuncs import *
 from ariac_gui.msgNames import *
-from ariac_gui.kittingTrayFunctions import *
 from ariac_msgs.msg import *
 from ament_index_python.packages import get_package_share_directory
 FRAMEWIDTH=1000
 FRAMEHEIGHT=750
 WINDOWMEASURE="900x800"
+LEFTCOLUMN=1
 def updatePartOrdLabel(agv1Parts, agv2Parts, agv3Parts, agv4Parts,bins,convParts, orderMSGS,partOrdLabel,a,b,c):
     newText="Parts:\nAGV Parts present:\n"
     for part in agv1Parts:
@@ -204,15 +199,6 @@ def runGUI(): # runs the entire gui
     for i in range(6):
         trayVals.append("")
         slotVals.append("")
-
-    agv1TrayIdVal=agvTrayIds[0]
-    agv2TrayIdVal=agvTrayIds[0]
-    agv3TrayIdVal=agvTrayIds[0]
-    agv4TrayIdVal=agvTrayIds[0]
-    convActiveVal='0'
-    spawnRateVal='0'
-    convOrderVal='random'
-    partVals=[agv1TrayIdVal, agv2TrayIdVal, agv3TrayIdVal, agv4TrayIdVal, convActiveVal, spawnRateVal, convOrderVal]
     # END OF DEFINITIONS
     # ----------------------------------------------------------------------------------------------
     # START OF GUI

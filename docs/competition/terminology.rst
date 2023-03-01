@@ -24,11 +24,13 @@ Terminology
       Parts are used during pick-and-place operations. There are four available parts (battery, pump, regulator, and sensor) and each part can be one of five possible colors (red, green, blue, orange, and purple).
 
     Order
-      An order is an instruction containing information on a task (`target to kitting task_`, `target to assembly task_`, or `target to combined task_`). Each task consists of at least one part of a specific color and type.
+      An order is an instruction containing information on a task ( :term:`Kitting Task`, 
+      :term:`Assembly Task`, or 
+      :term:`Combined Task`,). Each task consists of at least one 
+      :term:`part<Part>` of a specific color and type.
 
     Kitting Task
-      Kitting is the process which groups separate but related parts :term:`Part` 
-      as one unit. For a kitting task, competitors are expected to: 
+      Kitting is the process which groups separate but related :term:`parts<Part>` as one unit. For a kitting task, competitors are expected to - 
       
       1. Place a kit tray onto one of the four AGVs.
       2. Place parts onto that kit tray in a specific quadrant.
@@ -36,7 +38,7 @@ Terminology
       4. Evaluate the submitted kit for scoring.
 
     Assembly Task
-      Assembly is a manufacturing process in which interchangeable parts are added to a product in a sequential manner to create an end product. In ARIAC, assembly is simplified by not "forcing" competitors to use a sequence during assembly. Competitors can place parts in an insert in any order. For an assembly task, competitors are expected to use parts located on an AGV and assemble those parts at one of the four assembly stations.
+      Assembly is a manufacturing process in which interchangeable :term:`parts<Part>` are added to a product in a sequential manner to create an end product. In ARIAC, assembly is simplified by not "forcing" competitors to use a sequence during assembly. Competitors can place parts in an insert in any order. For an assembly task, competitors are expected to use parts located on an AGV and assemble those parts at one of the four assembly stations.
 
     Combined Task
       A combined task consists of a Kitting Task and an Assembly Task. In a combined task, only the Assembly Task is scored. Competitors have to find a way to move parts from their original locations to the assembly station.

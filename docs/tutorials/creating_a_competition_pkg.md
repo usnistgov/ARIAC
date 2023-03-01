@@ -62,13 +62,15 @@ Modify `package.xml` to match the following. Make sure to update the maintainer 
 </package>
 ```
 
-Next, create a python package with the same name as the ros2 package. This python package will include all the python source code for your software. 
+Next, create a python package with the same name as the ros2 package. This python package will include all the python source code for your software. Navigate into `ariac_ws/src/competition_tutorials` and run the following commands:
 
-Navigate into `ariac_ws/src/competition_tutorials` and run the following commands:
-
-```
+``` bash
 mkdir competition_tutorials
+```
+``` bash
 touch competition_tutorials/__init__.py
+```
+``` bash
 touch competition_tutorials/competition_interface.py
 ```
 
@@ -148,7 +150,7 @@ This creates a ROS2 python node that is able to call a ROS service to start the 
 touch src/start_competition.py
 ```
 
-Copy the following into `competition_interface.py`: 
+Copy the following into `start_competition.py`: 
 
 ``` python
 #!/usr/bin/env python3
@@ -176,7 +178,11 @@ Next, you need to build the package and run the node. To do this navigate to `ar
 
 ``` bash
 colcon build
+```
+``` bash
 . install/setup.bash
+```
+``` bash
 ros2 run competition_tutorials start_competition.py
 ```
 
@@ -187,9 +193,13 @@ You should this output:
 
 The node will wait until the competition is ready. To start the environment open a second terminal and run the following commands:
 
-```
+``` bash
 cd ~/ariac_ws
+```
+``` bash
 . install/setup.bash
+```
+``` bash
 ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial_1
 ```
 

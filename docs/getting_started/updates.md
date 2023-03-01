@@ -8,7 +8,6 @@
   - Faulty gripper challenge.
   - Faulty part challenge.
 - The test competitor package has been updated to include:
-  - Kitting Task (kitting.yaml)
   - Assembly Task (assembly.yaml)
   - Combined Task (combined.yaml)
 - The documentation was updated to include:
@@ -16,7 +15,7 @@
   - More information on the competition interface.
   - More information on the competition overview.
   - More information on the trial configuration files.
-- A graphical user interface to generate trial configuration files (documentation is coming).
+- A graphical user interface to generate trial configuration files.
 - The human challenge will be added at a later date.
 
 ## Release 2023, Jan 23 -- Beta Version

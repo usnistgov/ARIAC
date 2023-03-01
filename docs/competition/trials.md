@@ -96,9 +96,20 @@ Another way to place sensors is to add them in the sensor configuration file and
 
 Trials are the main way to test your robot's performance. Multiple trials are used during the qualifiers and the finals. The results of each trial are recorded and then used to rank competitors.
 
+### ARIAC GUI
+
+A graphical interface for creating trial configuration yaml files was created for ARIAC2023. The use of this tool is demonstrated in [this youtube video](https://youtu.be/8xqCEhBE4-s) 
+
+To run the gui, build and source the workspace using the [installation instructions](../getting_started/installation.md) and run:
+```
+ros2 run ariac_gui gui
+```
+
+### Trial Configuration Fields
+
 A trial configuration file (`sample.yaml`) is provided in the [ariac_gazebo](https://github.com/usnistgov/ARIAC/tree/ariac2023/ariac_gazebo/config/trials) package. Below is a description of the different sections in the trial configuration file. 
 
-### Time Limit (Mandatory Field)
+#### Time Limit (Mandatory Field)
 
 The time limit is defined in the `time_limit` field. The time limit is defined in (simulation) seconds and can be defined using floating-point values. A time limit of `-1` means that there is no time limit for this trial. Competitors can set no time limit during testing. During the qualifiers and the finals, there will be a time limit for each trial.
 
@@ -110,7 +121,7 @@ time_limit: -1 # no time limit
 time_limit: 300 # A 5 minute time limit
 ```
 
-### Kitting Trays (Mandatory Field)
+#### Kitting Trays (Mandatory Field)
 
 Kitting trays are defined in the `kitting_trays` field. Information in this field is used to spawn kitting trays in the environment. The tray IDs are provided in a list of integers and set with the field `tray_ids`. Kitting tray IDs range from 0 to 9. The location of kitting trays in the environment is defined in the field `slots`, which are slots located on the tray tables. Each tray table has 3 slots. Slots 1-3 for one tray table and slots 4-6 for the other tray table.
 
@@ -125,11 +136,11 @@ kitting_trays: # Which kitting trays will be spawn
   slots: [2, 4]
 ```
 
-### Part Locations (Mandatory Field)
+#### Part Locations (Mandatory Field)
 
 Parts can be found in 3 different location types: Bins, conveyor belt, and AGVs. The locations of parts in the environment are defined in the `parts` field. The `parts` field can have three subfields: `bins`, `agvs`, `conveyor_belt`.
 
-#### Bins
+##### Bins
 
 ```yaml
 bins: # bin params - 8 total bins each bin has nine total slots (1-9)
@@ -164,7 +175,7 @@ The `bins` field can have 8 subfields: `bin1`, `bin2`, `bin3`, `bin4`, `bin5`, `
 
 The `color` field describes the part color in a bin. The `slots` field describes the slots in a bin where the part can be found. The `rotation` field describes the rotation of the part in a bin. The `flipped` field describes whether the parts are flipped in a bin. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. In the provided example, all red pumps in bin1 are flipped and all the blue batteries in bin1 are not flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
 
-#### AGVs
+##### AGVs
 
 In trials where assembly is required, the environment starts with parts already located on the AGVs. The `agvs` field describes the parts on the AGVs. The subfields of `agvs` can be `agv1`, `agv2`, `agv3`, and `agv4`. Each one of these subfields contains a tray ID and a list of parts. The `tray_id` field describes the tray ID located on the AGV. By convention, tray IDs located on AGVs at the start of the environment are 0. The `parts` field describes the parts on the AGV. The `type` field describes the part type on the AGV. The `color` field describes the part color on the AGV. The `quadrant` field describes the quadrant of the AGV where the part is located. The `rotation` field describes the rotation of the part on the AGV. The `flipped` field describes whether the part is flipped on the AGV. The `flipped` field can be set to `true` or `false`. If the `flipped` field is not defined, the parts will not be flipped. See the [Challenges](challenges.md) page for more information about flipped parts.
 
@@ -187,7 +198,7 @@ parts:
           rotation: 'pi'
 ```
 
-#### Conveyor Belt
+##### Conveyor Belt
 
 Some trials require parts to be spawned on the conveyor belt. It can happen that parts required in a trial can only be found on the conveyor belt. Below is an example of how parts are defined on the conveyor belt.
 

@@ -96,7 +96,7 @@ Services
      - End the competition
    * - ``/ariac/submit_order``
      - ``ariac_msgs/srv/SubmitOrder``
-     - -
+     - `SubmitOrder.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/SubmitOrder.srv>`_
      - Submit an order with the requested ``order_id`` 
    * - ``/ariac/perform_quality_check``
      - ``ariac_msgs/srv/PerformQualityCheck``
@@ -147,8 +147,8 @@ Sensor Topics
    :name: communications-sensor-topics
 
    * - Sensor Type
-     - Topic
-     - Message  
+     - Topic Name
+     - Message Type 
    * - 'break_beam'
      - ``/ariac/sensors/{sensor_name}/status`` ``/ariac/sensors/{sensor_name}/status``
      - ``ariac_msgs/BreakBeamStatus`` ``ariac_msgs/BreakBeamStatus``

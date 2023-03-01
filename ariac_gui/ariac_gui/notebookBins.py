@@ -339,7 +339,7 @@ def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     binValsArr.append(flippedFlag)
     binWidgetsArr.append(flippedCheck)
     save_new_bin=partial(saveBin,binID, bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots, slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9,binWidgetsArr, binValsArr,binFlag,bins, partOrdCounter)
-    saveNewBinButton=tk.Button(binFrame, text="Save", command=save_new_bin)
+    saveNewBinButton=tk.Button(binFrame, text="Save bin", command=save_new_bin)
     saveNewBinButton.pack_forget()
     back_bin=partial(backBin,binWidgetsArr, binValsArr,binFlag)
     backBinButton=tk.Button(binFrame, text="Back", command=back_bin)
@@ -351,6 +351,9 @@ def binWidgets(binFrame,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Sl
     binValsArr[0].trace('w', switch_buttons)
     update_checkboxes=partial(runSlotChecks,binFrame, binID,slot1,slot2,slot3,slot4,slot5,slot6,slot7,slot8,slot9, checkBoxes,bin1Slots,bin2Slots,bin3Slots,bin4Slots,bin5Slots,bin6Slots,bin7Slots,bin8Slots,saveNewBinButton,binOptionFlag)
     binID.trace('w', update_checkboxes)
+    validate_rotation=partial(validateRotationValue,partRotation, saveNewBinButton)
+    partRotation.trace('w', validate_rotation)
+
 
 def writeBinsToFile(name, binsList, saveFileName):
     '''Writes a given bin to the file'''

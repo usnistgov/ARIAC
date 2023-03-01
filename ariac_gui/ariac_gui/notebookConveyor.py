@@ -183,7 +183,5 @@ def convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals):
     #entry validation
     validate_num_parts=partial(require_num, numberParts)
     numberParts.trace('w', validate_num_parts)
-    '''validate_rotation=partial(validateRotationValue, partRotation, saveConvButton)
+    validate_rotation=partial(validateRotationValue,partRotation, saveConvButton)
     partRotation.trace('w', validate_rotation)
-    validate_offset=partial(validateOffset, offsetParts)
-    offsetParts.trace('w', validate_offset)'''

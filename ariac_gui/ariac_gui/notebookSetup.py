@@ -1,6 +1,5 @@
 import tkinter as tk
 from functools import partial
-from ariac_gui.timeFunctions import *
 from ariac_gui.timeFunctions import validateSetupTime
 LEFTCOLUMN=1
 MIDDLECOLUMN=2

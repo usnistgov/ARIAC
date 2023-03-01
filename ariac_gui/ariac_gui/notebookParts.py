@@ -195,6 +195,8 @@ def partsWidgets(partsFrame, partFlag, agv1Quadrants,agv2Quadrants,agv3Quadrants
     agvTrayValsArr[1].trace('w',update_agv_menu)
     agvTrayValsArr[2].trace('w',update_agv_menu)
     agvTrayValsArr[3].trace('w',update_agv_menu)
+    validate_rotation=partial(validateRotationValue,partRotation, saveOptionButton)
+    partRotation.trace('w', validate_rotation)
 
 def updateAgvQudrants(agvSelection, quadrantMenu, currentQuadrant, agv1Quadrants,agv2Quadrants,agv3Quadrants,agv4Quadrants,a,b,c):
     '''Updates the available quadrants for each agv'''

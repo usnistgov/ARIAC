@@ -11,7 +11,6 @@ from ariac_gui.notebookOrders import orderWidgets
 from ariac_gui.notebookChallenges import allChallengeWidgets, chooseChallenge
 from PIL import Image, ImageTk  # needed for images in gui
 from ariac_gui.checkCancel import *
-from ariac_gui.updateRanges import *
 from ariac_gui.validationFunctions import *
 from ariac_gui.fileFunc import *
 from ariac_gui.timeFunctions import *

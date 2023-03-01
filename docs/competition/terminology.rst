@@ -27,8 +27,7 @@ Terminology
       An order is an instruction containing information on a task (`target to kitting task_`, `target to assembly task_`, or `target to combined task_`). Each task consists of at least one part of a specific color and type.
 
     Kitting Task
-      Kitting is the process which groups separate but related parts :term:`Part` 
-      as one unit. For a kitting task, competitors are expected to: 
+      Kitting is the process which groups separate but related :term:`parts<Part>` as one unit. For a kitting task, competitors are expected to - 
       
       1. Place a kit tray onto one of the four AGVs.
       2. Place parts onto that kit tray in a specific quadrant.

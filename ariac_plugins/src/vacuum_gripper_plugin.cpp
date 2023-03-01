@@ -16,9 +16,6 @@
 #include <ariac_msgs/srv/change_gripper.hpp>
 
 #include <ariac_msgs/msg/vacuum_gripper_state.hpp>
-#include <ariac_msgs/msg/trial.hpp>
-
-#include <ariac_plugins/ariac_common.hpp>
 
 #include <geometry_msgs/msg/point.hpp>
 #include <std_srvs/srv/trigger.hpp>
@@ -40,7 +37,6 @@ public:
   rclcpp::Publisher<ariac_msgs::msg::VacuumGripperState>::SharedPtr status_pub_;
   ariac_msgs::msg::VacuumGripperState status_msg_;
 
-  std::string robot_name_;
   bool enabled_;
   bool model_attached_;
   bool in_contact_with_part_;
@@ -64,27 +60,13 @@ public:
   gazebo::physics::CollisionPtr model_collision_;
   std::map<std::string, gazebo::physics::CollisionPtr> collisions_;
 
-  std::vector<std::string> pickable_part_types_ = {"battery", "regulator", "pump", "sensor"};
-  std::vector<std::string> pickable_part_colors_ = {"red", "orange", "green", "blue", "purple"};
+  std::vector<std::string> pickable_part_types;
 
   rclcpp::Time last_publish_time_;
   int update_ns_;
   bool first_publish_;
 
-  // Drop challenges
-  std::vector<ariac_msgs::msg::DroppedPartChallenge> drop_challenges_;
-  std::string part_in_contact_;
-  std::string attached_part_;
-  std::map<std::string, int> pick_counts_;
-  rclcpp::Time drop_time_;
-  bool drop_challenge_active_ = false;
-
-  // Subscriptions
-  rclcpp::Subscription<ariac_msgs::msg::Trial>::SharedPtr trial_config_sub_;
-
   void OnUpdate();
-
-  void OnTrialCallback(const ariac_msgs::msg::Trial::SharedPtr _msg);
 
   void OnContact(ConstContactsPtr& _msg);
 
@@ -92,8 +74,6 @@ public:
   void AttachJoint();
   void DetachJoint();
   void PublishState();
-
-  void HandleDropChallenge();
 
   double Distance(geometry_msgs::msg::Point, geometry_msgs::msg::Point);
 
@@ -123,11 +103,11 @@ void VacuumGripperPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr 
   impl_->model_ = model;
   impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
 
-  impl_->robot_name_ = sdf->GetElement("robot_name")->Get<std::string>();
+  std::string name = sdf->GetElement("robot_name")->Get<std::string>();
 
   const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
   rclcpp::QoS pub_qos = qos.get_publisher_qos("~/out", rclcpp::SensorDataQoS().reliable());
-  impl_->status_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::VacuumGripperState>("/ariac/" + impl_->robot_name_ + "_gripper_state", pub_qos);
+  impl_->status_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::VacuumGripperState>("/ariac/" + name + "_gripper_state", pub_qos);
 
   gazebo::physics::WorldPtr world = impl_->model_->GetWorld();
   impl_->picked_part_joint_ = world->Physics()->CreateJoint("fixed", impl_->model_);
@@ -144,6 +124,8 @@ void VacuumGripperPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr 
   std::string topic = "/gazebo/world/ariac_robots/" + link_name + "/bumper/contacts";
   impl_->contact_sub_ = impl_->gznode_->Subscribe(topic, &VacuumGripperPluginPrivate::OnContact, impl_.get());
 
+  impl_->pickable_part_types = {"battery", "regulator", "pump", "sensor"};
+
   impl_->gripper_types_ = {
     {ariac_msgs::srv::ChangeGripper::Request::PART_GRIPPER, "part_gripper"}, 
     {ariac_msgs::srv::ChangeGripper::Request::TRAY_GRIPPER, "tray_gripper"}, 
@@ -155,38 +137,22 @@ void VacuumGripperPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr 
   impl_->update_ns_ = int((1/publish_rate) * 1e9);
   impl_->first_publish_ = true;
 
-  // Connect Subscribers
-  impl_->trial_config_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Trial>(
-            "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", rclcpp::QoS(1)),
-            std::bind(&VacuumGripperPluginPrivate::OnTrialCallback, impl_.get(), std::placeholders::_1));
-
   // Register enable service
   impl_->enable_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::VacuumGripperControl>(
-      "/ariac/" + impl_->robot_name_ + "_enable_gripper", 
+      "/ariac/" + name + "_enable_gripper", 
       std::bind(
       &VacuumGripperPluginPrivate::EnableGripper, impl_.get(),
       std::placeholders::_1, std::placeholders::_2));
   
   // Register change service
   impl_->change_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::ChangeGripper>(
-      "/ariac/" + impl_->robot_name_ + "_change_gripper", 
+      "/ariac/" + name + "_change_gripper", 
       std::bind(
       &VacuumGripperPluginPrivate::ChangeGripper, impl_.get(),
       std::placeholders::_1, std::placeholders::_2));
 
   impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
     std::bind(&VacuumGripperPluginPrivate::OnUpdate, impl_.get()));
-}
-
-void VacuumGripperPluginPrivate::OnTrialCallback(const ariac_msgs::msg::Trial::SharedPtr _msg)
-{
-  if (_msg->challenges.size() > 0) {
-    for (auto challenge : _msg->challenges) {
-      if (challenge.type == ariac_msgs::msg::Challenge::DROPPED_PART) {
-        drop_challenges_.push_back(challenge.dropped_part_challenge);
-      }
-    }
-  }
 }
 
 void VacuumGripperPluginPrivate::OnUpdate()
@@ -207,14 +173,6 @@ void VacuumGripperPluginPrivate::OnUpdate()
   // If model attached and gripper is disabled remove joint
   if (model_attached_ && !enabled_){
     DetachJoint();
-  }
-
-  // Check drop part challenge
-  if (drop_challenge_active_){
-    if (ros_node_->now() >= drop_time_) {
-      DetachJoint();
-      drop_challenge_active_ = false;
-    }
   }
 
   // Publish status at rate
@@ -242,46 +200,12 @@ void VacuumGripperPluginPrivate::AttachJoint(){
   picked_part_joint_->Init();
 
   model_attached_ = true;
-
-  // Update pick counts map
-  if (current_gripper_type_ == ariac_msgs::srv::ChangeGripper::Request::PART_GRIPPER) {
-    if (pick_counts_.find(part_in_contact_) == pick_counts_.end()) {
-      pick_counts_[part_in_contact_] = 1;
-    } else {
-      pick_counts_[part_in_contact_]++;
-    }
-
-    attached_part_ = part_in_contact_;
-
-    HandleDropChallenge();
-  }
 }
 
-void VacuumGripperPluginPrivate::HandleDropChallenge() {
-  for (auto challenge: drop_challenges_) {
-    if (robot_name_ != challenge.robot) {
-      continue;
-    }
-
-    std::string part_to_drop;
-    part_to_drop = ariac_common::ConvertPartColorToString(challenge.part_to_drop.color) 
-      + "_" + ariac_common::ConvertPartTypeToString(challenge.part_to_drop.type);
-
-    if (attached_part_ == part_to_drop) {
-      if (pick_counts_[attached_part_] == challenge.drop_after_num + 1) {
-        drop_time_ = ros_node_->now() + rclcpp::Duration::from_seconds(challenge.drop_after_time);
-        drop_challenge_active_ = true;
-      }
-    }
-  }
-}
-
-void VacuumGripperPluginPrivate::DetachJoint() {
+void VacuumGripperPluginPrivate::DetachJoint(){
   RCLCPP_INFO(ros_node_->get_logger(), "Dropping object");
   picked_part_joint_->Detach();
   model_attached_ = false;
-
-  attached_part_ = "";
 }
 
 bool VacuumGripperPluginPrivate::CheckModelContact(ConstContactsPtr& msg, std::string contact_type){
@@ -305,15 +229,10 @@ bool VacuumGripperPluginPrivate::CheckModelContact(ConstContactsPtr& msg, std::s
       // Check if part is in the pickable_list
       bool is_part = false;
       
-      for (auto &type : pickable_part_types_){
+      for (auto &type : pickable_part_types){
         if (model_in_contact.find(type) != std::string::npos){
-          for (auto &color : pickable_part_colors_) {
-            if (model_in_contact.find(color) != std::string::npos) {
-              is_part = true;
-              part_in_contact_ = color + "_" + type;
-              break;
-            }
-          }
+          is_part = true;
+          break;
         }
       }
       // Ignore contact otherwise

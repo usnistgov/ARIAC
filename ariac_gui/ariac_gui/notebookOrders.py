@@ -17,6 +17,28 @@ taskPresentFlag=[]
 allProdTypes=["sensor", "pump", "regulator", "battery"]
 allProdColors=['green', 'red', 'purple','blue','orange']
 conditionTypes=['time','partPlace','submission']
+def partAvailable(agv1Parts, agv2Parts, agv3Parts, agv4Parts, type, color):
+    flag=False
+    for part in agv1Parts:
+        if type==part.pType and color==part.color:
+            flag=True
+    for part in agv2Parts:
+        if type==part.pType and color==part.color:
+            flag=True
+    for part in agv3Parts:
+        if type==part.pType and color==part.color:
+            flag=True
+    for part in agv4Parts:
+        if type==part.pType and color==part.color:
+            flag=True
+    return flag
+
+def checkForParts(agv1Parts, agv2Parts, agv3Parts, agv4Parts, warningLabel, type, color,a,b,c):
+    if partAvailable(agv1Parts, agv2Parts, agv3Parts, agv4Parts, type.get(), color.get()):
+        warningLabel.config(text="")
+    else:
+        warningLabel.config(text="Warning: The part have currently selected is not available from an AGV.")
+
 def showNewOrderMenu(orderWidgetsArr, orderValsArr, usedIDs):
     #orderValsArr[0].set(orderCategories[0])
     orderValsArr[1].set(orderTypes[0])
@@ -332,7 +354,14 @@ def saveOrder(orderWidgetsArr, orderValsArr, kittingParts, assemblyParts, orderM
     assemblyParts.clear()
     partOrdCounter.set(str(currVal+1))
 
-def kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr):
+def kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts):
+    if partAvailable(agv1Parts, agv2Parts, agv3Parts, agv4Parts, allProdTypes[0], allProdColors[0]):
+        message="Warning: The part have currently selected is not available from an AGV."
+    else:
+        message=""
+    kittingWarningLabel=tk.Label(orderFrame,text=message)
+    kittingWarningLabel.grid_forget()
+    kitWidgetsArr.append(kittingWarningLabel)
     prodType=tk.StringVar()
     prodType.set(allProdTypes[0])
     prodTypeLabel=tk.Label(orderFrame, text="Select the type of product for the kitting task")
@@ -371,8 +400,19 @@ def kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr):
     backKitButton=tk.Button(orderFrame, text="Back", command=back_kit_prod)
     backKitButton.grid_forget()
     kitWidgetsArr.append(backKitButton)
+    updateKitWarning=partial(checkForParts,agv1Parts, agv2Parts, agv3Parts, agv4Parts, kittingWarningLabel, prodType, prodColor)
+    prodType.trace('w', updateKitWarning)
+    prodColor.trace('w', updateKitWarning)
 
-def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidgetsArr):
+
+def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidgetsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts):
+    if partAvailable(agv1Parts, agv2Parts, agv3Parts, agv4Parts, allProdTypes[0], allProdColors[0]):
+        message="Warning: The part have currently selected is not available from an AGV."
+    else:
+        message=""
+    assemWarningLabel=tk.Label(orderFrame,text=message)
+    assemWarningLabel.grid_forget()
+    assemblyWidgetsArr.append(assemWarningLabel)
     prodType=tk.StringVar()
     prodType.set(allProdTypes[0])
     prodTypeLabel=tk.Label(orderFrame, text="Select the type of product for the assembly task")
@@ -401,6 +441,9 @@ def assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidg
     backAssembButton=tk.Button(orderFrame, text="Back", command=back_assemb_prod)
     backAssembButton.grid_forget()
     assemblyWidgetsArr.append(backAssembButton)
+    updateAssembWarning=partial(checkForParts,agv1Parts, agv2Parts, agv3Parts, agv4Parts, assemWarningLabel, prodType, prodColor)
+    prodType.trace('w', updateAssembWarning)
+    prodColor.trace('w', updateAssembWarning)
 
 def updateConditionMenus(usedIDs, annID, conditionMenu, condition, annIDMenu,a,b,c):
     if len(usedIDs):
@@ -414,7 +457,7 @@ def updateConditionMenus(usedIDs, annID, conditionMenu, condition, annIDMenu,a,b
         for id in usedIDs:
             annIDMen.add_command(label=id, command=lambda id=id: annID.set(id))
 
-def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter):
+def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter,agv1Parts, agv2Parts, agv3Parts, agv4Parts):
     kitWidgetsArr=[]
     kitValsArr=[]
     assemblyWidgetsArr=[]
@@ -545,8 +588,8 @@ def orderWidgets(orderFrame, orderMSGS,orderConditions, usedIDs, kittingParts, a
     orderID=tk.StringVar()
     orderValsArr.append(orderID)
     #Build the menus for kitting and assembly products
-    kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr)
-    assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidgetsArr)
+    kittingProdWidgets(orderFrame, kittingParts, kitValsArr, kitWidgetsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts)
+    assemblyProdWidgets(orderFrame, assemblyParts, assemblyValsArr, assemblyWidgetsArr,agv1Parts, agv2Parts, agv3Parts, agv4Parts)
     #Add order button
     show_new_order_menu=partial(showNewOrderMenu,orderWidgetsArr, orderValsArr,usedIDs)
     addOrderButton=tk.Button(orderFrame, text="Add order", command=show_new_order_menu)

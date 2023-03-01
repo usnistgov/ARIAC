@@ -343,7 +343,7 @@ def runGUI(): # runs the entire gui
     convWidgets(convFrame, convParts, partOrdCounter, convSettingsVals)
     
     #Orders frame
-    orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter)
+    orderWidgets(ordersFrame, orderMSGS,orderConditions, usedIDs, kittingParts, assemblyParts, partOrdCounter,agv1Parts, agv2Parts, agv3Parts, agv4Parts)
     #Challenges frame
     conditionVal=[]
     chooseChallenge(challengesFrame, allChallengeWidgetsArr,presentChallengeWidgets,rmVals,fpVals,dpVals, sbVals,huVals, chCondVals,usedIDs, partOrdCounter, conditionVal)

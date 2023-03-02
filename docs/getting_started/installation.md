@@ -94,9 +94,9 @@ This should start the competition and move each of the robots to the home positi
 
 A test competitor has been created to demonstrate how to complete some of the basic functions of working with the ARIAC environment. To run the test competitor you will need three terminals. 
 
-In terminal 1 start the environment using the test_competitor configurations:
+In terminal 1 start the environment with one of three trial names (kitting, assembly, or combined):
 ``` bash
-ros2 launch ariac_gazebo ariac.launch.py trial_config:=kitting
+ros2 launch ariac_gazebo ariac.launch.py trial_name:={name}
 ```
 
 In terminal 2 start the moveit node:
@@ -109,6 +109,4 @@ In terminal 3 start the competitor node:
 ros2 launch test_competitor competitor.launch.py
 ```
 
-The test competitor will start the competition, subscribe to the order's topic, and complete orders. 
-
-> NOTE: As of the beta release the test competitor is only capable of completing kitting orders
+The test competitor will start the competition, subscribe to the orders topic, and complete orders. 

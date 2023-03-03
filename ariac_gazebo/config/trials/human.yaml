@@ -25,7 +25,7 @@ parts:
 challenges:
   - human:
       behavior: 'helpful'
-      time_condition: 10.0
+      time_condition: 5.0
 
 # ORDERS
 orders:

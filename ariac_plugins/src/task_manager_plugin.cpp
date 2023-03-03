@@ -384,6 +384,7 @@ namespace ariac_plugins
             std::bind(&TaskManagerPlugin::OnAGV4StatusCallback, this, std::placeholders::_1));
 
         //============== PUBLISHERS =================
+        impl_->start_human_pub_ = impl_->ros_node_->create_publisher<std_msgs::msg::Bool>("/ariac/start_human", 10);
         impl_->sensor_health_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::Sensors>("/ariac/sensor_health", 10);
         impl_->robot_health_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::Robots>("/ariac/robot_health", 10);
         impl_->competition_state_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::CompetitionState>("/ariac/competition_state", 10);
@@ -884,7 +885,7 @@ namespace ariac_plugins
         if (impl_->elapsed_time_ >= impl_->time_based_human_challenge_->GetTriggerTime())
         {
             RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Starting human challenge");
-            auto msg = std_msgs::msg::Bool();
+            std_msgs::msg::Bool msg;
             msg.data = true;
             impl_->start_human_pub_->publish(msg);
             impl_->time_based_human_challenge_->SetStartTime(impl_->elapsed_time_);

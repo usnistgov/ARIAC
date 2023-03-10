@@ -9,6 +9,10 @@ kitting_trays: # Which kitting trays will be spawn
   tray_ids: [3, 8] 
   slots: [1, 4]
 
+
+
+
+
 parts:  
   bins: # bin params - 8 total bins each bin has nine total slots (1-9)
     bin2:
@@ -23,9 +27,15 @@ parts:
         
 # GLOBAL CHALLENGES
 challenges:
+  # - human:
+  #     behavior: 'helpful'
+  #     time_condition: 5.0
   - human:
-      behavior: 'helpful'
-      time_condition: 5.0
+      behavior: 'antagonistic'
+      part_place_condition:
+        color: 'blue'
+        type: 'battery'
+        agv: 4
 
 # ORDERS
 orders:
@@ -45,3 +55,19 @@ orders:
         - type: 'pump'
           color: 'purple'
           quadrant: 2
+  - id: 'MMB30H57'
+    type: 'kitting'
+    announcement:
+      time_condition: 60
+    priority: false
+    kitting_task:
+      agv_number: 1
+      tray_id: 8
+      destination: 'warehouse'
+      products:
+        - type: 'battery'
+          color: 'blue'
+          quadrant: 3
+        - type: 'pump'
+          color: 'purple'
+          quadrant: 4

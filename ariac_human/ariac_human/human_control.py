@@ -26,9 +26,13 @@ class HumanControl(Node):
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
-        # Service Client
+        # Teleport Service Client
         self.teleport_human_client = self.create_client(Trigger, '/ariac_human/teleport')
         self.teleport_request = Trigger.Request()
+    
+        # Safe_zone_penalty Service Client
+        self.s_zone_penalty_client = self.create_client(Trigger, '/ariac/set_human_safe_zone_penalty')
+        self.safe_zone_penalty_request = Trigger.Request()
     
         # Subscribers
         self.stop_sub = self.create_subscription(Bool, '/ariac_human/stop', self.stop_human, 10)
@@ -92,6 +96,7 @@ class HumanControl(Node):
 
             self.has_active_goal = False
             self.teleport_human_client.call_async(self.teleport_request)
+            self.s_zone_penalty_client.call_async(self.safe_zone_penalty_request)
 
     def send_to_goal(self, msg: Point):
         self.has_active_goal = True

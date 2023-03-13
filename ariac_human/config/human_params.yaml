@@ -128,7 +128,7 @@ controller_server:
       xy_goal_tolerance: 0.25
       yaw_goal_tolerance: 0.25
 
-    # DWB parameters
+    # DWB parameters: https://navigation.ros.org/configuration/packages/configuring-dwb-controller.html
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: True
@@ -144,7 +144,7 @@ controller_server:
       # https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/75
       acc_lim_x: 2.5 #2.5
       acc_lim_y: 0.0
-      acc_lim_theta: 0.2 #3.2
+      acc_lim_theta: 3.2
       decel_lim_x: -2.5
       decel_lim_y: 0.0
       decel_lim_theta: -0.2 #-3.2

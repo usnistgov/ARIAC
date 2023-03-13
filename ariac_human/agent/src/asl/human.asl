@@ -2,10 +2,10 @@
 // The location belief contains the location and the X,Y,Z coordinates
 // Positions of the tables are with respect of the initial position of the screen when the simulation starts
 // station1 = table bottom right, station2 = table top right, station4 = table top left, station3 = table bottom left
-location(station1,  -3.75,  4.0, 0.0).   //   -5.75,  3.0, 0.0
-location(station2, -10.85,  3.5, 0.0).  //  -11.85, -3.0, 0.0 
-location(station4, -10.85, -3.5, 0.0). //  -11.85, -3.0, 0.0 Y was -4.5
-location(station3,  -3.75, -4.0, 0.0).
+location(station1,  -3.7,  4.0, 0.0).    //   -5.75,  3.0, 0.0
+location(station2, -10.8,  3.5, 0.0).   //  -11.85, -3.0, 0.0 
+location(station4, -10.8, -3.5, 0.0).  //  -11.85, -3.0, 0.0 Y was -4.5
+location(station3,  -3.7, -3.8, 0.0). // -4.0, -4.0, 0.0).
 
 // Determine the next location to work (second parameter) based on the current one (first parameter)
 next_location(station1,station2).

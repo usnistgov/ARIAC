@@ -2,9 +2,9 @@
 
 Please complete the steps in [Tutorial 1](./tutorial_1.md) before this tutorial.
 
-This tutorial will add functionality to the competition interface to read data from a sensor and output that data to the terminal. 
+This tutorial will add functionality to the competition interface to read data from a sensor and output that data to the terminal.
 
-To start create a [custom sensor configuration](../competition/sensors.md). Navigate to `ariac_ws/src/competition_tutorials` and run the following command:
+To start, create a [custom sensor configuration](../competition/sensors.md). Navigate to `ariac_ws/src/competition_tutorials` and run the following command:
 
 ``` bash
 mkdir config
@@ -42,11 +42,11 @@ install(DIRECTORY
 )
 ```
 
-To test that this worked build the workspace. In `ariac_ws` run
+To test that this worked, build the workspace. In `ariac_ws` run
 
 ```bash
 colcon build
-``` 
+```
 
 ```bash
 . install/setup.bash

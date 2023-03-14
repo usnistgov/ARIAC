@@ -45,7 +45,8 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
 
    tutorials/tutorial_1.md
    tutorials/tutorial_2.md
-   tutorials/tutorial_3.md
+   tutorials/tutorial_3.rst
    tutorials/tutorial_4.md
    tutorials/tutorial_5.md
+   tutorials/tutorial_6.md
  

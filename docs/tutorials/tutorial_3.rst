@@ -12,11 +12,15 @@ Tutorial 3: Reading Data from a Camera
 In this tutorial you will learn how to: 1) Read data from a camera, 2) store the data internally in Python classes, and 3) display the data on the standard output.
 
 We will reuse the ``sensors.yaml`` file from tutorial 2 to add an advanced logical camera to the environment. 
-To start, create a [custom sensor configuration](../competition/sensors.md). Navigate to ``ariac_ws/src/competition_tutorials`` and run the following command:
 
-Add a new entry to  ```sensors.yaml```:
+Add a Camera to the Environment
+--------------------------------
+
+Add a new entry to  ``sensors.yaml`` as shown on lines 8-13 in :numref:`sensors-yaml`:
 
 .. code-block:: yaml
+    :caption: sensors.yaml
+    :name: sensors-yaml
     :linenos:
     
     sensors:

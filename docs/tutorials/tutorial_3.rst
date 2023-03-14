@@ -2,16 +2,18 @@
 .. _TUTORIAL_3:
 
 ======================================
-Tutorial 3: Reading Data from a Camera
+Tutorial #3: Reading Data from a Camera
 ======================================
 
 .. note::
-  Prerequisites: :ref:`TUTORIAL_1` and :ref:`TUTORIAL_2`
+  Prerequisites: Complete tutorials 1 and 2.
 
 
-In this tutorial you will learn how to: 1) Read data from a camera, 2) store the data internally in Python classes, and 3) display the data on the standard output.
+In this tutorial you will learn how to:
+  - Read data from a camera, 
+  - Store the data internally in Python classes,
+  - Display the data on the standard output.
 
-We will reuse the ``sensors.yaml`` file from tutorial 2 to add an advanced logical camera to the environment. 
 
 Add a Camera to the Environment
 --------------------------------
@@ -21,6 +23,7 @@ Add a new entry to  ``sensors.yaml`` as shown on lines 8-13 in :numref:`sensors-
 .. code-block:: yaml
     :caption: sensors.yaml
     :name: sensors-yaml
+    :emphasize-lines: 8, 9, 10, 11, 12, 13
     :linenos:
     
     sensors:

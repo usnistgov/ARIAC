@@ -72,12 +72,14 @@ The camera which was added to ``sensors.yaml`` is publishing messages to the top
 Import Modules
 ^^^^^^^^^^^^^^
 Modules needed in this tutorial are imported in the ``competition_interface.py`` file as seen in :numref:`import-advanced-camera`.
-Import the message type for the camera in the ``competition_interface.py`` file.
 
 .. code-block:: python
     :caption: Module Imports
     :name: import-advanced-camera
     
+    import rclpy
+    from rclpy.node import Node
+    from rclpy.qos import qos_profile_sensor_data
     # Import the message type AdvancedLogicalCameraImage
     from ariac_msgs.msg import AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg
     # Import the message type PartPose

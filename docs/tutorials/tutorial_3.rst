@@ -56,7 +56,7 @@ To test  the camera was correctly added to the environment, do the following:
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
 
 
-You should see the camera above bins 1-4 as shown in figure :numref:`fig-advanced-camera-0`.
+You should see the camera above bins 1-4 as shown in the figure below.
 
 .. _fig-advanced-camera-0:
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
@@ -85,6 +85,7 @@ Besides the modules imported in tutorial 1, extra modules must be imported in th
     from geometry_msgs.msg import Pose
 
 Competition Interface Attributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In the class ``CompetitionInterface``, add the following attributes.
 

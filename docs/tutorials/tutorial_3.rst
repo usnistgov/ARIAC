@@ -27,18 +27,18 @@ Add a an advanced logical camera to  ``sensors.yaml`` as shown on lines 8-13 in 
     :linenos:
     
     sensors:
-        breakbeam_0:
-            type: break_beam
-            visualize_fov: true
-            pose:
-                xyz: [-0.36, 3.5, 0.88]
-                rpy: [0, 0, pi]
-        advanced_camera_0:
-            type: advanced_logical_camera
-            visualize_fov: true
-            pose:
-                xyz: [-2.286, 2.96, 1.8]
-                rpy: [pi, pi/2, 0]
+      breakbeam_0:
+        type: break_beam
+        visualize_fov: true
+        pose:
+          xyz: [-0.36, 3.5, 0.88]
+          rpy: [0, 0, pi]
+      advanced_camera_0:
+        type: advanced_logical_camera
+        visualize_fov: true
+        pose:
+          xyz: [-2.286, 2.96, 1.8]
+          rpy: [pi, pi/2, 0]
 
 
 
@@ -49,15 +49,22 @@ Testing the Camera
 To test  the camera was correctly added to the environment, do the following:
 
 .. code-block:: bash
-  
+
   cd ~/ariac_ws
   colcon build
   . install/setup.bash
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
 
 
-You should see the camera as shown in :numref:`fig_tutorial_3_image1`:
+You should see the camera above bins 1-4 as shown in :numref:`fig_tutorial_3_image1`:
 
+.. figure:: ../images/tutorial3/advanced_camera_0.jpg
+   :caption : Camera above bins 1-4
+   :name : fig_tutorial_3_image1
+   :scale: 70 %
+   :align: center
+   :figclass: align-center
+   :class: no-border
 
 Retrieving Camera Messages
 ----------------------------

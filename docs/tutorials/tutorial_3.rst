@@ -10,7 +10,7 @@ Tutorial #3: Reading Data from a Camera
 
 
 In this tutorial you will learn how to:
-  - Read data from a camera, 
+  - Receive messages from a camera, 
   - Store the data internally in Python classes,
   - Display the data on the standard output.
 
@@ -64,8 +64,8 @@ You should see the camera above bins 1-4 as shown in the figure below:
    :figclass: align-center
    :class: with-shadow
 
-Retrieving Camera Messages
-----------------------------
+Receiving Messages from a Camera
+---------------------------------
 
-The camera which was added to 11sensors.yaml`` is publishing messages to the topic ``/ariac/advanced_camera_0``. Topics for sensors and cameras are dynamically generated based on the name of the sensor in the ``sensors.yaml`` file. The topic name is the name of the sensor/camera prefixed with ``/ariac/``. For example, the topic for the advanced logical camera is ``/ariac/advanced_camera_0``.
-To read these messages, we will create a subscriber in the ``competition_interface.py`` file.
+The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/advanced_camera_0``. Topics for sensors and cameras are dynamically generated based on the name used in ``sensors.yaml`` file. The topic name is the name of the sensor/camera prefixed with ``/ariac/``. For example, the topic for ``advanced_camera_0`` is ``/ariac/advanced_camera_0``.
+To read messages published on the topic ``/ariac/advanced_camera_0``, create a subscriber in the ``competition_interface.py`` file.

@@ -67,11 +67,11 @@ You should see the camera above bins 1-4 as shown in the figure below:
 Receiving Messages from a Camera
 ---------------------------------
 
+The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name used in ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
 
 Subscriber
 ^^^^^^^^^^
 
-The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name used in ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
 To read messages published on the topic ``/ariac/sensors/advanced_camera_0/image``, create a subscriber in the ``competition_interface.py`` file as seen in :numref:`competition-interface`.
 
 .. code-block:: python

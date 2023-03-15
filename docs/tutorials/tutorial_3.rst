@@ -67,5 +67,35 @@ You should see the camera above bins 1-4 as shown in the figure below:
 Receiving Messages from a Camera
 ---------------------------------
 
-The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/advanced_camera_0``. Topics for sensors and cameras are dynamically generated based on the name used in ``sensors.yaml`` file. The topic name is the name of the sensor/camera prefixed with ``/ariac/``. For example, the topic for ``advanced_camera_0`` is ``/ariac/advanced_camera_0``.
-To read messages published on the topic ``/ariac/advanced_camera_0``, create a subscriber in the ``competition_interface.py`` file.
+The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name used in ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
+To read messages published on the topic ``/ariac/sensors/advanced_camera_0/image``, create a subscriber in the ``competition_interface.py`` file.
+
+.. code-block:: python
+    :caption: competition_interface.py
+    :name: sensors-yaml
+    :emphasize-lines: 8, 9, 10, 11, 12, 13
+    
+    class CompetitionInterface(Node):
+    '''
+    Class for a competition interface node.
+
+    Args:
+        Node (rclpy.node.Node): Parent class for ROS nodes
+
+    Raises:
+        KeyboardInterrupt: Exception raised when the user uses Ctrl+C to kill a process
+    '''
+
+    ...
+
+    def __init__(self):
+        super().__init__('competition_interface')
+
+        ...
+
+        # Subscriber to the logical camera topic
+        self.advanced_camera0_sub = self.create_subscription(
+            AdvancedLogicalCameraImageMsg,
+            '/ariac/sensors/advanced_camera_0/image',
+            self.advanced_camera0_cb,
+            qos_profile_sensor_data)

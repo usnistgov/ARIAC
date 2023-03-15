@@ -32,6 +32,7 @@ public class RosEnv extends Environment {
 	double lastHumanState_MsgT = System.currentTimeMillis();
 	double lastUnsafeD_MsgT    = System.currentTimeMillis();
 	double previousDistance = 50.0;
+	double minAgvDist = 0.9;
 	boolean isAproximating = false;
 	
 	boolean simulationStarted = false; 	
@@ -60,13 +61,13 @@ public class RosEnv extends Environment {
 					double distance_agvHuman = calculateDistanceAgvH(1, msg);
 					//logger.info("AGV1 distance: " + distance_agvHuman);
 
-					if((distance_agvHuman < 0.8) && (simulationStarted==true) && 
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
 					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
 						//clearPercepts("human");
 						logger.info("AGV1 too close, teleporting human!");
 						lastUnsafeD_MsgT = timeNow;
 
-						Literal gUnsafeLit = new LiteralImpl("gantry_disabled"); 
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
 						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
 						addPercept("human",gUnsafeLit); 
 					}
@@ -89,13 +90,13 @@ public class RosEnv extends Environment {
 					double distance_agvHuman = calculateDistanceAgvH(2, msg);
 					//logger.info("AGV2 distance: " + distance_agvHuman);
 
-					if((distance_agvHuman < 0.8) && (simulationStarted==true) && 
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
 					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
 						//clearPercepts("human");
 						logger.info("AGV2 too close, teleporting human!");
 						lastUnsafeD_MsgT = timeNow;
 
-						Literal gUnsafeLit = new LiteralImpl("gantry_disabled"); 
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
 						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
 						addPercept("human",gUnsafeLit); 
 					}
@@ -118,13 +119,13 @@ public class RosEnv extends Environment {
 					double distance_agvHuman = calculateDistanceAgvH(3, msg);
 					//logger.info("AGV3 distance: " + distance_agvHuman);
 
-					if((distance_agvHuman < 0.8) && (simulationStarted==true) && 
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
 					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
 						//clearPercepts("human");
 						logger.info("AGV3 too close, teleporting human!");
 						lastUnsafeD_MsgT = timeNow;
 
-						Literal gUnsafeLit = new LiteralImpl("gantry_disabled"); 
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
 						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
 						addPercept("human",gUnsafeLit); 
 					}
@@ -147,13 +148,13 @@ public class RosEnv extends Environment {
 					double distance_agvHuman = calculateDistanceAgvH(4, msg);
 					//logger.info("AGV4 distance: " + distance_agvHuman);
 
-					if((distance_agvHuman < 0.8) && (simulationStarted==true) && 
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
 					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
 						//clearPercepts("human");
 						logger.info("AGV4 too close, teleporting human!");
 						lastUnsafeD_MsgT = timeNow;
 
-						Literal gUnsafeLit = new LiteralImpl("gantry_disabled"); 
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
 						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
 						addPercept("human",gUnsafeLit); 
 					}
@@ -187,7 +188,7 @@ public class RosEnv extends Environment {
 
 					long timeNow = System.currentTimeMillis();   //Time check
 
-					if ((distance_robotHuman < safe_distanceRH*2) && 
+					if ((distance_robotHuman < safe_distanceRH*1.75) && 
 						(timeNow-lastHumanState_MsgT > 20000) && (isAproximating == true)){
 						//clearPercepts("human");
 						lastHumanState_MsgT=timeNow;
@@ -329,6 +330,9 @@ public class RosEnv extends Environment {
 		else if (act.getFunctor().equals("teleport_safe")) { 
 			teleport();
 		}
+		else if (act.getFunctor().equals("teleport_agv")) { 
+			teleportAGV();
+		}
 		else if (act.getFunctor().equals("move_to_gantry")) { 
 			move_to_gantry(); 
 		}
@@ -355,6 +359,18 @@ public class RosEnv extends Environment {
 	// Published topic is read by movebaser_node.py; it than calls a service in the Gazebo plugin TeleportHuman
 	public void teleport() { 
 		Publisher teleport_h = new Publisher("/ariac_human/go_home", "std_msgs/Bool", bridge);	
+		teleport_h.publish(new Bool(true));	
+
+		// Reset "smart" orientation variables
+		lastHumanState_MsgT = System.currentTimeMillis();
+		lastUnsafeD_MsgT = System.currentTimeMillis();
+		previousDistance = 50.0;
+		isAproximating = false;
+	}
+
+	// Published topic is read by movebaser_node.py; it than calls a service in the Gazebo plugin TeleportHuman
+	public void teleportAGV() { 
+		Publisher teleport_h = new Publisher("/ariac_human/go_home_agv", "std_msgs/Bool", bridge);	
 		teleport_h.publish(new Bool(true));	
 
 		// Reset "smart" orientation variables

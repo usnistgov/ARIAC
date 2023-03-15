@@ -37,6 +37,7 @@ class HumanControl(Node):
         # Subscribers
         self.stop_sub = self.create_subscription(Bool, '/ariac_human/stop', self.stop_human, 10)
         self.go_home_sub = self.create_subscription(Bool, '/ariac_human/go_home', self.go_home, 10)
+        self.go_home_agv_sub = self.create_subscription(Bool, '/ariac_human/go_home_agv', self.go_home_agv, 10)
         self.send_to_goal_sub = self.create_subscription(Point, '/ariac_human/goal_position', self.send_to_goal, 10)
 
         # Timer
@@ -97,6 +98,11 @@ class HumanControl(Node):
             self.has_active_goal = False
             self.teleport_human_client.call_async(self.teleport_request)
             self.s_zone_penalty_client.call_async(self.safe_zone_penalty_request)
+
+    def go_home_agv(self, msg: Bool):
+        if msg.data:
+            self.navigator.cancelTask()
+            self.navigator.setInitialPose(self.initial_pose)
 
     def send_to_goal(self, msg: Point):
         self.has_active_goal = True

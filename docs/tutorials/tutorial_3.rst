@@ -1,18 +1,18 @@
 
 .. _TUTORIAL_3:
 
-======================================
-Tutorial 3: Reading Data from a Camera
-======================================
+=========================================================
+Tutorial 3: Reading Data from an Advanced Logical Camera
+=========================================================
 
 .. note::
-  Prerequisites: Complete tutorials 1 and 2.
+  **Prerequisites**: The code snippets provided in tutorials 1 and 2 will be reused and augmented in this tutorial. The completion of tutorials 1 and 2 is a prerequisite for this tutorial.
 
 
 In this tutorial you will learn how to:
   - Receive messages from a camera, 
-  - Store the data internally,
-  - Display the data on the standard output.
+  - Store the data internally as an instance of a class,
+  - Display the stored data on the standard output.
 
 
 Add a Camera to the Environment
@@ -56,8 +56,9 @@ To test  the camera was correctly added to the environment, do the following:
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
 
 
-You should see the camera above bins 1-4 as shown in the figure below:
+You should see the camera above bins 1-4 as shown in figure :numref:`fig-advanced-camera-0`.
 
+.. _fig-advanced-camera-0:
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
    :scale: 70 %
    :align: center
@@ -67,29 +68,55 @@ You should see the camera above bins 1-4 as shown in the figure below:
 Receive Messages from a Camera
 ---------------------------------
 
-The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name used in ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
+The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name of the sensors/cameras from ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
 
 Import Modules
 ^^^^^^^^^^^^^^
-Modules needed in this tutorial are imported in the ``competition_interface.py`` file as seen in :numref:`import-advanced-camera`.
+Besides the modules imported in tutorial 1, extra modules must be imported in the ``competition_interface.py`` file as seen in :numref:`import-advanced-camera`.
 
 .. code-block:: python
     :caption: Module Imports
     :name: import-advanced-camera
     
-    import rclpy
-    from rclpy.node import Node
-    from rclpy.qos import qos_profile_sensor_data
-    # Import the message type AdvancedLogicalCameraImage
     from ariac_msgs.msg import AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg
-    # Import the message type PartPose
     from ariac_msgs.msg import PartPose as PartPoseMsg
     # For KDL transformations
     import PyKDL
-    # For defining poses
     from geometry_msgs.msg import Pose
 
+Competition Interface Attributes
 
+In the class ``CompetitionInterface``, add the following attributes.
+
+.. code-block:: python
+    :caption: Dictionaries for converting PartColor and PartType constants to strings
+    :name: competition-interface
+
+    part_colors_ = {
+      Part.RED: 'red',
+      Part.BLUE: 'blue',
+      Part.GREEN: 'green',
+      Part.ORANGE: 'orange',
+      Part.PURPLE: 'purple',
+    }
+    '''Dictionary for converting PartColor constants to strings'''    
+    
+    part_colors_emoji_ = {
+      Part.RED: '🟥',
+      Part.BLUE: '🟦',
+      Part.GREEN: '🟩',
+      Part.ORANGE: '🟧',
+      Part.PURPLE: '🟪',
+    }
+    '''Dictionary for displaying an emoji for the part color'''
+
+    part_types_ = {
+      Part.BATTERY: 'battery',
+      Part.PUMP: 'pump',
+      Part.REGULATOR: 'regulator',
+      Part.SENSOR: 'sensor',
+    }
+    '''Dictionary for converting PartType constants to strings'''
 
 Subscriber
 ^^^^^^^^^^
@@ -100,24 +127,15 @@ To read messages published on the topic ``/ariac/sensors/advanced_camera_0/image
     :caption: Subscriber to the Camera Topic
     :name: competition-interface
     
-    class CompetitionInterface(Node):
+    # Subscriber to the logical camera topic
+    self.advanced_camera0_sub = self.create_subscription(
+        AdvancedLogicalCameraImageMsg,
+        '/ariac/sensors/advanced_camera_0/image',
+        self.advanced_camera0_cb,
+        qos_profile_sensor_data)
 
-      ...
-
-      def __init__(self):
-          super().__init__('competition_interface')
-
-          ...
-
-          # Subscriber to the logical camera topic
-          self.advanced_camera0_sub = self.create_subscription(
-              AdvancedLogicalCameraImageMsg,
-              '/ariac/sensors/advanced_camera_0/image',
-              self.advanced_camera0_cb,
-              qos_profile_sensor_data)
-
-          # An instance of the AdvancedLogicalCameraImage class
-          self.camera_image_ = None
+    # An instance of the AdvancedLogicalCameraImage class
+    self.camera_image_ = None
 
 Camera Callback
 ^^^^^^^^^^^^^^^
@@ -133,7 +151,9 @@ Camera Callback
         '''
         self.camera_image_ = AdvancedLogicalCameraImage(msg)
 
-In the callback, each incoming message is converted to an instance of the ``AdvancedLogicalCameraImage`` class and stored in the attribute ``camera_image_``. This class is defined in the ``competition_interface.py`` file as seen in :numref:`advanced-logical-camera-image`.
+In the callback, each incoming message is converted to an instance of the ``AdvancedLogicalCameraImage`` class and stored in the attribute ``camera_image_``. Define this class in the ``competition_interface.py`` file as seen in :numref:`advanced-logical-camera-image`.
+Each attribute of this class represents a field of the message type ``AdvancedLogicalCameraImageMsg``.
+
 
 .. code-block:: python
     :caption: AdvancedLogicalCameraImage Class
@@ -146,11 +166,11 @@ In the callback, each incoming message is converted to an instance of the ``Adva
         self.sensor_pose = msg.sensor_pose
 
 
-Parse the Data
+Parse 
 --------------------------------
 
-To parse the data, create a new method in the ``competition_interface.py`` file as seen in :numref:`parse-advanced-camera-image`.
-This method parses the camera data and prints it to the standard output. Information about each part detected by the camera is printed in the following format:
+To parse ``/ariac/sensors/advanced_camera_0/image`` messages, create a new method in the ``competition_interface.py`` file as seen in :numref:`parse-advanced-camera-image`.
+This method parses the stored attribute ``camera_image_`` (see :numref:`competition-interface`) and prints it to the standard output. Information about each part detected by the camera is printed in the following format:
 
   - Part color
   - Part type
@@ -161,13 +181,13 @@ This method parses the camera data and prints it to the standard output. Informa
     :caption: Parse AdvancedLogicalCameraImage Instance
     :name: parse-advanced-camera-image
     
-    def parse_advanced_camera_image(self, image: AdvancedLogicalCameraImage):
+    def parse_advanced_camera_image(self):
         output = '\n\n==========================\n'
         
-        sensor_pose: Pose = image.sensor_pose
+        sensor_pose: Pose = self.camera_image_.sensor_pose
         
         part_pose: PartPoseMsg
-        for part_pose in image.part_poses:
+        for part_pose in self.camera_image_.part_poses:
             part_color = CompetitionInterface.part_colors_[part_pose.part.color].capitalize()
             part_color_emoji = CompetitionInterface.part_colors_emoji_[part_pose.part.color]
             part_type = CompetitionInterface.part_types_[part_pose.part.type].capitalize()

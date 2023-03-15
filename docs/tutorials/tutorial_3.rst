@@ -80,16 +80,16 @@ To read messages published on the topic ``/ariac/sensors/advanced_camera_0/image
     
     class CompetitionInterface(Node):
 
-    ...
+      ...
+      
+      def __init__(self):
+          super().__init__('competition_interface')
 
-    def __init__(self):
-        super().__init__('competition_interface')
+          ...
 
-        ...
-
-        # Subscriber to the logical camera topic
-        self.advanced_camera0_sub = self.create_subscription(
-            AdvancedLogicalCameraImageMsg,
-            '/ariac/sensors/advanced_camera_0/image',
-            self.advanced_camera0_cb,
-            qos_profile_sensor_data)
+          # Subscriber to the logical camera topic
+          self.advanced_camera0_sub = self.create_subscription(
+              AdvancedLogicalCameraImageMsg,
+              '/ariac/sensors/advanced_camera_0/image',
+              self.advanced_camera0_cb,
+              qos_profile_sensor_data)

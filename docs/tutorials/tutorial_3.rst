@@ -274,7 +274,7 @@ To use this code create a new file ``read_advanced_camera.py`` in ``competition_
 
 This executable creates an instance of the interface, starts the competition and logs each message received from the camera.
 
-Update ` `CMakeLists.txt``` to add ``read_advanced_camera.py`` as an executable.
+Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
 
 .. code-block:: cmake
 
@@ -304,13 +304,6 @@ The node will wait until the competition is ready. To start the environment open
   . install/setup.bash
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 
-
-``` bash
-. install/setup.bash
-```
-``` bash
-ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
-```
 
 Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition and the sensor will start publishing data.
 Each part detected by the camera will be logged to the terminal.

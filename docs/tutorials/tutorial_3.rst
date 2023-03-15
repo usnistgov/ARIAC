@@ -59,8 +59,6 @@ To test  the camera was correctly added to the environment, do the following:
 You should see the camera above bins 1-4 as shown in :numref:`fig_tutorial_3_image1`:
 
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
-
-   :caption : Advanced logical camera above bins 1-4
    :name : fig_tutorial_3_image1
    :scale: 70 %
    :align: center

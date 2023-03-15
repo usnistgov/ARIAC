@@ -87,11 +87,11 @@ Besides the modules imported in tutorial 1, extra modules must be imported in th
 Competition Interface Attributes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the class ``CompetitionInterface``, add the following attributes.
+In the class ``CompetitionInterface``, add the following class attributes.
 
 .. code-block:: python
     :caption: Dictionaries for converting PartColor and PartType constants to strings
-    :name: competition-interface
+    :name: class-attributes
 
     part_colors_ = {
       Part.RED: 'red',
@@ -141,18 +141,8 @@ To read messages published on the topic ``/ariac/sensors/advanced_camera_0/image
 Camera Callback
 ^^^^^^^^^^^^^^^
 
-.. code-block:: python
-    :caption: Subscriber Callback
-    
-    def advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
-        '''Callback for the topic /ariac/sensors/advanced_camera_0/image
 
-        Arguments:
-            msg -- AdvancedLogicalCameraImage message
-        '''
-        self.camera_image_ = AdvancedLogicalCameraImage(msg)
-
-In the callback, each incoming message is converted to an instance of the ``AdvancedLogicalCameraImage`` class and stored in the attribute ``camera_image_``. Define this class in the ``competition_interface.py`` file as seen in :numref:`advanced-logical-camera-image`.
+Define the ``AdvancedLogicalCameraImage`` in the ``competition_interface.py`` file as seen in :numref:`advanced-logical-camera-image`. This class is used to store the data from the camera.
 Each attribute of this class represents a field of the message type ``AdvancedLogicalCameraImageMsg``.
 
 
@@ -167,11 +157,24 @@ Each attribute of this class represents a field of the message type ``AdvancedLo
         self.sensor_pose = msg.sensor_pose
 
 
-Parse 
+Define the callback for the subscriber as seen in :numref:`advanced-camera-callback`. Each incoming message is converted to an instance of the ``AdvancedLogicalCameraImage`` class and stored in the attribute ``camera_image_``. 
+
+.. code-block:: python
+    :caption: Subscriber Callback
+    :name: advanced-camera-callback
+    
+    def advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+      self.camera_image_ = AdvancedLogicalCameraImage(msg)
+
+
+
+
+Parse Stored Camera Image
 --------------------------------
 
-To parse ``/ariac/sensors/advanced_camera_0/image`` messages, create a new method in the ``competition_interface.py`` file as seen in :numref:`parse-advanced-camera-image`.
-This method parses the stored attribute ``camera_image_`` (see :numref:`competition-interface`) and prints it to the standard output. Information about each part detected by the camera is printed in the following format:
+
+To parse the attribute ``camera_image_`` (see :numref:`competition-interface`), create a new method in the ``competition_interface.py`` file as seen in :numref:`parse-advanced-camera-image`.
+This method parses the attribute ``camera_image_``  and prints its content to the standard output. The output is printed in the following format:
 
   - Part color
   - Part type

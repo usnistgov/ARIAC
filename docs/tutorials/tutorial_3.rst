@@ -43,7 +43,7 @@ Add a an advanced logical camera to  ``sensors.yaml`` as shown on lines 8-13 in 
 
 
 
-Testing the Camera
+Test the Camera
 ^^^^^^^^^^^^^^^^^^
 
 To test  the camera was correctly added to the environment, do the following:
@@ -64,13 +64,13 @@ You should see the camera above bins 1-4 as shown in the figure below:
    :figclass: align-center
    :class: with-shadow
 
-Receiving Messages from a Camera
+Receive Messages from a Camera
 ---------------------------------
 
 The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name used in ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
 
-Import
-^^^^^^
+Import Modules
+^^^^^^^^^^^^^^
 Modules needed in this tutorial are imported in the ``competition_interface.py`` file as seen in :numref:`import-advanced-camera`.
 Import the message type for the camera in the ``competition_interface.py`` file.
 
@@ -238,9 +238,12 @@ This method parses the camera data and prints it to the standard output. Informa
         return tf2
 
 
-Running the Tutorial
-=====================
-To use this code create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
+Configure the Tutorial
+=======================
+To use this code, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
+
+Create the Executable
+----------------------
 
 .. code-block:: python
     :caption: Display Camera Data
@@ -274,6 +277,9 @@ To use this code create a new file ``read_advanced_camera.py`` in ``competition_
 
 This executable creates an instance of the interface, starts the competition and logs each message received from the camera.
 
+Update CMakelists.txt
+----------------------
+
 Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
 
 .. code-block:: cmake
@@ -285,6 +291,9 @@ Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
     DESTINATION lib/${PROJECT_NAME}
   )
 
+
+Run the Script
+========================
 
 Next, build the package and run the node. To do this navigate to ``ariac_ws`` and run the following commands:
 

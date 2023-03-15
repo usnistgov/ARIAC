@@ -147,7 +147,7 @@ In the callback, each incoming message is converted to an instance of the ``Adva
 
 
 Parse the Data
-=================
+--------------------------------
 
 To parse the data, create a new method in the ``competition_interface.py`` file as seen in :numref:`parse-advanced-camera-image`.
 This method parses the camera data and prints it to the standard output. Information about each part detected by the camera is printed in the following format:
@@ -242,7 +242,7 @@ This method parses the camera data and prints it to the standard output. Informa
 
 
 Configure the Executable
-=========================
+--------------------------------
 
 To use this code, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
 
@@ -280,7 +280,7 @@ To use this code, create a new file ``read_advanced_camera.py`` in ``competition
 This executable creates an instance of the interface, starts the competition and logs each message received from the camera.
 
 Update CMakelists.txt
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
 
@@ -295,7 +295,7 @@ Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
 
 
 Run the Executable
-========================
+--------------------------------
 
 Next, build the package and run the node. To do this navigate to ``ariac_ws`` and run the following commands:
 

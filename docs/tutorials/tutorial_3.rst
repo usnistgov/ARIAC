@@ -238,12 +238,12 @@ This method parses the camera data and prints it to the standard output. Informa
         return tf2
 
 
-Configure the Tutorial
-=======================
+
+Configure the Executable
+=========================
+
 To use this code, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
 
-Create the Executable
-----------------------
 
 .. code-block:: python
     :caption: Display Camera Data
@@ -292,7 +292,7 @@ Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
   )
 
 
-Run the Script
+Run the Executable
 ========================
 
 Next, build the package and run the node. To do this navigate to ``ariac_ws`` and run the following commands:

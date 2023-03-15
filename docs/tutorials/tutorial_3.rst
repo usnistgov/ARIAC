@@ -18,7 +18,7 @@ In this tutorial you will learn how to:
 Add a Camera to the Environment
 --------------------------------
 
-Add a new entry to  ``sensors.yaml`` as shown on lines 8-13 in :numref:`sensors-yaml`:
+Add a an advanced logical camera to  ``sensors.yaml`` as shown on lines 8-13 in :numref:`sensors-yaml`. The camera will be placed above bins 1, 2, 3, and 4. 
 
 .. code-block:: yaml
     :caption: sensors.yaml
@@ -45,10 +45,13 @@ Add a new entry to  ``sensors.yaml`` as shown on lines 8-13 in :numref:`sensors-
 This will add an advanced logical camera above bins 1, 2, 3, and 4.
 
 
-To test that this worked, build the workspace. In ``ariac_ws`` run
+Testing the Camera
+^^^^^^^^^^^^^^^^^^
+
+To test  the camera was correctly added to the environment, do the following:
 
 .. code-block:: bash
-
+  cd ~/ariac_ws
   colcon build
   . install/setup.bash
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials

@@ -173,13 +173,14 @@ Parse Stored Camera Image
 --------------------------------
 
 
-To parse the attribute ``camera_image_`` (see :numref:`competition-interface`), create a new method in the ``competition_interface.py`` file as seen in :numref:`parse-advanced-camera-image`.
+To parse the attribute ``camera_image_`` (refer to :numref:`competition-interface`), create a new method in the ``competition_interface.py`` file as seen in :numref:`parse-advanced-camera-image`.
 This method parses the attribute ``camera_image_``  and prints its content to the standard output. The output is printed in the following format:
 
-  - Part color
-  - Part type
+  - Emoji for the part color using the class attribute ``part_colors_emoji_``.
+  - Part color using the class attribute ``part_colors_``.
+  - Part type using the class attribute ``part_types_``.
   - Part pose in the camera frame: This is the pose returned by the camera.
-  - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method ``multiply_pose``, which is shown in :numref:`multiply-pose`.
+  - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method ``multiply_pose`` (see  :numref:`multiply-pose`).
 
 .. code-block:: python
     :caption: Parse AdvancedLogicalCameraImage Instance

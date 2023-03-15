@@ -238,8 +238,8 @@ This method parses the camera data and prints it to the standard output. Informa
         return tf2
 
 
-Display the Data
-=================
+Running the Tutorial
+=====================
 To use this code create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
 
 .. code-block:: python

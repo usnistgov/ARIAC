@@ -2,7 +2,7 @@
 .. _TUTORIAL_3:
 
 ======================================
-Tutorial #3: Reading Data from a Camera
+Tutorial 3: Reading Data from a Camera
 ======================================
 
 .. note::
@@ -75,7 +75,7 @@ Modules needed in this tutorial are imported in the ``competition_interface.py``
 Import the message type for the camera in the ``competition_interface.py`` file.
 
 .. code-block:: python
-    :caption: Import AdvancedLogicalCameraImage Message
+    :caption: Module Imports
     :name: import-advanced-camera
     
     # Import the message type AdvancedLogicalCameraImage
@@ -95,7 +95,7 @@ Subscriber
 To read messages published on the topic ``/ariac/sensors/advanced_camera_0/image``, create a subscriber in the ``competition_interface.py`` file as seen in :numref:`competition-interface`.
 
 .. code-block:: python
-    :caption: competition_interface.py
+    :caption: Subscriber to the Camera Topic
     :name: competition-interface
     
     class CompetitionInterface(Node):
@@ -243,7 +243,7 @@ Display the Data
 To use this code create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
 
 .. code-block:: python
-    :caption: AdvancedLogicalCameraImage Class
+    :caption: Display Camera Data
     
     #!/usr/bin/env python3
 
@@ -272,32 +272,38 @@ To use this code create a new file ``read_advanced_camera.py`` in ``competition_
 
 
 
-This executable creates an instance of the interface, starts the competition and logs the `part_count` at a two second interval. 
+This executable creates an instance of the interface, starts the competition and logs each message received from the camera.
 
-Update `CMakeLists.txt` to add `read_sensor.py` as an executable
+Update ` `CMakeLists.txt``` to add ``read_advanced_camera.py`` as an executable.
 
-``` cmake
-# Install Python executables
-install(PROGRAMS
-  src/start_competition.py
-  src/read_sensor.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-```
+.. code-block:: cmake
 
-Next, you need to build the package and run the node. To do this navigate to `ariac_ws` and run the following commands:
+  # Install Python executables
+  install(PROGRAMS
+    src/start_competition.py
+    src/read_advanced_camera.py
+    DESTINATION lib/${PROJECT_NAME}
+  )
 
-``` bash
-colcon build
-```
-``` bash
-. install/setup.bash
-```
-``` bash
-ros2 run competition_tutorials read_sensor.py
-```
 
-The node will wait until the competition is ready. To start the environment open a second terminal navigate to `ariac_ws` and run the following commands:
+Next, build the package and run the node. To do this navigate to ``ariac_ws`` and run the following commands:
+
+
+.. code-block:: bash
+
+  cd ~/ariac_ws
+  colcon build
+  . install/setup.bash
+  ros2 run competition_tutorials read_advanced_camera.py
+
+
+The node will wait until the competition is ready. To start the environment open a second terminal navigate to ``ariac_ws`` and run the following commands:
+
+.. code-block:: bash
+
+  . install/setup.bash
+  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
+
 
 ``` bash
 . install/setup.bash
@@ -306,6 +312,5 @@ The node will wait until the competition is ready. To start the environment open
 ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 ```
 
-Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition and the sensor will start publishing data. You should see the the part count output increasing as part on the conveyor break the sensor beam. 
-
-![part breaking sensor beam](../images/tutorial_2_image2.png)
+Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition and the sensor will start publishing data.
+Each part detected by the camera will be logged to the terminal.

@@ -56,14 +56,13 @@ To test  the camera was correctly added to the environment, do the following:
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
 
 
-You should see the camera above bins 1-4 as shown in :numref:`fig_tutorial_3_image1`:
+You should see the camera above bins 1-4 as shown in the figure below:
 
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
-   :name : fig_tutorial_3_image1
    :scale: 70 %
    :align: center
    :figclass: align-center
-   :class: no-border
+   :class: with-shadow
 
 Retrieving Camera Messages
 ----------------------------

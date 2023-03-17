@@ -9,6 +9,7 @@ Tutorial 3: Reading Data from an Advanced Logical Camera
   **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
 
 This tutorial covers the following steps:
+
   - Receive messages from a camera, 
   - Store the data internally as an instance of a class,
   - Display the stored data on the standard output.
@@ -171,35 +172,40 @@ The interface used in this tutorial is shown in :numref:`competitioninterface`. 
             )
 
             self.set_parameters([sim_time])
+
             # Service client for starting the competition
             self._start_competition_client = self.create_client(Trigger, '/ariac/start_competition')
+
             # Subscriber to the competition state topic
             self._competition_state_sub = self.create_subscription(
                 CompetitionStateMsg,
                 '/ariac/competition_state',
                 self.competition_state_cb,
                 10)
+
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
+
             # Subscriber to the logical camera topic
             self._advanced_camera0_sub = self.create_subscription(
                 AdvancedLogicalCameraImageMsg,
                 '/ariac/sensors/advanced_camera_0/image',
                 self.advanced_camera0_cb,
                 qos_profile_sensor_data)
+
             # Store each camera image as an AdvancedLogicalCameraImage object
             self._camera_image: AdvancedLogicalCameraImage = None
 
         @property
         def camera_image(self):
-            '''Property for the camera images.'''
+            '''Store one camera message as an object of AdvancedLogicalCameraImage.'''
             return self._camera_image
 
         def competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
 
             Arguments:
-                msg -- CompetitionState message
+                msg -- CompetitionStateMsg message
             '''
             # Log if competition state has changed
             if self._competition_state != msg.competition_state:
@@ -245,7 +251,7 @@ The interface used in this tutorial is shown in :numref:`competitioninterface`. 
             '''Callback for the topic /ariac/sensors/advanced_camera_0/image
 
             Arguments:
-                msg -- AdvancedLogicalCameraImage message
+                msg -- AdvancedLogicalCameraImageMsg message
             '''
             self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
                                                             msg.tray_poses,
@@ -339,7 +345,9 @@ The interface used in this tutorial is shown in :numref:`competitioninterface`. 
 
 
 The content of the interface is described as follows:
+
     - ``AdvancedLogicalCameraImage`` class: This class stores a message from  ``/ariac/sensors/advanced_camera_0/image``. 
+
         - The class attribute ``_part_poses`` is a list of ``PartPose`` objects that contain the part type, color, and pose. 
         - The class attribute ``_tray_poses`` is a list of ``TrayPose`` objects that contain the tray type and pose. 
         - The class attribute ``_sensor_pose`` is a ``Pose`` object that contains the pose of the camera sensor.
@@ -348,6 +356,7 @@ The content of the interface is described as follows:
     - ``advanced_camera0_cb()``: This method is the callback function for the subscriber to the camera topic. It stores the message received on the topic in the class attribute ``_camera_image``.
     - ``multiply_pose()``: This method multiplies two poses and returns the resulting pose. This method is used to convert the pose of the part in the camera frame to the world frame.
     - ``parse_advanced_camera_image()``: This method parses the message stored in the class attribute ``_camera_image`` and returns a string representation of the message. This method is used to display the part color, type, and pose in a human-readable format. The output is printed in the following format:
+
         - Emoji for the part color using the class attribute ``part_colors_emoji_``.
         - Part color using the class attribute ``part_colors_``.
         - Part type using the class attribute ``part_types_``.

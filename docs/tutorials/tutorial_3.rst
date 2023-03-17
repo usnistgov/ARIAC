@@ -9,7 +9,7 @@ Tutorial 3: Reading Data from an Advanced Logical Camera
   **Prerequisites**: The code snippets provided in tutorials 1 and 2 will be reused and augmented in this tutorial. The completion of tutorials 1 and 2 is a prerequisite for this tutorial.
 
 
-In this tutorial you will learn how to:
+This tutorial covers the following steps:
   - Receive messages from a camera, 
   - Store the data internally as an instance of a class,
   - Display the stored data on the standard output.
@@ -18,7 +18,7 @@ In this tutorial you will learn how to:
 Add a Camera to the Environment
 --------------------------------
 
-Add a an advanced logical camera to  ``sensors.yaml`` as shown on lines 8-13 in :numref:`sensors-yaml`. 
+Add an advanced logical camera to  ``sensors.yaml`` (lines 8-13 in :numref:`sensors-yaml`). 
 
 .. code-block:: yaml
     :caption: sensors.yaml
@@ -46,7 +46,7 @@ Add a an advanced logical camera to  ``sensors.yaml`` as shown on lines 8-13 in 
 Test the Camera
 ^^^^^^^^^^^^^^^^^^
 
-To test  the camera was correctly added to the environment, do the following:
+To test  the camera was correctly added to the environment:
 
 .. code-block:: bash
 
@@ -72,101 +72,319 @@ The camera which was added to ``sensors.yaml`` is publishing messages to the top
 
 Import Modules
 ^^^^^^^^^^^^^^
-Besides the modules imported in tutorial 1, extra modules must be imported in the ``competition_interface.py`` file as seen in :numref:`import-advanced-camera`.
+The modules shown in  :numref:`import-advanced-camera` must be imported in ``competition_interface.py``.
 
 .. code-block:: python
     :caption: Module Imports
     :name: import-advanced-camera
     
-    from ariac_msgs.msg import AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg
-    from ariac_msgs.msg import PartPose as PartPoseMsg
-    # For KDL transformations
+    import rclpy
     import PyKDL
+    from dataclasses import dataclass
+    from rclpy.node import Node
+    from rclpy.qos import qos_profile_sensor_data
+    from rclpy.parameter import Parameter
     from geometry_msgs.msg import Pose
+
+    from ariac_msgs.msg import (
+        CompetitionState,
+        Part,
+        AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
+        PartPose as PartPoseMsg,
+        KitTrayPose as KitTrayPoseMsg,
+    )
+
+    from std_srvs.srv import Trigger
 
 Competition Interface Attributes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In the class ``CompetitionInterface``, add the following class attributes.
+The class ``CompetitionInterface`` used in this tutorial is shown in :numref:`competitioninterface`. The content of this class is described in the following sections.
 
 .. code-block:: python
-    :caption: Dictionaries for converting PartColor and PartType constants to strings
-    :name: class-attributes
+    :caption: CompetitionInterface class
+    :name: competitioninterface
 
-    part_colors_ = {
-      Part.RED: 'red',
-      Part.BLUE: 'blue',
-      Part.GREEN: 'green',
-      Part.ORANGE: 'orange',
-      Part.PURPLE: 'purple',
-    }
-    '''Dictionary for converting PartColor constants to strings'''    
-    
-    part_colors_emoji_ = {
-      Part.RED: '🟥',
-      Part.BLUE: '🟦',
-      Part.GREEN: '🟩',
-      Part.ORANGE: '🟧',
-      Part.PURPLE: '🟪',
-    }
-    '''Dictionary for displaying an emoji for the part color'''
+    class CompetitionInterface(Node):
+        '''
+        Class for a competition interface node.
 
-    part_types_ = {
-      Part.BATTERY: 'battery',
-      Part.PUMP: 'pump',
-      Part.REGULATOR: 'regulator',
-      Part.SENSOR: 'sensor',
-    }
-    '''Dictionary for converting PartType constants to strings'''
+        Args:
+            Node (rclpy.node.Node): Parent class for ROS nodes
+
+        Raises:
+            KeyboardInterrupt: Exception raised when the user uses Ctrl+C to kill a process
+        '''
+
+        _part_colors = {
+            PartMsg.RED: 'red',
+            PartMsg.BLUE: 'blue',
+            PartMsg.GREEN: 'green',
+            PartMsg.ORANGE: 'orange',
+            PartMsg.PURPLE: 'purple',
+        }
+
+        _part_colors_emoji = {
+            PartMsg.RED: '🟥',
+            PartMsg.BLUE: '🟦',
+            PartMsg.GREEN: '🟩',
+            PartMsg.ORANGE: '🟧',
+            PartMsg.PURPLE: '🟪',
+        }
+
+        '''Dictionary for converting PartColor constants to strings'''
+
+        _part_types = {
+            PartMsg.BATTERY: 'battery',
+            PartMsg.PUMP: 'pump',
+            PartMsg.REGULATOR: 'regulator',
+            PartMsg.SENSOR: 'sensor',
+        }
+        '''Dictionary for converting PartType constants to strings'''
+
+        _competition_states = {
+            CompetitionStateMsg.IDLE: 'idle',
+            CompetitionStateMsg.READY: 'ready',
+            CompetitionStateMsg.STARTED: 'started',
+            CompetitionStateMsg.ORDER_ANNOUNCEMENTS_DONE: 'order_announcements_done',
+            CompetitionStateMsg.ENDED: 'ended',
+        }
+        '''Dictionary for converting CompetitionState constants to strings'''
+
+        def __init__(self):
+            super().__init__('competition_interface')
+
+            sim_time = Parameter(
+                "use_sim_time",
+                rclpy.Parameter.Type.BOOL,
+                True
+            )
+
+            self.set_parameters([sim_time])
+            # Service client for starting the competition
+            self._start_competition_client = self.create_client(Trigger, '/ariac/start_competition')
+            # Subscriber to the competition state topic
+            self._competition_state_sub = self.create_subscription(
+                CompetitionStateMsg,
+                '/ariac/competition_state',
+                self.competition_state_cb,
+                10)
+            # Store the state of the competition
+            self._competition_state: CompetitionStateMsg = None
+            # Subscriber to the logical camera topic
+            self._advanced_camera0_sub = self.create_subscription(
+                AdvancedLogicalCameraImageMsg,
+                '/ariac/sensors/advanced_camera_0/image',
+                self.advanced_camera0_cb,
+                qos_profile_sensor_data)
+            # Store each camera image as an AdvancedLogicalCameraImage object
+            self._camera_image: AdvancedLogicalCameraImage = None
+
+        @property
+        def camera_image(self):
+            '''Property for the camera images.'''
+            return self._camera_image
+
+        def competition_state_cb(self, msg: CompetitionStateMsg):
+            '''Callback for the topic /ariac/competition_state
+
+            Arguments:
+                msg -- CompetitionState message
+            '''
+            # Log if competition state has changed
+            if self._competition_state != msg.competition_state:
+                self.get_logger().info(
+                    f'Competition state is: \
+                    {CompetitionInterface._competition_states[msg.competition_state]}',
+                    throttle_duration_sec=1.0)
+            self._competition_state = msg.competition_state
+
+        def start_competition(self):
+            '''Function to start the competition.
+            '''
+            self.get_logger().info('Waiting for competition to be ready')
+
+            if self._competition_state == CompetitionStateMsg.STARTED:
+                return
+            # Wait for competition to be ready
+            while self._competition_state != CompetitionStateMsg.READY:
+                try:
+                    rclpy.spin_once(self)
+                except KeyboardInterrupt:
+                    return
+
+            self.get_logger().info('Competition is ready. Starting...')
+
+            # Call ROS service to start competition
+            while not self._start_competition_client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info('Waiting for /ariac/start_competition to be available...')
+
+            # Create trigger request and call starter service
+            request = Trigger.Request()
+            future = self._start_competition_client.call_async(request)
+
+            # Wait until the service call is completed
+            rclpy.spin_until_future_complete(self, future)
+
+            if future.result().success:
+                self.get_logger().info('Started competition.')
+            else:
+                self.get_logger().info('Unable to start competition')
+
+        def advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+            '''Callback for the topic /ariac/sensors/advanced_camera_0/image
+
+            Arguments:
+                msg -- AdvancedLogicalCameraImage message
+            '''
+            self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
+                                                            msg.tray_poses,
+                                                            msg.sensor_pose)
+
+        def multiply_pose(self, pose1: Pose, pose2: Pose):
+            '''
+            Use KDL to multiply two poses together.
+
+            Args:
+                pose1 (Pose): Pose of the first frame
+                pose2 (Pose): Pose of the second frame
+
+            Returns:
+                Pose: Pose of the resulting frame
+            '''
+
+            frame1 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose1.orientation.x,
+                                                        pose1.orientation.y,
+                                                        pose1.orientation.z,
+                                                        pose1.orientation.w),
+                                PyKDL.Vector(pose1.position.x, pose1.position.y, pose1.position.z))
+
+            frame2 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose2.orientation.x,
+                                                        pose2.orientation.y,
+                                                        pose2.orientation.z,
+                                                        pose2.orientation.w),
+                                PyKDL.Vector(pose2.position.x, pose2.position.y, pose2.position.z))
+
+            frame3: PyKDL.Frame = frame1 * frame2
+
+            tf2 = Pose()
+            tf2.position.x = frame3.p.x()
+            tf2.position.y = frame3.p.y()
+            tf2.position.z = frame3.p.z()
+            tf2.orientation.x = frame3.M.GetQuaternion()[0]
+            tf2.orientation.y = frame3.M.GetQuaternion()[1]
+            tf2.orientation.z = frame3.M.GetQuaternion()[2]
+            tf2.orientation.w = frame3.M.GetQuaternion()[3]
+
+            # return the resulting pose from frame3
+            return tf2
+
+        def parse_advanced_camera_image(self):
+            '''
+            Parse an AdvancedLogicalCameraImage message and return a string representation.
+
+
+            Args:
+                image (AdvancedLogicalCameraImage): Object of type AdvancedLogicalCameraImage
+            '''
+            output = '\n\n==========================\n'
+
+            sensor_pose: Pose = self._camera_image._sensor_pose
+
+            part_pose: PartPoseMsg
+            
+            counter = 1
+            for part_pose in self._camera_image._part_poses:
+                part_color = CompetitionInterface._part_colors[part_pose.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[part_pose.part.color]
+                part_type = CompetitionInterface._part_types[part_pose.part.type].capitalize()
+                output += f'Part {counter}: {part_color_emoji} {part_color} {part_type}\n'
+                output += '==========================\n'
+                output += 'Camera Frame\n'
+                output += '==========================\n'
+                position = f'x: {part_pose.pose.position.x}\n\t\ty: {part_pose.pose.position.y}\n\t\tz: {part_pose.pose.position.z}'
+                orientation = f'x: {part_pose.pose.orientation.x}\n\t\ty: {part_pose.pose.orientation.y}\n\t\tz: {part_pose.pose.orientation.z}\n\t\tw: {part_pose.pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                output += 'World Frame\n'
+                output += '==========================\n'
+                part_world_pose = self.multiply_pose(sensor_pose, part_pose.pose)
+                position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
+                orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                
+                counter += 1
+
+            return output
+
+
+Class Attributes
+^^^^^^^^^^^^^^^^
+
+The class attributes ``_part_colors`` and ``_part_types`` are dictionaries that map the integer values of the part color and type to their string representations. The class attribute ``_part_colors_emoji`` is a dictionary that maps the integer values of the part color to their emoji representations.
+These dictionaries are mainly used to display the part color and type in a human-readable format.
 
 Subscriber
 ^^^^^^^^^^
 
-To read messages published on the topic ``/ariac/sensors/advanced_camera_0/image``, create a subscriber in the ``competition_interface.py`` file as seen in :numref:`competition-interface`.
+A subscriber to the topic ``/ariac/sensors/advanced_camera_0/image`` is shown in :numref:`subscriber`. Each message received on this topic is stored in the attribute ``_camera_image``. This attribute is an instance of the class ``AdvancedLogicalCameraImage``, which is defined in :numref:`AdvancedLogicalCameraImage`.
 
 .. code-block:: python
     :caption: Subscriber to the Camera Topic
-    :name: competition-interface
+    :name: subscriber
     
     # Subscriber to the logical camera topic
-    self.advanced_camera0_sub = self.create_subscription(
+    self._advanced_camera0_sub = self.create_subscription(
         AdvancedLogicalCameraImageMsg,
         '/ariac/sensors/advanced_camera_0/image',
         self.advanced_camera0_cb,
         qos_profile_sensor_data)
 
-    # An instance of the AdvancedLogicalCameraImage class
-    self.camera_image_ = None
+    # Store each camera image as an AdvancedLogicalCameraImage object
+    self._camera_image: AdvancedLogicalCameraImage = None
+
+
+.. code-block:: python
+    :caption: AdvancedLogicalCameraImage class
+    :name: AdvancedLogicalCameraImage
+    
+    @dataclass
+    class AdvancedLogicalCameraImage:
+    '''
+    Class to store information about a AdvancedLogicalCameraImageMsg.
+    '''
+        _part_poses: PartPoseMsg
+        _tray_poses: KitTrayPoseMsg
+        _sensor_pose: Pose
 
 Camera Callback
 ^^^^^^^^^^^^^^^
 
-
-Define the ``AdvancedLogicalCameraImage`` in the ``competition_interface.py`` file as seen in :numref:`advanced-logical-camera-image`. This class is used to store the data from the camera.
-Each attribute of this class represents a field of the message type ``AdvancedLogicalCameraImageMsg``.
-
-
-.. code-block:: python
-    :caption: AdvancedLogicalCameraImage Class
-    :name: advanced-logical-camera-image
-    
-    class AdvancedLogicalCameraImage:
-      def __init__(self, msg: AdvancedLogicalCameraImageMsg) -> None:
-        self.part_poses = msg.part_poses
-        self.tray_poses = msg.tray_poses
-        self.sensor_pose = msg.sensor_pose
-
-
-Define the callback for the subscriber as seen in :numref:`advanced-camera-callback`. Each incoming message is converted to an instance of the ``AdvancedLogicalCameraImage`` class and stored in the attribute ``camera_image_``. 
+The callback for the camera subscriber is seen in :numref:`advanced-camera-callback`. 
+Each incoming message is converted to an instance of the ``AdvancedLogicalCameraImage`` class and stored in the attribute ``camera_image_``. 
 
 .. code-block:: python
     :caption: Subscriber Callback
     :name: advanced-camera-callback
     
     def advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
-      self.camera_image_ = AdvancedLogicalCameraImage(msg)
+        '''Callback for the topic /ariac/sensors/advanced_camera_0/image
 
-
+        Arguments:
+            msg -- AdvancedLogicalCameraImage message
+        '''
+        self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
+                                                        msg.tray_poses,
+                                                        msg.sensor_pose)
 
 
 Parse Stored Camera Image
@@ -187,40 +405,47 @@ This method parses the attribute ``camera_image_``  and prints its content to th
     :name: parse-advanced-camera-image
     
     def parse_advanced_camera_image(self):
-        output = '\n\n==========================\n'
-        
-        sensor_pose: Pose = self.camera_image_.sensor_pose
-        
-        part_pose: PartPoseMsg
-        for part_pose in self.camera_image_.part_poses:
-            part_color = CompetitionInterface.part_colors_[part_pose.part.color].capitalize()
-            part_color_emoji = CompetitionInterface.part_colors_emoji_[part_pose.part.color]
-            part_type = CompetitionInterface.part_types_[part_pose.part.type].capitalize()
-            output += f'Part: {part_color_emoji} {part_color} {part_type}\n'
-            output += '==========================\n'
-            output += 'Camera Frame\n'
-            output += '==========================\n'
-            position = f'x: {part_pose.pose.position.x}\n\t\ty: {part_pose.pose.position.y}\n\t\tz: {part_pose.pose.position.z}'
-            orientation = f'x: {part_pose.pose.orientation.x}\n\t\ty: {part_pose.pose.orientation.y}\n\t\tz: {part_pose.pose.orientation.z}\n\t\tw: {part_pose.pose.orientation.w}'
+            '''
+            Parse an AdvancedLogicalCameraImage message and return a string representation.
+            '''
+            output = '\n\n==========================\n'
 
-            output += '\tPosition:\n'
-            output += f'\t\t{position}\n'
-            output += '\tOrientation:\n'
-            output += f'\t\t{orientation}\n'
-            output += '==========================\n'
-            output += 'World Frame\n'
-            output += '==========================\n'
-            part_world_pose = self.multiply_pose(sensor_pose, part_pose.pose)
-            position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
-            orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
+            sensor_pose: Pose = self._camera_image._sensor_pose
 
-            output += '\tPosition:\n'
-            output += f'\t\t{position}\n'
-            output += '\tOrientation:\n'
-            output += f'\t\t{orientation}\n'
-            output += '==========================\n'
-        
-        return output
+            part_pose: PartPoseMsg
+            
+            counter = 1
+            for part_pose in self._camera_image._part_poses:
+                part_color = CompetitionInterface._part_colors[part_pose.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[part_pose.part.color]
+                part_type = CompetitionInterface._part_types[part_pose.part.type].capitalize()
+                output += f'Part {counter}: {part_color_emoji} {part_color} {part_type}\n'
+                output += '==========================\n'
+                output += 'Camera Frame\n'
+                output += '==========================\n'
+                position = f'x: {part_pose.pose.position.x}\n\t\ty: {part_pose.pose.position.y}\n\t\tz: {part_pose.pose.position.z}'
+                orientation = f'x: {part_pose.pose.orientation.x}\n\t\ty: {part_pose.pose.orientation.y}\n\t\tz: {part_pose.pose.orientation.z}\n\t\tw: {part_pose.pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                output += 'World Frame\n'
+                output += '==========================\n'
+                part_world_pose = self.multiply_pose(sensor_pose, part_pose.pose)
+                position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
+                orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                
+                counter += 1
+
+            return output
 
 .. code-block:: python
     :caption: Transform using KDL frames
@@ -237,22 +462,21 @@ This method parses the attribute ``camera_image_``  and prints its content to th
         Returns:
             Pose: Pose of the resulting frame
         '''
-        
-        frame1 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose1.orientation.x, 
-                                                       pose1.orientation.y, 
-                                                       pose1.orientation.z, 
-                                                       pose1.orientation.w), 
+
+        frame1 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose1.orientation.x,
+                                                       pose1.orientation.y,
+                                                       pose1.orientation.z,
+                                                       pose1.orientation.w),
                              PyKDL.Vector(pose1.position.x, pose1.position.y, pose1.position.z))
-        
-        frame2 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose2.orientation.x, 
-                                                       pose2.orientation.y, 
-                                                       pose2.orientation.z, 
-                                                       pose2.orientation.w), 
+
+        frame2 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose2.orientation.x,
+                                                       pose2.orientation.y,
+                                                       pose2.orientation.z,
+                                                       pose2.orientation.w),
                              PyKDL.Vector(pose2.position.x, pose2.position.y, pose2.position.z))
-        
+
         frame3: PyKDL.Frame = frame1 * frame2
-        
-        # return the resulting pose from frame3
+
         tf2 = Pose()
         tf2.position.x = frame3.p.x()
         tf2.position.y = frame3.p.y()
@@ -261,7 +485,8 @@ This method parses the attribute ``camera_image_``  and prints its content to th
         tf2.orientation.y = frame3.M.GetQuaternion()[1]
         tf2.orientation.z = frame3.M.GetQuaternion()[2]
         tf2.orientation.w = frame3.M.GetQuaternion()[3]
-        
+
+        # return the resulting pose from frame3
         return tf2
 
 
@@ -269,7 +494,7 @@ This method parses the attribute ``camera_image_``  and prints its content to th
 Configure the Executable
 --------------------------------
 
-To use this code, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
+To test this tutorial, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
 
 
 .. code-block:: python
@@ -278,31 +503,35 @@ To use this code, create a new file ``read_advanced_camera.py`` in ``competition
     #!/usr/bin/env python3
 
     import rclpy
-    from ariac_tutorials.competition_interface import CompetitionInterface
+    from ariac_tutorials.tutorial3 import CompetitionInterface
+
 
     def main(args=None):
-      rclpy.init(args=args)
-      interface = CompetitionInterface()
-      interface.start_competition()
+        rclpy.init(args=args)
+        interface = CompetitionInterface()
+        interface.start_competition()
 
-      while rclpy.ok():
+        while rclpy.ok():
         try:
-          rclpy.spin_once(interface)    
-          interface.camera_images_ is not None:
-            interface.get_logger().info(interface.parse_advanced_camera_image(interface.camera_image_), throttle_duration_sec=2.0)
-        except KeyboardInterrupt:
-          break
+        rclpy.spin_once(interface)
+        # interface.get_logger().info(
+            # f'Number of parts detected: {len(interface.camera_images)}', throttle_duration_sec=2.0)
 
-      interface.destroy_node()
-      rclpy.shutdown()
+        if interface.camera_image is not None:
+            interface.get_logger().info(interface.parse_advanced_camera_image(), throttle_duration_sec=2.0)
+        except KeyboardInterrupt:
+        break
+
+        interface.destroy_node()
+        rclpy.shutdown()
 
 
     if __name__ == '__main__':
-        main()
+    main()
 
 
 
-This executable creates an instance of the interface, starts the competition and logs each message received from the camera.
+This executable creates an instance of the interface, starts the competition and logs the content of ``_camera_image`` every 2 seconds.
 
 Update CMakelists.txt
 ^^^^^^^^^^^^^^^^^^^^^^

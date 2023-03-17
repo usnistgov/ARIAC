@@ -16,7 +16,7 @@ This tutorial covers the following steps:
   - Identify AGVs and stations from the assembly tasks
   - Move the AGVs to the stations.
 
-Once this tutorial completed, the package ``competition_tutorials`` should have the following structure:
+The package ``competition_tutorials`` is expected to have the following structure for tutorial 5:
 
 .. code-block:: bash
     

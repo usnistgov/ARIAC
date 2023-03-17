@@ -10,7 +10,7 @@ Tutorial 6: Changing the State of a Gripper
 
 This tutorial shows how to use service calls to enable and disable the gripper of a robot. The gripper can be enabled and disabled using the ``/ariac/gripper/control`` service. The service takes a boolean as input. If the input is ``True``, the gripper is enabled. If the input is ``False``, the gripper is disabled. The service returns a boolean as output. If the output is ``True``, the gripper was successfully enabled or disabled. If the output is ``False``, the gripper was not successfully enabled or disabled.
 
-Once this tutorial completed, the package ``competition_tutorials`` should have the following structure:
+The package ``competition_tutorials`` is expected to have the following structure for tutorial 6:
 
 .. code-block:: bash
     

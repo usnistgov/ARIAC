@@ -14,7 +14,7 @@ This tutorial covers the following steps:
   - Store each order internally as an instance of a class,
   - Display each order on the standard output.
 
-Once this tutorial completed, the package ``competition_tutorials`` should have the following structure:
+The package ``competition_tutorials`` is expected to have the following structure for tutorial 4:
 
 .. code-block:: bash
     

@@ -14,7 +14,7 @@ This tutorial covers the following steps:
   - Create a configuration file for sensors and cameras, 
   - Add functionality to the competition interface to read data from a sensor and output that data to the terminal.
 
-Once this tutorial completed, the package ``competition_tutorials`` should have the following structure:
+The package ``competition_tutorials`` is expected to have the following structure for tutorial 2:
 
 .. code-block:: bash
     

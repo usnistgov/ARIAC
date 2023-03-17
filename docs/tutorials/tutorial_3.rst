@@ -14,7 +14,7 @@ This tutorial covers the following steps:
   - Store the data internally as an instance of a class,
   - Display the stored data on the standard output.
 
-Once this tutorial completed, the package ``competition_tutorials`` should have the following structure:
+The package ``competition_tutorials`` is expected to have the following structure for tutorial 3:
 
 .. code-block:: bash
     

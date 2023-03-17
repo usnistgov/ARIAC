@@ -8,12 +8,25 @@ Tutorial 3: Reading Data from an Advanced Logical Camera
 .. note::
   **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
 
-  **Workspace**: This tutorial uses the workspace ``~/ariac_ws``, which was created in was created from `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
-
 This tutorial covers the following steps:
   - Receive messages from a camera, 
   - Store the data internally as an instance of a class,
   - Display the stored data on the standard output.
+
+Once this tutorial completed, the package ``competition_tutorials`` should have the following structure:
+
+.. code-block:: bash
+    
+    competition_tutorials
+    ├── CMakeLists.txt
+    ├── package.xml
+    ├── competition_tutorials
+    │   ├── __init__.py
+    │   └── competition_interface.py
+    └── src
+        ├── start_competition.py        (from tutorial 1)
+        ├── read_break_beam_sensor.py   (from tutorial 2)
+        └── read_advanced_camera.py     (new)
 
 
 Add a Camera to the Environment
@@ -532,6 +545,7 @@ Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
   # Install Python executables
   install(PROGRAMS
     src/start_competition.py
+    src/read_break_beam_sensor.py
     src/read_advanced_camera.py
     DESTINATION lib/${PROJECT_NAME}
   )

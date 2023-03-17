@@ -11,9 +11,10 @@ This competition package will use a python node to listen to the competition sta
 
 To create the package: 
     - Navigate to the ``src`` directory of the ``ariac_ws`` that was created in `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
-    - Navigate into ``ariac_ws/src`` and run the package creation command:
+    - Run the package creation command:
 
 .. code-block:: bash
+    
     ros2 pkg create competition_tutorials --build-type ament_cmake
 
 

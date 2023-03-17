@@ -761,7 +761,7 @@ Outputs
 
 Terminal outputs of tutorial 5 are provided below.
 
-.. code-block:: bash
+.. code-block::
     :caption: Terminal outputs
     
     [INFO] [1679043864.680244149] [competition_interface]: Waiting for competition to be ready

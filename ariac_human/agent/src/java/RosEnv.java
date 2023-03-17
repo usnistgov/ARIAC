@@ -32,7 +32,7 @@ public class RosEnv extends Environment {
 	double lastHumanState_MsgT = System.currentTimeMillis();
 	double lastUnsafeD_MsgT    = System.currentTimeMillis();
 	double previousDistance = 50.0;
-	double minAgvDist = 0.9;
+	double minAgvDist = 1.0;
 	boolean isAproximating = false;
 	
 	boolean simulationStarted = false; 	

@@ -99,8 +99,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
 .. code-block:: python
     :caption: Competition interface for tutorial 2
-    :name: competitioninterface-tutorial2
-    .. :emphasize-lines: 
+    :name: competitioninterface-tutorial2 
     :linenos:
 
     #!/usr/bin/env python3

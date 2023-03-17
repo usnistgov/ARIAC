@@ -96,7 +96,7 @@ Competition Interface
 --------------------------------
 
 
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial2`. 
+The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial2`.  Contents specific to this tutorial are highlighted in yellow.
 
 .. code-block:: python
     :caption: Competition interface for tutorial 2

@@ -8,6 +8,18 @@ Tutorial 1: Creating a Competition Package
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
+Once completed, the package should have the following structure:
+
+.. code-block:: bash
+    
+    competition_tutorials
+    ├── CMakeLists.txt
+    ├── package.xml
+    ├── competition_tutorials
+    │   ├── __init__.py
+    │   └── competition_interface.py
+    └── src
+        └── start_competition.py
 
 To create the package: 
     - Navigate to the ``src`` directory of the ``ariac_ws`` that was created in `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 

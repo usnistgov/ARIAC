@@ -8,7 +8,7 @@ Tutorial 3: Reading Data from an Advanced Logical Camera
 .. note::
   **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
 
-  **Workspace**: We assume that we are working with the workspace ``~/ariac_ws``, which was created in tutorial 1.
+  **Workspace**: This tutorial uses the workspace ``~/ariac_ws``, which was created in was created from `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
 
 This tutorial covers the following steps:
   - Receive messages from a camera, 
@@ -63,19 +63,18 @@ You should see the camera above bins 1-4 as shown in the figure below.
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
    :align: center
 
-.. Receive Messages from a Camera
-.. ---------------------------------
+    
 
-.. The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name of the sensors/cameras from ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
 
-Import Modules
-^^^^^^^^^^^^^^
-The modules shown in  :numref:`import-advanced-camera` must be imported in ``competition_interface.py``.
+Competition Interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The class ``CompetitionInterface`` used in this tutorial is shown in :numref:`competitioninterface`. The content of this class is described in the following sections.
 
 .. code-block:: python
-    :caption: Module Imports
-    :name: import-advanced-camera
-    
+    :caption: CompetitionInterface class
+    :name: competitioninterface
+
     import rclpy
     import PyKDL
     from dataclasses import dataclass
@@ -93,15 +92,6 @@ The modules shown in  :numref:`import-advanced-camera` must be imported in ``com
     )
 
     from std_srvs.srv import Trigger
-
-Competition Interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The class ``CompetitionInterface`` used in this tutorial is shown in :numref:`competitioninterface`. The content of this class is described in the following sections.
-
-.. code-block:: python
-    :caption: CompetitionInterface class
-    :name: competitioninterface
 
     class CompetitionInterface(Node):
         '''
@@ -502,7 +492,7 @@ To test this tutorial, create a new file ``read_advanced_camera.py`` in ``compet
     #!/usr/bin/env python3
 
     import rclpy
-    from ariac_tutorials.tutorial3 import CompetitionInterface
+    from competition_tutorials.tutorial3 import CompetitionInterface
 
 
     def main(args=None):

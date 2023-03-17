@@ -574,13 +574,13 @@ The node will wait until the competition is ready. To start the environment open
 Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and the sensor will start publishing data.
 Each part detected by the camera will be logged to the terminal.
 
-Output
+Outputs
 --------------------------------
 
-A snippet of the output is shown below:
+A snippet of the terminal outputs of tutorial 3 displaying only the first two parts is provided below.
 
 .. code-block:: bash
-    :caption: Output of tutorial 3
+    :caption: Terminal outputs
     
     ==========================
     Part 1: 🟪 Purple Pump

@@ -45,6 +45,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 .. code-block:: python
     :caption: Competition interface for tutorial 5
     :name: competitioninterface-tutorial5
+    :linenos:
 
     #!/usr/bin/env python3
 

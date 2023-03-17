@@ -88,6 +88,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 .. code-block:: python
     :caption: Competition interface for tutorial 3
     :name: competitioninterface-tutorial3
+    :linenos:
 
     import rclpy
     import PyKDL

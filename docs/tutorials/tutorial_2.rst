@@ -101,7 +101,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 .. code-block:: python
     :caption: Competition interface for tutorial 2
     :name: competitioninterface-tutorial2
-    :emphasize-lines: 5, 10, 59-63, 65, 67, 72-74, 76-85
+    :emphasize-lines: 8, 57-61, 63, 65, 70-72, 74-83, 
     :linenos:
 
 
@@ -198,8 +198,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             # Log if competition state has changed
             if self._competition_state != msg.competition_state:
                 self.get_logger().info(
-                    f'Competition state is: \
-                    {CompetitionInterface._competition_states[msg.competition_state]}',
+                    f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
                     throttle_duration_sec=1.0)
             self._competition_state = msg.competition_state
 

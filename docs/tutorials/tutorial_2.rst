@@ -351,7 +351,7 @@ Outputs
 
 A sample of the outputs is shown below.
 
-.. code-block:: bash
+.. code-block:: text
     :caption: Terminal outputs
     
     [INFO] [1679030246.597452729] [competition_interface]: Part Count: 0

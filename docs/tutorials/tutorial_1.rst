@@ -304,7 +304,7 @@ The node will wait until the competition is ready. Do the following in a new ter
 This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 
 The outputs obtained in Terminal 1 should be:
 
-.. code-block:: bash
+.. code-block:: text
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
     [INFO] [1679025079.463133489] [competition_interface]: Competition state is: idle

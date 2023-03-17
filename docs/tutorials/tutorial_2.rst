@@ -101,7 +101,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 .. code-block:: python
     :caption: Competition interface for tutorial 2
     :name: competitioninterface-tutorial2
-    :emphasize-lines: 8, 57-61, 63, 65, 70-72, 74-83, 
+    :emphasize-lines: 8, 57-61, 63, 65, 70-72, 74-83
     :linenos:
 
 
@@ -301,7 +301,7 @@ Copy the following code in the file ``read_break_beam_sensor.py``:
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
- This executable creates an instance of the interface, starts the competition and logs the ``_part_count`` variable every 2 seconds. 
+ This executable creates an instance of the interface, starts the competition and logs the ``part_count`` variable every 2 seconds. 
 
 Update CMakelists.txt
 ^^^^^^^^^^^^^^^^^^^^^^

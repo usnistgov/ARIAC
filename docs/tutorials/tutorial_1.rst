@@ -11,10 +11,11 @@ This competition package will use a python node to listen to the competition sta
 
 To create the package: 
     - Navigate to the ``src`` directory of the ``ariac_ws`` that was created in `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
-    - Run the package creation command:
+    - Run the package creation command.
 
 .. code-block:: bash
     
+    cd ~/ariac_ws/src
     ros2 pkg create competition_tutorials --build-type ament_cmake
 
 
@@ -218,19 +219,19 @@ Create the executable ``start_competition.py`` in ``competition_tutorials/src``:
 
 .. code-block:: bash
     
-    cd ~/ariac_ws/src/competition_tutorials/competition_tutorials
-    touch start_competition.py
+    cd ~/ariac_ws/src/competition_tutorials
+    touch src/start_competition.py
 
 Copy the following into ``start_competition.py``: 
 
 
 .. code-block:: python
-    :caption: Display Camera Data
+    :caption: Executable for tutorial 1.
     
     #!/usr/bin/env python3
 
     import rclpy
-    from ariac_tutorials.competition_interface import CompetitionInterface
+    from competition_tutorials.competition_interface import CompetitionInterface
 
     def main(args=None):
         rclpy.init(args=args)
@@ -250,7 +251,7 @@ This executable creates an instance of the ``CompetitionInterface`` class from `
 Run the Executable
 --------------------------------
 
-Next, build the package and run the node. To do this navigate to ``ariac_ws`` and run the following commands:
+Next, build the package and run the node:
 
 
 .. code-block:: bash
@@ -265,20 +266,29 @@ You should this output:
 
 .. code-block:: bash
     
-    [INFO] [1677690270.816618425] [start_competition_node]: Waiting for competition to be ready
+    [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
 
 
-The node will wait until the competition is ready. To start the environment open a second terminal navigate to ``ariac_ws`` and run the following commands:
+The node will wait until the competition is ready. Do the following in a new terminal:
 
 .. code-block:: bash
     :caption: Terminal 2
-    
+
+    cd ~/ariac_ws
     . install/setup.bash
     ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 
 
 This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 
+The outputs obtained in Terminal 1 should be:
 
-Outputs
---------------------------------
+.. code-block:: bash
+    
+    [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
+    [INFO] [1679025079.463133489] [competition_interface]: Competition state is:                 idle
+    [INFO] [1679025085.587755650] [competition_interface]: Competition state is:                 ready
+    [INFO] [1679025085.588245939] [competition_interface]: Competition is ready. Starting...
+    [INFO] [1679025085.590775613] [competition_interface]: Started competition.
+
+
 

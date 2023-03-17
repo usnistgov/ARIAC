@@ -553,6 +553,7 @@ Next, build the package and run the node. To do this navigate to ``ariac_ws`` an
 
 
 .. code-block:: bash
+    :caption: Terminal 1: Run the node for tutorial 3
 
   cd ~/ariac_ws
   colcon build
@@ -563,10 +564,11 @@ Next, build the package and run the node. To do this navigate to ``ariac_ws`` an
 The node will wait until the competition is ready. To start the environment open a second terminal navigate to ``ariac_ws`` and run the following commands:
 
 .. code-block:: bash
+    :caption: Terminal 2: Start the environment
 
   . install/setup.bash
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 
 
-Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition and the sensor will start publishing data.
+Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and the sensor will start publishing data.
 Each part detected by the camera will be logged to the terminal.

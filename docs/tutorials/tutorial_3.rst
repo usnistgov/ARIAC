@@ -60,10 +60,7 @@ You should see the camera above bins 1-4 as shown in the figure below.
 
 .. _fig-advanced-camera-0:
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
-   :scale: 70 %
    :align: center
-   :figclass: align-center
-   :class: with-shadow
 
 Receive Messages from a Camera
 ---------------------------------

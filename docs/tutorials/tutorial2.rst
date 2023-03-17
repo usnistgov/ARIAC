@@ -243,6 +243,7 @@ The content of the interface is described as follows:
 
     - To create a subscription to the breakbeam sensor, the subscriber needs to match the QoS for the sensor. This is shown when the subscriber is created. The ROS msg ``BreakBeamStatus`` which is the msg type that the sensor publishes is also added to the imports.
     - ``__init__()``: 
+    
         - ``_break_beam0_sub``: This is the subscriber to the breakbeam sensor topic. The callback function is ``breakbeam0_cb()``.
 
             - ``BreakBeamStatusMsg``: This is an alias for the message ``BreakBeamStatus``, which is the message type that the sensor publishes.

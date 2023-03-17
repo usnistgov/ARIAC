@@ -573,3 +573,64 @@ The node will wait until the competition is ready. To start the environment open
 
 Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and the sensor will start publishing data.
 Each part detected by the camera will be logged to the terminal.
+
+Output
+--------------------------------
+
+A snippet of the output is shown below:
+
+.. code-block:: bash
+    :caption: Output of tutorial 3
+    
+    ==========================
+    Part 1: 🟪 Purple Pump
+    ==========================
+    Camera Frame
+    ==========================
+        Position:
+            x: 1.0772143770406752
+            y: 0.5150000388121461
+            z: -0.2060067933778063
+        Orientation:
+            x: -0.0006855918720226918
+            y: -0.7063449441335629
+            z: -0.0006911150034743035
+            w: 0.7078671289308405
+    ==========================
+    World Frame
+    ==========================
+        Position:
+            x: -2.0799998435394826
+            y: 2.4450000325688257
+            z: 0.7227843196083803
+        Orientation:
+            x: -0.0010731836296401
+            y: -0.0009734789503818064
+            z: 0.9999989503002881
+            w: 3.7353182917545933e-06
+    ==========================
+    Part 2: 🟪 Purple Pump
+    ==========================
+    Camera Frame
+    ==========================
+        Position:
+            x: 1.0774243270564583
+            y: 0.15500079119043203
+            z: -0.20600655688080022
+        Orientation:
+            x: 0.0003549575317311197
+            y: -0.7072292680009703
+            z: 0.00035219184924200627
+            w: 0.7069840963196159
+    ==========================
+    World Frame
+    ==========================
+        Position:
+            x: -2.080000206072213
+            y: 2.8049992801904398
+            z: 0.7225743696009308
+        Orientation:
+            x: 0.0001765258688373336
+            y: 0.0005000301498669066
+            z: 0.9999998594026379
+            w: 1.7808459680221148e-06

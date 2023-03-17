@@ -333,12 +333,12 @@ These dictionaries are mainly used to display the part color and type in a human
 Subscriber
 ^^^^^^^^^^
 
-A subscriber to the topic ``/ariac/sensors/advanced_camera_0/image`` is shown in :numref:`subscriber`. Topics for sensors and cameras are dynamically generated based on the name of the sensors/cameras from ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
+A subscriber to the topic ``/ariac/sensors/advanced_camera_0/image`` is shown in :numref:`tutorial3-subscriber`. Topics for sensors and cameras are dynamically generated based on the name of the sensors/cameras from ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
 Each message received on this topic is stored in the attribute ``_camera_image``. This attribute is an instance of the class ``AdvancedLogicalCameraImage``, which is defined in :numref:`AdvancedLogicalCameraImage`.
 
 .. code-block:: python
     :caption: Subscriber to the Camera Topic
-    :name: subscriber
+    :name: tutorial3-subscriber
     
     # Subscriber to the logical camera topic
     self._advanced_camera0_sub = self.create_subscription(

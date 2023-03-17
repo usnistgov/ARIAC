@@ -347,7 +347,6 @@ The node will wait until the competition is ready. In a second terminal, run the
 Outputs
 --------------------------------
 
-Terminal outputs of tutorial 6 are provided below.
 
 .. code-block:: text
     :caption: Terminal outputs

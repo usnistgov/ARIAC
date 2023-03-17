@@ -352,7 +352,6 @@ Once the environment is loaded and the competition state is ready, the interface
 Outputs
 --------------------------------
 
-A sample of the outputs is shown below.
 
 .. code-block:: text
     :caption: Terminal outputs

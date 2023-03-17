@@ -463,7 +463,6 @@ Each part detected by the camera will be logged to the terminal.
 Outputs
 --------------------------------
 
-A snippet of the terminal outputs of tutorial 3 displaying only the first two parts is provided below.
 
 .. code-block:: bash
     :caption: Terminal outputs

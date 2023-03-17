@@ -691,7 +691,6 @@ Once the environment is loaded and the competition state is ready, the interface
 Outputs
 --------------------------------
 
-Terminal outputs of tutorial 4 displaying received orders are provided below.
 
 .. code-block:: bash
     :caption: Terminal outputs

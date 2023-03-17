@@ -576,7 +576,6 @@ Once the environment is loaded and the competition state is ready, the interface
 Outputs
 --------------------------------
 
-Terminal outputs of tutorial 5 are provided below.
 
 .. code-block:: text
     :caption: Terminal outputs

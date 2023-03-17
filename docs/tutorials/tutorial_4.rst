@@ -682,7 +682,7 @@ The node will wait until the competition is ready. In a second terminal, run the
 
     cd ~/ariac_ws
     . install/setup.bash
-    ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
+    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
 
 
 Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and published orders will be displayed on the standard output in Terminal 1.

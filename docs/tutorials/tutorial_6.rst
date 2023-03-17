@@ -341,7 +341,7 @@ The node will wait until the competition is ready. In a second terminal, run the
 
     cd ~/ariac_ws
     . install/setup.bash
-    ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
+    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
 
 
 Outputs

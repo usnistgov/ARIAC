@@ -58,8 +58,8 @@ Add an advanced logical camera to  ``sensors.yaml`` (lines 8-13 in :numref:`sens
 
 
 
-Test the Camera
-^^^^^^^^^^^^^^^^^^
+Verify the Camera is Added to the Environment
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To test  the camera was correctly added to the environment:
 
@@ -83,11 +83,11 @@ You should see the camera above bins 1-4 as shown in the figure below.
 Competition Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The interface used in this tutorial is shown in :numref:`competitioninterface`. The content of this class is described in the following sections.
+The interface used in this tutorial is shown in :numref:`competitioninterface-tutorial3`.
 
 .. code-block:: python
     :caption: Interface for tutorial 3
-    :name: competitioninterface
+    :name: competitioninterface-tutorial3
 
     import rclpy
     import PyKDL
@@ -370,7 +370,16 @@ The content of the interface is described as follows:
 Configure the Executable
 --------------------------------
 
-To test this tutorial, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/nodes`` and paste the following code:
+To test this tutorial, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/src``:
+
+.. code-block:: bash
+
+    cd ~/ariac_ws/src/competition_tutorials/src
+    touch read_advanced_camera.py
+    chmod +x read_advanced_camera.py
+
+
+Copy the following code in the file ``read_advanced_camera.py``:
 
 
 .. code-block:: python

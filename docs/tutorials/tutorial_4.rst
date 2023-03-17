@@ -693,7 +693,7 @@ Once the environment is loaded and the competition state is ready, the interface
 Outputs
 --------------------------------
 
-A snippet of the terminal outputs of tutorial 4 displaying received orders is provided below.
+Terminal outputs of tutorial 4 displaying received orders are provided below.
 
 .. code-block:: bash
     :caption: Terminal outputs

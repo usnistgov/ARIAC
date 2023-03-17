@@ -48,13 +48,13 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
     #!/usr/bin/env python3
 
+
     from dataclasses import dataclass
     from typing import List
     import rclpy
     from rclpy.node import Node
     from rclpy.parameter import Parameter
 
-    
     from ariac_msgs.msg import (
         CompetitionState as CompetitionStateMsg,
         Part as PartMsg,
@@ -64,8 +64,8 @@ The competition interface used in this tutorial is shown in :numref:`competition
         AGVStatus as AGVStatusMsg
     )
 
+    from ariac_msgs.srv import MoveAGV
     from geometry_msgs.msg import PoseStamped, Vector3
-
     from std_srvs.srv import Trigger
 
 
@@ -381,6 +381,11 @@ The competition interface used in this tutorial is shown in :numref:`competition
             self._parse_incoming_order = False
 
         @property
+        def orders(self):
+            '''Property for the orders list.'''
+            return self._orders
+
+        @property
         def parse_incoming_order(self):
             '''Property for the parse_incoming_order flag.'''
             return self._parse_incoming_order
@@ -393,249 +398,309 @@ The competition interface used in this tutorial is shown in :numref:`competition
             '''Callback for the topic /ariac/competition_state
 
             Arguments:
-            msg -- CompetitionState message
-        '''
-        # Log if competition state has changed
-        if self._competition_state != msg.competition_state:
-            self.get_logger().info(
-                f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
-                throttle_duration_sec=1.0)
-        self._competition_state = msg.competition_state
+                msg -- CompetitionState message
+            '''
+            # Log if competition state has changed
+            if self._competition_state != msg.competition_state:
+                self.get_logger().info(
+                    f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
+                    throttle_duration_sec=1.0)
+            self._competition_state = msg.competition_state
 
-    def start_competition(self):
-        '''Function to start the competition.
-        '''
-        self.get_logger().info('Waiting for competition to be ready')
+        def start_competition(self):
+            '''Function to start the competition.
+            '''
+            self.get_logger().info('Waiting for competition to be ready')
 
-        if self._competition_state == CompetitionStateMsg.STARTED:
-            return
-        # Wait for competition to be ready
-        while self._competition_state != CompetitionStateMsg.READY:
-            try:
-                rclpy.spin_once(self)
-            except KeyboardInterrupt:
+            if self._competition_state == CompetitionStateMsg.STARTED:
                 return
+            # Wait for competition to be ready
+            while self._competition_state != CompetitionStateMsg.READY:
+                try:
+                    rclpy.spin_once(self)
+                except KeyboardInterrupt:
+                    return
 
-        self.get_logger().info('Competition is ready. Starting...')
+            self.get_logger().info('Competition is ready. Starting...')
 
-        # Call ROS service to start competition
-        while not self._start_competition_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().info('Waiting for /ariac/start_competition to be available...')
+            # Call ROS service to start competition
+            while not self._start_competition_client.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info('Waiting for /ariac/start_competition to be available...')
 
-        # Create trigger request and call starter service
-        request = Trigger.Request()
-        future = self._start_competition_client.call_async(request)
+            # Create trigger request and call starter service
+            request = Trigger.Request()
+            future = self._start_competition_client.call_async(request)
 
-        # Wait until the service call is completed
-        rclpy.spin_until_future_complete(self, future)
+            # Wait until the service call is completed
+            rclpy.spin_until_future_complete(self, future)
 
-        if future.result().success:
-            self.get_logger().info('Started competition.')
-        else:
-            self.get_logger().info('Unable to start competition')
+            if future.result().success:
+                self.get_logger().info('Started competition.')
+            else:
+                self.get_logger().info('Unable to start competition')
 
-    def orders_cb(self, msg: OrderMsg):
-        '''Callback for the topic /ariac/orders
+        def orders_cb(self, msg: OrderMsg):
+            '''Callback for the topic /ariac/orders
 
-        Arguments:
-            msg (OrderMsg) -- Order message
-        '''
-        order = Order(msg)
-        self._orders.append(order)
-        if self._parse_incoming_order:
-            self.get_logger().info(self.parse_order(order))
+            Arguments:
+                msg (OrderMsg) -- Order message
+            '''
+            order = Order(msg)
+            self._orders.append(order)
+            if self._parse_incoming_order:
+                self.get_logger().info(self.parse_order(order))
 
-    def parse_kitting_task(self, kitting_task: KittingTask):
-        '''
-        Parses a KittingTask object and returns a string representation.
+        def parse_kitting_task(self, kitting_task: KittingTask):
+            '''
+            Parses a KittingTask object and returns a string representation.
 
-        Args:
-            kitting_task (KittingTask): KittingTask object to parse
+            Args:
+                kitting_task (KittingTask): KittingTask object to parse
 
-        Returns:
-            str: String representation of the KittingTask object
-        '''
-        output = 'Type: Kitting\n'
-        output += '==========================\n'
-        output += f'AGV: {kitting_task.agv_number}\n'
-        output += f'Destination: {CompetitionInterface._destinations[kitting_task.destination]}\n'
-        output += f'Tray ID: {kitting_task.tray_id}\n'
-        output += 'Products:\n'
-        output += '==========================\n'
+            Returns:
+                str: String representation of the KittingTask object
+            '''
+            output = 'Type: Kitting\n'
+            output += '==========================\n'
+            output += f'AGV: {kitting_task.agv_number}\n'
+            output += f'Destination: {CompetitionInterface._destinations[kitting_task.destination]}\n'
+            output += f'Tray ID: {kitting_task.tray_id}\n'
+            output += 'Products:\n'
+            output += '==========================\n'
 
-        quadrants = {1: "Quadrant 1: -",
-                     2: "Quadrant 2: -",
-                     3: "Quadrant 3: -",
-                     4: "Quadrant 4: -"}
+            quadrants = {1: "Quadrant 1: -",
+                        2: "Quadrant 2: -",
+                        3: "Quadrant 3: -",
+                        4: "Quadrant 4: -"}
 
-        for i in range(1, 5):
-            product: KittingPart
-            for product in kitting_task.parts:
-                if i == product.quadrant:
-                    part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
-                    part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
-                    part_type = CompetitionInterface._part_types[product.part.type].capitalize()
-                    quadrants[i] = f'Quadrant {i}: {part_color_emoji} {part_color} {part_type}'
-        output += f'\t{quadrants[1]}\n'
-        output += f'\t{quadrants[2]}\n'
-        output += f'\t{quadrants[3]}\n'
-        output += f'\t{quadrants[4]}\n'
+            for i in range(1, 5):
+                product: KittingPart
+                for product in kitting_task.parts:
+                    if i == product.quadrant:
+                        part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
+                        part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
+                        part_type = CompetitionInterface._part_types[product.part.type].capitalize()
+                        quadrants[i] = f'Quadrant {i}: {part_color_emoji} {part_color} {part_type}'
+            output += f'\t{quadrants[1]}\n'
+            output += f'\t{quadrants[2]}\n'
+            output += f'\t{quadrants[3]}\n'
+            output += f'\t{quadrants[4]}\n'
 
-        return output
+            return output
 
-    def parse_assembly_task(self, assembly_task: AssemblyTask):
-        '''
-        Parses an AssemblyTask object and returns a string representation.
+        def parse_assembly_task(self, assembly_task: AssemblyTask):
+            '''
+            Parses an AssemblyTask object and returns a string representation.
 
-        Args:
-            assembly_task (AssemblyTask): AssemblyTask object to parse
+            Args:
+                assembly_task (AssemblyTask): AssemblyTask object to parse
 
-        Returns:
-            str: String representation of the AssemblyTask object
-        '''
-        output = 'Type: Assembly\n'
-        output += '==========================\n'
-        if len(assembly_task.agv_numbers) == 1:
-            output += f'AGV: {assembly_task.agv_number[0]}\n'
-        elif len(assembly_task.agv_numbers) == 2:
-            output += f'AGV(s): [{assembly_task.agv_numbers[0]}, {assembly_task.agv_numbers[1]}]\n'
-        output += f'Assembly station: {self._destinations[assembly_task.station].title()}\n'
-        output += 'Products:\n'
-        output += '==========================\n'
+            Returns:
+                str: String representation of the AssemblyTask object
+            '''
+            output = 'Type: Assembly\n'
+            output += '==========================\n'
+            if len(assembly_task.agv_numbers) == 1:
+                output += f'AGV: {assembly_task.agv_number[0]}\n'
+            elif len(assembly_task.agv_numbers) == 2:
+                output += f'AGV(s): [{assembly_task.agv_numbers[0]}, {assembly_task.agv_numbers[1]}]\n'
+            output += f'Assembly station: {self._destinations[assembly_task.station].title()}\n'
+            output += 'Products:\n'
+            output += '==========================\n'
 
-        product: AssemblyPartMsg
-        for product in assembly_task.parts:
-            part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
-            part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
-            part_type = CompetitionInterface._part_types[product.part.type].capitalize()
-            assembled_pose_position = product.assembled_pose.pose.position
-            assembled_pose_orientation = product.assembled_pose.pose.orientation
-            install_direction = product.install_direction
-            position = f'x: {assembled_pose_position.x}\n\t\ty: {assembled_pose_position.y}\n\t\tz: {assembled_pose_position.z}'
-            orientation = f'x: {assembled_pose_orientation.x}\n\t\ty: {assembled_pose_orientation.y}\n\t\tz: {assembled_pose_orientation.z}\n\t\tw: {assembled_pose_orientation.w}'
-            output += f'\tPart: {part_color_emoji} {part_color} {part_type}\n'
-            output += '\tPosition:\n'
-            output += f'\t\t{position}\n'
-            output += '\tOrientation:\n'
-            output += f'\t\t{orientation}\n'
-            output += f'\tInstall direction: [{install_direction.x}, {install_direction.y}, {install_direction.z}]\n\n'
+            product: AssemblyPartMsg
+            for product in assembly_task.parts:
+                part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
+                part_type = CompetitionInterface._part_types[product.part.type].capitalize()
+                assembled_pose_position = product.assembled_pose.pose.position
+                assembled_pose_orientation = product.assembled_pose.pose.orientation
+                install_direction = product.install_direction
+                position = f'x: {assembled_pose_position.x}\n\t\ty: {assembled_pose_position.y}\n\t\tz: {assembled_pose_position.z}'
+                orientation = f'x: {assembled_pose_orientation.x}\n\t\ty: {assembled_pose_orientation.y}\n\t\tz: {assembled_pose_orientation.z}\n\t\tw: {assembled_pose_orientation.w}'
+                output += f'\tPart: {part_color_emoji} {part_color} {part_type}\n'
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += f'\tInstall direction: [{install_direction.x}, {install_direction.y}, {install_direction.z}]\n\n'
 
-        return output
+            return output
 
-    def parse_combined_task(self, combined_task: CombinedTask):
-        '''
-        Parses a CombinedTask object and returns a string representation.
+        def parse_combined_task(self, combined_task: CombinedTask):
+            '''
+            Parses a CombinedTask object and returns a string representation.
 
-        Args:
-            combined_task (CombinedTask): CombinedTask object to parse
+            Args:
+                combined_task (CombinedTask): CombinedTask object to parse
 
-        Returns:
-            str: String representation of the CombinedTask object
-        '''
+            Returns:
+                str: String representation of the CombinedTask object
+            '''
 
-        output = 'Type: Combined\n'
-        output += '==========================\n'
-        output += f'Assembly station: {self._destinations[combined_task.station].title()}\n'
-        output += 'Products:\n'
-        output += '==========================\n'
+            output = 'Type: Combined\n'
+            output += '==========================\n'
+            output += f'Assembly station: {self._destinations[combined_task.station].title()}\n'
+            output += 'Products:\n'
+            output += '==========================\n'
 
-        product: AssemblyPartMsg
-        for product in combined_task.parts:
-            part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
-            part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
-            part_type = CompetitionInterface._part_types[product.part.type].capitalize()
-            assembled_pose_position = product.assembled_pose.pose.position
-            assembled_pose_orientation = product.assembled_pose.pose.orientation
-            install_direction = product.install_direction
-            position = f'x: {assembled_pose_position.x}\n\t\ty: {assembled_pose_position.y}\n\t\tz: {assembled_pose_position.z}'
-            orientation = f'x: {assembled_pose_orientation.x}\n\t\ty: {assembled_pose_orientation.y}\n\t\tz: {assembled_pose_orientation.z}\n\t\tw: {assembled_pose_orientation.w}'
-            output += f'\tPart: {part_color_emoji} {part_color} {part_type}\n'
-            output += '\tPosition:\n'
-            output += f'\t\t{position}\n'
-            output += '\tOrientation:\n'
-            output += f'\t\t{orientation}\n'
-            output += f'\tInstall direction: [{install_direction.x}, {install_direction.y}, {install_direction.z}]\n\n'
+            product: AssemblyPartMsg
+            for product in combined_task.parts:
+                part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
+                part_type = CompetitionInterface._part_types[product.part.type].capitalize()
+                assembled_pose_position = product.assembled_pose.pose.position
+                assembled_pose_orientation = product.assembled_pose.pose.orientation
+                install_direction = product.install_direction
+                position = f'x: {assembled_pose_position.x}\n\t\ty: {assembled_pose_position.y}\n\t\tz: {assembled_pose_position.z}'
+                orientation = f'x: {assembled_pose_orientation.x}\n\t\ty: {assembled_pose_orientation.y}\n\t\tz: {assembled_pose_orientation.z}\n\t\tw: {assembled_pose_orientation.w}'
+                output += f'\tPart: {part_color_emoji} {part_color} {part_type}\n'
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += f'\tInstall direction: [{install_direction.x}, {install_direction.y}, {install_direction.z}]\n\n'
 
-        return output
+            return output
 
-    def parse_order(self, order: Order):
-        '''Parse an order message and return a string representation.
+        def parse_order(self, order: Order):
+            '''Parse an order message and return a string representation.
 
-        Args:
-            order (Order) -- Order message
+            Args:
+                order (Order) -- Order message
 
-        Returns:
-            String representation of the order message
-        '''
-        output = '\n\n==========================\n'
-        output += f'Received Order: {order.order_id}\n'
-        output += f'Priority: {order.order_priority}\n'
+            Returns:
+                String representation of the order message
+            '''
+            output = '\n\n==========================\n'
+            output += f'Received Order: {order.order_id}\n'
+            output += f'Priority: {order.order_priority}\n'
 
-        if order.order_type == OrderMsg.KITTING:
-            output += self.parse_kitting_task(order.order_task)
-        elif order.order_type == OrderMsg.ASSEMBLY:
-            output += self.parse_assembly_task(order.order_task)
-        elif order.order_type == OrderMsg.COMBINED:
-            output += self.parse_combined_task(order.order_task)
-        else:
-            output += 'Type: Unknown\n'
-        return output
+            if order.order_type == OrderMsg.KITTING:
+                output += self.parse_kitting_task(order.order_task)
+            elif order.order_type == OrderMsg.ASSEMBLY:
+                output += self.parse_assembly_task(order.order_task)
+            elif order.order_type == OrderMsg.COMBINED:
+                output += self.parse_combined_task(order.order_task)
+            else:
+                output += 'Type: Unknown\n'
+            return output
+
+        def lock_agv_tray(self, num):
+            '''Function to lock the tray of an AGV.
+
+            Arguments:
+                num -- AGV number
+
+            Raises:
+                KeyboardInterrupt: Exception raised when the user presses Ctrl+C
+            '''
+            tray_locker = self.create_client(
+                Trigger,
+                f'/ariac/agv{num}_lock_tray'
+            )
+
+            request = Trigger.Request()
+
+            future = tray_locker.call_async(request)
+
+            try:
+                rclpy.spin_until_future_complete(self, future)
+            except KeyboardInterrupt as kb_error:
+                raise KeyboardInterrupt from kb_error
+
+            if future.result().success:
+                self.get_logger().info(f'Locked AGV{num}\'s tray')
+            else:
+                self.get_logger().warn('Unable to lock tray')
+
+        def move_agv_to_station(self, num, station):
+            '''Function to move an AGV to a station.
+
+            Arguments:
+                num -- AGV number
+
+                station -- Station to move to
+
+            Raises:
+                KeyboardInterrupt: Exception raised when the user presses Ctrl+C
+            '''
+            mover = self.create_client(
+                MoveAGV,
+                f'/ariac/move_agv{num}')
+
+            request = MoveAGV.Request()
+
+            if station in [AssemblyTaskMsg.AS1, AssemblyTaskMsg.AS3]:
+                request.location = MoveAGV.Request.ASSEMBLY_FRONT
+            else:
+                request.location = MoveAGV.Request.ASSEMBLY_BACK
+
+            future = mover.call_async(request)
+
+            try:
+                rclpy.spin_until_future_complete(self, future)
+            except KeyboardInterrupt as kb_error:
+                raise KeyboardInterrupt from kb_error
+
+            if future.result().success:
+                self.get_logger().info(f'Moved AGV{num} to {self._stations[station]}')
+            else:
+                self.get_logger().warn(future.result().message)
+
 
 
 
 
 Contents of the competition interface specific to this tutorial are described as follows:
 
-    - Multiple messages from the package ``ariac_msgs`` are imported to store the content of messages published to the topic ``/ariac/orders``. 
-    - Data classes: Multiple data classes are used to store the content of messages published to the topic ``/ariac/orders``. Best practices for creating data classes are described in the `Python documentation <https://docs.python.org/3/library/dataclasses.html>`_.
-
-    - ``__init__()``: 
-
-        - ``_orders_sub``: This is the subscriber to the topic ``/ariac/orders``. The callback function is ``orders_cb()``. 
-        - ``_orders``: This is a list of orders that have been received. It is initialized to an empty list.
-        - ``_parse_incoming_order``: This is a boolean that determines whether the competition interface should parse (display on the standard output) incoming orders.
- 
-    - ``orders_cb()``: This is the callback method for the subscriber ``_orders_sub``. It is called whenever a new message is published to the topic ``/ariac/orders``. The content of the message is stored in the list ``_orders``. If ``_parse_incoming_order`` is ``True``, the content of the message is parsed and displayed on the standard output.
-    - ``parse_order()``: This method parses the content of an order message and returns a string representation. It is called by ``orders_cb()`` if ``_parse_incoming_order`` is ``True``. This method calls the methods ``parse_kitting_task()``, ``parse_assembly_task()``, and ``parse_combined_task()`` depending on the type of the order.
-
+    - ``lock_agv_tray``: Method to lock the tray of an AGV. This method creates a client to the ``/ariac/agv{num}_lock_tray`` service and calls it. The AGV number is passed as an argument to the method.
+    - ``move_agv_to_station``: Method to move an AGV to a station. This method creates a client to the ``/ariac/move_agv{num}`` service and calls it. The AGV number and station are passed as arguments to the method.
 
 
 
 Configure the Executable
 --------------------------------
 
-To test this tutorial, create a new file ``read_orders.py`` in ``competition_tutorials/src``:
+To test this tutorial, create a new file ``move_agvs.py`` in ``competition_tutorials/src``:
 
 .. code-block:: bash
 
     cd ~/ariac_ws/src/competition_tutorials/src
-    touch read_orders.py
-    chmod +x read_orders.py
+    touch move_agvs.py
+    chmod +x move_agvs.py
 
 
-Copy the following code in the file ``read_orders.py``:
+Copy the following code in the file ``move_agvs.py``:
 
 
 .. code-block:: python
-    :caption: read_orders.py
+    :caption: move_agvs.py
     
     #!/usr/bin/env python3
 
     import rclpy
+    from ariac_msgs.msg import Order as OrderMsg
     from competition_tutorials.competition_interface import CompetitionInterface
 
+
     def main(args=None):
+
         rclpy.init(args=args)
         interface = CompetitionInterface()
         interface.start_competition()
-        # The following line enables order displays in the terminal.
-        interface.parse_incoming_order = True
 
-        while rclpy.ok():
+        while not interface.orders:
             try:
                 rclpy.spin_once(interface)
             except KeyboardInterrupt:
                 break
+
+        for order in interface.orders:
+            if order.order_type == OrderMsg.ASSEMBLY:
+                for agv in order.order_task.agv_numbers:
+                    interface.lock_agv_tray(agv)
+                    interface.move_agv_to_station(agv, order.order_task.station)
 
         interface.destroy_node()
         rclpy.shutdown()
@@ -643,8 +708,8 @@ Copy the following code in the file ``read_orders.py``:
     if __name__ == '__main__':
         main()
 
-In the main function we set the variable ``parse_incoming_order`` to ``True``. This will cause the competition interface to parse incoming orders and display them on the standard output. To disable this feature, set ``parse_incoming_order`` to ``False``.
 
+The for loop in the ``main`` function iterates through the orders, retrieves orders with assembly tasks, retrieves AGVs for the assembly tasks, locks the tray of the AGVs and moves them to the assembly station. The ``lock_agv_tray`` and ``move_agv_to_station`` methods are defined in the ``CompetitionInterface`` class.
 
 Update CMakelists.txt
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -659,6 +724,7 @@ Update ``CMakeLists.txt`` to add ``read_orders.py`` as an executable.
     src/read_break_beam_sensor.py
     src/read_advanced_camera.py
     src/read_orders.py
+    src/move_agvs.py
     DESTINATION lib/${PROJECT_NAME}
   )
 
@@ -675,7 +741,7 @@ Next, build the package and run the executable.
     cd ~/ariac_ws
     colcon build
     . install/setup.bash
-    ros2 run competition_tutorials read_orders.py
+    ros2 run competition_tutorials move_agvs.py
 
 
 The node will wait until the competition is ready. In a second terminal, run the following:
@@ -688,181 +754,22 @@ The node will wait until the competition is ready. In a second terminal, run the
     ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 
 
-Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and published orders will be displayed on the standard output in Terminal 1.
-
+Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and move AGS 1 and 2 to station 1.
 
 Outputs
 --------------------------------
 
-Terminal outputs of tutorial 4 displaying received orders are provided below.
+Terminal outputs of tutorial 5 are provided below.
 
 .. code-block:: bash
     :caption: Terminal outputs
     
-    ==========================
-    Received Order: 2IZJP127
-    Priority: False
-    Type: Assembly
-    ==========================
-    AGV(s): [1, 2]
-    Assembly station: Front Assembly Station
-    Products:
-    ==========================
-        Part: 🟥 Red Regulator
-        Position:
-            x: 0.175
-            y: -0.223
-            z: 0.215
-        Orientation:
-            x: 0.5
-            y: -0.4999999999999999
-            z: -0.5
-            w: 0.5000000000000001
-        Install direction: [0.0, 0.0, -1.0]
+    [INFO] [1679043864.680244149] [competition_interface]: Waiting for competition to be ready
+    [INFO] [1679043864.681023755] [competition_interface]: Competition state is: ready
+    [INFO] [1679043864.681309010] [competition_interface]: Competition is ready. Starting...
+    [INFO] [1679043864.683703043] [competition_interface]: Started competition.
+    [INFO] [1679043864.692431248] [competition_interface]: Locked AGV1's tray
+    [INFO] [1679043871.798302676] [competition_interface]: Moved AGV1 to assembly station 1
+    [INFO] [1679043871.799515938] [competition_interface]: Locked AGV2's tray
+    [INFO] [1679043878.443151905] [competition_interface]: Moved AGV2 to assembly station 1
 
-        Part: 🟥 Red Battery
-        Position:
-            x: -0.15
-            y: 0.035
-            z: 0.043
-        Orientation:
-            x: 0.0
-            y: 0.0
-            z: 0.7071067811865475
-            w: 0.7071067811865476
-        Install direction: [0.0, 1.0, 0.0]
-
-        Part: 🟥 Red Pump
-        Position:
-            x: 0.14
-            y: 0.0
-            z: 0.02
-        Orientation:
-            x: 0.0
-            y: 0.0
-            z: -0.7071067811865475
-            w: 0.7071067811865476
-        Install direction: [0.0, 0.0, -1.0]
-
-        Part: 🟥 Red Sensor
-        Position:
-            x: -0.1
-            y: 0.395
-            z: 0.045
-        Orientation:
-            x: 0.0
-            y: 0.0
-            z: -0.7071067811865475
-            w: 0.7071067811865476
-        Install direction: [0.0, -1.0, 0.0]
-
-
-    [INFO] [1679041253.912411883] [competition_interface]: 
-
-    ==========================
-    Received Order: 2IZJP320
-    Priority: False
-    Type: Combined
-    ==========================
-    Assembly station: Warehouse
-    Products:
-    ==========================
-        Part: 🟧 Orange Regulator
-        Position:
-            x: 0.175
-            y: -0.223
-            z: 0.215
-        Orientation:
-            x: 0.5
-            y: -0.4999999999999999
-            z: -0.5
-            w: 0.5000000000000001
-        Install direction: [0.0, 0.0, -1.0]
-
-        Part: 🟧 Orange Battery
-        Position:
-            x: -0.15
-            y: 0.035
-            z: 0.043
-        Orientation:
-            x: 0.0
-            y: 0.0
-            z: 0.7071067811865475
-            w: 0.7071067811865476
-        Install direction: [0.0, 1.0, 0.0]
-
-        Part: 🟧 Orange Pump
-        Position:
-            x: 0.14
-            y: 0.0
-            z: 0.02
-        Orientation:
-            x: 0.0
-            y: 0.0
-            z: -0.7071067811865475
-            w: 0.7071067811865476
-        Install direction: [0.0, 0.0, -1.0]
-
-        Part: 🟧 Orange Sensor
-        Position:
-            x: -0.1
-            y: 0.395
-            z: 0.045
-        Orientation:
-            x: 0.0
-            y: 0.0
-            z: -0.7071067811865475
-            w: 0.7071067811865476
-        Install direction: [0.0, -1.0, 0.0]
-
-
-    [INFO] [1679041253.913566162] [competition_interface]: 
-
-    ==========================
-    Received Order: MMB30H56
-    Priority: False
-    Type: Kitting
-    ==========================
-    AGV: 1
-    Destination: warehouse
-    Tray ID: 3
-    Products:
-    ==========================
-        Quadrant 1: 🟪 Purple Pump
-        Quadrant 2: -
-        Quadrant 3: 🟦 Blue Battery
-        Quadrant 4: -
-
-    [INFO] [1679041259.750922649] [competition_interface]: 
-
-    ==========================
-    Received Order: MMB30H57
-    Priority: False
-    Type: Kitting
-    ==========================
-    AGV: 2
-    Destination: warehouse
-    Tray ID: 5
-    Products:
-    ==========================
-        Quadrant 1: -
-        Quadrant 2: 🟧 Orange Regulator
-        Quadrant 3: -
-        Quadrant 4: -
-
-    [INFO] [1679041268.581512935] [competition_interface]: 
-
-    ==========================
-    Received Order: MMB30H58
-    Priority: False
-    Type: Kitting
-    ==========================
-    AGV: 3
-    Destination: warehouse
-    Tray ID: 8
-    Products:
-    ==========================
-        Quadrant 1: -
-        Quadrant 2: -
-        Quadrant 3: -
-        Quadrant 4: 🟩 Green Sensor

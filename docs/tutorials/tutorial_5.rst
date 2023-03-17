@@ -31,7 +31,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
         ├── read_break_beam_sensor.py   (from tutorial 2)
         ├── read_advanced_camera.py     (from tutorial 3)
         ├── read_orders.py              (from tutorial 4)
-        └── read_orders.py              (new)
+        └── move_agvs.py                (new)
 
 
 

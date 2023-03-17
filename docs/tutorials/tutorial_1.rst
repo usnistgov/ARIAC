@@ -26,6 +26,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
         └── start_competition.py
 
 To create the package: 
+
     - Navigate to ``~/ariac_ws/src``, which was created from `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
     - Run the package creation command.
 
@@ -218,8 +219,10 @@ Copy the following into ``competition_interface.py``:
 
 
 The class ``CompetitionInterface`` consists of the following:
+
     - ``_competition_states``: A dictionary for converting CompetitionState constants to strings for logging purposes.
     - ``__init__()``: The constructor for the class. 
+
         - ``_start_competition_client`` is a client for the service ``/ariac/start_competition``.
         - ``_competition_state_sub`` is a subscriber for the topic ``/ariac/competition_state``.
         - ``_competition_state`` is a variable to store the state of the competition.

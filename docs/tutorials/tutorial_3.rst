@@ -89,7 +89,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 .. code-block:: python
     :caption: Competition interface for tutorial 3
     :name: competitioninterface-tutorial3
-    :emphasize-lines: 2, 3, 5, 7, 11-14, 19-26, 39-45, 47-53
+    :emphasize-lines: 2, 3, 5, 7, 11-14, 19-26, 39-46, 48-55, 57-63, 99-103, 106, 109-111, 159-167, 169-205, 207-252
     :linenos:
 
     import rclpy

@@ -95,15 +95,15 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
 Competition Interface
 --------------------------------
 
+
 The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial2`. 
 
 .. code-block:: python
     :caption: Competition interface for tutorial 2
     :name: competitioninterface-tutorial2
-    :emphasize-lines: 5, 10, 59-63, 65, 67, 72-74, 76-85, 
+    :emphasize-lines: 5, 10, 59-63, 65, 67, 72-74, 76-85
     :linenos:
 
-    #!/usr/bin/env python3
 
     import rclpy
     from rclpy.node import Node

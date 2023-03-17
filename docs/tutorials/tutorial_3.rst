@@ -62,10 +62,10 @@ You should see the camera above bins 1-4 as shown in the figure below.
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
    :align: center
 
-Receive Messages from a Camera
----------------------------------
+.. Receive Messages from a Camera
+.. ---------------------------------
 
-The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name of the sensors/cameras from ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
+.. The camera which was added to ``sensors.yaml`` is publishing messages to the topic ``/ariac/sensors/advanced_camera_0/image``. Topics for sensors and cameras are dynamically generated based on the name of the sensors/cameras from ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
 
 Import Modules
 ^^^^^^^^^^^^^^
@@ -93,7 +93,7 @@ The modules shown in  :numref:`import-advanced-camera` must be imported in ``com
 
     from std_srvs.srv import Trigger
 
-Competition Interface Attributes
+Competition Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The class ``CompetitionInterface`` used in this tutorial is shown in :numref:`competitioninterface`. The content of this class is described in the following sections.
@@ -333,7 +333,8 @@ These dictionaries are mainly used to display the part color and type in a human
 Subscriber
 ^^^^^^^^^^
 
-A subscriber to the topic ``/ariac/sensors/advanced_camera_0/image`` is shown in :numref:`subscriber`. Each message received on this topic is stored in the attribute ``_camera_image``. This attribute is an instance of the class ``AdvancedLogicalCameraImage``, which is defined in :numref:`AdvancedLogicalCameraImage`.
+A subscriber to the topic ``/ariac/sensors/advanced_camera_0/image`` is shown in :numref:`subscriber`. Topics for sensors and cameras are dynamically generated based on the name of the sensors/cameras from ``sensors.yaml`` file. For example, the topic for ``advanced_camera_0`` is ``/ariac/sensors/advanced_camera_0/image``.
+Each message received on this topic is stored in the attribute ``_camera_image``. This attribute is an instance of the class ``AdvancedLogicalCameraImage``, which is defined in :numref:`AdvancedLogicalCameraImage`.
 
 .. code-block:: python
     :caption: Subscriber to the Camera Topic

@@ -136,7 +136,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.ORANGE: 'orange',
             PartMsg.PURPLE: 'purple',
         }
-        '''Dictionary for converting PartColor constants to strings'''
+        '''Dictionary for converting part colors int to strings'''
 
         _part_colors_emoji = {
             PartMsg.RED: '🟥',
@@ -145,7 +145,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.ORANGE: '🟧',
             PartMsg.PURPLE: '🟪',
         }
-        '''Dictionary for converting PartColor constants to strings'''
+        '''Dictionary for converting part colors int to emoji'''
 
         _part_types = {
             PartMsg.BATTERY: 'battery',
@@ -153,7 +153,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.REGULATOR: 'regulator',
             PartMsg.SENSOR: 'sensor',
         }
-        '''Dictionary for converting PartType constants to strings'''
+        '''Dictionary for converting part types int  to strings'''
 
         _competition_states = {
             CompetitionStateMsg.IDLE: 'idle',
@@ -162,7 +162,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             CompetitionStateMsg.ORDER_ANNOUNCEMENTS_DONE: 'order_announcements_done',
             CompetitionStateMsg.ENDED: 'ended',
         }
-        '''Dictionary for converting CompetitionState constants to strings'''
+        '''Dictionary for converting competition states int to strings'''
 
         def __init__(self):
             super().__init__('competition_interface')

@@ -1,25 +1,27 @@
 
-.. _TUTORIAL_4:
+.. _TUTORIAL_5:
 
 ======================================
-Tutorial 4: Reading an Order
+Tutorial 5: Moving AGVs
 ======================================
 
 .. note::
-  **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
+  **Prerequisites**: Tutorial 1 and 4 should be completed before starting this tutorial.
 
 This tutorial covers the following steps:
 
   - Receive order messages, 
-  - Store each order internally as an instance of a class,
-  - Display each order on the standard output.
+  - Store each order in a list,
+  - Find assembly tasks in the list, 
+  - Identify AGVs and stations from the assembly tasks
+  - Move the AGVs to the stations.
 
 Once this tutorial completed, the package ``competition_tutorials`` should have the following structure:
 
 .. code-block:: bash
     
     competition_tutorials
-    ├── CMakeLists.txt                  (updated)
+    ├── CMakeLists.txt                 (updated)
     ├── package.xml
     ├── competition_tutorials
     │   ├── __init__.py
@@ -28,6 +30,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
         ├── start_competition.py        (from tutorial 1)
         ├── read_break_beam_sensor.py   (from tutorial 2)
         ├── read_advanced_camera.py     (from tutorial 3)
+        ├── read_orders.py              (from tutorial 4)
         └── read_orders.py              (new)
 
 
@@ -37,11 +40,11 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
 Competition Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial4`.
+The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial5`.
 
 .. code-block:: python
-    :caption: Competition interface for tutorial 4
-    :name: competitioninterface-tutorial4
+    :caption: Competition interface for tutorial 5
+    :name: competitioninterface-tutorial5
 
     #!/usr/bin/env python3
 

@@ -19,7 +19,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
 .. code-block:: bash
     
     competition_tutorials
-    ├── CMakeLists.txt
+    ├── CMakeLists.txt                  (updated)
     ├── package.xml
     ├── competition_tutorials
     │   ├── __init__.py

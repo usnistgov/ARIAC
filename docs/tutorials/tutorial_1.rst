@@ -202,13 +202,13 @@ Copy the following into ``competition_interface.py``:
 
 
 The class ``CompetitionInterface`` consists of the following:
-    - ``_competition_states``: A dictionary for converting CompetitionState constants to strings for logging.
+    - ``_competition_states``: A dictionary for converting CompetitionState constants to strings for logging purposes.
     - ``__init__()``: The constructor for the class. 
         - ``_start_competition_client`` is a client for the service ``/ariac/start_competition``.
         - ``_competition_state_sub`` is a subscriber for the topic ``/ariac/competition_state``.
         - ``_competition_state`` is a variable to store the state of the competition.
     - ``competition_state_cb()``: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable ``_competition_state``.
-    - ``start_competition()``: Method to start the competition. This method waits for the competition to be ready and then calls the service ``/ariac/start_competition``.
+    - ``start_competition()``: Method to start the competition. This method waits for the competition to be ready by checking the value of ``_competition_state`` and then calls the service ``/ariac/start_competition`` through the client ``_start_competition_client``.
 
 
 
@@ -251,7 +251,7 @@ This executable creates an instance of the ``CompetitionInterface`` class from `
 Run the Executable
 --------------------------------
 
-Next, build the package and run the node:
+Next, build the package and run the executable:
 
 
 .. code-block:: bash
@@ -262,9 +262,9 @@ Next, build the package and run the node:
     . install/setup.bash
     ros2 run competition_tutorials start_competition.py
 
-You should this output:
+You should see this output:
 
-.. code-block:: bash
+.. code-block::
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
 

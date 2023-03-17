@@ -88,6 +88,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 .. code-block:: python
     :caption: Competition interface for tutorial 3
     :name: competitioninterface-tutorial3
+    :emphasize-lines: 2, 3, 5, 7, 11-14, 19-26, 39-45, 47-53
     :linenos:
 
     import rclpy
@@ -135,6 +136,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.ORANGE: 'orange',
             PartMsg.PURPLE: 'purple',
         }
+        '''Dictionary for converting PartColor constants to strings'''
 
         _part_colors_emoji = {
             PartMsg.RED: '🟥',
@@ -143,7 +145,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.ORANGE: '🟧',
             PartMsg.PURPLE: '🟪',
         }
-
         '''Dictionary for converting PartColor constants to strings'''
 
         _part_types = {

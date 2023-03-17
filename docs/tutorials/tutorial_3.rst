@@ -383,12 +383,12 @@ Copy the following code in the file ``read_advanced_camera.py``:
 
 
 .. code-block:: python
-    :caption: Display Camera Data
+    :caption: Executable for tutorial 3.
     
     #!/usr/bin/env python3
 
     import rclpy
-    from competition_tutorials.tutorial3 import CompetitionInterface
+    from competition_tutorials.competition_interface import CompetitionInterface
 
 
     def main(args=None):

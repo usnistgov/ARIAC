@@ -234,14 +234,16 @@ The class ``CompetitionInterface`` consists of the following:
 Configure the Executable
 --------------------------------
 
-Create the executable ``start_competition.py`` in ``competition_tutorials/src``:
+To test this tutorial, create a new file ``start_competition.py`` in ``competition_tutorials/src``:
 
 .. code-block:: bash
-    
-    cd ~/ariac_ws/src/competition_tutorials
-    touch src/start_competition.py
 
-Copy the following into ``start_competition.py``: 
+    cd ~/ariac_ws/src/competition_tutorials/src
+    touch start_competition.py
+    chmod +x start_competition.py
+
+
+Copy the following code in the file ``start_competition.py``:
 
 
 .. code-block:: python

@@ -243,7 +243,7 @@ The content of the interface is described as follows:
 
     - To create a subscription to the breakbeam sensor, the subscriber needs to match the QoS for the sensor. This is shown when the subscriber is created. The ROS msg ``BreakBeamStatus`` which is the msg type that the sensor publishes is also added to the imports.
     - ``__init__()``: 
-    
+
         - ``_break_beam0_sub``: This is the subscriber to the breakbeam sensor topic. The callback function is ``breakbeam0_cb()``.
 
             - ``BreakBeamStatusMsg``: This is an alias for the message ``BreakBeamStatus``, which is the message type that the sensor publishes.
@@ -271,7 +271,7 @@ Copy the following code in the file ``read_break_beam_sensor.py``:
 
 
 .. code-block:: python
-    :caption: Display Camera Data
+    :caption: Executable for tutorial 2.
     
     #!/usr/bin/env python3
 
@@ -342,7 +342,6 @@ The node will wait until the competition is ready. In a second terminal, run the
 
 Once the environment is loaded and the competition state is ready, the interface node running in Terminal 2 will start the competition and the sensor will start publishing data. You should see the the part count output increasing as parts on the conveyor break the sensor beam, as shown in the figure below.
 
-.. _fig-break-beam-sensor-2:
 .. figure:: ../images/tutorial_2_image2.png
    :align: center
 
@@ -364,7 +363,6 @@ A sample of the outputs is shown below.
     [INFO] [1679030258.601208258] [competition_interface]: Part Count: 0
     [INFO] [1679030260.602070416] [competition_interface]: Part Count: 1
     [INFO] [1679030262.602922331] [competition_interface]: Part Count: 1
-    [INFO] [1679030264.345901894] [competition_interface]: Competition state is:                 order_announcements_done
     [INFO] [1679030264.603971647] [competition_interface]: Part Count: 1
     [INFO] [1679030266.604177567] [competition_interface]: Part Count: 2
     [INFO] [1679030268.605299171] [competition_interface]: Part Count: 2

@@ -35,7 +35,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
 Competition Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial6`.
+The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial6`. Contents specific to this tutorial are highlighted in yellow.
 
 .. code-block:: python
     :caption: Competition interface for tutorial 6
@@ -223,4 +223,141 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 except KeyboardInterrupt as kb_error:
                     raise KeyboardInterrupt from kb_error
 
-           
+
+Description of the Code
+-----------------------
+
+- Imports
+
+    - ``from rclpy.time import Duration``: A ``wait()`` function is implemented using the ``Duration`` class. The wait function is used to wait for a specified duration while the gripper state is being changed.
+    - ``from rclpy.qos import qos_profile_sensor_data``: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
+    - ``from ariac_msgs.msg import VacuumGripperState``: Message type for the vacuum gripper state. 
+    - ``from ariac_msgs.srv import VacuumGripperControl``: Service type for controlling the vacuum gripper. 
+
+- Class Variables
+
+    - ``gripper_states_``: A dictionary for converting the ``VacuumGripperState`` constants to strings. This is used for logging the gripper state.
+    - ``_floor_robot_gripper_state_sub``: Subscriber to the floor robot gripper state topic.
+    - ``_floor_gripper_enable``: Service client for turning on/off the vacuum gripper on the floor robot.
+    - ``_floor_robot_gripper_state``: Attribute to store the current state of the floor robot gripper.
+
+- Class Methods
+
+    - ``floor_robot_gripper_state_cb(self, msg: VacuumGripperState)``: Callback for the topic ``/ariac/floor_robot_gripper_state``. This is used to store the current state of the floor robot gripper.
+    - ``set_floor_robot_gripper_state(self, state)``: Function to set the gripper state of the floor robot. This function calls the ROS service to change the gripper state.
+    - ``wait(self, duration)``: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
+
+
+Configure the Executable
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+To test this tutorial, create a new file ``change_gripper_state.py`` in ``competition_tutorials/src``:
+
+.. code-block:: bash
+
+    cd ~/ariac_ws/src/competition_tutorials/src
+    touch change_gripper_state.py
+    chmod +x change_gripper_state.py
+
+
+Copy the following code in the file ``change_gripper_state.py``:
+
+
+.. code-block:: python
+    :caption: change_gripper_state.py
+    
+    #!/usr/bin/env python3
+
+    import rclpy
+    from competition_tutorials.competition_interface import CompetitionInterface
+
+    def main(args=None):
+        '''
+        main function for the change_gripper_state script.
+
+        Args:
+            args (Any, optional): ROS arguments. Defaults to None.
+        '''
+        rclpy.init(args=args)
+
+        interface = CompetitionInterface()
+        interface.start_competition()
+
+        while rclpy.ok():
+            try:
+                interface.set_floor_robot_gripper_state(True)
+                interface.wait(3)
+                interface.set_floor_robot_gripper_state(False)
+                interface.wait(3)
+            except KeyboardInterrupt:
+                break
+
+        interface.destroy_node()
+        rclpy.shutdown()
+
+    if __name__ == '__main__':
+        main()
+
+The main function of the script creates a ``CompetitionInterface`` object and calls the ``start_competition()`` function. The ``start_competition()`` function is used to wait until the competition is ready. The main function then calls the ``set_floor_robot_gripper_state()`` function to enable the gripper and then waits for 3 seconds. The main function then calls the ``set_floor_robot_gripper_state()`` function to disable the gripper and then waits for 3 seconds. The main function then repeats this process until the user presses Ctrl+C.
+
+Update CMakelists.txt
+^^^^^^^^^^^^^^^^^^^^^^
+
+Update ``CMakeLists.txt`` to add ``change_gripper_state.py`` as an executable.
+
+.. code-block:: cmake
+
+  # Install Python executables
+  install(PROGRAMS
+    src/start_competition.py
+    src/read_break_beam_sensor.py
+    src/read_advanced_camera.py
+    src/read_orders.py
+    src/move_agvs.py
+    src/change_gripper_state.py
+    DESTINATION lib/${PROJECT_NAME}
+  )
+
+
+Run the Executable
+--------------------------------
+
+Next, build the package and run the executable.
+
+
+.. code-block:: bash
+    :caption: Terminal 1
+
+    cd ~/ariac_ws
+    colcon build
+    . install/setup.bash
+    ros2 run competition_tutorials change_gripper_state.py
+
+
+The node will wait until the competition is ready. In a second terminal, run the following:
+
+.. code-block:: bash
+    :caption: Terminal 2
+
+    cd ~/ariac_ws
+    . install/setup.bash
+    ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
+
+
+Outputs
+--------------------------------
+
+Terminal outputs of tutorial 6 are provided below.
+
+.. code-block:: text
+    :caption: Terminal outputs
+    
+    [INFO] [1679048497.138846958] [competition_interface]: Waiting for competition to be ready
+    [INFO] [1679048497.139894604] [competition_interface]: Competition state is: ready
+    [INFO] [1679048497.140293729] [competition_interface]: Competition is ready. Starting...
+    [INFO] [1679048497.142822117] [competition_interface]: Started competition.
+    [INFO] [1679048497.145127615] [competition_interface]: Changed gripper state to enabled
+    [INFO] [1679048501.986702439] [competition_interface]: Changed gripper state to disabled
+    [INFO] [1679048507.031545831] [competition_interface]: Changed gripper state to enabled
+
+

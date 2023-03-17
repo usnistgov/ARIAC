@@ -15,11 +15,11 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
 .. code-block:: bash
     
     competition_tutorials
-    ├── CMakeLists.txt                 (updated)
+    ├── CMakeLists.txt                  (updated)
     ├── package.xml
     ├── competition_tutorials
     │   ├── __init__.py
-    │   └── competition_interface.py
+    │   └── competition_interface.py    (new)
     └── src
         ├── start_competition.py        (from tutorial 1)
         ├── read_break_beam_sensor.py   (from tutorial 2)
@@ -40,7 +40,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 .. code-block:: python
     :caption: Competition interface for tutorial 6
     :name: competitioninterface-tutorial6
-    :emphasize-lines: 6,7,11
+    :emphasize-lines: 6,7,11, 14, 29-32, 69-73, 76-78, 81, 128-134, 136-162, 164-179
     :linenos:
 
     #!/usr/bin/env python3

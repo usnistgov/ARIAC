@@ -83,10 +83,10 @@ You should see the camera above bins 1-4 as shown in the figure below.
 Competition Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The interface used in this tutorial is shown in :numref:`competitioninterface-tutorial3`.
+The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial3`.
 
 .. code-block:: python
-    :caption: Interface for tutorial 3
+    :caption: Competition interface for tutorial 3
     :name: competitioninterface-tutorial3
 
     import rclpy

@@ -2,7 +2,7 @@
 .. _TUTORIAL_6:
 
 ======================================
-Tutorial 6: Reading an Order
+Tutorial 6: Moving AGVs
 ======================================
 
 .. note::

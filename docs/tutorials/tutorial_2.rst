@@ -95,10 +95,10 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
 Competition Interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The interface used in this tutorial is shown in :numref:`competitioninterface-tutorial2`. 
+The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial2`. 
 
 .. code-block:: python
-    :caption: Interface for tutorial 2
+    :caption: Competition interface for tutorial 2
     :name: competitioninterface-tutorial2
 
     #!/usr/bin/env python3

@@ -112,11 +112,12 @@ Create a python package with the same name as the ros2 package. This python pack
 Competition Interface
 ----------------------
 
-Copy the following into ``competition_interface.py``:
+The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial1`.
 
 
 .. code-block:: python
-    :caption: Content of competition_interface.py for tutorial 1.
+    :caption: Competition interface for tutorial 1
+    :name: competitioninterface-tutorial1
     
     import rclpy
     from rclpy.node import Node

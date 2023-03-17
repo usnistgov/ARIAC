@@ -224,7 +224,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
                     raise KeyboardInterrupt from kb_error
 
 
-Description of the Code
+Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 - Imports

@@ -99,7 +99,8 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
 .. code-block:: python
     :caption: Competition interface for tutorial 2
-    :name: competitioninterface-tutorial2 
+    :name: competitioninterface-tutorial2
+    :emphasize-lines: 5, 10, 59-63, 65, 67, 72-74, 76-85, 
     :linenos:
 
     #!/usr/bin/env python3
@@ -238,23 +239,24 @@ The competition interface used in this tutorial is shown in :numref:`competition
     
 
 
+Code Explained
+^^^^^^^^^^^^^^^^^^^^^^^
 
+- Imports
 
-The content of the interface is described as follows:
+    - ``from rclpy.qos import qos_profile_sensor_data``: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
+    - ``from ariac_msgs.msg import BreakBeamStatus as BreakBeamStatusMsg``: ROS message for the break beam status, used to subscribe to the break beam status topic.
+  
+- Class Variables
 
-    - To create a subscription to the breakbeam sensor, the subscriber needs to match the QoS for the sensor. This is shown when the subscriber is created. The ROS msg ``BreakBeamStatus`` which is the msg type that the sensor publishes is also added to the imports.
-    - ``__init__()``: 
+    - ``_break_beam0_sub``: Subscriber to the break beam status topic. 
+    - ``_part_count``: Variable to store the number of parts that crossed the beam.
+    - ``_object_detected``: Variable to store whether the beam is broken.
 
-        - ``_break_beam0_sub``: This is the subscriber to the breakbeam sensor topic. The callback function is ``breakbeam0_cb()``.
+- Class Methods
 
-            - ``BreakBeamStatusMsg``: This is an alias for the message ``BreakBeamStatus``, which is the message type that the sensor publishes.
-            - ``/ariac/sensors/breakbeam_0/status``: This is the topic that the sensor publishes to.
-            - ``qos_profile_sensor_data``: This is the QoS profile for the sensor. It is imported from ``rclpy.qos``. The QoS profile is used to create the subscriber.
-            - ``breakbeam0_cb``: This is the callback function for the breakbeam sensor. The message is stored in ``msg``. The function checks if the beam is broken and increments the part count if it is. It also updates the ``_object_detected`` variable.
-            
-        - ``_part_count``: This is the number of parts that have crossed the beam. It is initialized to 0.
-        - ``_object_detected``: This is a boolean that is true if the beam is broken. It is initialized to false.
-     
+    - ``breakbeam0_cb()``: Callback function for the break beam status topic. It increments the variable ``_part_count`` if the beam is broken and the variable ``_object_detected`` is ``False``. It also sets the variable ``_object_detected`` to ``True`` if the beam is broken.
+    
 
 Create the Executable
 --------------------------------
@@ -297,9 +299,10 @@ Copy the following code in the file ``read_break_beam_sensor.py``:
     if __name__ == '__main__':
         main()
 
+Code Explained
+^^^^^^^^^^^^^^^^^^^^^^^
 
-
-This executable creates an instance of the interface, starts the competition and logs the ``_part_count`` variable every 2 seconds.
+ This executable creates an instance of the interface, starts the competition and logs the ``_part_count`` variable every 2 seconds. 
 
 Update CMakelists.txt
 ^^^^^^^^^^^^^^^^^^^^^^

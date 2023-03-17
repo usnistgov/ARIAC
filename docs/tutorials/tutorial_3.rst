@@ -8,6 +8,7 @@ Tutorial 3: Reading Data from an Advanced Logical Camera
 .. note::
   **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
 
+  **Workspace**: We assume that we are working with the workspace ``~/ariac_ws`` created in tutorial 1.
 
 This tutorial covers the following steps:
   - Receive messages from a camera, 

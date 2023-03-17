@@ -6,7 +6,7 @@ Tutorial 3: Reading Data from an Advanced Logical Camera
 =========================================================
 
 .. note::
-  **Prerequisites**: The code snippets provided in tutorials 1 and 2 will be reused and augmented in this tutorial. The completion of tutorials 1 and 2 is a prerequisite for this tutorial.
+  **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
 
 
 This tutorial covers the following steps:
@@ -553,21 +553,21 @@ Next, build the package and run the node. To do this navigate to ``ariac_ws`` an
 
 
 .. code-block:: bash
-    :caption: Terminal 1: Run the node for tutorial 3
+    :caption: Terminal 1
 
-  cd ~/ariac_ws
-  colcon build
-  . install/setup.bash
-  ros2 run competition_tutorials read_advanced_camera.py
+    cd ~/ariac_ws
+    colcon build
+    . install/setup.bash
+    ros2 run competition_tutorials read_advanced_camera.py
 
 
 The node will wait until the competition is ready. To start the environment open a second terminal navigate to ``ariac_ws`` and run the following commands:
 
 .. code-block:: bash
-    :caption: Terminal 2: Start the environment
-
-  . install/setup.bash
-  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
+    :caption: Terminal 2
+    
+    . install/setup.bash
+    ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 
 
 Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and the sensor will start publishing data.

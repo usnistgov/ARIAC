@@ -603,7 +603,7 @@ Contents of the competition interface specific to this tutorial is described as 
 Configure the Executable
 --------------------------------
 
-To test this tutorial, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/src``:
+To test this tutorial, create a new file ``read_orders.py`` in ``competition_tutorials/src``:
 
 .. code-block:: bash
 
@@ -616,7 +616,7 @@ Copy the following code in the file ``read_orders.py``:
 
 
 .. code-block:: python
-    :caption: Executable for tutorial 4.
+    :caption: read_orders.py
     
     #!/usr/bin/env python3
 
@@ -682,7 +682,7 @@ The node will wait until the competition is ready. In a second terminal, run the
 .. code-block:: bash
     :caption: Terminal 2
 
-    cdd ~/ariac_ws
+    cd ~/ariac_ws
     . install/setup.bash
     ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 

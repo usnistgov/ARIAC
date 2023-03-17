@@ -383,7 +383,7 @@ Copy the following code in the file ``read_advanced_camera.py``:
 
 
 .. code-block:: python
-    :caption: Executable for tutorial 3.
+    :caption: read_advanced_camera.py
     
     #!/usr/bin/env python3
 
@@ -452,7 +452,7 @@ The node will wait until the competition is ready. In a second terminal, run the
 .. code-block:: bash
     :caption: Terminal 2
 
-    cdd ~/ariac_ws
+    cd ~/ariac_ws
     . install/setup.bash
     ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
 

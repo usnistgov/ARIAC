@@ -248,7 +248,7 @@ Copy the following code in the file ``start_competition.py``:
 
 
 .. code-block:: python
-    :caption: Executable for tutorial 1.
+    :caption: start_competition.py
     
     #!/usr/bin/env python3
 
@@ -307,8 +307,8 @@ The outputs obtained in Terminal 1 should be:
 .. code-block:: bash
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
-    [INFO] [1679025079.463133489] [competition_interface]: Competition state is:                 idle
-    [INFO] [1679025085.587755650] [competition_interface]: Competition state is:                 ready
+    [INFO] [1679025079.463133489] [competition_interface]: Competition state is: idle
+    [INFO] [1679025085.587755650] [competition_interface]: Competition state is: ready
     [INFO] [1679025085.588245939] [competition_interface]: Competition is ready. Starting...
     [INFO] [1679025085.590775613] [competition_interface]: Started competition.
 

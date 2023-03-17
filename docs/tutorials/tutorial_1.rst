@@ -37,7 +37,7 @@ To create the package:
 
 
 Update CMakelists.txt
-^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 Update ``CMakeLists.txt`` as follows:
 
@@ -69,7 +69,7 @@ Update ``CMakeLists.txt`` as follows:
 
 
 Update package.xml
-^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 In ``package.xml``, update the maintainer and license information. Make sure to add the following dependencies:
 
@@ -97,7 +97,7 @@ In ``package.xml``, update the maintainer and license information. Make sure to 
 
 
 Create Python Package
-^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 Create a python package with the same name as the ros2 package. This python package will include all the python source code for your software. 
 
@@ -232,7 +232,7 @@ The class ``CompetitionInterface`` consists of the following:
 
 
 
-Configure the Executable
+Create the Executable
 --------------------------------
 
 To test this tutorial, create a new file ``start_competition.py`` in ``competition_tutorials/src``:

@@ -81,7 +81,7 @@ You should see the camera above bins 1-4 as shown in the figure below.
 
 
 Competition Interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial3`.
 
@@ -367,7 +367,7 @@ The content of the interface is described as follows:
 
 
 
-Configure the Executable
+Create the Executable
 --------------------------------
 
 To test this tutorial, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/src``:

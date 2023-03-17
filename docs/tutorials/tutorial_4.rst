@@ -23,7 +23,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
     ├── package.xml
     ├── competition_tutorials
     │   ├── __init__.py
-    │   └── competition_interface.py
+    │   └── competition_interface.py    (new)
     └── src
         ├── start_competition.py        (from tutorial 1)
         ├── read_break_beam_sensor.py   (from tutorial 2)
@@ -35,7 +35,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
 
 
 Competition Interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial4`.
 
@@ -598,7 +598,7 @@ Contents of the competition interface specific to this tutorial are described as
 
 
 
-Configure the Executable
+Create the Executable
 --------------------------------
 
 To test this tutorial, create a new file ``read_orders.py`` in ``competition_tutorials/src``:

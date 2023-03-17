@@ -33,7 +33,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
 
 
 Competition Interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial6`. Contents specific to this tutorial are highlighted in yellow.
 
@@ -225,7 +225,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
 
 Description of the Code
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - Imports
 
@@ -248,8 +248,8 @@ Description of the Code
     - ``wait(self, duration)``: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
 
 
-Configure the Executable
-^^^^^^^^^^^^^^^^^^^^^^^^
+Create the Executable
+--------------------------------
 
 To test this tutorial, create a new file ``change_gripper_state.py`` in ``competition_tutorials/src``:
 

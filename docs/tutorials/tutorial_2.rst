@@ -25,7 +25,7 @@ Once this tutorial completed, the package ``competition_tutorials`` should have 
     │   ├── sensors.yaml                (new)
     ├── competition_tutorials
     │   ├── __init__.py
-    │   └── competition_interface.py    (updated)
+    │   └── competition_interface.py    (new)
     └── src
         ├── start_competition.py        (from tutorial 1)
         └── read_break_beam_sensor.py   (new)
@@ -93,7 +93,7 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
 
 
 Competition Interface
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial2`. 
 
@@ -255,7 +255,7 @@ The content of the interface is described as follows:
         - ``_object_detected``: This is a boolean that is true if the beam is broken. It is initialized to false.
      
 
-Configure the Executable
+Create the Executable
 --------------------------------
 
 To test this tutorial, create a new file ``read_break_beam_sensor.py`` in ``competition_tutorials/src``:

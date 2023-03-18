@@ -281,9 +281,7 @@ Run the Executable
 --------------------------------
 
 
-Terminal 1
-^^^^^^^^^^^^^^^^^^^^^^^
-
+In *terminal 1*, run the following commands:
 
 .. code-block:: console
 
@@ -311,8 +309,7 @@ You should see this output:
 
 The node waits until the competition is ready. 
 
-Terminal 2
-^^^^^^^^^^^^^^^^^^^^^^^
+In *terminal 2*, run the following commands:
 
 .. code-block:: console
     :caption: Terminal 2
@@ -322,7 +319,7 @@ Terminal 2
     ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
 
 
-This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 
+This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 
 
 
 Outputs

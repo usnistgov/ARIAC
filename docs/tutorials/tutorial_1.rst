@@ -14,7 +14,7 @@ Tutorial 1: Creating a Competition Package
 =========================================================
 
 .. admonition:: Source Code for Tutorial 1
-  :class: tip
+  :class: attention
   :name: tutorial_1
   
   `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ 

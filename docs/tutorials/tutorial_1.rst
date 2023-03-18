@@ -34,8 +34,6 @@ The final state of the package ``ariac_tutorials`` for **tutorial 1**  is as fol
     ├── ariac_tutorials
     │   ├── __init__.py
     │   └── competition_interface.py
-    ├── config
-    │   └── sensors.yaml
     └── nodes
         └── tutorial_1.py
 
@@ -109,7 +107,7 @@ The competition interface for **tutorial 1** is shown in :numref:`competitionint
 
 
 .. code-block:: python
-    :caption: Competition interface for tutorial 1
+    :caption: competition_interface.py
     :name: competitioninterface-tutorial1
     
     import rclpy

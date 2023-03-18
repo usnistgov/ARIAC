@@ -8,10 +8,8 @@ Tutorial 1: Creating a Competition Package
 .. admonition:: Source Code for Tutorial 1
   :class: tip
   :name: tutorial_1
-
-   .. math::
-
-        S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
+  
+  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ 
 
 
 

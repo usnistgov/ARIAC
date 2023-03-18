@@ -1,6 +1,9 @@
 
 .. _TUTORIAL_1:
 
+.. only:: builder_html or readthedocs
+
+    
 =========================================================
 Tutorial 1: Creating a Competition Package
 =========================================================

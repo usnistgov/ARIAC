@@ -280,16 +280,27 @@ Code Explained
 Run the Executable
 --------------------------------
 
-Next, build the package and run the executable:
+
+Terminal 1
+^^^^^^^^^^^^^^^^^^^^^^^
 
 
-.. code-block:: bash
-    :caption: Terminal 1
+.. code-block:: console
 
     cd ~/ariac_ws
+
+.. code-block:: console
+
     colcon build
+
+.. code-block:: console
+
     . install/setup.bash
+
+.. code-block:: console
+
     ros2 run ariac_tutorials tutorial_1.py
+
 
 You should see this output:
 
@@ -298,7 +309,10 @@ You should see this output:
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
 
 
-The node will wait until the competition is ready. Do the following in a new terminal:
+The node waits until the competition is ready. 
+
+Terminal 2
+^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: console
     :caption: Terminal 2

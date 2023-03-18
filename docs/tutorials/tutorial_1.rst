@@ -286,17 +286,8 @@ In *terminal 1*, run the following commands:
 .. code-block:: console
 
     cd ~/ariac_ws
-
-.. code-block:: console
-
     colcon build
-
-.. code-block:: console
-
     . install/setup.bash
-
-.. code-block:: console
-
     ros2 run ariac_tutorials tutorial_1.py
 
 

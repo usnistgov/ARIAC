@@ -1,9 +1,9 @@
 
 .. _TUTORIAL_1:
 
-.. only:: builder_html or readthedocs
 
-    
+
+
 =========================================================
 Tutorial 1: Creating a Competition Package
 =========================================================
@@ -265,8 +265,6 @@ Overview of the Executable
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. role:: inline-python(code)
-    :language: python
 
 - Imports:
 

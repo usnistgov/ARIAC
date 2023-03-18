@@ -290,35 +290,35 @@ Run the Executable
 --------------------------------
 
 
-In *terminal 1*, run the following commands:
+- In *terminal 1*, run the following commands:
 
-.. code-block:: bash
+    .. code-block:: bash
 
-    cd ~/ariac_ws
-    colcon build
-    . install/setup.bash
-    ros2 run ariac_tutorials tutorial_1.py
-
-
-You should see this output:
-
-.. code-block:: console
-    
-    [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
+        cd ~/ariac_ws
+        colcon build
+        . install/setup.bash
+        ros2 run ariac_tutorials tutorial_1.py
 
 
-The node waits until the competition is ready. 
+    You should see this output:
 
-In *terminal 2*, run the following commands:
-
-.. code-block:: bash
-
-    cd ~/ariac_ws
-    . install/setup.bash
-    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
+    .. code-block:: console
+        
+        [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
 
 
-This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 
+    The node waits until the competition is ready. 
+
+- In *terminal 2*, run the following commands:
+
+    .. code-block:: bash
+
+        cd ~/ariac_ws
+        . install/setup.bash
+        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
+
+
+    This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 
 
 
 Outputs

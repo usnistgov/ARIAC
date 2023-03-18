@@ -14,8 +14,6 @@ Tutorial 1: Creating a Competition Package
 
 
 
-.. note::
-  **Prerequisites**: This tutorial uses the workspace ``~/ariac_ws``, which was created from `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
 
 
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 

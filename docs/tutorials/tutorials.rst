@@ -20,3 +20,16 @@ A brief description of each tutorial is provided below.
 - Tutorial 5 (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5>`_ ): This tutorial retrieves information from published assembly tasks and moves the AGVs to the correct station. Service calls to lock and move AGVs are used in this tutorial.
 - Tutorial 6 (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6>`_ ): This tutorial uses service calls to activate/deactivate the gripper of the floor robot.
 - Tutorial 7 (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7>`_ ): This tutorial shows how to use custom services to move the floor and the ceiling robots to their respective home positions. MoveIt is used in this tutorial. The service clients are implemented in Python while the service servers are hosted in C++. 
+
+
+.. note::
+  In the tutorials we assume the user cloned the package ``ariac_tutorials`` in the workspace ``~/ariac_ws``, which was created during `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
+  Clone the package ``ariac_tutorials`` in the workspace ``~/ariac_ws`` by running the following command in the terminal:
+
+    .. code-block:: bash
+    
+        cd ~/ariac_ws/src
+        git clone https://github.com/jaybrecht/ariac_tutorials
+        cd ..
+        colcon build
+        . install/setup.bash

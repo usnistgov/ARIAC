@@ -5,6 +5,9 @@ Welcome to ARIAC 2023!
 
 Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.com/usnistgov/ARIAC/>`_
 
+.. role::python(code)
+    :language: python
+
 
 .. image:: images/environment.png
   :width: 900

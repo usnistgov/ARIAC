@@ -9,13 +9,16 @@ author = 'Pavel'
 release = '0.1'
 version = '0.1.0'
 
+# pip install sphinx-copybutton
+
 # -- General configuration
 
 extensions = [
     'myst_parser',
     'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
-    'sphinx.ext.autosectionlabel'
+    'sphinx.ext.autosectionlabel',
+    'sphinx_copybutton'
 ]
 
 # Make sure the target is unique

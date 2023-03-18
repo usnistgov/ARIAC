@@ -268,7 +268,7 @@ Code Explained
 - ``main()``:
     
         1. Initializes the ROS2 node.
-        2. Creates an instance of the ``CompetitionInterface`` class.
+        2. Creates an instance of the :python:`CompetitionInterface` class.
         3. Calls the ``start_competition`` method.
         4. Destroys the node and shuts down ROS2.
 

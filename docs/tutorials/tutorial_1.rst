@@ -5,6 +5,17 @@
 Tutorial 1: Creating a Competition Package
 =========================================================
 
+.. admonition:: Source Code for Tutorial 1
+  :class: tip
+  :name: tutorial_1
+
+   .. math::
+
+        S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
+
+
+
+
 .. note::
   **Prerequisites**: This tutorial uses the workspace ``~/ariac_ws``, which was created from `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
 

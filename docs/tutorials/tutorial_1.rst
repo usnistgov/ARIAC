@@ -267,10 +267,10 @@ Code Explained
 
 - ``main()``:
     
-        1 Initializes the ROS2 node.
-        2 Creates an instance of the ``CompetitionInterface`` class.
-        3 Calls the ``start_competition`` method.
-        4 Destroys the node and shuts down ROS2.
+        1. Initializes the ROS2 node.
+        2. Creates an instance of the ``CompetitionInterface`` class.
+        3. Calls the ``start_competition`` method.
+        4. Destroys the node and shuts down ROS2.
 
 
 
@@ -281,7 +281,7 @@ Run the Executable
 
 In *terminal 1*, run the following commands:
 
-.. code-block:: console
+.. code-block:: bash
 
     cd ~/ariac_ws
     colcon build
@@ -300,7 +300,7 @@ The node waits until the competition is ready.
 
 In *terminal 2*, run the following commands:
 
-.. code-block:: console
+.. code-block:: bash
 
     cd ~/ariac_ws
     . install/setup.bash

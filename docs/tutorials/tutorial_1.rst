@@ -11,6 +11,11 @@ Tutorial 1: Creating a Competition Package
   
   `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ 
 
+  .. code-block:: bash
+    
+        cd ~/ariac_ws/ariac_tutorials
+        git checkout tutorial_1
+
 
 
 

@@ -7,6 +7,8 @@
 .. role:: inline-python(code)
     :language: python
 
+.. role:: inline-file(file)
+
 =========================================================
 Tutorial 1: Creating a Competition Package
 =========================================================

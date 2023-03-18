@@ -1,12 +1,27 @@
 
 .. _TUTORIAL_2:
 
+.. only:: builder_html or readthedocs
+
+.. role:: inline-python(code)
+    :language: python
+
+.. role:: inline-file(file)
+
 =========================================================
 Tutorial 2: Reading Data from a Break Beam Sensor
 =========================================================
 
-.. note::
-  **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
+.. admonition:: Source Code for Tutorial 2
+  :class: attention
+  :name: tutorial_2
+  
+  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2>`_ 
+
+  .. code-block:: bash
+    
+        cd ~/ariac_ws/ariac_tutorials
+        git checkout tutorial_2
 
 
 This tutorial covers the following steps:
@@ -14,36 +29,36 @@ This tutorial covers the following steps:
   - Create a configuration file for sensors and cameras, 
   - Add functionality to the competition interface to read data from a sensor and output that data to the terminal.
 
-The package ``competition_tutorials`` is expected to have the following structure for tutorial 2:
+The final state of the package :inline-file:`ariac_tutorials` for **tutorial 2**  is as follows:
 
-.. code-block:: bash
+.. code-block:: text
+    :emphasize-lines: 4,5,10
     
-    competition_tutorials
-    ├── CMakeLists.txt                  (updated)
+    ariac_tutorials
+    ├── CMakeLists.txt
     ├── package.xml
     ├── config
-    │   ├── sensors.yaml                (new)
-    ├── competition_tutorials
+    │   └── sensors.yaml
+    ├── ariac_tutorials
     │   ├── __init__.py
-    │   └── competition_interface.py    (new)
-    └── src
-        ├── start_competition.py        (from tutorial 1)
-        └── read_break_beam_sensor.py   (new)
+    │   └── competition_interface.py
+    └── nodes
+        └── tutorial_2.py
 
 
 Create a Sensor Configuration File
 -----------------------------------
 
-Create a `sensor configuration file  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_ in the package ``competition_tutorials``.
+Create a `sensor configuration file  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_ in the package :inline-file:`ariac_tutorials`.
 
 .. code-block:: bash
 
-  cd ~/ariac_ws/src/competition_tutorials
+  cd ~/ariac_ws/src/ariac_tutorials
   mkdir config
   touch config/sensors.yaml
 
 
-Add a break beam sensor to  ``sensors.yaml`` as seen in :numref:`sensors-yaml-break-beam`. 
+Add a break beam sensor to  :inline-file:`sensors.yaml` as seen in :numref:`sensors-yaml-break-beam`. 
 
 .. code-block:: yaml
     :caption: Add a break beam sensor in sensors.yaml

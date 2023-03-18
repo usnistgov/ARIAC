@@ -17,8 +17,7 @@ extensions = [
     'myst_parser',
     'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
-    'sphinx.ext.autosectionlabel',
-    'sphinx_copybutton'
+    'sphinx.ext.autosectionlabel'
 ]
 
 # Make sure the target is unique

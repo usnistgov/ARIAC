@@ -303,7 +303,6 @@ The node waits until the competition is ready.
 In *terminal 2*, run the following commands:
 
 .. code-block:: console
-    :caption: Terminal 2
 
     cd ~/ariac_ws
     . install/setup.bash

@@ -262,7 +262,8 @@ Overview of the Executable
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-.. role:: python(code)
+.. role:: inline-python(code)
+    :language: python
 
 - Imports:
 
@@ -271,7 +272,7 @@ Code Explained
 - ``main()``:
     
         1. Initializes the ROS2 node.
-        2. Creates an instance of the :python:`CompetitionInterface` class.
+        2. Creates an instance of the :inline-python:`CompetitionInterface` class.
         3. Calls the ``start_competition`` method.
         4. Destroys the node and shuts down ROS2.
 

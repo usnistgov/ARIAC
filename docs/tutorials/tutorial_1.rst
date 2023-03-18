@@ -80,11 +80,12 @@ Overview of package.xml
 
 .. admonition:: package.xml
   :class: attention
-  :emphasize-lines: 7
+
   
   In ``package.xml``, update the maintainer and license information.
 
 .. code-block:: xml
+  :emphasize-lines: 7
     
     <?xml version="1.0"?>
     <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>

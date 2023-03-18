@@ -18,7 +18,6 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
     'sphinx.ext.autosectionlabel',
-    'sphinx_copybutton',
 ]
 
 # Make sure the target is unique

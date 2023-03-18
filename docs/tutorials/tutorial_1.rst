@@ -12,18 +12,18 @@ Tutorial 1: Creating a Competition Package
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
-The package ``competition_tutorials`` is expected to have the following structure for tutorial 1:
+The structure of the package ``ariac_tutorials`` for **tutorial 1**  is as follows:
 
-.. code-block:: bash
+.. code-block:: text
     
-    competition_tutorials
+    ariac_tutorials
     ├── CMakeLists.txt
     ├── package.xml
-    ├── competition_tutorials
+    ├── ariac_tutorials
     │   ├── __init__.py
     │   └── competition_interface.py
     └── src
-        └── start_competition.py
+        └── tutorial_1.py
 
 To create the package: 
 
@@ -307,7 +307,7 @@ This should start gazebo. Once the environment is loaded and the competition sta
 Outputs
 --------------------------------
 
-.. code-block:: text
+.. code-block:: console
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
     [INFO] [1679025079.463133489] [competition_interface]: Competition state is: idle

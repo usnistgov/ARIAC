@@ -80,6 +80,7 @@ Overview of package.xml
 
 .. admonition:: package.xml
   :class: attention
+  :emphasize-lines: 7
   
   In ``package.xml``, update the maintainer and license information.
 
@@ -220,25 +221,25 @@ Code Explained
 
 - Imports:
 
-    - ``ariac_msgs.msg``: The ROS2 message API for the ARIAC messages.
+    - :inline-python:`ariac_msgs.msg`: The ROS2 message API for the ARIAC messages.
 
-        - ``CompetitionState``: The competition state message.
-    - ``std_srvs.srv``: The ROS2 service API for the standard services.
+        - :inline-python:`CompetitionState`: The competition state message.
+    - :inline-python:`std_srvs.srv`: The ROS2 service API for the standard services.
 
 - Class Variables
 
-    -  ``_competition_states``: A dictionary for converting CompetitionState constants to strings for logging purposes.
+    -  :inline-python:`_competition_states`: A dictionary for converting CompetitionState constants to strings for logging purposes.
 
 - Instance Variables
 
-    - ``_start_competition_client`` is a client for the service ``/ariac/start_competition``.
-    - ``_competition_state_sub`` is a subscriber for the topic ``/ariac/competition_state``.
-    - ``_competition_state`` is a variable to store the current competition state.
+    - :inline-python:`_start_competition_client` is a client for the service ``/ariac/start_competition``.
+    - :inline-python:`_competition_state_sub` is a subscriber for the topic ``/ariac/competition_state``.
+    - :inline-python:`_competition_state` is a variable to store the current competition state.
 
 - Class Methods
 
-    - ``competition_state_cb()``: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable ``_competition_state``.
-    - ``start_competition()``: Method to start the competition. This method waits for the competition to be ready by checking the value of ``_competition_state`` and then calls the service ``/ariac/start_competition`` through the client ``_start_competition_client``.
+    - :inline-python:`competition_state_cb()`: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable :inline-python:`_competition_state`.
+    - :inline-python:`start_competition()`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`_competition_state` and then calls the service ``/ariac/start_competition`` through the client :inline-python:`_start_competition_client`.
 
 
 
@@ -274,7 +275,7 @@ Code Explained
 
     - :inline-python:`from competition_tutorials.competition_interface import CompetitionInterface` imports the :inline-python:`CompetitionInterface` class.
 
-- ``main()``:
+- :inline-python:`main()`:
     
         1. Initializes the ROS2 node.
         2. Creates an instance of the :inline-python:`CompetitionInterface` class.

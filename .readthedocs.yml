@@ -5,7 +5,7 @@ build:
   tools:
     python: "3.8"
   commands:
-    - pip install sphinx-copybutton
+    - pip3 install sphinx-copybutton
 
 python:
   install:

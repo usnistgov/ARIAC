@@ -224,7 +224,7 @@ Code Explained
 
     - :inline-python:`ariac_msgs.msg`: The ROS2 message API for the ARIAC messages.
 
-        - :inline-python:`CompetitionState`: The competition state message.
+        - :inline-python:`CompetitionState`: The competition state message (defined in  `ariac_msgs/msg/CompetitionState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/CompetitionState.msg>`_ ).
     - :inline-python:`std_srvs.srv`: The ROS2 service API for the standard services.
 
 - Class Variables

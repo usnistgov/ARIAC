@@ -13,4 +13,5 @@ The code for each tutorial is located in a separate branch of the repository. Th
 
 A brief description of each tutorial is provided below.
 
-- `Tutorial 1: <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ : This tutorial shows how to use the Python interface to the ARIAC system to get information about the competition state and the current state of the robot. It also shows how to use the Python interface to the ROS system to get information about the state of the robot and the environment. This tutorial uses C++ code to control the robot without Moveit.
+- `Tutorial 1: <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ : This tutorial shows how to start the competition based on the state of the competition.
+- `Tutorial 2: <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2>`_ : This tutorial shows how to add a sensor to the sensor configuration file. The sensor is then used to keep track of the number of parts that are spawned on the conveyor belt.

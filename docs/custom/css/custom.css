@@ -2,10 +2,14 @@
     max-width: 80% !important;
 }
 
-code.inline-file {
+.inline-file {
     color: #082e9f !important;
     font-style: italic;
     background-color: #fbfbfb !important;
+}
+
+.emphasize-lines {
+    background-color: #f9a04d !important;
 }
 
 /* button.copybtn {

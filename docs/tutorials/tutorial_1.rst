@@ -262,6 +262,9 @@ Overview of the Executable
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+.. role:: python(code)
+    :language: python
+    
 - Imports:
 
     - ``competition_tutorials.competition_interface``: The competition interface class.

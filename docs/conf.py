@@ -36,7 +36,7 @@ templates_path = ['_templates']
 html_theme = 'sphinx_rtd_theme'
 # The name of the Pygments (syntax highlighting) style to use.
 
-pygments_style = 'colorful'
+pygments_style = 'monokai'
 
 source_suffix = ['.rst', '.md']
 

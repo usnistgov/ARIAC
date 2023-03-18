@@ -2,6 +2,9 @@
     max-width: 80% !important;
 }
 
+button.copybtn {
+   color: red;
+}
 
 
 /* code.literal {

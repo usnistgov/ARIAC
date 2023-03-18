@@ -45,6 +45,7 @@ Overview of CMakelists.txt
 --------------------------------
 
 .. code-block:: cmake
+    :emphasize-lines: 19
     
     cmake_minimum_required(VERSION 3.8)
     project(competition_tutorials)

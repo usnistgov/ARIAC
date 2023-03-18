@@ -18,7 +18,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
     'sphinx.ext.autosectionlabel',
-    'sphinx.copybutton',
+    'sphinx_copybutton',
 ]
 
 # Make sure the target is unique
@@ -41,7 +41,7 @@ templates_path = ['_templates']
 html_theme = 'sphinx_rtd_theme'
 # The name of the Pygments (syntax highlighting) style to use.
 
-pygments_style = 'colorful'
+pygments_style = 'tango'
 
 source_suffix = ['.rst', '.md']
 

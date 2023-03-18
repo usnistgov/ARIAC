@@ -32,6 +32,7 @@ This competition package will use a python node to listen to the competition sta
 The final state of the package :inline-file:`ariac_tutorials` for **tutorial 1**  is as follows:
 
 .. code-block:: text
+    :emphasize-lines: 8
     
     ariac_tutorials
     ├── CMakeLists.txt

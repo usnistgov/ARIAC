@@ -223,6 +223,9 @@ Code Explained
 - Class Variables
 
     -  ``_competition_states``: A dictionary for converting CompetitionState constants to strings for logging purposes.
+
+- Instance Variables
+
     - ``_start_competition_client`` is a client for the service ``/ariac/start_competition``.
     - ``_competition_state_sub`` is a subscriber for the topic ``/ariac/competition_state``.
     - ``_competition_state`` is a variable to store the current competition state.

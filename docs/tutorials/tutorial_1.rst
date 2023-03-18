@@ -34,24 +34,14 @@ The structure of the package ``ariac_tutorials`` for **tutorial 1**  is as follo
     ├── ariac_tutorials
     │   ├── __init__.py
     │   └── competition_interface.py
-    └── src
+    ├── config
+    │   └── sensors.yaml
+    └── nodes
         └── tutorial_1.py
 
-To create the package: 
 
-    - Navigate to ``~/ariac_ws/src``, which was created from `the installation directions <https://ariac.readthedocs.io/en/latest/getting_started/installation.html>`_. 
-    - Run the package creation command.
-
-.. code-block:: bash
-    
-    cd ~/ariac_ws/src
-    ros2 pkg create competition_tutorials --build-type ament_cmake
-
-
-Update CMakelists.txt
+Overview of CMakelists.txt
 --------------------------------
-
-Update ``CMakeLists.txt`` as follows:
 
 .. code-block:: cmake
     
@@ -73,17 +63,20 @@ Update ``CMakeLists.txt`` as follows:
 
     # Install Python executables
     install(PROGRAMS
-    src/start_competition.py
+    nodes/tutorial_1.py
     DESTINATION lib/${PROJECT_NAME}
     )
 
     ament_package()
 
 
-Update package.xml
+Overview of package.xml
 --------------------------------
 
-In ``package.xml``, update the maintainer and license information. Make sure to add the following dependencies:
+.. admonition:: package.xml
+  :class: attention
+  
+  In ``package.xml``, update the maintainer and license information.
 
 .. code-block:: xml
     

@@ -4,8 +4,6 @@ build:
   os: "ubuntu-20.04"
   tools:
     python: "3.8"
-  commands:
-    - pip3 install sphinx-copybutton
 
 python:
   install:

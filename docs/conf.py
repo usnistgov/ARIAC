@@ -36,6 +36,8 @@ templates_path = ['_templates']
 
 # -- Options for HTML output
 
+copybutton_selector = "div:not(.no-copybutton) > div.highlight > pre"
+
 html_theme = 'sphinx_rtd_theme'
 # The name of the Pygments (syntax highlighting) style to use.
 

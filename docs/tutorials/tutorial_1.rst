@@ -27,6 +27,7 @@ This competition package will use a python node to listen to the competition sta
 The final state of the package ``ariac_tutorials`` for **tutorial 1**  is as follows:
 
 .. code-block:: text
+    :class: no-copybutton
     
     ariac_tutorials
     ├── CMakeLists.txt

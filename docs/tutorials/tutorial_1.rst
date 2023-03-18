@@ -2,7 +2,10 @@
 .. _TUTORIAL_1:
 
 
+.. only:: builder_html or readthedocs
 
+.. role:: inline-python(code)
+    :language: python
 
 =========================================================
 Tutorial 1: Creating a Competition Package
@@ -21,16 +24,12 @@ Tutorial 1: Creating a Competition Package
 
 
 
-
-
-
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
 The final state of the package :file:`ariac_tutorials` for **tutorial 1**  is as follows:
 
 .. code-block:: text
-    :class: no-copybutton
     
     ariac_tutorials
     ├── CMakeLists.txt
@@ -262,19 +261,20 @@ Overview of the Executable
     if __name__ == '__main__':
         main()
 
+
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 
 - Imports:
 
-    - ``competition_tutorials.competition_interface``: The competition interface class.
+    - :inline-python:`from competition_tutorials.competition_interface import CompetitionInterface` imports the :inline-python:`CompetitionInterface` class.
 
 - ``main()``:
     
         1. Initializes the ROS2 node.
         2. Creates an instance of the :inline-python:`CompetitionInterface` class.
-        3. Calls the ``start_competition`` method.
+        3. Calls the :inline-python:`start_competition()` method.
         4. Destroys the node and shuts down ROS2.
 
 

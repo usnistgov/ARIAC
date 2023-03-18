@@ -24,7 +24,7 @@ Tutorial 1: Creating a Competition Package
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
-The structure of the package ``ariac_tutorials`` for **tutorial 1**  is as follows:
+The final state of the package ``ariac_tutorials`` for **tutorial 1**  is as follows:
 
 .. code-block:: text
     
@@ -101,23 +101,11 @@ Overview of package.xml
     </package>
 
 
-Create Python Package
---------------------------------
 
-Create a python package with the same name as the ros2 package. This python package will include all the python source code for your software. 
+Overview of the Competition Interface
+--------------------------------------------
 
-.. code-block:: bash
-    
-    cd ~/ariac_ws/src/competition_tutorials
-    mkdir competition_tutorials
-    touch competition_tutorials/__init__.py
-    touch competition_tutorials/competition_interface.py
-
-
-Competition Interface
-----------------------
-
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial1`.
+The competition interface for **tutorial 1** is shown in :numref:`competitioninterface-tutorial1`.
 
 
 .. code-block:: python
@@ -186,8 +174,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             # Log if competition state has changed
             if self._competition_state != msg.competition_state:
                 self.get_logger().info(
-                    f'Competition state is: \
-                    {CompetitionInterface._competition_states[msg.competition_state]}',
+                    f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
                     throttle_duration_sec=1.0)
             self._competition_state = msg.competition_state
 
@@ -223,37 +210,37 @@ The competition interface used in this tutorial is shown in :numref:`competition
             else:
                 self.get_logger().info('Unable to start competition')
 
+Code Explained
+^^^^^^^^^^^^^^^^^^^^^^^
 
-The class ``CompetitionInterface`` consists of the following:
+- Imports:
 
-    - ``_competition_states``: A dictionary for converting CompetitionState constants to strings for logging purposes.
-    - ``__init__()``: The constructor for the class. 
+    - ``ariac_msgs.msg``: The ROS2 message API for the ARIAC messages.
 
-        - ``_start_competition_client`` is a client for the service ``/ariac/start_competition``.
-        - ``_competition_state_sub`` is a subscriber for the topic ``/ariac/competition_state``.
-        - ``_competition_state`` is a variable to store the state of the competition.
+        - ``CompetitionState``: The competition state message.
+    - ``std_srvs.srv``: The ROS2 service API for the standard services.
+
+- Class Variables
+
+    -  ``_competition_states``: A dictionary for converting CompetitionState constants to strings for logging purposes.
+    - ``_start_competition_client`` is a client for the service ``/ariac/start_competition``.
+    - ``_competition_state_sub`` is a subscriber for the topic ``/ariac/competition_state``.
+    - ``_competition_state`` is a variable to store the current competition state.
+
+- Class Methods
+
     - ``competition_state_cb()``: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable ``_competition_state``.
     - ``start_competition()``: Method to start the competition. This method waits for the competition to be ready by checking the value of ``_competition_state`` and then calls the service ``/ariac/start_competition`` through the client ``_start_competition_client``.
 
 
 
-Create the Executable
+Overview of the Executable
 --------------------------------
 
-To test this tutorial, create a new file ``start_competition.py`` in ``competition_tutorials/src``:
-
-.. code-block:: bash
-
-    cd ~/ariac_ws/src/competition_tutorials/src
-    touch start_competition.py
-    chmod +x start_competition.py
-
-
-Copy the following code in the file ``start_competition.py``:
 
 
 .. code-block:: python
-    :caption: start_competition.py
+    :caption: tutorial_1.py
     
     #!/usr/bin/env python3
 
@@ -270,8 +257,20 @@ Copy the following code in the file ``start_competition.py``:
     if __name__ == '__main__':
         main()
 
+Code Explained
+^^^^^^^^^^^^^^^^^^^^^^^
 
-This executable creates an instance of the ``CompetitionInterface`` class from ``competition_tutorials/competition_interface.py`` and calls the ``start_competition`` method.
+- Imports:
+
+    - ``competition_tutorials.competition_interface``: The competition interface class.
+
+- ``main()``:
+    
+        1 Initializes the ROS2 node.
+        2 Creates an instance of the ``CompetitionInterface`` class.
+        3 Calls the ``start_competition`` method.
+        4 Destroys the node and shuts down ROS2.
+
 
 
 
@@ -287,23 +286,23 @@ Next, build the package and run the executable:
     cd ~/ariac_ws
     colcon build
     . install/setup.bash
-    ros2 run competition_tutorials start_competition.py
+    ros2 run ariac_tutorials tutorial_1.py
 
 You should see this output:
 
-.. code-block::
+.. code-block:: console
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
 
 
 The node will wait until the competition is ready. Do the following in a new terminal:
 
-.. code-block:: bash
+.. code-block:: console
     :caption: Terminal 2
 
     cd ~/ariac_ws
     . install/setup.bash
-    ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
+    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
 
 
 This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 

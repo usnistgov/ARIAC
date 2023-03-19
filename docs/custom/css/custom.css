@@ -25,6 +25,14 @@
     background-color: #fbfbfb !important;
 }
 
+.tutorial {
+    color: #0d7b1a !important;
+    font-style: oblique;
+    font-weight: lighter;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #fbfbfb !important;
+}
+
 code.emphasize-lines {
     background-color: #f9a04d !important;
 }

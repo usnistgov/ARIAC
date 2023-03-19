@@ -49,10 +49,6 @@ The package ``competition_tutorials`` is expected to have the following structur
 Sensor Configuration File
 -----------------------------------
 
-.. admonition:: Pied Piper
-   :class: pied-piper
-
-   This is neat, right?
 
 
 Add an advanced logical camera to  :inline-file:`sensors.yaml` (lines 8-13 in :numref:`sensors-yaml`). 

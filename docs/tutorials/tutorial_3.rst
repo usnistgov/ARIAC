@@ -1,15 +1,31 @@
 
 .. _TUTORIAL_3:
 
+.. only:: builder_html or readthedocs
+
+.. role:: inline-python(code)
+    :language: python
+
+.. role:: inline-file(file)
+
 =========================================================
 Tutorial 3: Reading Data from an Advanced Logical Camera
 =========================================================
 
-.. note::
-  **Prerequisites**: Tutorial 1 should be completed before starting this tutorial.
+.. admonition:: Source Code for Tutorial 3
+  :class: attention
+  :name: tutorial_3
+  
+  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3>`_ 
 
-This tutorial covers the following steps:
+  .. code-block:: bash
+    
+        cd ~/ariac_ws/ariac_tutorials
+        git checkout tutorial_3
 
+This tutorial covers the following topics:
+
+  - Adding a camera to the environment,
   - Receive messages from a camera, 
   - Store the data internally as an instance of a class,
   - Display the stored data on the standard output.
@@ -30,10 +46,16 @@ The package ``competition_tutorials`` is expected to have the following structur
         └── read_advanced_camera.py     (new)
 
 
-Add a Camera to the Environment
---------------------------------
+Sensor Configuration File
+-----------------------------------
 
-Add an advanced logical camera to  ``sensors.yaml`` (lines 8-13 in :numref:`sensors-yaml`). 
+.. admonition:: Pied Piper
+   :class: pied-piper
+
+   This is neat, right?
+
+
+Add an advanced logical camera to  :inline-file:`sensors.yaml` (lines 8-13 in :numref:`sensors-yaml`). 
 
 .. code-block:: yaml
     :caption: sensors.yaml
@@ -58,8 +80,8 @@ Add an advanced logical camera to  ``sensors.yaml`` (lines 8-13 in :numref:`sens
 
 
 
-Verify the Camera is Added to the Environment
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Test the Sensor Configuration
+--------------------------------------------
 
 To test  the camera was correctly added to the environment:
 

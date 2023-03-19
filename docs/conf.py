@@ -48,6 +48,7 @@ html_js_files = [
     'js/custom.js'
 ]
 
+todo_include_todos = True
 # -- Options for copy button -------------------------------------------------------
 #
 copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "

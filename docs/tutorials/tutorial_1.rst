@@ -31,7 +31,7 @@ Tutorial 1: Creating a Competition Package
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
-The final state of the package :inline-file:`ariac_tutorials` for :tutorial:`tutorial 1``  is as follows:
+The final state of the package :inline-file:`ariac_tutorials` for :tutorial:`tutorial 1`  is as follows:
 
 .. code-block:: text
     :class: no-copybutton

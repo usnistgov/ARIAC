@@ -540,59 +540,44 @@ This executable does the following:
         - Move the AGVs to the assembly station.
 
 
-The for loop in the ``main`` function iterates through the orders, retrieves orders with assembly tasks, retrieves AGVs for the assembly tasks, locks the tray of the AGVs and moves them to the assembly station. The ``lock_agv_tray`` and ``move_agv_to_station`` methods are defined in the ``CompetitionInterface`` class.
-
-Update CMakelists.txt
-^^^^^^^^^^^^^^^^^^^^^^
-
-Update ``CMakeLists.txt`` to add ``read_orders.py`` as an executable.
-
-.. code-block:: cmake
-
-  # Install Python executables
-  install(PROGRAMS
-    src/start_competition.py
-    src/read_break_beam_sensor.py
-    src/read_advanced_camera.py
-    src/read_orders.py
-    src/move_agvs.py
-    DESTINATION lib/${PROJECT_NAME}
-  )
-
 
 Run the Executable
 --------------------------------
 
-Next, build the package and run the executable.
+- In *terminal 1*, run the following commands:
 
 
-.. code-block:: bash
-    :caption: Terminal 1
+    .. code-block:: bash
 
-    cd ~/ariac_ws
-    colcon build
-    . install/setup.bash
-    ros2 run competition_tutorials move_agvs.py
-
-
-The node will wait until the competition is ready. In a second terminal, run the following:
-
-.. code-block:: bash
-    :caption: Terminal 2
-
-    cd ~/ariac_ws
-    . install/setup.bash
-    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
+        cd ~/ariac_ws
+        colcon build
+        . install/setup.bash
+        ros2 run ariac_tutorials tutorial_5.py
 
 
-Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and move AGS 1 and 2 to station 1.
+    The node will wait until the competition is ready.
+
+
+- In *terminal 2*, run the following commands:
+
+    .. code-block:: bash
+
+        cd ~/ariac_ws
+        . install/setup.bash
+        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
+
+
+
+
+Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition and move AGVs 1 and 2 to station 1.
 
 Outputs
 --------------------------------
 
 
-.. code-block:: text
+.. code-block:: console
     :caption: Terminal outputs
+    :class: no-copybutton
     
     [INFO] [1679043864.680244149] [competition_interface]: Waiting for competition to be ready
     [INFO] [1679043864.681023755] [competition_interface]: Competition state is: ready

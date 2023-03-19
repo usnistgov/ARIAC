@@ -18,16 +18,16 @@
 Tutorial 3: Reading Data from an Advanced Logical Camera
 =========================================================
 
-.. admonition:: Source Code for Tutorial 3
+.. admonition:: Source Code for Tutorial 4
   :class: attention
-  :name: tutorial_3
+  :name: tutorial_4
   
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3>`_ 
+  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4>`_ 
 
   .. code-block:: bash
     
         cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_3
+        git checkout tutorial_4
 
 
 This tutorial covers the following steps:
@@ -401,7 +401,7 @@ Code Explained
   
 - Instance Variables
 
-    - :inline-python:`_orders_sub`: ROS subscriber to the topic ``/ariac/orders``
+    - :inline-python:`self._orders_sub`: ROS subscriber to the topic ``/ariac/orders``
     - :inline-python:`_orders`: List of orders.
     - :inline-python:`_parse_incoming_order`: Flag for for logging an order in the terminal. If the flag is set to ``True``, the order is logged in the terminal. If the flag is set to ``False``, the order is not logged in the terminal.
 

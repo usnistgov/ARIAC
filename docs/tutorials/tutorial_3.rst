@@ -406,7 +406,7 @@ Run the Executable
         ros2 run ariac_tutorials tutorial_3.py
 
 
-    The node will wait until the competition is ready. In a second terminal, run the following:
+    The node will wait until the competition is ready.
 
 
 - In *terminal 2*, run the following commands:

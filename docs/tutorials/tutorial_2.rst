@@ -8,6 +8,8 @@
 
 .. role:: inline-file(file)
 
+.. role:: inline-tutorial(file)
+
 =========================================================
 Tutorial 2: Reading Data from a Break Beam Sensor
 =========================================================
@@ -29,10 +31,11 @@ This tutorial covers the following steps:
   - Create a configuration file for sensors and cameras, 
   - Read data published by the sensor and log the outputs.
 
-The final state of the package :inline-file:`ariac_tutorials` for **tutorial 2**  is as follows:
+The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 2` is as follows:
 
 .. code-block:: text
     :emphasize-lines: 4,5,10
+    :class: no-copybutton
     
     ariac_tutorials
     ├── CMakeLists.txt
@@ -139,7 +142,7 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
 Overview of the Competition Interface
 --------------------------------------------
 
-The competition interface for **tutorial 2** is shown in :numref:`competitioninterface-tutorial2`.
+The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:`competitioninterface-tutorial2`.
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -368,6 +371,7 @@ Outputs
 
 
 .. code-block:: console
+    :class: no-copybutton
     :caption: Terminal outputs
     
     [INFO] [1679030246.597452729] [competition_interface]: Part Count: 0

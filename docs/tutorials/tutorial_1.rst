@@ -328,6 +328,7 @@ Outputs
 --------------------------------
 
 .. code-block:: console
+    :class: no-copybutton
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
     [INFO] [1679025079.463133489] [competition_interface]: Competition state is: idle

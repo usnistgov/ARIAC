@@ -125,7 +125,7 @@ To test  the sensor was correctly added to the environment, run the following co
   cd ~/ariac_ws
   colcon build
   . install/setup.bash
-  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
+  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=ariac_tutorials
 
 
 You should see a break beam sensor on the right side of the conveyor belt, as shown in :numref:`my-custom-label`.
@@ -136,7 +136,11 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
     :align: center
     :alt: Break beam sensor in Gazebo
 
-    
+
+.. admonition:: Attention
+  :class: attention
+  
+  By default, the command :bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials` uses the sensor configuration file :inline-file:`ariac_tutorials/config/sensors.yaml`. If you want to use a different sensor configuration file, you need to use the argument :bash:`sensor_config_file:=<path_to_file>`. For example, to use the sensor configuration file :inline-file:`sensors_test.yaml`, you would use the command :bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials sensor_config_file:=sensors_test.yaml`.
 
 
 Overview of the Competition Interface
@@ -309,7 +313,7 @@ Overview of the Executable
     #!/usr/bin/env python3
 
     import rclpy
-    from competition_tutorials.competition_interface import CompetitionInterface
+    from ariac_tutorials.competition_interface import CompetitionInterface
 
     def main(args=None):
         rclpy.init(args=args)
@@ -345,7 +349,7 @@ Run the Executable
         cd ~/ariac_ws
         colcon build
         . install/setup.bash
-        ros2 run competition_tutorials read_break_beam_sensor.py
+        ros2 run ariac_tutorials tutorial_2.py
 
 
     The node will wait until the competition is ready. In a second terminal, run the following:
@@ -357,7 +361,7 @@ Run the Executable
 
         cd ~/ariac_ws
         . install/setup.bash
-        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
+        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
 
 
     Once the environment is loaded and the competition state is ready, the interface node running in *terminal 2* will start the competition and the sensor will start publishing data. In *terminal 1* you should see the the part count output increasing as parts on the conveyor break the sensor beam, as shown in the figure below.

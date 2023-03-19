@@ -50,12 +50,11 @@ Sensor Configuration File
 -----------------------------------
 
 
-
-Add an advanced logical camera to  :inline-file:`sensors.yaml` (lines 8-13 in :numref:`sensors-yaml`). 
+Add an advanced logical camera to  :inline-file:`sensors.yaml` (lines 8-13 in :numref:`sensors-camera-yaml`). 
 
 .. code-block:: yaml
     :caption: sensors.yaml
-    :name: sensors-yaml
+    :name: sensors-camera-yaml
     :emphasize-lines: 8, 9, 10, 11, 12, 13
     :linenos:
     
@@ -79,7 +78,7 @@ Add an advanced logical camera to  :inline-file:`sensors.yaml` (lines 8-13 in :n
 Test the Sensor Configuration
 --------------------------------------------
 
-To test  the camera was correctly added to the environment:
+To test  the camera was correctly added to the environment, run the following commands:
 
 .. code-block:: bash
 
@@ -91,7 +90,6 @@ To test  the camera was correctly added to the environment:
 
 You should see the camera above bins 1-4 as shown in the figure below.
 
-.. _fig-advanced-camera-0:
 .. figure:: ../images/tutorial3/advanced_camera_0.jpg
    :align: center
 

@@ -9,6 +9,8 @@
 
 .. role:: inline-file(file)
 
+.. role:: tutorial(file)
+
 =========================================================
 Tutorial 1: Creating a Competition Package
 =========================================================

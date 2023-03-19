@@ -411,9 +411,9 @@ Code Explained
     - :inline-python:`_orders_cb(self, msg: OrderMsg)`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`self._orders`
     - :inline-python:`parse_order(self, order: Order)`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
 
-        - :inline-python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a KittingTask object and returns a string representation.
-        - :inline-python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an AssemblyTask object and returns a string representation.
-        - :inline-python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a CombinedTask object and returns a string representation.
+        - :inline-python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a :inline-python:`KittingTask` object and returns a string representation.
+        - :inline-python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an :inline-python:`AssemblyTask` object and returns a string representation.
+        - :inline-python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a :inline-python:`CombinedTask` object and returns a string representation.
 
 
 
@@ -432,6 +432,7 @@ Create the Executable
         rclpy.init(args=args)
         interface = CompetitionInterface()
         interface.start_competition()
+
         # The following line enables order displays in the terminal.
         # To disable order displays, set parse_incoming_order to False.
         interface.parse_incoming_order = True

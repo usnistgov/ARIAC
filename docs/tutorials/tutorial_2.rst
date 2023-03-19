@@ -128,7 +128,7 @@ To test  the sensor was correctly added to the environment, run the following co
 You should see a break beam sensor on the right side of the conveyor belt, as shown in :numref:`my-custom-label`.
 
 
-.. figure:: ../images/tutorial_2_image1.png.*
+.. figure:: ../images/tutorial_2_image1.png
     :name: my-custom-label
     :align: center
     :alt: Break beam sensor in Gazebo
@@ -276,16 +276,6 @@ The competition interface for **tutorial 2** is shown in :numref:`competitionint
                 self.get_logger().info('Started competition.')
             else:
                 self.get_logger().info('Unable to start competition')
-
-
-    
-.. sidebar:: Optional Sidebar Title
-   :subtitle: Optional Sidebar Subtitle
-
-   Subsequent indented lines comprise
-   the body of the sidebar, and are
-   interpreted as body elements.
-
 
 
 Code Explained

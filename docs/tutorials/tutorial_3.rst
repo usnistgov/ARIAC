@@ -30,9 +30,9 @@ Tutorial 3: Reading Data from an Advanced Logical Camera
 
 This tutorial covers the following topics:
 
-  - Adding a camera to the environment,
+  - Add a camera to the environment,
   - Receive messages from a camera, 
-  - Store the data internally as an instance of a class,
+  - Store camera data internally as an instance of a class,
   - Display the stored data on the standard output.
 
 The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 3` is as follows:

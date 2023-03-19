@@ -125,9 +125,10 @@ To test  the sensor was correctly added to the environment, run the following co
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
 
 
-You should see a break beam sensor on the right side of the conveyor belt, as shown in :numref:`Image of Sphinx (Fig. %s) <fig-break-beam-sensor>`.
+You should see a break beam sensor on the right side of the conveyor belt, as shown in :numref:`fig break beam sensor`.
 
-.. _fig-break-beam-sensor:
+.. _fig break beam sensor:
+
 .. figure:: ../images/tutorial_2_image1.png
    :align: center
 

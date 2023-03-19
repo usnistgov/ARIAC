@@ -27,7 +27,7 @@ Tutorial 2: Reading Data from a Break Beam Sensor
 This tutorial covers the following steps:
 
   - Create a configuration file for sensors and cameras, 
-  - Add functionality to the competition interface to read data from a sensor and output that data to the terminal.
+  - Read data published by the sensor and log the outputs.
 
 The final state of the package :inline-file:`ariac_tutorials` for **tutorial 2**  is as follows:
 
@@ -46,17 +46,13 @@ The final state of the package :inline-file:`ariac_tutorials` for **tutorial 2**
         └── tutorial_2.py
 
 
-Create a Sensor Configuration File
+Sensor Configuration File
 -----------------------------------
+A sensor configuration file for a given package must be created in the folder :inline-file:`config` in the package. The file must be added to the ``CMakeLists.txt`` file in the package to allow the competition software to find the file.
+To learn more about sensor configuration files, see `https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_.
 
-Create a `sensor configuration file  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_ in the package :inline-file:`ariac_tutorials`.
-
-.. code-block:: bash
-
-  cd ~/ariac_ws/src/ariac_tutorials
-  mkdir config
-  touch config/sensors.yaml
-
+Add a Break Beam Sensor
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Add a break beam sensor to  :inline-file:`sensors.yaml` as seen in :numref:`sensors-yaml-break-beam`. 
 
@@ -76,19 +72,50 @@ Add a break beam sensor to  :inline-file:`sensors.yaml` as seen in :numref:`sens
 
 
 
-Verify the Sensor is Added to the Environment
+Update CMakelists.txt
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To allow for the competition software to be able to find the sensor configuration it must be added to the share directory of the package. To do this, add the following lines to the ``CMakeLists.txt`` file in the ``competition_tutorials`` package.
+To allow for the competition software to be able to find the sensor configuration, it must be added to the share directory of the package. 
+To do this, add the following lines to the :inline-file:`CMakeLists.txt` file in the :inline-file:`ariac_tutorials` package.
 
 .. code-block:: cmake
+    :emphasize-lines: 15-18, 25
 
-    install(DIRECTORY config
-        DESTINATION share/${PROJECT_NAME}
+    cmake_minimum_required(VERSION 3.8)
+    project(ariac_tutorials)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    find_package(ament_cmake REQUIRED)
+    find_package(ament_cmake_python REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(rclpy REQUIRED)
+    find_package(ariac_msgs REQUIRED)
+
+    # Install the config directory to the package share directory
+    install(DIRECTORY 
+    config
+    DESTINATION share/${PROJECT_NAME}
     )
 
+    # Install Python modules
+    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
 
-To test  the camera was correctly added to the environment, run the following commands:
+    # Install Python executables
+    install(PROGRAMS
+    nodes/tutorial_2.py
+    DESTINATION lib/${PROJECT_NAME}
+    )
+
+    ament_package()
+
+
+Test the Sensor Configuration
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To test  the sensor was correctly added to the environment, run the following commands:
 
 .. code-block:: bash
 
@@ -98,7 +125,7 @@ To test  the camera was correctly added to the environment, run the following co
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
 
 
-You should see a break beam sensor on the right side of the conveyor belt, as shown in the figure below.
+You should see a break beam sensor on the right side of the conveyor belt, as shown in :numref:`Image of Sphinx (Fig. %s) <fig-break-beam-sensor>`.
 
 .. _fig-break-beam-sensor:
 .. figure:: ../images/tutorial_2_image1.png

@@ -41,6 +41,7 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 copybutton_line_continuation_character = "\\"
 copybutton_here_doc_delimiter = "EOT"
+
 copybutton_selector = "div:not(.no-copybutton) > div.highlight > pre"
 
 # -- Options for TODOs -------------------------------------------------------

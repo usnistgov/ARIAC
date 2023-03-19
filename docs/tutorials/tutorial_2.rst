@@ -329,8 +329,7 @@ Overview of the Executable
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
- This executable creates an instance of the interface, starts the competition and logs the
-:inline-python:`part_count` variable every 2 seconds. 
+ This executable creates an instance of the interface, starts the competition and logs the :inline-python:`part_count` variable every 2 seconds. 
 
 
 Run the Executable

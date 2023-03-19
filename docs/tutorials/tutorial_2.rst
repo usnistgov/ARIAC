@@ -72,8 +72,8 @@ Add a break beam sensor to  :inline-file:`sensors.yaml` as seen in :numref:`sens
 
 
 
-Update CMakelists.txt
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Overview of CMakelists.txt
+--------------------------------------------
 
 To allow for the competition software to be able to find the sensor configuration, it must be added to the share directory of the package. 
 To do this, add the following lines to the :inline-file:`CMakeLists.txt` file in the :inline-file:`ariac_tutorials` package.
@@ -113,7 +113,7 @@ To do this, add the following lines to the :inline-file:`CMakeLists.txt` file in
 
 
 Test the Sensor Configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------------------
 
 To test  the sensor was correctly added to the environment, run the following commands:
 
@@ -297,23 +297,11 @@ Code Explained
     - :inline-python:`breakbeam0_cb()`: Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
     
 
-Create the Executable
+Overview of the Executable
 --------------------------------
 
-To test this tutorial, create a new file ``read_break_beam_sensor.py`` in ``competition_tutorials/src``:
-
-.. code-block:: bash
-
-    cd ~/ariac_ws/src/competition_tutorials/src
-    touch read_break_beam_sensor.py
-    chmod +x read_break_beam_sensor.py
-
-
-Copy the following code in the file ``read_break_beam_sensor.py``:
-
-
 .. code-block:: python
-    :caption: read_break_beam_sensor.py
+    :caption: tutorial_2.py
     
     #!/usr/bin/env python3
 
@@ -341,59 +329,46 @@ Copy the following code in the file ``read_break_beam_sensor.py``:
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
- This executable creates an instance of the interface, starts the competition and logs the ``part_count`` variable every 2 seconds. 
-
-Update CMakelists.txt
-^^^^^^^^^^^^^^^^^^^^^^
-
-Update ``CMakeLists.txt`` to add ``read_break_beam_sensor.py`` as an executable.
-
-.. code-block:: cmake
-
-  # Install Python executables
-  install(PROGRAMS
-    src/start_competition.py
-    src/read_break_beam_sensor.py
-    DESTINATION lib/${PROJECT_NAME}
-  )
+ This executable creates an instance of the interface, starts the competition and logs the
+:inline-python:`part_count` variable every 2 seconds. 
 
 
 Run the Executable
 --------------------------------
 
-Next, build the package and run the executable.
+- In *terminal 1*, run the following commands:
+
+    .. code-block:: bash
+
+        cd ~/ariac_ws
+        colcon build
+        . install/setup.bash
+        ros2 run competition_tutorials read_break_beam_sensor.py
 
 
-.. code-block:: bash
-    :caption: Terminal 1
-
-    cd ~/ariac_ws
-    colcon build
-    . install/setup.bash
-    ros2 run competition_tutorials read_break_beam_sensor.py
+    The node will wait until the competition is ready. In a second terminal, run the following:
 
 
-The node will wait until the competition is ready. In a second terminal, run the following:
+- In *terminal 2*, run the following commands:
 
-.. code-block:: bash
-    :caption: Terminal 2
+    .. code-block:: bash
 
-    cd ~/ariac_ws
-    . install/setup.bash
-    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
+        cd ~/ariac_ws
+        . install/setup.bash
+        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
 
 
-Once the environment is loaded and the competition state is ready, the interface node running in Terminal 2 will start the competition and the sensor will start publishing data. You should see the the part count output increasing as parts on the conveyor break the sensor beam, as shown in the figure below.
+    Once the environment is loaded and the competition state is ready, the interface node running in Terminal 2 will start the competition and the sensor will start publishing data. You should see the the part count output increasing as parts on the conveyor break the sensor beam, as shown in the figure below.
 
-.. figure:: ../images/tutorial_2_image2.png
-   :align: center
+    .. figure:: ../images/tutorial_2_image2.png
+    :align: center
 
 
 Outputs
 --------------------------------
 
 
-.. code-block:: text
+.. code-block:: consolde
     :caption: Terminal outputs
     
     [INFO] [1679030246.597452729] [competition_interface]: Part Count: 0

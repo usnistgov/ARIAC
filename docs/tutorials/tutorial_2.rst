@@ -136,14 +136,13 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
     
 
 
-Competition Interface
---------------------------------
+Overview of the Competition Interface
+--------------------------------------------
 
-
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial2`.  Contents specific to this tutorial are highlighted in yellow.
+The competition interface for **tutorial 2** is shown in :numref:`competitioninterface-tutorial2`.
 
 .. code-block:: python
-    :caption: Competition interface for tutorial 2
+    :caption: competition_interface.py
     :name: competitioninterface-tutorial2
     :emphasize-lines: 8, 57-61, 63, 65, 70-72, 74-83
     :linenos:
@@ -287,7 +286,7 @@ Code Explained
 
 - Imports
 
-    - ``from rclpy.qos import qos_profile_sensor_data``: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
+    - :inline-python:`from rclpy.qos import qos_profile_sensor_data`: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
     - ``from ariac_msgs.msg import BreakBeamStatus as BreakBeamStatusMsg``: ROS message for the break beam status, used to subscribe to the break beam status topic.
   
 - Class Variables

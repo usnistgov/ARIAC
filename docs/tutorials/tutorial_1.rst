@@ -115,7 +115,7 @@ Overview of package.xml
 Overview of the Competition Interface
 --------------------------------------------
 
-The competition interface for **tutorial 1** is shown in :numref:`competitioninterface-tutorial1`.
+The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`.
 
 
 .. code-block:: python
@@ -277,7 +277,7 @@ Code Explained
 
 - Imports:
 
-    - :inline-python:`from competition_tutorials.competition_interface import CompetitionInterface` imports the :inline-python:`CompetitionInterface` class.
+    - :inline-python:`from competition_tutorials.competition_interface import CompetitionInterface` imports the :inline-python:`CompetitionInterface` class from the :inline-file:`competition_interface.py` file.
 
 - :inline-python:`main()`:
     

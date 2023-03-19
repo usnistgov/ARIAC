@@ -1,2 +1,3 @@
 myst_parser
-docutils<0.17
+sphinx_copybutton
+# docutils<0.17

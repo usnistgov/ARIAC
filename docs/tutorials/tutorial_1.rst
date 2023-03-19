@@ -276,17 +276,10 @@ Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 
-- Imports:
+This executable does the following:
 
-    - :inline-python:`from ariac_tutorials.competition_interface import CompetitionInterface` imports the :inline-python:`CompetitionInterface` class from the :inline-file:`competition_interface.py` file.
-
-- :inline-python:`main()`:
-    
-        1. Initializes the ROS2 node.
-        2. Creates an instance of the :inline-python:`CompetitionInterface` class.
-        3. Calls the :inline-python:`start_competition()` method.
-        4. Destroys the node and shuts down ROS2.
-
+    - Creates an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Starts the competition.
 
 
 

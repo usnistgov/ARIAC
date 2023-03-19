@@ -402,18 +402,18 @@ Code Explained
 - Instance Variables
 
     - :inline-python:`self._orders_sub`: ROS subscriber to the topic ``/ariac/orders``
-    - :inline-python:`_orders`: List of orders.
-    - :inline-python:`_parse_incoming_order`: Flag for for logging an order in the terminal. If the flag is set to :inline-python:`True`, the order is logged in the terminal. If the flag is set to :inline-python:`False`, the order is not logged in the terminal.
+    - :inline-python:`self._orders`: List of orders.
+    - :inline-python:`self._parse_incoming_order`: Flag for for logging an order in the terminal. If the flag is set to :inline-python:`True`, the order is logged in the terminal. If the flag is set to :inline-python:`False`, the order is not logged in the terminal.
 
 
 - Instance Methods
 
-    - :inline-python:`_orders_cb()`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`_orders`
-    - :inline-python:`parse_order()`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
+    - :inline-python:`_orders_cb(self, msg: OrderMsg)`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`self._orders`
+    - :inline-python:`parse_order(self, order: Order)`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
 
-        - :inline-python:`_parse_kitting_task()`: Parses a KittingTask object and returns a string representation.
-        - :inline-python:`_parse_assembly_task()`: Parses an AssemblyTask object and returns a string representation.
-        - :inline-python:`_parse_combined_task()`: Parses a CombinedTask object and returns a string representation.
+        - :inline-python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a KittingTask object and returns a string representation.
+        - :inline-python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an AssemblyTask object and returns a string representation.
+        - :inline-python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a CombinedTask object and returns a string representation.
 
 
 

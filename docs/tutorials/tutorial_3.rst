@@ -106,13 +106,11 @@ You should see the camera above bins 1-4 as shown in the figure below.
 Competition Interface
 --------------------------------
 
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial3`. Contents specific to this tutorial are highlighted in yellow.
-
+The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:`competitioninterface-tutorial3`.
 
 .. code-block:: python
-    :caption: Competition interface for tutorial 3
+    :caption: competition_interface.py
     :name: competitioninterface-tutorial3
-    :emphasize-lines: 2, 3, 5, 7, 11-14, 19-26, 39-46, 48-55, 57-63, 99-103, 106, 109-111, 159-167, 169-205, 207-252
     :linenos:
 
     #!/usr/bin/env python3
@@ -164,7 +162,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.ORANGE: '🟧',
             PartMsg.PURPLE: '🟪',
         }
-
         '''Dictionary for converting PartColor constants to strings'''
 
         _part_types = {
@@ -194,31 +191,33 @@ The competition interface used in this tutorial is shown in :numref:`competition
             )
 
             self.set_parameters([sim_time])
+
             # Service client for starting the competition
             self._start_competition_client = self.create_client(Trigger, '/ariac/start_competition')
+
             # Subscriber to the competition state topic
             self._competition_state_sub = self.create_subscription(
                 CompetitionStateMsg,
                 '/ariac/competition_state',
-                self.competition_state_cb,
+                self._competition_state_cb,
                 10)
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
+
             # Subscriber to the logical camera topic
             self._advanced_camera0_sub = self.create_subscription(
                 AdvancedLogicalCameraImageMsg,
                 '/ariac/sensors/advanced_camera_0/image',
-                self.advanced_camera0_cb,
+                self._advanced_camera0_cb,
                 qos_profile_sensor_data)
             # Store each camera image as an AdvancedLogicalCameraImage object
             self._camera_image: AdvancedLogicalCameraImage = None
 
         @property
         def camera_image(self):
-            '''Property for the camera images.'''
             return self._camera_image
 
-        def competition_state_cb(self, msg: CompetitionStateMsg):
+        def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
 
             Arguments:
@@ -263,7 +262,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             else:
                 self.get_logger().info('Unable to start competition')
 
-        def advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+        def _advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
             '''Callback for the topic /ariac/sensors/advanced_camera_0/image
 
             Arguments:

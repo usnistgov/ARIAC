@@ -156,7 +156,6 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
 .. code-block:: python
     :caption: competition_interface.py
     :name: competitioninterface-tutorial2
-    :emphasize-lines: 8, 57-61, 63, 65, 70-72, 74-83
     :linenos:
 
 
@@ -230,7 +229,6 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
             
         @property
         def part_count(self):
-            '''Number of parts that crossed the beam.'''
             return self._part_count
         
         def breakbeam0_cb(self, msg: BreakBeamStatusMsg):

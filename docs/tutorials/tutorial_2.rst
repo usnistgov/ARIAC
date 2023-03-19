@@ -360,7 +360,7 @@ Run the Executable
     Once the environment is loaded and the competition state is ready, the interface node running in *terminal 2* will start the competition and the sensor will start publishing data. In *terminal 1* you should see the the part count output increasing as parts on the conveyor break the sensor beam, as shown in the figure below.
 
     .. figure:: ../images/tutorial_2_image2.png
-    :align: center
+        :align: center
 
 
 Outputs

@@ -329,6 +329,7 @@ Outputs
 --------------------------------
 
 .. code-block:: console
+    :caption: terminal 1
     :class: no-copybutton
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
@@ -336,6 +337,129 @@ Outputs
     [INFO] [1679025085.587755650] [competition_interface]: Competition state is: ready
     [INFO] [1679025085.588245939] [competition_interface]: Competition is ready. Starting...
     [INFO] [1679025085.590775613] [competition_interface]: Started competition.
+
+.. code-block:: console
+    :caption: terminal 2
+    :class: no-copybutton
+    
+    [gzserver-1] [INFO] [1679262580.420282809] [task_manager]: Announcing order
+    [gzserver-1] [INFO] [1679262580.420560785] [task_manager]: 
+    [gzserver-1] =================
+    [gzserver-1] Announcing Order 2IZJP127
+    [gzserver-1] =================
+    [gzserver-1] Type: Assembly
+    [gzserver-1] Priority: 0
+    [gzserver-1]    Assembly Task
+    [gzserver-1]    ================
+    [gzserver-1]    AGV: [1,2]
+    [gzserver-1]    Station: as1
+    [gzserver-1]    ================
+    [gzserver-1]    Products: 
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [regulator,red]
+    [gzserver-1]    Assembled Pose: [0.175,-0.223,0.215][0.5,-0.5,-0.5,0.5]
+    [gzserver-1]    Assembled Direction: [0,0,-1]
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [battery,red]
+    [gzserver-1]    Assembled Pose: [-0.15,0.035,0.043][0,0,0.707107,0.707107]
+    [gzserver-1]    Assembled Direction: [0,1,0]
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [pump,red]
+    [gzserver-1]    Assembled Pose: [0.14,0,0.02][0,0,-0.707107,0.707107]
+    [gzserver-1]    Assembled Direction: [0,0,-1]
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [sensor,red]
+    [gzserver-1]    Assembled Pose: [-0.1,0.395,0.045][0,0,-0.707107,0.707107]
+    [gzserver-1]    Assembled Direction: [0,-1,0]
+    [gzserver-1] 
+    [gzserver-1] [INFO] [1679262580.421094684] [task_manager]: Announcing order
+    [gzserver-1] [INFO] [1679262580.421236972] [task_manager]: 
+    [gzserver-1] =================
+    [gzserver-1] Announcing Order 2IZJP320
+    [gzserver-1] =================
+    [gzserver-1] Type: Combined
+    [gzserver-1] Priority: 0
+    [gzserver-1]    Combined Task
+    [gzserver-1]    ================
+    [gzserver-1]    Station: as3
+    [gzserver-1]    ================
+    [gzserver-1]    Products: 
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [regulator,orange]
+    [gzserver-1]    Assembled Pose: [0.175,-0.223,0.215][0.5,-0.5,-0.5,0.5]
+    [gzserver-1]    Assembled Direction: [0,0,-1]
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [battery,orange]
+    [gzserver-1]    Assembled Pose: [-0.15,0.035,0.043][0,0,0.707107,0.707107]
+    [gzserver-1]    Assembled Direction: [0,1,0]
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [pump,orange]
+    [gzserver-1]    Assembled Pose: [0.14,0,0.02][0,0,-0.707107,0.707107]
+    [gzserver-1]    Assembled Direction: [0,0,-1]
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [sensor,orange]
+    [gzserver-1]    Assembled Pose: [-0.1,0.395,0.045][0,0,-0.707107,0.707107]
+    [gzserver-1]    Assembled Direction: [0,-1,0]
+    [gzserver-1] 
+    [gzserver-1] [INFO] [1679262580.421869143] [task_manager]: Announcing order
+    [gzserver-1] [INFO] [1679262580.421926369] [task_manager]: 
+    [gzserver-1] =================
+    [gzserver-1] Announcing Order MMB30H56
+    [gzserver-1] =================
+    [gzserver-1] Type: Kitting
+    [gzserver-1] Priority: 0
+    [gzserver-1]    Kitting Task
+    [gzserver-1]    ================
+    [gzserver-1]    AGV: 1
+    [gzserver-1]    Tray ID: 3
+    [gzserver-1]    Destination: warehouse
+    [gzserver-1]    ================
+    [gzserver-1]    Products: 
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [battery,blue]
+    [gzserver-1]    Quadrant: 3
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [pump,purple]
+    [gzserver-1]    Quadrant: 1
+    [gzserver-1] 
+    [gzserver-1] [INFO] [1679262585.260788577] [task_manager]: Announcing order
+    [gzserver-1] [INFO] [1679262585.260829987] [task_manager]: 
+    [gzserver-1] =================
+    [gzserver-1] Announcing Order MMB30H57
+    [gzserver-1] =================
+    [gzserver-1] Type: Kitting
+    [gzserver-1] Priority: 0
+    [gzserver-1]    Kitting Task
+    [gzserver-1]    ================
+    [gzserver-1]    AGV: 2
+    [gzserver-1]    Tray ID: 5
+    [gzserver-1]    Destination: warehouse
+    [gzserver-1]    ================
+    [gzserver-1]    Products: 
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [regulator,orange]
+    [gzserver-1]    Quadrant: 2
+    [gzserver-1] 
+    [gzserver-1] [INFO] [1679262593.872668975] [task_manager]: Announcing order
+    [gzserver-1] [INFO] [1679262593.872722245] [task_manager]: 
+    [gzserver-1] =================
+    [gzserver-1] Announcing Order MMB30H58
+    [gzserver-1] =================
+    [gzserver-1] Type: Kitting
+    [gzserver-1] Priority: 0
+    [gzserver-1]    Kitting Task
+    [gzserver-1]    ================
+    [gzserver-1]    AGV: 3
+    [gzserver-1]    Tray ID: 8
+    [gzserver-1]    Destination: warehouse
+    [gzserver-1]    ================
+    [gzserver-1]    Products: 
+    [gzserver-1]    ------
+    [gzserver-1]    Part: [sensor,green]
+    [gzserver-1]    Quadrant: 4
+    [gzserver-1] 
+    [gzserver-1] [INFO] [1679262593.874780073] [task_manager]: All orders have been announced.
+
 
 
 

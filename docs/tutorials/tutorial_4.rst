@@ -403,16 +403,17 @@ Code Explained
 
     - :inline-python:`self._orders_sub`: ROS subscriber to the topic ``/ariac/orders``
     - :inline-python:`_orders`: List of orders.
-    - :inline-python:`_parse_incoming_order`: Flag for for logging an order in the terminal. If the flag is set to ``True``, the order is logged in the terminal. If the flag is set to ``False``, the order is not logged in the terminal.
+    - :inline-python:`_parse_incoming_order`: Flag for for logging an order in the terminal. If the flag is set to :inline-python:`True`, the order is logged in the terminal. If the flag is set to :inline-python:`False`, the order is not logged in the terminal.
 
 
 - Instance Methods
 
     - :inline-python:`_orders_cb()`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`_orders`
-    - :inline-python:`_parse_kitting_task()`: Parses a KittingTask object and returns a string representation.
-    - :inline-python:`_parse_assembly_task()`: Parses an AssemblyTask object and returns a string representation.
-    - :inline-python:`_parse_combined_task()`: Parses a CombinedTask object and returns a string representation.
-    - :inline-python:`parse_order()`: Parses an order message and returns a string representation. This method calls the appropriate parsing method (:inline-python:`_parse_assembly_task()`, :inline-python:`_parse_kitting_task()`, or :inline-python:`_parse_combined_task()`) based on the type of the order.
+    - :inline-python:`parse_order()`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
+
+        - :inline-python:`_parse_kitting_task()`: Parses a KittingTask object and returns a string representation.
+        - :inline-python:`_parse_assembly_task()`: Parses an AssemblyTask object and returns a string representation.
+        - :inline-python:`_parse_combined_task()`: Parses a CombinedTask object and returns a string representation.
 
 
 

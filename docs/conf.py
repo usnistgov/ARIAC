@@ -21,7 +21,6 @@ extensions = [
     # External stuff
     "myst_parser",
     "sphinx_copybutton",
-    "sphinx_design"
 ]
 
 templates_path = ['_templates']

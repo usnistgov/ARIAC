@@ -131,6 +131,13 @@ To test  the sensor was correctly added to the environment, run the following co
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=ariac_tutorials
 
 
+.. admonition:: Attention
+  :class: attention
+  
+  By default, the command :bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials` uses the sensor configuration file :inline-file:`ariac_tutorials/config/sensors.yaml`. If you want to use a different sensor configuration file, you need to use the argument :bash:`sensor_config_file:=<path_to_file>`. For example, to use the sensor configuration file :inline-file:`sensors_test.yaml`, you would use the command :bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials sensor_config_file:=sensors_test.yaml`.
+
+
+
 You should see a break beam sensor on the right side of the conveyor belt, as shown in the figure.
 
 
@@ -139,11 +146,6 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
     :alt: Break beam sensor in Gazebo
 
 
-
-.. admonition:: Attention
-  :class: attention
-  
-  By default, the command :bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials` uses the sensor configuration file :inline-file:`ariac_tutorials/config/sensors.yaml`. If you want to use a different sensor configuration file, you need to use the argument :bash:`sensor_config_file:=<path_to_file>`. For example, to use the sensor configuration file :inline-file:`sensors_test.yaml`, you would use the command :bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials sensor_config_file:=sensors_test.yaml`.
 
 
 Overview of the Competition Interface

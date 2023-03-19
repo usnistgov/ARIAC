@@ -37,7 +37,7 @@ This tutorial covers the following steps:
 The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 2` is as follows:
 
 .. code-block:: text
-    :emphasize-lines: 4,5,10
+    :emphasize-lines: 4,5,11
     :class: no-copybutton
     
     ariac_tutorials
@@ -49,6 +49,7 @@ The final state of the package :inline-file:`ariac_tutorials` for :inline-tutori
     │   ├── __init__.py
     │   └── competition_interface.py
     └── nodes
+        ├── tutorial_1.py
         └── tutorial_2.py
 
 

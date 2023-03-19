@@ -6,7 +6,7 @@ project = 'ARIAC'
 copyright = 'NIST'
 author = 'Pavel'
 
-release = '0.1'
+release = '1.0'
 version = '0.1.0'
 
 
@@ -34,24 +34,16 @@ intersphinx_mapping = {
 }
 intersphinx_disabled_domains = ['std']
 
-
-
-
-
 html_theme = 'sphinx_rtd_theme'
-numfig = True
-# The name of the Pygments (syntax highlighting) style to use.
 
+# The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'tango'
 
 source_suffix = ['.rst', '.md']
-
 html_static_path = ['custom']
-
 html_css_files = [
     'css/custom.css',
 ]
-
 html_js_files = [
     'js/custom.js'
 ]
@@ -62,8 +54,9 @@ copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: 
 copybutton_prompt_is_regexp = True
 copybutton_line_continuation_character = "\\"
 copybutton_here_doc_delimiter = "EOT"
-
 copybutton_selector = "div:not(.no-copybutton) > div.highlight > pre"
+numfig = True
+
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'

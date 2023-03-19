@@ -357,7 +357,7 @@ Run the Executable
         ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
 
 
-    Once the environment is loaded and the competition state is ready, the interface node running in Terminal 2 will start the competition and the sensor will start publishing data. You should see the the part count output increasing as parts on the conveyor break the sensor beam, as shown in the figure below.
+    Once the environment is loaded and the competition state is ready, the interface node running in *terminal 2* will start the competition and the sensor will start publishing data. In *terminal 1* you should see the the part count output increasing as parts on the conveyor break the sensor beam, as shown in the figure below.
 
     .. figure:: ../images/tutorial_2_image2.png
     :align: center
@@ -367,7 +367,7 @@ Outputs
 --------------------------------
 
 
-.. code-block:: consolde
+.. code-block:: console
     :caption: Terminal outputs
     
     [INFO] [1679030246.597452729] [competition_interface]: Part Count: 0

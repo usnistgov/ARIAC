@@ -169,13 +169,13 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
             self._competition_state_sub = self.create_subscription(
                 CompetitionStateMsg,
                 '/ariac/competition_state',
-                self.competition_state_cb,
+                self._competition_state_cb,
                 10)
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
             # Subscriber to the logical camera topic
 
-        def competition_state_cb(self, msg: CompetitionStateMsg):
+        def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
 
             Arguments:

@@ -14,7 +14,7 @@
     :language: bash
 
 =========================================================
-Tutorial 6: Activate/Deativate a Gripper
+Tutorial 6: Enable/Disable a Gripper
 =========================================================
 
 .. admonition:: Source Code for Tutorial 6
@@ -553,27 +553,27 @@ Code Explained
 
 - Imports
 
-    - ``from rclpy.time import Duration``: A ``wait()`` function is implemented using the ``Duration`` class. The wait function is used to wait for a specified duration while the gripper state is being changed.
-    - ``from rclpy.qos import qos_profile_sensor_data``: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - ``from ariac_msgs.msg import VacuumGripperState``: Message type for the vacuum gripper state. 
-    - ``from ariac_msgs.srv import VacuumGripperControl``: Service type for controlling the vacuum gripper. 
+    - :inline-python:`from rclpy.time import Duration`: A :inline-python:`wait(self, duration)` method is implemented using the :inline-python:`Duration` class. The :inline-python:`wait(self, duration)` method is used to wait for a specified duration while the gripper state is being changed.
+    - :inline-python:`from rclpy.qos import qos_profile_sensor_data`: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
+    - :inline-python:`from ariac_msgs.msg import VacuumGripperState`: Message type for the vacuum gripper state. 
+    - :inline-python:`from ariac_msgs.srv import VacuumGripperControl`: Service type for controlling the vacuum gripper. 
 
 - Class Variables
 
-    - ``_gripper_states``: A dictionary for converting the ``VacuumGripperState`` constants to strings. This is used for logging the gripper state.
+    - :inline-python:`self._gripper_states`: A dictionary for converting the :inline-python:`VacuumGripperState` constants to strings. This is used for logging the gripper state.
 
 - Instance Variables
 
-    - ``_floor_robot_gripper_state_sub``: Subscriber to the floor robot gripper state topic.
-    - ``_floor_gripper_enable``: Service client for turning on/off the vacuum gripper on the floor robot.
-    - ``_floor_robot_gripper_state``: Attribute to store the current state of the floor robot gripper.
+    - :inline-python:`self._floor_robot_gripper_state_sub`: Subscriber to the floor robot gripper state topic.
+    - :inline-python:`self._floor_gripper_enable`: Service client for turning on/off the vacuum gripper on the floor robot.
+    - :inline-python:`self._floor_robot_gripper_state`: Attribute to store the current state of the floor robot gripper.
 
 
 - Instance Methods
 
-    - ``_floor_robot_gripper_state_cb(self, msg: VacuumGripperState)``: Callback for the topic ``/ariac/floor_robot_gripper_state``. This is used to store the current state of the floor robot gripper.
-    - ``set_floor_robot_gripper_state(self, state)``: Function to set the gripper state of the floor robot. This function calls the ROS service to change the gripper state.
-    - ``wait(self, duration)``: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
+    - :inline-python:`_floor_robot_gripper_state_cb(self, msg: VacuumGripperState)`: Callback for the topic ``/ariac/floor_robot_gripper_state``. This is used to store the current state of the floor robot gripper.
+    - :inline-python:`set_floor_robot_gripper_state(self, state)`: Function to set the gripper state of the floor robot. This function calls the ROS service to change the gripper state.
+    - :inline-python:`wait(self, duration)`: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
 
 
 Create the Executable

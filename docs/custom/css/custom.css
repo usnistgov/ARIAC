@@ -25,7 +25,7 @@
     background-color: #fbfbfb !important;
 }
 
-.tutorial {
+.inline-tutorial {
     color: #0d7b1a !important;
     font-style: oblique;
     font-weight: lighter;
@@ -33,7 +33,7 @@
     background-color: #fbfbfb !important;
 }
 
-code.emphasize-lines {
+.emphasize-lines {
     background-color: #f9a04d !important;
 }
 

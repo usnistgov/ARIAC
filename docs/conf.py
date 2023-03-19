@@ -18,7 +18,13 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
     'sphinx.ext.autosectionlabel',
+    # External stuff
+    "myst_parser",
+    "sphinx_copybutton",
+    "sphinx-design"
 ]
+
+templates_path = ['_templates']
 
 # Make sure the target is unique
 autosectionlabel_prefix_document = True
@@ -29,9 +35,12 @@ intersphinx_mapping = {
 }
 intersphinx_disabled_domains = ['std']
 
-templates_path = ['_templates']
 
 
+# -- Options for TODOs -------------------------------------------------------
+#
+
+todo_include_todos = True
 
 # -- Options for HTML output
 

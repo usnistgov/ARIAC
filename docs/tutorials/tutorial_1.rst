@@ -54,7 +54,7 @@ Overview of CMakelists.txt
     :emphasize-lines: 19
     
     cmake_minimum_required(VERSION 3.8)
-    project(competition_tutorials)
+    project(ariac_tutorials)
 
     if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
@@ -93,7 +93,7 @@ Overview of package.xml
     <?xml version="1.0"?>
     <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
     <package format="3">
-    <name>competition_tutorials</name>
+    <name>ariac_tutorials</name>
     <version>0.0.0</version>
     <description>ROS2 pkg for ARIAC tutorials</description>
     <maintainer email="{your_email}">{your name}</maintainer>
@@ -258,7 +258,7 @@ Overview of the Executable
     #!/usr/bin/env python3
 
     import rclpy
-    from competition_tutorials.competition_interface import CompetitionInterface
+    from ariac_tutorials.competition_interface import CompetitionInterface
 
     def main(args=None):
         rclpy.init(args=args)
@@ -277,7 +277,7 @@ Code Explained
 
 - Imports:
 
-    - :inline-python:`from competition_tutorials.competition_interface import CompetitionInterface` imports the :inline-python:`CompetitionInterface` class from the :inline-file:`competition_interface.py` file.
+    - :inline-python:`from ariac_tutorials.competition_interface import CompetitionInterface` imports the :inline-python:`CompetitionInterface` class from the :inline-file:`competition_interface.py` file.
 
 - :inline-python:`main()`:
     
@@ -318,7 +318,7 @@ Run the Executable
 
         cd ~/ariac_ws
         . install/setup.bash
-        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
+        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
 
 
     This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. 

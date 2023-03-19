@@ -132,7 +132,7 @@ To test  the sensor was correctly added to the environment, run the following co
 
 
 .. admonition:: Attention
-  :class: attention
+  :class: warning
   
   By default, the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials` uses the sensor configuration file :inline-file:`ariac_tutorials/config/sensors.yaml`. If you want to use a different sensor configuration file, you need to use the argument :inline-bash:`sensor_config:={name_of_sensor_config}`. For example, to use the sensor configuration file :inline-file:`sensors_test.yaml`, you would use the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials sensor_config:=sensors_test`.
 

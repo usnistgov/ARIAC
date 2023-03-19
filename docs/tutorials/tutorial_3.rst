@@ -38,7 +38,7 @@ This tutorial covers the following topics:
 The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 3` is as follows:
 
 .. code-block:: text
-    :emphasize-lines: 8, 10
+    :emphasize-lines: 8, 11
     :class: no-copybutton
     
     ariac_tutorials
@@ -426,7 +426,8 @@ Outputs
 
 
 .. code-block:: console
-    :caption: Outputs
+    :caption: Terminal outputs
+    :class: no-copybutton
     
     ==========================
     Part 1: 🟪 Purple Pump

@@ -18,6 +18,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
     'sphinx.ext.autosectionlabel',
+    'sphinx.ext.todo',
     # External stuff
     "myst_parser",
     "sphinx_copybutton",

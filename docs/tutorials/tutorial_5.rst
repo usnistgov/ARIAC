@@ -531,7 +531,7 @@ This executable does the following:
     - Start the competition.
     - Iterate through the list of orders and retrieve orders with assembly tasks.
 
-        - See `Tutorial 4`_ for more information on retrieving orders.
+        - See :ref:`Tutorial 4 <Tutorial 4>` for more information on retrieving orders.
 
     - Retrieve AGVs for the assembly tasks.
     - Lock the tray of the AGVs.

@@ -9,7 +9,7 @@ author = 'Pavel'
 release = '0.1'
 version = '0.1.0'
 
-# pip install sphinx-copybutton
+numfig = True
 
 # -- General configuration
 
@@ -54,7 +54,7 @@ html_js_files = [
     'js/custom.js'
 ]
 
-numfig = True
+
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'

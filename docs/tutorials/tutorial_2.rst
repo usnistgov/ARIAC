@@ -86,7 +86,7 @@ To allow for the competition software to be able to find the sensor configuratio
 To do this, add the following lines to the :inline-file:`CMakeLists.txt` file in the :inline-file:`ariac_tutorials` package.
 
 .. code-block:: cmake
-    :emphasize-lines: 15-18, 25
+    :emphasize-lines: 15-18, 26
 
     cmake_minimum_required(VERSION 3.8)
     project(ariac_tutorials)
@@ -112,6 +112,7 @@ To do this, add the following lines to the :inline-file:`CMakeLists.txt` file in
 
     # Install Python executables
     install(PROGRAMS
+    nodes/tutorial_1.py
     nodes/tutorial_2.py
     DESTINATION lib/${PROJECT_NAME}
     )
@@ -129,7 +130,7 @@ To test  the sensor was correctly added to the environment, run the following co
   cd ~/ariac_ws
   colcon build
   . install/setup.bash
-  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=ariac_tutorials
+  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials
 
 
 .. admonition:: Attention
@@ -301,13 +302,13 @@ Code Explained
         - :inline-python:`BreakBeamStatus`: ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ ).
     - :inline-python:`from rclpy.qos import qos_profile_sensor_data`: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
 
-- Class Variables
+- Intance Variables
 
     - :inline-python:`_break_beam0_sub`: Subscriber to the break beam status topic. 
     - :inline-python:`_conveyor_part_count`: Variable to store the number of parts on the conveyor belt that cross the beam.
     - :inline-python:`_object_detected`: Variable to store whether the beam is broken.
 
-- Class Methods
+- Instance Methods
 
     - :inline-python:`_breakbeam0_cb()`: Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
     

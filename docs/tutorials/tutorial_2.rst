@@ -125,13 +125,13 @@ To test  the sensor was correctly added to the environment, run the following co
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
 
 
-You should see a break beam sensor on the right side of the conveyor belt, as shown in :numref:`target to image`
+You should see a break beam sensor on the right side of the conveyor belt, as shown in :numref:`my-custom-label`.
 
-.. _target to image:
 
-.. figure:: ../images/tutorial_2_image1.png
-   :align: center
-   :alt: Break beam sensor in Gazebo
+.. figure:: ../images/tutorial_2_image1.png.*
+    :name: my-custom-label
+    :align: center
+    :alt: Break beam sensor in Gazebo
 
     
 
@@ -286,7 +286,7 @@ The competition interface for **tutorial 2** is shown in :numref:`competitionint
    the body of the sidebar, and are
    interpreted as body elements.
 
-   
+
 
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^

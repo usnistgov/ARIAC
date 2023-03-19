@@ -9,7 +9,7 @@ author = 'Pavel'
 release = '0.1'
 version = '0.1.0'
 
-numfig = True
+
 
 # -- General configuration
 
@@ -38,6 +38,7 @@ templates_path = ['_templates']
 # copybutton_selector = "div:not(.no-copybutton) > div.highlight > pre"
 
 html_theme = 'sphinx_rtd_theme'
+numfig = True
 # The name of the Pygments (syntax highlighting) style to use.
 
 pygments_style = 'tango'

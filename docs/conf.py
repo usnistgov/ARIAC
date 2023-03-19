@@ -35,23 +35,8 @@ intersphinx_mapping = {
 intersphinx_disabled_domains = ['std']
 
 
-# -- Options for copy button -------------------------------------------------------
-#
-copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
-copybutton_prompt_is_regexp = True
-copybutton_line_continuation_character = "\\"
-copybutton_here_doc_delimiter = "EOT"
 
-copybutton_selector = "div:not(.no-copybutton) > div.highlight > pre"
 
-# -- Options for TODOs -------------------------------------------------------
-#
-
-todo_include_todos = True
-
-# -- Options for HTML output
-
-# copybutton_selector = "div:not(.no-copybutton) > div.highlight > pre"
 
 html_theme = 'sphinx_rtd_theme'
 numfig = True
@@ -71,7 +56,14 @@ html_js_files = [
     'js/custom.js'
 ]
 
+# -- Options for copy button -------------------------------------------------------
+#
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+copybutton_line_continuation_character = "\\"
+copybutton_here_doc_delimiter = "EOT"
 
+copybutton_selector = "div:not(.no-copybutton) > div.highlight > pre"
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'

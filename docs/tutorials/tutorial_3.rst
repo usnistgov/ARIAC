@@ -8,6 +8,11 @@
 
 .. role:: inline-file(file)
 
+.. role:: inline-tutorial(file)
+
+.. role:: inline-bash(code)
+    :language: bash
+
 =========================================================
 Tutorial 3: Reading Data from an Advanced Logical Camera
 =========================================================
@@ -30,21 +35,23 @@ This tutorial covers the following topics:
   - Store the data internally as an instance of a class,
   - Display the stored data on the standard output.
 
-The package ``competition_tutorials`` is expected to have the following structure for tutorial 3:
+The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 3` is as follows:
 
-.. code-block:: bash
+.. code-block:: text
+    :emphasize-lines: 8, 10
+    :class: no-copybutton
     
-    competition_tutorials
-    ├── CMakeLists.txt                  (updated)
+    ariac_tutorials
+    ├── CMakeLists.txt
     ├── package.xml
-    ├── competition_tutorials
+    ├── config
+    │   └── sensors.yaml
+    ├── ariac_tutorials
     │   ├── __init__.py
+    │   ├── utils.py
     │   └── competition_interface.py
-    └── src
-        ├── start_competition.py        (from tutorial 1)
-        ├── read_break_beam_sensor.py   (from tutorial 2)
-        └── read_advanced_camera.py     (new)
-
+    └── nodes
+        └── tutorial_3.py
 
 Sensor Configuration File
 -----------------------------------
@@ -85,7 +92,7 @@ To test  the camera was correctly added to the environment, run the following co
   cd ~/ariac_ws
   colcon build
   . install/setup.bash
-  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=competition_tutorials
+  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials
 
 
 You should see the camera above bins 1-4 as shown in the figure below.
@@ -108,32 +115,28 @@ The competition interface used in this tutorial is shown in :numref:`competition
     :emphasize-lines: 2, 3, 5, 7, 11-14, 19-26, 39-46, 48-55, 57-63, 99-103, 106, 109-111, 159-167, 169-205, 207-252
     :linenos:
 
+    #!/usr/bin/env python3
+
     import rclpy
-    import PyKDL
-    from dataclasses import dataclass
     from rclpy.node import Node
     from rclpy.qos import qos_profile_sensor_data
     from rclpy.parameter import Parameter
     from geometry_msgs.msg import Pose
 
     from ariac_msgs.msg import (
-        CompetitionState,
-        Part,
+        CompetitionState as CompetitionStateMsg,
+        Part as PartMsg,
         AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
-        PartPose as PartPoseMsg,
-        KitTrayPose as KitTrayPoseMsg,
+        PartPose as PartPoseMsg
     )
 
     from std_srvs.srv import Trigger
 
-    @dataclass
-    class AdvancedLogicalCameraImage:
-    '''
-    Class to store information about a AdvancedLogicalCameraImageMsg.
-    '''
-        _part_poses: PartPoseMsg
-        _tray_poses: KitTrayPoseMsg
-        _sensor_pose: Pose
+    from ariac_tutorials.utils import (
+        multiply_pose,
+        AdvancedLogicalCameraImage
+    )
+
 
     class CompetitionInterface(Node):
         '''
@@ -153,7 +156,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.ORANGE: 'orange',
             PartMsg.PURPLE: 'purple',
         }
-        '''Dictionary for converting part colors int to strings'''
 
         _part_colors_emoji = {
             PartMsg.RED: '🟥',
@@ -162,7 +164,8 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.ORANGE: '🟧',
             PartMsg.PURPLE: '🟪',
         }
-        '''Dictionary for converting part colors int to emoji'''
+
+        '''Dictionary for converting PartColor constants to strings'''
 
         _part_types = {
             PartMsg.BATTERY: 'battery',
@@ -170,7 +173,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             PartMsg.REGULATOR: 'regulator',
             PartMsg.SENSOR: 'sensor',
         }
-        '''Dictionary for converting part types int  to strings'''
+        '''Dictionary for converting PartType constants to strings'''
 
         _competition_states = {
             CompetitionStateMsg.IDLE: 'idle',
@@ -179,7 +182,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             CompetitionStateMsg.ORDER_ANNOUNCEMENTS_DONE: 'order_announcements_done',
             CompetitionStateMsg.ENDED: 'ended',
         }
-        '''Dictionary for converting competition states int to strings'''
+        '''Dictionary for converting CompetitionState constants to strings'''
 
         def __init__(self):
             super().__init__('competition_interface')
@@ -191,46 +194,40 @@ The competition interface used in this tutorial is shown in :numref:`competition
             )
 
             self.set_parameters([sim_time])
-
             # Service client for starting the competition
             self._start_competition_client = self.create_client(Trigger, '/ariac/start_competition')
-
             # Subscriber to the competition state topic
             self._competition_state_sub = self.create_subscription(
                 CompetitionStateMsg,
                 '/ariac/competition_state',
                 self.competition_state_cb,
                 10)
-
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
-
             # Subscriber to the logical camera topic
             self._advanced_camera0_sub = self.create_subscription(
                 AdvancedLogicalCameraImageMsg,
                 '/ariac/sensors/advanced_camera_0/image',
                 self.advanced_camera0_cb,
                 qos_profile_sensor_data)
-
             # Store each camera image as an AdvancedLogicalCameraImage object
             self._camera_image: AdvancedLogicalCameraImage = None
 
         @property
         def camera_image(self):
-            '''Store one camera message as an object of AdvancedLogicalCameraImage.'''
+            '''Property for the camera images.'''
             return self._camera_image
 
         def competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
 
             Arguments:
-                msg -- CompetitionStateMsg message
+                msg -- CompetitionState message
             '''
             # Log if competition state has changed
             if self._competition_state != msg.competition_state:
                 self.get_logger().info(
-                    f'Competition state is: \
-                    {CompetitionInterface._competition_states[msg.competition_state]}',
+                    f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
                     throttle_duration_sec=1.0)
             self._competition_state = msg.competition_state
 
@@ -270,64 +267,22 @@ The competition interface used in this tutorial is shown in :numref:`competition
             '''Callback for the topic /ariac/sensors/advanced_camera_0/image
 
             Arguments:
-                msg -- AdvancedLogicalCameraImageMsg message
+                msg -- AdvancedLogicalCameraImage message
             '''
             self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
                                                             msg.tray_poses,
                                                             msg.sensor_pose)
 
-        def multiply_pose(self, pose1: Pose, pose2: Pose):
-            '''
-            Use KDL to multiply two poses together.
-
-            Args:
-                pose1 (Pose): Pose of the first frame
-                pose2 (Pose): Pose of the second frame
-
-            Returns:
-                Pose: Pose of the resulting frame
-            '''
-
-            frame1 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose1.orientation.x,
-                                                        pose1.orientation.y,
-                                                        pose1.orientation.z,
-                                                        pose1.orientation.w),
-                                PyKDL.Vector(pose1.position.x, pose1.position.y, pose1.position.z))
-
-            frame2 = PyKDL.Frame(PyKDL.Rotation.Quaternion(pose2.orientation.x,
-                                                        pose2.orientation.y,
-                                                        pose2.orientation.z,
-                                                        pose2.orientation.w),
-                                PyKDL.Vector(pose2.position.x, pose2.position.y, pose2.position.z))
-
-            frame3: PyKDL.Frame = frame1 * frame2
-
-            tf2 = Pose()
-            tf2.position.x = frame3.p.x()
-            tf2.position.y = frame3.p.y()
-            tf2.position.z = frame3.p.z()
-            tf2.orientation.x = frame3.M.GetQuaternion()[0]
-            tf2.orientation.y = frame3.M.GetQuaternion()[1]
-            tf2.orientation.z = frame3.M.GetQuaternion()[2]
-            tf2.orientation.w = frame3.M.GetQuaternion()[3]
-
-            # return the resulting pose from frame3
-            return tf2
-
         def parse_advanced_camera_image(self):
             '''
             Parse an AdvancedLogicalCameraImage message and return a string representation.
-
-
-            Args:
-                image (AdvancedLogicalCameraImage): Object of type AdvancedLogicalCameraImage
             '''
             output = '\n\n==========================\n'
 
             sensor_pose: Pose = self._camera_image._sensor_pose
 
             part_pose: PartPoseMsg
-            
+
             counter = 1
             for part_pose in self._camera_image._part_poses:
                 part_color = CompetitionInterface._part_colors[part_pose.part.color].capitalize()
@@ -347,7 +302,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 output += '==========================\n'
                 output += 'World Frame\n'
                 output += '==========================\n'
-                part_world_pose = self.multiply_pose(sensor_pose, part_pose.pose)
+                part_world_pose = multiply_pose(sensor_pose, part_pose.pose)
                 position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
                 orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
 
@@ -356,58 +311,53 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 output += '\tOrientation:\n'
                 output += f'\t\t{orientation}\n'
                 output += '==========================\n'
-                
+
                 counter += 1
 
             return output
 
 
+Code Explained
+^^^^^^^^^^^^^^^^^^^^^^^
 
-The content of the interface is described as follows:
+- Imports
 
-    - ``AdvancedLogicalCameraImage`` class: This class stores a message from  ``/ariac/sensors/advanced_camera_0/image``. 
+    - :inline-python:`ariac_msgs.msg`: Messages from the package :inline-file:`ariac_msgs`.
+    - :inline-python:`ariac_tutorials.utils`: Module which contains reusable functions and classes.
+  
+- Class Variables
 
-        - The class attribute ``_part_poses`` is a list of ``PartPose`` objects that contain the part type, color, and pose. 
-        - The class attribute ``_tray_poses`` is a list of ``TrayPose`` objects that contain the tray type and pose. 
-        - The class attribute ``_sensor_pose`` is a ``Pose`` object that contains the pose of the camera sensor.
-    - ``_part_colors`` and ``_part_types`` are dictionaries that map the integer values of the part color and type to their string representations. ``_part_colors_emoji`` is a dictionary that maps the integer values of the part color to their emoji representations. These dictionaries are mainly used to display the part color and type in a human-readable format.
-    - ``__init__()``: This method initializes the node and the subscriber to the camera topic. It also initializes the class attribute ``_camera_image`` to an instance of ``AdvancedLogicalCameraImage``.
-    - ``advanced_camera0_cb()``: This method is the callback function for the subscriber to the camera topic. It stores the message received on the topic in the class attribute ``_camera_image``.
-    - ``multiply_pose()``: This method multiplies two poses and returns the resulting pose. This method is used to convert the pose of the part in the camera frame to the world frame.
-    - ``parse_advanced_camera_image()``: This method parses the message stored in the class attribute ``_camera_image`` and returns a string representation of the message. This method is used to display the part color, type, and pose in a human-readable format. The output is printed in the following format:
+    - :inline-python:`_part_colors` and :inline-python:`_part_types` are dictionaries that map the integer values of the part color and type to their string representations. :inline-python:`_part_colors_emoji` is a dictionary that maps the integer values of the part color to their emoji representations. These dictionaries are mainly used to display the part color and type in a human-readable format.
 
-        - Emoji for the part color using the class attribute ``part_colors_emoji_``.
-        - Part color using the class attribute ``part_colors_``.
-        - Part type using the class attribute ``part_types_``.
+- Instance Variables
+
+    - :inline-python:`_camera_image` is an object of the class :inline-python:`AdvancedLogicalCameraImage` that stores the latest message published on the camera topic.
+
+- Instance Methods
+
+    - :inline-python:`advanced_camera0_cb()`: Callback for the camera topic which stores the latest published message in  :inline-python:`_camera_image`.
+    - :inline-python:`parse_advanced_camera_image()` parses the message stored in :inline-python:`_camera_image` and returns a string representation of the message. This method is used to display the part color, type, and pose in a human-readable format. The output is printed in the following format:
+    
+        - Emoji for the part color using the class attribute :inline-python:`part_colors_emoji_`.
+        - Part color using the class attribute :inline-python:`part_colors_`.
+        - Part type using the class attribute :inline-python:`part_types_`.
         - Part pose in the camera frame: This is the pose returned by the camera.
-        - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method ``multiply_pose`` (see  :numref:`multiply-pose`).
+        - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method :inline-python:`multiply_pose()`.
 
 
 
 
 
-Create the Executable
+Overview of the Executable
 --------------------------------
 
-To test this tutorial, create a new file ``read_advanced_camera.py`` in ``competition_tutorials/src``:
-
-.. code-block:: bash
-
-    cd ~/ariac_ws/src/competition_tutorials/src
-    touch read_advanced_camera.py
-    chmod +x read_advanced_camera.py
-
-
-Copy the following code in the file ``read_advanced_camera.py``:
-
-
 .. code-block:: python
-    :caption: read_advanced_camera.py
+    :caption: tutorial_3.py
     
     #!/usr/bin/env python3
 
     import rclpy
-    from competition_tutorials.competition_interface import CompetitionInterface
+    from ariac_tutorials.competition_interface import CompetitionInterface
 
 
     def main(args=None):
@@ -432,59 +382,52 @@ Copy the following code in the file ``read_advanced_camera.py``:
     main()
 
 
+Code Explained
+^^^^^^^^^^^^^^^^^^^^^^^
 
-This executable creates an instance of the interface, starts the competition and logs the content of ``_camera_image`` every 2 seconds.
+This executable does the following:
 
-Update CMakelists.txt
-^^^^^^^^^^^^^^^^^^^^^^
+    - Creates an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Starts the competition.
+    - Logs the content of :inline-python:`_camera_image` every 2 seconds.
 
-Update ``CMakeLists.txt`` to add ``read_advanced_camera.py`` as an executable.
-
-.. code-block:: cmake
-
-  # Install Python executables
-  install(PROGRAMS
-    src/start_competition.py
-    src/read_break_beam_sensor.py
-    src/read_advanced_camera.py
-    DESTINATION lib/${PROJECT_NAME}
-  )
 
 
 Run the Executable
 --------------------------------
 
-Next, build the package and run the executable.
+- In *terminal 1*, run the following commands:
 
 
-.. code-block:: bash
-    :caption: Terminal 1
+    .. code-block:: bash
 
-    cd ~/ariac_ws
-    colcon build
-    . install/setup.bash
-    ros2 run competition_tutorials read_advanced_camera.py
-
-
-The node will wait until the competition is ready. In a second terminal, run the following:
-
-.. code-block:: bash
-    :caption: Terminal 2
-
-    cd ~/ariac_ws
-    . install/setup.bash
-    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
+        cd ~/ariac_ws
+        colcon build
+        . install/setup.bash
+        ros2 run ariac_tutorials tutorial_3.py
 
 
-Once the environment is loaded and the competition state is ready, the interface node running in Terminal 1 will start the competition and the sensor will start publishing data.
-Each part detected by the camera will be logged to the terminal.
+    The node will wait until the competition is ready. In a second terminal, run the following:
+
+
+- In *terminal 2*, run the following commands:
+
+    .. code-block:: bash
+
+        cd ~/ariac_ws
+        . install/setup.bash
+        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
+
+
+    Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition and the sensor will start publishing data.
+    Each part detected by the camera will be logged to the terminal.
 
 Outputs
 --------------------------------
 
 
-.. code-block:: bash
-    :caption: Terminal outputs
+.. code-block:: console
+    :caption: Outputs
     
     ==========================
     Part 1: 🟪 Purple Pump

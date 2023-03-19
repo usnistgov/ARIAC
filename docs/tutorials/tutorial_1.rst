@@ -122,6 +122,8 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
     :caption: competition_interface.py
     :name: competitioninterface-tutorial1
     
+    #!/usr/bin/env python3
+
     import rclpy
     from rclpy.node import Node
     from rclpy.parameter import Parameter
@@ -219,6 +221,7 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
                 self.get_logger().info('Started competition.')
             else:
                 self.get_logger().info('Unable to start competition')
+
 
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^

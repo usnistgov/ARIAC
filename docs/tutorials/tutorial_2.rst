@@ -160,6 +160,8 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
     :linenos:
 
 
+    #!/usr/bin/env python3
+
     import rclpy
     from rclpy.node import Node
     from rclpy.qos import qos_profile_sensor_data
@@ -226,8 +228,6 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
             # Store whether the beam is broken
             self._object_detected = False
             
-            
-
         @property
         def part_count(self):
             '''Number of parts that crossed the beam.'''
@@ -288,6 +288,10 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
                 self.get_logger().info('Started competition.')
             else:
                 self.get_logger().info('Unable to start competition')
+
+
+        
+
 
 
 Code Explained

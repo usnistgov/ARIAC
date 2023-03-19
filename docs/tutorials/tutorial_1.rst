@@ -233,7 +233,7 @@ Code Explained
 
 - Class Variables
 
-    -  :inline-python:`self._competition_states`: A dictionary for converting CompetitionState constants to strings for logging purposes.
+    -  :inline-python:`self._competition_states`: A dictionary used for logging purposes.
 
 - Instance Variables
 
@@ -241,7 +241,7 @@ Code Explained
     - :inline-python:`self._competition_state_sub` is a subscriber for the topic ``/ariac/competition_state``.
     - :inline-python:`self._competition_state` is a variable to store the current competition state.
 
-- Class Methods
+- Instance Methods
 
     - :inline-python:`_competition_state_cb()`: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable :inline-python:`self._competition_state`.
     - :inline-python:`start_competition()`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`self._competition_state` and then calls the service ``/ariac/start_competition`` through the client :inline-python:`self._start_competition_client`.

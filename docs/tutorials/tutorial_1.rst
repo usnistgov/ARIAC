@@ -121,8 +121,6 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
 .. code-block:: python
     :caption: competition_interface.py
     :name: competitioninterface-tutorial1
-    
-    #!/usr/bin/env python3
 
     import rclpy
     from rclpy.node import Node

@@ -158,9 +158,6 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
     :name: competitioninterface-tutorial2
     :linenos:
 
-
-    #!/usr/bin/env python3
-
     import rclpy
     from rclpy.node import Node
     from rclpy.qos import qos_profile_sensor_data

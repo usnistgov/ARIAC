@@ -72,8 +72,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
     :name: competitioninterface-tutorial5
     :linenos:
 
-    #!/usr/bin/env python3
-
     import rclpy
     from rclpy.node import Node
     from rclpy.parameter import Parameter

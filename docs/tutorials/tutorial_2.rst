@@ -279,7 +279,14 @@ The competition interface for **tutorial 2** is shown in :numref:`competitionint
 
 
     
+.. sidebar:: Optional Sidebar Title
+   :subtitle: Optional Sidebar Subtitle
 
+   Subsequent indented lines comprise
+   the body of the sidebar, and are
+   interpreted as body elements.
+
+   
 
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -287,17 +294,17 @@ Code Explained
 - Imports
 
     - :inline-python:`from rclpy.qos import qos_profile_sensor_data`: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - ``from ariac_msgs.msg import BreakBeamStatus as BreakBeamStatusMsg``: ROS message for the break beam status, used to subscribe to the break beam status topic.
+    - :inline-python:`from ariac_msgs.msg import BreakBeamStatus as BreakBeamStatusMsg`: ROS message for the break beam status, used to subscribe to the break beam status topic.
   
 - Class Variables
 
-    - ``_break_beam0_sub``: Subscriber to the break beam status topic. 
-    - ``_part_count``: Variable to store the number of parts that crossed the beam.
-    - ``_object_detected``: Variable to store whether the beam is broken.
+    - :inline-python:`_break_beam0_sub`: Subscriber to the break beam status topic. 
+    - :inline-python:`_part_count`: Variable to store the number of parts that crossed the beam.
+    - :inline-python:`_object_detected`: Variable to store whether the beam is broken.
 
 - Class Methods
 
-    - ``breakbeam0_cb()``: Callback function for the break beam status topic. It increments the variable ``_part_count`` if the beam is broken and the variable ``_object_detected`` is ``False``. It also sets the variable ``_object_detected`` to ``True`` if the beam is broken.
+    - :inline-python:`breakbeam0_cb()`: Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
     
 
 Create the Executable

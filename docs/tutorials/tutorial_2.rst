@@ -200,46 +200,47 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
             )
 
             self.set_parameters([sim_time])
-            
+
             # Service client for starting the competition
             self._start_competition_client = self.create_client(Trigger, '/ariac/start_competition')
-            
+
             # Subscriber to the competition state topic
             self._competition_state_sub = self.create_subscription(
                 CompetitionStateMsg,
                 '/ariac/competition_state',
-                self.competition_state_cb,
+                self._competition_state_cb,
                 10)
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
-            
+
             # Subscriber to the break beam status topic
             self._break_beam0_sub = self.create_subscription(
                 BreakBeamStatusMsg,
                 '/ariac/sensors/breakbeam_0/status',
-                self.breakbeam0_cb,
+                self._breakbeam0_cb,
                 qos_profile_sensor_data)
             # Store the number of parts that crossed the beam
-            self._part_count = 0
+            self._conveyor_part_count = 0
             # Store whether the beam is broken
             self._object_detected = False
-            
+
         @property
-        def part_count(self):
-            return self._part_count
-        
-        def breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+        def conveyor_part_count(self):
+            '''Number of parts that crossed the beam.'''
+            return self._conveyor_part_count
+
+        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
             '''Callback for the topic /ariac/sensors/breakbeam_0/status
 
             Arguments:
                 msg -- BreakBeamStatusMsg message
             '''
             if not self._object_detected and msg.object_detected:
-                self._part_count += 1
+                self._conveyor_part_count += 1
 
             self._object_detected = msg.object_detected
 
-        def competition_state_cb(self, msg: CompetitionStateMsg):
+        def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
 
             Arguments:
@@ -285,27 +286,29 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
                 self.get_logger().info('Unable to start competition')
 
 
+
         
 
 
 
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
+- Imports:
 
-- Imports
+    - :inline-python:`ariac_msgs.msg`: The ROS2 message API for the ARIAC messages.
 
+        - :inline-python:`BreakBeamStatus`: ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ ).
     - :inline-python:`from rclpy.qos import qos_profile_sensor_data`: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - :inline-python:`from ariac_msgs.msg import BreakBeamStatus as BreakBeamStatusMsg`: ROS message for the break beam status, used to subscribe to the break beam status topic.
-  
+
 - Class Variables
 
     - :inline-python:`_break_beam0_sub`: Subscriber to the break beam status topic. 
-    - :inline-python:`_part_count`: Variable to store the number of parts that crossed the beam.
+    - :inline-python:`_conveyor_part_count`: Variable to store the number of parts on the conveyor belt that cross the beam.
     - :inline-python:`_object_detected`: Variable to store whether the beam is broken.
 
 - Class Methods
 
-    - :inline-python:`breakbeam0_cb()`: Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
+    - :inline-python:`_breakbeam0_cb()`: Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
     
 
 Overview of the Executable
@@ -327,7 +330,7 @@ Overview of the Executable
         while rclpy.ok():
             try:
                 rclpy.spin_once(interface)
-                interface.get_logger().info(f'Part Count: {interface.part_count}', throttle_duration_sec=2.0)
+                interface.get_logger().info(f'Part Count: {interface.conveyor_part_count}', throttle_duration_sec=2.0)
             except KeyboardInterrupt:
                 break
 
@@ -340,7 +343,7 @@ Overview of the Executable
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
- This executable creates an instance of the interface, starts the competition and logs the :inline-python:`part_count` variable every 2 seconds. 
+ This executable creates an instance of the interface, starts the competition and logs the :inline-python:`conveyor_part_count` variable every 2 seconds. 
 
 
 Run the Executable
@@ -380,7 +383,7 @@ Outputs
 
 .. code-block:: console
     :class: no-copybutton
-    :caption: Terminal outputs
+    :caption: Outputs:  *terminal 1*
     
     [INFO] [1679030246.597452729] [competition_interface]: Part Count: 0
     [INFO] [1679030248.597506278] [competition_interface]: Part Count: 0

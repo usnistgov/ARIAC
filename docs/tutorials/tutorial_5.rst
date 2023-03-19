@@ -527,9 +527,11 @@ Code Explained
 
 This executable does the following:
 
+    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Start the competition.
     - Iterate through the list of orders and retrieve orders with assembly tasks.
 
-        - See `Tutorial 4 <TUTORIAL_4>`_ for more information on retrieving orders.
+        - See `Tutorial 4`_ for more information on retrieving orders.
 
     - Retrieve AGVs for the assembly tasks.
     - Lock the tray of the AGVs.

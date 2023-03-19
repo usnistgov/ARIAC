@@ -531,11 +531,13 @@ This executable does the following:
     - Start the competition.
     - Iterate through the list of orders and retrieve orders with assembly tasks.
 
-        - See :ref:`Tutorial 4 <Tutorial 4>` for more information on retrieving orders.
+        - **Note**: See :ref:`Tutorial 4 <Tutorial 4>` for more information on retrieving orders.
 
     - Retrieve AGVs for the assembly tasks.
-    - Lock the tray of the AGVs.
-    - Move the AGVs to the assembly station.
+    - For each AGV:
+    
+        - Lock the tray of the AGVs.
+        - Move the AGVs to the assembly station.
 
 
 The for loop in the ``main`` function iterates through the orders, retrieves orders with assembly tasks, retrieves AGVs for the assembly tasks, locks the tray of the AGVs and moves them to the assembly station. The ``lock_agv_tray`` and ``move_agv_to_station`` methods are defined in the ``CompetitionInterface`` class.

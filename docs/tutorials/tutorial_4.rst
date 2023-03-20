@@ -18,28 +18,34 @@
 Tutorial 4: Read an Order
 =========================================================
 
-.. admonition:: Source Code for Tutorial 4
+.. admonition:: Tutorial 4
   :class: attention
   :name: tutorial_4
-  
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4>`_ 
 
-  .. code-block:: bash
-    
-        cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_4
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4>`_ 
+  - **Switch Branch**:
+
+    .. code-block:: bash
+        
+            cd ~/ariac_ws/ariac_tutorials
+            git checkout tutorial_4
 
 
-This tutorial covers the following steps:
+This tutorial shows how to read each order published by the ARIAC manager. The following steps are performed:
 
   - Receive order messages, 
   - Store each order internally as an instance of a class,
   - Display each order on the standard output.
 
-The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 4` is as follows:
+Package Structure
+--------------------------------------------
+
+Updates and additions that are specific to :inline-tutorial:`tutorial 3`  are highlighted in the tree below.
+
 
 .. code-block:: text
-    :emphasize-lines: 11
+    :emphasize-lines: 2, 9, 14
     :class: no-copybutton
     
     ariac_tutorials
@@ -52,15 +58,58 @@ The final state of the package :inline-file:`ariac_tutorials` for :inline-tutori
     │   ├── utils.py
     │   └── competition_interface.py
     └── nodes
+        ├── tutorial_1.py
+        ├── tutorial_2.py
+        ├── tutorial_3.py
         └── tutorial_4.py
 
+
+CMakelists.txt
+--------------------------------------------
+
+.. code-block:: cmake
+    :emphasize-lines: 29
+
+    cmake_minimum_required(VERSION 3.8)
+    project(ariac_tutorials)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    find_package(ament_cmake REQUIRED)
+    find_package(ament_cmake_python REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(rclpy REQUIRED)
+    find_package(ariac_msgs REQUIRED)
+    find_package(orocos_kdl REQUIRED)
+
+    # Install the config directory to the package share directory
+    install(DIRECTORY 
+    config
+    DESTINATION share/${PROJECT_NAME}
+    )
+
+    # Install Python modules
+    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
+
+    # Install Python executables
+    install(PROGRAMS
+    scripts/tutorial_1.py
+    scripts/tutorial_2.py
+    scripts/tutorial_3.py
+    scripts/tutorial_4.py
+    DESTINATION lib/${PROJECT_NAME}
+    )
+
+    ament_package()
 
 
 
 Competition Interface
 --------------------------------
 
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial4`.
+The competition interface for :inline-tutorial:`tutorial 4` is shown in :numref:`competitioninterface-tutorial4`.
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -69,11 +118,15 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
     import rclpy
     from rclpy.node import Node
+    from rclpy.qos import qos_profile_sensor_data
     from rclpy.parameter import Parameter
-
+    from geometry_msgs.msg import Pose
     from ariac_msgs.msg import (
         CompetitionState as CompetitionStateMsg,
+        BreakBeamStatus as BreakBeamStatusMsg,
+        AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
         Part as PartMsg,
+        PartPose as PartPoseMsg,
         Order as OrderMsg,
         AssemblyPart as AssemblyPartMsg,
         AssemblyTask as AssemblyTaskMsg,
@@ -83,11 +136,14 @@ The competition interface used in this tutorial is shown in :numref:`competition
     from std_srvs.srv import Trigger
 
     from ariac_tutorials.utils import (
-        KittingTask,
+        multiply_pose,
+        AdvancedLogicalCameraImage,
         Order,
-        KittingPart,
+        KittingTask,
+        CombinedTask,
         AssemblyTask,
-        CombinedTask
+        KittingPart,
+        AssemblyPart
     )
 
 
@@ -101,33 +157,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
         Raises:
             KeyboardInterrupt: Exception raised when the user uses Ctrl+C to kill a process
         '''
-
-        _part_colors = {
-            PartMsg.RED: 'red',
-            PartMsg.BLUE: 'blue',
-            PartMsg.GREEN: 'green',
-            PartMsg.ORANGE: 'orange',
-            PartMsg.PURPLE: 'purple',
-        }
-
-        _part_colors_emoji = {
-            PartMsg.RED: '🟥',
-            PartMsg.BLUE: '🟦',
-            PartMsg.GREEN: '🟩',
-            PartMsg.ORANGE: '🟧',
-            PartMsg.PURPLE: '🟪',
-        }
-
-        '''Dictionary for converting PartColor constants to strings'''
-
-        _part_types = {
-            PartMsg.BATTERY: 'battery',
-            PartMsg.PUMP: 'pump',
-            PartMsg.REGULATOR: 'regulator',
-            PartMsg.SENSOR: 'sensor',
-        }
-        '''Dictionary for converting PartType constants to strings'''
-
         _competition_states = {
             CompetitionStateMsg.IDLE: 'idle',
             CompetitionStateMsg.READY: 'ready',
@@ -136,6 +165,32 @@ The competition interface used in this tutorial is shown in :numref:`competition
             CompetitionStateMsg.ENDED: 'ended',
         }
         '''Dictionary for converting CompetitionState constants to strings'''
+        
+        _part_colors = {
+            PartMsg.RED: 'red',
+            PartMsg.BLUE: 'blue',
+            PartMsg.GREEN: 'green',
+            PartMsg.ORANGE: 'orange',
+            PartMsg.PURPLE: 'purple',
+        }
+        '''Dictionary for converting Part color constants to strings'''
+
+        _part_colors_emoji = {
+            PartMsg.RED: '🟥',
+            PartMsg.BLUE: '🟦',
+            PartMsg.GREEN: '🟩',
+            PartMsg.ORANGE: '🟧',
+            PartMsg.PURPLE: '🟪',
+        }
+        '''Dictionary for converting Part color constants to emojis'''
+
+        _part_types = {
+            PartMsg.BATTERY: 'battery',
+            PartMsg.PUMP: 'pump',
+            PartMsg.REGULATOR: 'regulator',
+            PartMsg.SENSOR: 'sensor',
+        }
+        '''Dictionary for converting Part type constants to strings'''
 
         _destinations = {
             AGVStatusMsg.KITTING: 'kitting station',
@@ -144,14 +199,8 @@ The competition interface used in this tutorial is shown in :numref:`competition
             AGVStatusMsg.WAREHOUSE: 'warehouse',
         }
         '''Dictionary for converting AGVDestination constants to strings'''
-
-        _stations = {
-            AssemblyTaskMsg.AS1: "assembly station 1",
-            AssemblyTaskMsg.AS2: "assembly station 2",
-            AssemblyTaskMsg.AS3: "assembly station 3",
-            AssemblyTaskMsg.AS4: "assembly station 4",
-        }
-        '''Dictionary for converting AssemblyTaskMsg constants to strings'''
+        
+        
 
         def __init__(self):
             super().__init__('competition_interface')
@@ -173,25 +222,91 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 '/ariac/competition_state',
                 self._competition_state_cb,
                 10)
-
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
 
+            # Subscriber to the break beam status topic
+            self._break_beam0_sub = self.create_subscription(
+                BreakBeamStatusMsg,
+                '/ariac/sensors/breakbeam_0/status',
+                self._breakbeam0_cb,
+                qos_profile_sensor_data)
+            # Store the number of parts that crossed the beam
+            self._conveyor_part_count = 0
+            # Store whether the beam is broken
+            self._object_detected = False
+            
+            # Subscriber to the logical camera topic
+            self._advanced_camera0_sub = self.create_subscription(
+                AdvancedLogicalCameraImageMsg,
+                '/ariac/sensors/advanced_camera_0/image',
+                self._advanced_camera0_cb,
+                qos_profile_sensor_data)
+            # Store each camera image as an AdvancedLogicalCameraImage object
+            self._camera_image: AdvancedLogicalCameraImage = None
+            
             # Subscriber to the order topic
-            self._orders_sub = self.create_subscription(OrderMsg, '/ariac/orders', self._orders_cb, 10)
-            # List of orders
-            self._orders = []
+            self.orders_sub = self.create_subscription(
+                OrderMsg,
+                '/ariac/orders',
+                self._orders_cb,
+                10)
             # Flag for parsing incoming orders
             self._parse_incoming_order = False
+            # List of orders
+            self._orders = []
 
         @property
-        def parse_incoming_order(self):
-            '''Property for the parse_incoming_order flag.'''
-            return self._parse_incoming_order
+        def orders(self):
+            return self._orders
+        
+        @property
+        def camera_image(self):
+            return self._camera_image
 
+        @property
+        def conveyor_part_count(self):
+            return self._conveyor_part_count
+        
+        @property
+        def parse_incoming_order(self):
+            return self._parse_incoming_order
+        
         @parse_incoming_order.setter
-        def parse_incoming_order(self, value: bool):
+        def parse_incoming_order(self, value):
             self._parse_incoming_order = value
+        
+        def _orders_cb(self, msg: Order):
+            '''Callback for the topic /ariac/orders
+            Arguments:
+                msg -- Order message
+            '''
+            order = Order(msg)
+            self._orders.append(order)
+            if self._parse_incoming_order:
+                self.get_logger().info(self._parse_order(order))
+                
+
+        def _advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+            '''Callback for the topic /ariac/sensors/advanced_camera_0/image
+
+            Arguments:
+                msg -- AdvancedLogicalCameraImage message
+            '''
+            self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
+                                                            msg.tray_poses,
+                                                            msg.sensor_pose)
+
+        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+            '''Callback for the topic /ariac/sensors/breakbeam_0/status
+
+            Arguments:
+                msg -- BreakBeamStatusMsg message
+            '''
+            if not self._object_detected and msg.object_detected:
+                self._conveyor_part_count += 1
+
+            self._object_detected = msg.object_detected
 
         def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
@@ -205,17 +320,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
                     f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
                     throttle_duration_sec=1.0)
             self._competition_state = msg.competition_state
-
-        def _orders_cb(self, msg: OrderMsg):
-            '''Callback for the topic /ariac/orders
-
-            Arguments:
-                msg (OrderMsg) -- Order message
-            '''
-            order = Order(msg)
-            self._orders.append(order)
-            if self._parse_incoming_order:
-                self.get_logger().info(self.parse_order(order))
 
         def start_competition(self):
             '''Function to start the competition.
@@ -248,7 +352,52 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 self.get_logger().info('Started competition.')
             else:
                 self.get_logger().info('Unable to start competition')
+                
+        
 
+        def parse_advanced_camera_image(self):
+            '''
+            Parse an AdvancedLogicalCameraImage message and return a string representation.
+            '''
+            output = '\n\n==========================\n'
+
+            sensor_pose: Pose = self._camera_image._sensor_pose
+
+            part_pose: PartPoseMsg
+
+            counter = 1
+            for part_pose in self._camera_image._part_poses:
+                part_color = CompetitionInterface._part_colors[part_pose.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[part_pose.part.color]
+                part_type = CompetitionInterface._part_types[part_pose.part.type].capitalize()
+                output += f'Part {counter}: {part_color_emoji} {part_color} {part_type}\n'
+                output += '==========================\n'
+                output += 'Camera Frame\n'
+                output += '==========================\n'
+                position = f'x: {part_pose.pose.position.x}\n\t\ty: {part_pose.pose.position.y}\n\t\tz: {part_pose.pose.position.z}'
+                orientation = f'x: {part_pose.pose.orientation.x}\n\t\ty: {part_pose.pose.orientation.y}\n\t\tz: {part_pose.pose.orientation.z}\n\t\tw: {part_pose.pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                output += 'World Frame\n'
+                output += '==========================\n'
+                part_world_pose = multiply_pose(sensor_pose, part_pose.pose)
+                position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
+                orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+
+                counter += 1
+
+            return output
+        
         def _parse_kitting_task(self, kitting_task: KittingTask):
             '''
             Parses a KittingTask object and returns a string representation.
@@ -362,7 +511,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
             return output
 
-        def parse_order(self, order: Order):
+        def _parse_order(self, order: Order):
             '''Parse an order message and return a string representation.
 
             Args:
@@ -386,33 +535,275 @@ The competition interface used in this tutorial is shown in :numref:`competition
             return output
 
 
-Code Explained
-^^^^^^^^^^^^^^^^^^^^^^^
-
-- Imports
-
-    - :inline-python:`ariac_msgs.msg`: Messages from the package :inline-file:`ariac_msgs`.
-
-        - :inline-python:`Order`: Message that contains the order information.
-
-    - :inline-python:`ariac_tutorials.utils`: Module which contains reusable functions and classes. 
-  
-- Instance Variables
-
-    - :inline-python:`self._orders_sub`: ROS subscriber to the topic ``/ariac/orders``
-    - :inline-python:`self._orders`: List of orders.
-    - :inline-python:`self._parse_incoming_order`: Flag for for logging an order in the terminal. If the flag is set to :inline-python:`True`, the order is logged in the terminal. If the flag is set to :inline-python:`False`, the order is not logged in the terminal.
 
 
-- Instance Methods
+Code Explanation
+^^^^^^^^^^^^^^^^^
 
-    - :inline-python:`_orders_cb(self, msg: OrderMsg)`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`self._orders`
-    - :inline-python:`parse_order(self, order: Order)`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
+The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with the components described below.
 
-        - :inline-python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a :inline-python:`KittingTask` object and returns a string representation.
-        - :inline-python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an :inline-python:`AssemblyTask` object and returns a string representation.
-        - :inline-python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a :inline-python:`CombinedTask` object and returns a string representation.
 
+- :inline-python:`Order`: Message class that contains the order information (see `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_ )
+- :inline-python:`AssemblyPart`: Message class that contains the assembly part information (see `AssemblyPart.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AssemblyPart.msg>`_ )
+- :inline-python:`AssemblyTask`: Message class that contains the assembly task information (see `AssemblyTask.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AssemblyTask.msg>`_ )
+- :inline-python:`AGVStatus`: Message class that contains the AGV status information (see `AGVStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AGVStatus.msg>`_ )
+
+    .. code-block:: python
+        :lineno-start: 6
+        :emphasize-lines: 7-10
+
+        from ariac_msgs.msg import (
+            CompetitionState as CompetitionStateMsg,
+            BreakBeamStatus as BreakBeamStatusMsg,
+            AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
+            Part as PartMsg,
+            PartPose as PartPoseMsg,
+            Order as OrderMsg,
+            AssemblyPart as AssemblyPartMsg,
+            AssemblyTask as AssemblyTaskMsg,
+            AGVStatus as AGVStatusMsg,
+        )
+
+- :inline-python:`_destinations` is a dictionary that maps the integer values of the AGV destination to their string representations.
+
+    .. code-block:: python
+        :lineno-start: 76
+        
+        _destinations = {
+            AGVStatusMsg.KITTING: 'kitting station',
+            AGVStatusMsg.ASSEMBLY_FRONT: 'front assembly station',
+            AGVStatusMsg.ASSEMBLY_BACK: 'back assembly station',
+            AGVStatusMsg.WAREHOUSE: 'warehouse',
+        }
+        '''Dictionary for converting AGVDestination constants to strings'''
+
+
+- :inline-python:`_orders_sub`: ROS subscriber to the topic ``/ariac/orders``
+
+    .. code-block:: python
+        :lineno-start: 138
+
+        self.orders_sub = self.create_subscription(
+            OrderMsg,
+            '/ariac/orders',
+            self._orders_cb,
+            10)
+
+- :inline-python:`self._parse_incoming_order`: Flag  for logging an order in the terminal. If the flag is set to :inline-python:`True`, the order is logged in the terminal. If the flag is set to :inline-python:`False`, the order is not logged in the terminal.
+
+    .. code-block:: python
+        :lineno-start: 144
+
+        self._parse_incoming_order = False
+
+- :inline-python:`self._orders`: List of orders. Each order announced by the competition interface is stored in this list.
+
+    .. code-block:: python
+        :lineno-start: 146
+
+        self._orders = []
+
+
+- Getter for the list of orders :inline-python:`self._orders`
+
+    .. code-block:: python
+        :lineno-start: 148
+
+        @property
+        def orders(self):
+            return self._orders
+
+- Getter and setter for the flag :inline-python:`self._parse_incoming_order`
+
+    .. code-block:: python
+        :lineno-start: 160
+
+        @property
+        def parse_incoming_order(self):
+            return self._parse_incoming_order
+
+        @parse_incoming_order.setter
+        def parse_incoming_order(self, value):
+            self._parse_incoming_order = value
+
+
+
+
+- :inline-python:`_orders_cb(self, msg: OrderMsg)`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`self._orders`
+
+    .. code-block:: python
+        :lineno-start: 168
+
+        def _orders_cb(self, msg: Order):
+        '''Callback for the topic /ariac/orders
+        Arguments:
+            msg -- Order message
+        '''
+        order = Order(msg)
+        self._orders.append(order)
+        if self._parse_incoming_order:
+            self.get_logger().info(self._parse_order(order))
+
+
+
+
+
+- :inline-python:`_parse_order(self, order: Order)`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
+
+    .. code-block:: python
+        :lineno-start: 403
+
+        def _parse_order(self, order: Order):
+            '''Parse an order message and return a string representation.
+
+            Args:
+                order (Order) -- Order message
+
+            Returns:
+                String representation of the order message
+            '''
+            output = '\n\n==========================\n'
+            output += f'Received Order: {order.order_id}\n'
+            output += f'Priority: {order.order_priority}\n'
+
+            if order.order_type == OrderMsg.KITTING:
+                output += self._parse_kitting_task(order.order_task)
+            elif order.order_type == OrderMsg.ASSEMBLY:
+                output += self._parse_assembly_task(order.order_task)
+            elif order.order_type == OrderMsg.COMBINED:
+                output += self._parse_combined_task(order.order_task)
+            else:
+                output += 'Type: Unknown\n'
+            return output
+
+- :inline-python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a :inline-python:`KittingTask` object and returns a string representation.
+
+    .. code-block:: python
+        :lineno-start: 290
+
+        def _parse_kitting_task(self, kitting_task: KittingTask):
+            '''
+            Parses a KittingTask object and returns a string representation.
+
+            Args:
+                kitting_task (KittingTask): KittingTask object to parse
+
+            Returns:
+                str: String representation of the KittingTask object
+            '''
+            output = 'Type: Kitting\n'
+            output += '==========================\n'
+            output += f'AGV: {kitting_task.agv_number}\n'
+            output += f'Destination: {CompetitionInterface._destinations[kitting_task.destination]}\n'
+            output += f'Tray ID: {kitting_task.tray_id}\n'
+            output += 'Products:\n'
+            output += '==========================\n'
+
+            quadrants = {1: "Quadrant 1: -",
+                        2: "Quadrant 2: -",
+                        3: "Quadrant 3: -",
+                        4: "Quadrant 4: -"}
+
+            for i in range(1, 5):
+                product: KittingPart
+                for product in kitting_task.parts:
+                    if i == product.quadrant:
+                        part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
+                        part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
+                        part_type = CompetitionInterface._part_types[product.part.type].capitalize()
+                        quadrants[i] = f'Quadrant {i}: {part_color_emoji} {part_color} {part_type}'
+            output += f'\t{quadrants[1]}\n'
+            output += f'\t{quadrants[2]}\n'
+            output += f'\t{quadrants[3]}\n'
+            output += f'\t{quadrants[4]}\n'
+
+            return output
+
+- :inline-python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an :inline-python:`AssemblyTask` object and returns a string representation.
+
+    .. code-block:: python
+        :lineno-start: 328
+
+        def _parse_assembly_task(self, assembly_task: AssemblyTask):
+            '''
+            Parses an AssemblyTask object and returns a string representation.
+
+            Args:
+                assembly_task (AssemblyTask): AssemblyTask object to parse
+
+            Returns:
+                str: String representation of the AssemblyTask object
+            '''
+            output = 'Type: Assembly\n'
+            output += '==========================\n'
+            if len(assembly_task.agv_numbers) == 1:
+                output += f'AGV: {assembly_task.agv_number[0]}\n'
+            elif len(assembly_task.agv_numbers) == 2:
+                output += f'AGV(s): [{assembly_task.agv_numbers[0]}, {assembly_task.agv_numbers[1]}]\n'
+            output += f'Assembly station: {self._destinations[assembly_task.station].title()}\n'
+            output += 'Products:\n'
+            output += '==========================\n'
+
+            product: AssemblyPartMsg
+            for product in assembly_task.parts:
+                part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
+                part_type = CompetitionInterface._part_types[product.part.type].capitalize()
+                assembled_pose_position = product.assembled_pose.pose.position
+                assembled_pose_orientation = product.assembled_pose.pose.orientation
+                install_direction = product.install_direction
+                position = f'x: {assembled_pose_position.x}\n\t\ty: {assembled_pose_position.y}\n\t\tz: {assembled_pose_position.z}'
+                orientation = f'x: {assembled_pose_orientation.x}\n\t\ty: {assembled_pose_orientation.y}\n\t\tz: {assembled_pose_orientation.z}\n\t\tw: {assembled_pose_orientation.w}'
+                output += f'\tPart: {part_color_emoji} {part_color} {part_type}\n'
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += f'\tInstall direction: [{install_direction.x}, {install_direction.y}, {install_direction.z}]\n\n'
+
+            return output
+
+
+- :inline-python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a :inline-python:`CombinedTask` object and returns a string representation.
+
+    .. code-block:: python
+        :lineno-start: 367
+
+        def _parse_combined_task(self, combined_task: CombinedTask):
+            '''
+            Parses a CombinedTask object and returns a string representation.
+
+            Args:
+                combined_task (CombinedTask): CombinedTask object to parse
+
+            Returns:
+                str: String representation of the CombinedTask object
+            '''
+
+            output = 'Type: Combined\n'
+            output += '==========================\n'
+            output += f'Assembly station: {self._destinations[combined_task.station].title()}\n'
+            output += 'Products:\n'
+            output += '==========================\n'
+
+            product: AssemblyPartMsg
+            for product in combined_task.parts:
+                part_color = CompetitionInterface._part_colors[product.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[product.part.color]
+                part_type = CompetitionInterface._part_types[product.part.type].capitalize()
+                assembled_pose_position = product.assembled_pose.pose.position
+                assembled_pose_orientation = product.assembled_pose.pose.orientation
+                install_direction = product.install_direction
+                position = f'x: {assembled_pose_position.x}\n\t\ty: {assembled_pose_position.y}\n\t\tz: {assembled_pose_position.z}'
+                orientation = f'x: {assembled_pose_orientation.x}\n\t\ty: {assembled_pose_orientation.y}\n\t\tz: {assembled_pose_orientation.z}\n\t\tw: {assembled_pose_orientation.w}'
+                output += f'\tPart: {part_color_emoji} {part_color} {part_type}\n'
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += f'\tInstall direction: [{install_direction.x}, {install_direction.y}, {install_direction.z}]\n\n'
+
+            return output
 
 
 Create the Executable
@@ -447,7 +838,7 @@ Create the Executable
     if __name__ == '__main__':
         main()
 
-Code Explained
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 This executable does the following:
@@ -493,7 +884,7 @@ Outputs
 
 
 .. code-block:: console
-    :caption: Terminal outputs
+    :caption: terminal 1 output
     :class: no-copybutton
     
     ==========================

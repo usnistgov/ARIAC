@@ -1,5 +1,5 @@
 
-.. _TUTORIAL_3:
+.. _TUTORIAL3:
 
 .. only:: builder_html or readthedocs
 

@@ -73,7 +73,7 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are hi
         └── tutorial_7.py
 
 
-Overview of  CMakeLists.txt
+CMakeLists.txt
 --------------------------------
 
 Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are highlighted in the :inline-file:`CMakeLists.txt` below.

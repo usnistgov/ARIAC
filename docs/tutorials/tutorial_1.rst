@@ -15,27 +15,28 @@
 Tutorial 1: Creating a Competition Package
 =========================================================
 
-.. admonition:: Source Code for Tutorial 1
+.. admonition:: Tutorial 1
   :class: attention
   :name: tutorial_1
-  
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ 
 
-  .. code-block:: bash
-    
-        cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_1
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ 
+  - **Local Branch**:
 
-
+    .. code-block:: bash
+        
+            cd ~/ariac_ws/ariac_tutorials
+            git checkout tutorial_1
 
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
-The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 1`  is as follows:
+
+Updates and additions that are specific to :inline-tutorial:`tutorial 1`  are highlighted in the tree below.
 
 .. code-block:: text
     :class: no-copybutton
-    :emphasize-lines: 8
+    :emphasize-lines: 6-8
     
     ariac_tutorials
     ├── CMakeLists.txt
@@ -43,12 +44,16 @@ The final state of the package :inline-file:`ariac_tutorials` for :inline-tutori
     ├── ariac_tutorials
     │   ├── __init__.py
     │   └── competition_interface.py
-    └── nodes
+    └── scripts
         └── tutorial_1.py
 
 
-Overview of CMakelists.txt
+CMakelists.txt
 --------------------------------
+
+Updates and additions that are specific to :inline-tutorial:`tutorial 1`  are highlighted in the :inline-file:`CMakeLists.txt` below.
+
+
 
 .. code-block:: cmake
     :emphasize-lines: 19
@@ -71,48 +76,15 @@ Overview of CMakelists.txt
 
     # Install Python executables
     install(PROGRAMS
-    nodes/tutorial_1.py
+    scripts/tutorial_1.py
     DESTINATION lib/${PROJECT_NAME}
     )
 
     ament_package()
 
 
-Overview of package.xml
---------------------------------
 
-.. admonition:: package.xml
-  :class: attention
-
-  
-  In ``package.xml``, update the maintainer and license information.
-
-.. code-block:: xml
-  :emphasize-lines: 7
-    
-    <?xml version="1.0"?>
-    <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-    <package format="3">
-    <name>ariac_tutorials</name>
-    <version>0.0.0</version>
-    <description>ROS2 pkg for ARIAC tutorials</description>
-    <maintainer email="{your_email}">{your name}</maintainer>
-    <license>Apache License 2.0</license>
-
-    <buildtool_depend>ament_cmake</buildtool_depend>
-
-    <depend>rclcpp</depend>
-    <depend>rclpy</depend>
-    <depend>ariac_msgs</depend>
-
-    <export>
-        <build_type>ament_cmake</build_type>
-    </export>
-    </package>
-
-
-
-Overview of the Competition Interface
+Competition Interface
 --------------------------------------------
 
 The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`.
@@ -248,10 +220,8 @@ Code Explained
 
 
 
-Overview of the Executable
+Create the Executable
 --------------------------------
-
-
 
 .. code-block:: python
     :caption: tutorial_1.py
@@ -278,8 +248,9 @@ Code Explained
 
 This executable does the following:
 
-    - Creates an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
-    - Starts the competition.
+    - Initialize the ROS client library.
+    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Start the competition.
 
 
 
@@ -303,8 +274,10 @@ Run the Executable
         
         [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
 
+    .. highlights::
 
-    The node waits until the competition is ready. 
+        *The node waits until the competition is ready.*
+    
 
 - In *terminal 2*, run the following commands:
 
@@ -314,8 +287,11 @@ Run the Executable
         . install/setup.bash
         ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
 
+    .. highlights::
 
-    This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. Orders will also be announced.
+        *This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. Orders will also be announced.*
+
+    
 
 
 Outputs

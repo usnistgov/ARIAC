@@ -17,29 +17,27 @@
 Tutorial 6: Enable/Disable a Gripper
 =========================================================
 
-.. admonition:: Source Code for Tutorial 6
+.. admonition:: Tutorial 6
   :class: attention
   :name: tutorial_6
-  
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6>`_ 
 
-  .. code-block:: bash
-    
-        cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_6
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6>`_ 
+  - **Local Branch**:
+
+    .. code-block:: bash
+        
+            cd ~/ariac_ws/ariac_tutorials
+            git checkout tutorial_6
 
 
-This tutorial covers the following steps:
+This tutorial shows how to use service calls to enable and disable the gripper of the floor robot. 
 
-  - Parse received orders to identify assembly tasks, 
-  - identify the AGVs that need to be moved to the assembly station,
-  - Lock the tray and parts so that they do not fall off the AGV,
-  - Move the AGV to the assembly station.
+Updates and additions that are specific to :inline-tutorial:`tutorial 6`  are highlighted in the tree below.
 
-The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 6` is as follows:
 
 .. code-block:: text
-    :emphasize-lines: 16
+    :emphasize-lines: 2, 16
     :class: no-copybutton
     
     ariac_tutorials

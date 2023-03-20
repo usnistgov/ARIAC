@@ -1,4 +1,4 @@
-.. _TUTORIAL_5:
+.. _TUTORIAL5:
 
 .. only:: builder_html or readthedocs
 
@@ -16,29 +16,35 @@
 Tutorial 5: Move AGVs to Stations
 =========================================================
 
-.. admonition:: Source Code for Tutorial 5
+.. admonition:: Tutorial 5
   :class: attention
   :name: tutorial_5
-  
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5>`_ 
 
-  .. code-block:: bash
-    
-        cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_5
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5>`_ 
+  - **Switch Branch**:
+
+    .. code-block:: bash
+        
+            cd ~/ariac_ws/ariac_tutorials
+            git checkout tutorial_5
 
 
-This tutorial covers the following steps:
+This tutorial shows how to move AGVs to assembly stations. 
 
   - Parse received orders to identify assembly tasks, 
-  - identify the AGVs that need to be moved to the assembly station,
-  - Lock the tray and parts so that they do not fall off the AGV,
-  - Move the AGV to the assembly station.
+  - Identify the AGVs that need to be moved
+  - Identify the assembly station where the AGVs need to be moved,
+  - Lock the trays to prevent parts from moving during transport,
+  - Move the AGVs to the assembly station.
 
-The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 5` is as follows:
+Package Structure
+--------------------------------------------
+
+Updates and additions that are specific to :inline-tutorial:`tutorial 5`  are highlighted in the tree below.
 
 .. code-block:: text
-    :emphasize-lines: 15
+    :emphasize-lines: 2, 9, 15
     :class: no-copybutton
     
     ariac_tutorials
@@ -50,7 +56,7 @@ The final state of the package :inline-file:`ariac_tutorials` for :inline-tutori
     │   ├── __init__.py
     │   ├── utils.py
     │   └── competition_interface.py
-    └── nodes
+    └── scripts
         ├── tutorial_1.py
         ├── tutorial_2.py
         ├── tutorial_3.py
@@ -58,14 +64,53 @@ The final state of the package :inline-file:`ariac_tutorials` for :inline-tutori
         └── tutorial_5.py
 
 
+CMakelists.txt
+--------------------------------------------
 
+.. code-block:: cmake
+    :emphasize-lines: 30
+
+    cmake_minimum_required(VERSION 3.8)
+    project(ariac_tutorials)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    find_package(ament_cmake REQUIRED)
+    find_package(ament_cmake_python REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(rclpy REQUIRED)
+    find_package(ariac_msgs REQUIRED)
+    find_package(orocos_kdl REQUIRED)
+
+    # Install the config directory to the package share directory
+    install(DIRECTORY 
+    config
+    DESTINATION share/${PROJECT_NAME}
+    )
+
+    # Install Python modules
+    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
+
+    # Install Python executables
+    install(PROGRAMS
+    scripts/tutorial_1.py
+    scripts/tutorial_2.py
+    scripts/tutorial_3.py
+    scripts/tutorial_4.py
+    scripts/tutorial_5.py
+    DESTINATION lib/${PROJECT_NAME}
+    )
+
+    ament_package()
 
 
 
 Competition Interface
 --------------------------------
 
-The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial5`.
+The competition interface for :inline-tutorial:`tutorial 5` is shown in :numref:`competitioninterface-tutorial5`.
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -74,28 +119,34 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
     import rclpy
     from rclpy.node import Node
+    from rclpy.qos import qos_profile_sensor_data
     from rclpy.parameter import Parameter
-
+    from geometry_msgs.msg import Pose
     from ariac_msgs.msg import (
         CompetitionState as CompetitionStateMsg,
+        BreakBeamStatus as BreakBeamStatusMsg,
+        AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
         Part as PartMsg,
+        PartPose as PartPoseMsg,
         Order as OrderMsg,
         AssemblyPart as AssemblyPartMsg,
         AssemblyTask as AssemblyTaskMsg,
-        AGVStatus as AGVStatusMsg,
-    )
+        AGVStatus as AGVStatusMsg)
+
+    from ariac_msgs.srv import (
+        MoveAGV)
 
     from std_srvs.srv import Trigger
-    from ariac_msgs.srv import MoveAGV
 
     from ariac_tutorials.utils import (
-        KittingTask,
+        multiply_pose,
+        AdvancedLogicalCameraImage,
         Order,
-        KittingPart,
+        KittingTask,
+        CombinedTask,
         AssemblyTask,
-        CombinedTask
+        KittingPart
     )
-
 
     class CompetitionInterface(Node):
         '''
@@ -107,33 +158,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
         Raises:
             KeyboardInterrupt: Exception raised when the user uses Ctrl+C to kill a process
         '''
-
-        _part_colors = {
-            PartMsg.RED: 'red',
-            PartMsg.BLUE: 'blue',
-            PartMsg.GREEN: 'green',
-            PartMsg.ORANGE: 'orange',
-            PartMsg.PURPLE: 'purple',
-        }
-
-        _part_colors_emoji = {
-            PartMsg.RED: '🟥',
-            PartMsg.BLUE: '🟦',
-            PartMsg.GREEN: '🟩',
-            PartMsg.ORANGE: '🟧',
-            PartMsg.PURPLE: '🟪',
-        }
-
-        '''Dictionary for converting PartColor constants to strings'''
-
-        _part_types = {
-            PartMsg.BATTERY: 'battery',
-            PartMsg.PUMP: 'pump',
-            PartMsg.REGULATOR: 'regulator',
-            PartMsg.SENSOR: 'sensor',
-        }
-        '''Dictionary for converting PartType constants to strings'''
-
         _competition_states = {
             CompetitionStateMsg.IDLE: 'idle',
             CompetitionStateMsg.READY: 'ready',
@@ -143,13 +167,31 @@ The competition interface used in this tutorial is shown in :numref:`competition
         }
         '''Dictionary for converting CompetitionState constants to strings'''
 
-        _destinations = {
-            AGVStatusMsg.KITTING: 'kitting station',
-            AGVStatusMsg.ASSEMBLY_FRONT: 'front assembly station',
-            AGVStatusMsg.ASSEMBLY_BACK: 'back assembly station',
-            AGVStatusMsg.WAREHOUSE: 'warehouse',
+        _part_colors = {
+            PartMsg.RED: 'red',
+            PartMsg.BLUE: 'blue',
+            PartMsg.GREEN: 'green',
+            PartMsg.ORANGE: 'orange',
+            PartMsg.PURPLE: 'purple',
         }
-        '''Dictionary for converting AGVDestination constants to strings'''
+        '''Dictionary for converting Part color constants to strings'''
+
+        _part_colors_emoji = {
+            PartMsg.RED: '🟥',
+            PartMsg.BLUE: '🟦',
+            PartMsg.GREEN: '🟩',
+            PartMsg.ORANGE: '🟧',
+            PartMsg.PURPLE: '🟪',
+        }
+        '''Dictionary for converting Part color constants to emojis'''
+
+        _part_types = {
+            PartMsg.BATTERY: 'battery',
+            PartMsg.PUMP: 'pump',
+            PartMsg.REGULATOR: 'regulator',
+            PartMsg.SENSOR: 'sensor',
+        }
+        '''Dictionary for converting Part type constants to strings'''
 
         _stations = {
             AssemblyTaskMsg.AS1: "assembly station 1",
@@ -157,7 +199,15 @@ The competition interface used in this tutorial is shown in :numref:`competition
             AssemblyTaskMsg.AS3: "assembly station 3",
             AssemblyTaskMsg.AS4: "assembly station 4",
         }
-        '''Dictionary for converting AssemblyTaskMsg constants to strings'''
+        '''Dictionary for converting AssemblyTask constants to strings'''
+
+        _destinations = {
+            AGVStatusMsg.KITTING: 'kitting station',
+            AGVStatusMsg.ASSEMBLY_FRONT: 'front assembly station',
+            AGVStatusMsg.ASSEMBLY_BACK: 'back assembly station',
+            AGVStatusMsg.WAREHOUSE: 'warehouse',
+        }
+        '''Dictionary for converting AGVDestination constants to strings'''
 
         def __init__(self):
             super().__init__('competition_interface')
@@ -179,25 +229,90 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 '/ariac/competition_state',
                 self._competition_state_cb,
                 10)
-
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
 
+            # Subscriber to the break beam status topic
+            self._break_beam0_sub = self.create_subscription(
+                BreakBeamStatusMsg,
+                '/ariac/sensors/breakbeam_0/status',
+                self._breakbeam0_cb,
+                qos_profile_sensor_data)
+            # Store the number of parts that crossed the beam
+            self._conveyor_part_count = 0
+            # Store whether the beam is broken
+            self._object_detected = False
+
+            # Subscriber to the logical camera topic
+            self._advanced_camera0_sub = self.create_subscription(
+                AdvancedLogicalCameraImageMsg,
+                '/ariac/sensors/advanced_camera_0/image',
+                self._advanced_camera0_cb,
+                qos_profile_sensor_data)
+            # Store each camera image as an AdvancedLogicalCameraImage object
+            self._camera_image: AdvancedLogicalCameraImage = None
+
             # Subscriber to the order topic
-            self._orders_sub = self.create_subscription(OrderMsg, '/ariac/orders', self._orders_cb, 10)
-            # List of orders
-            self._orders = []
+            self.orders_sub = self.create_subscription(
+                OrderMsg,
+                '/ariac/orders',
+                self._orders_cb,
+                10)
             # Flag for parsing incoming orders
             self._parse_incoming_order = False
+            # List of orders
+            self._orders = []
+
+        @property
+        def orders(self):
+            return self._orders
+
+        @property
+        def camera_image(self):
+            return self._camera_image
+
+        @property
+        def conveyor_part_count(self):
+            return self._conveyor_part_count
 
         @property
         def parse_incoming_order(self):
-            '''Property for the parse_incoming_order flag.'''
             return self._parse_incoming_order
 
         @parse_incoming_order.setter
-        def parse_incoming_order(self, value: bool):
+        def parse_incoming_order(self, value):
             self._parse_incoming_order = value
+
+        def _orders_cb(self, msg: Order):
+            '''Callback for the topic /ariac/orders
+            Arguments:
+                msg -- Order message
+            '''
+            order = Order(msg)
+            self._orders.append(order)
+            if self._parse_incoming_order:
+                self.get_logger().info(self._parse_order(order))
+
+        def _advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+            '''Callback for the topic /ariac/sensors/advanced_camera_0/image
+
+            Arguments:
+                msg -- AdvancedLogicalCameraImage message
+            '''
+            self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
+                                                            msg.tray_poses,
+                                                            msg.sensor_pose)
+
+        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+            '''Callback for the topic /ariac/sensors/breakbeam_0/status
+
+            Arguments:
+                msg -- BreakBeamStatusMsg message
+            '''
+            if not self._object_detected and msg.object_detected:
+                self._conveyor_part_count += 1
+
+            self._object_detected = msg.object_detected
 
         def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
@@ -211,17 +326,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
                     f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
                     throttle_duration_sec=1.0)
             self._competition_state = msg.competition_state
-
-        def _orders_cb(self, msg: OrderMsg):
-            '''Callback for the topic /ariac/orders
-
-            Arguments:
-                msg (OrderMsg) -- Order message
-            '''
-            order = Order(msg)
-            self._orders.append(order)
-            if self._parse_incoming_order:
-                self.get_logger().info(self.parse_order(order))
 
         def start_competition(self):
             '''Function to start the competition.
@@ -254,6 +358,49 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 self.get_logger().info('Started competition.')
             else:
                 self.get_logger().info('Unable to start competition')
+
+        def parse_advanced_camera_image(self):
+            '''
+            Parse an AdvancedLogicalCameraImage message and return a string representation.
+            '''
+            output = '\n\n==========================\n'
+
+            sensor_pose: Pose = self._camera_image._sensor_pose
+
+            part_pose: PartPoseMsg
+
+            counter = 1
+            for part_pose in self._camera_image._part_poses:
+                part_color = CompetitionInterface._part_colors[part_pose.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[part_pose.part.color]
+                part_type = CompetitionInterface._part_types[part_pose.part.type].capitalize()
+                output += f'Part {counter}: {part_color_emoji} {part_color} {part_type}\n'
+                output += '==========================\n'
+                output += 'Camera Frame\n'
+                output += '==========================\n'
+                position = f'x: {part_pose.pose.position.x}\n\t\ty: {part_pose.pose.position.y}\n\t\tz: {part_pose.pose.position.z}'
+                orientation = f'x: {part_pose.pose.orientation.x}\n\t\ty: {part_pose.pose.orientation.y}\n\t\tz: {part_pose.pose.orientation.z}\n\t\tw: {part_pose.pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                output += 'World Frame\n'
+                output += '==========================\n'
+                part_world_pose = multiply_pose(sensor_pose, part_pose.pose)
+                position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
+                orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+
+                counter += 1
+
+            return output
 
         def _parse_kitting_task(self, kitting_task: KittingTask):
             '''
@@ -368,7 +515,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
             return output
 
-        def parse_order(self, order: Order):
+        def _parse_order(self, order: Order):
             '''Parse an order message and return a string representation.
 
             Args:
@@ -390,7 +537,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
             else:
                 output += 'Type: Unknown\n'
             return output
-        
+
         def lock_agv_tray(self, num):
             '''
             Lock the tray of an AGV and parts on the tray. This will prevent tray and parts from moving during transport.
@@ -400,8 +547,8 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
             Raises:
                 KeyboardInterrupt: Exception raised when the user presses Ctrl+C
-            '''        
-            
+            '''
+
             # Create a client to send a request to the `/ariac/agv{num}_lock_tray` service
             tray_locker = self.create_client(
                 Trigger,
@@ -435,8 +582,8 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
             Raises:
                 KeyboardInterrupt: Exception raised when the user presses Ctrl+C
-            '''        
-            
+            '''
+
             # Create a client to send a request to the `/ariac/move_agv` service.
             mover = self.create_client(
                 MoveAGV,
@@ -469,8 +616,12 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
 
 
-Code Explained
-^^^^^^^^^^^^^^^^^^^^^^^
+
+Code Explanation
+^^^^^^^^^^^^^^^^^
+
+The competition interface from :ref:`Tutorial 4 <TUTORIAL4>` was augmented with the components described below.
+
 
 - Imports
 

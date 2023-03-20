@@ -38,10 +38,10 @@ This tutorial shows how to move the robots through service calls using the follo
 
   - Create a C++ class for interfacing with MoveIt (:inline-file:`src/robot_commander.cpp`).
 
-    - Create a MoveGroupInterface object for each robot.
+    - Initialize a MoveGroupInterface object for each robot.
     - Create a service server for each robot. Service requests sent to these service servers will be used to move the robots to their home position.
   - Create a Python method for each robot that will be used to move the robot to its home position. Each one of these methods consists of a service client.
-  - Call these methods from the main function to move the robots to their home positions.
+  - Call the Python methods from the script :inline-file:`tutorial_7.py` to move the robots to their home positions.
 
 
 Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are highlighted in the tree below.
@@ -75,6 +75,9 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are hi
 
 Overview of  CMakeLists.txt
 --------------------------------
+
+Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are highlighted in the :inline-file:`CMakeLists.txt` below.
+
 
 .. code-block:: cmake
     :emphasize-lines: 14, 33, 40, 45-46, 48-51, 53-55

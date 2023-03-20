@@ -459,7 +459,7 @@ Outputs
 
 .. code-block:: console
     :class: no-copybutton
-    :caption: Outputs:  *terminal 1*
+    :caption: terminal 1 output
     
     [INFO] [1679030246.597452729] [competition_interface]: Part Count: 0
     [INFO] [1679030248.597506278] [competition_interface]: Part Count: 0

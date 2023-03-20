@@ -658,7 +658,7 @@ Outputs
 
 
 .. code-block:: console
-    :caption: Terminal outputs
+    :caption: terminal 1 output
     :class: no-copybutton
     
     ==========================

@@ -322,7 +322,7 @@ Outputs
 --------------------------------
 
 .. code-block:: console
-    :caption: terminal 1
+    :caption: terminal 1 output
     :class: no-copybutton
     
     [INFO] [1679025057.998334513] [competition_interface]: Waiting for competition to be ready
@@ -332,7 +332,7 @@ Outputs
     [INFO] [1679025085.590775613] [competition_interface]: Started competition.
 
 .. code-block:: console
-    :caption: terminal 2
+    :caption: terminal 2 output
     :class: no-copybutton
     
     [gzserver-1] [INFO] [1679262580.420282809] [task_manager]: Announcing order

@@ -411,7 +411,7 @@ Create the Executable
     if __name__ == '__main__':
         main()
 
-Code Explained
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
  This executable creates an instance of the interface, starts the competition and logs the :inline-python:`conveyor_part_count` variable every 2 seconds. 

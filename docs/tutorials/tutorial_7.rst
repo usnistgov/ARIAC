@@ -249,6 +249,7 @@ Code Explained
 
 This executable does the following:
 
+    - Initialize the ROS client library.
     - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - The call to :inline-python:`move_robot_home("floor_robot")` sends a service request to ``/competitor/move_floor_robot_home``
@@ -269,8 +270,12 @@ Run the Executable
         . install/setup.bash
         ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
 
+    .. highlights::
 
-    This command starts the environment.
+        *The last command starts the environment.*
+
+
+    
 
 
 - In *terminal 2*, run the following commands:
@@ -281,7 +286,11 @@ Run the Executable
         . install/setup.bash
         ros2 launch ariac_tutorials robot_commander.launch.py
 
-    The launch command starts the robot commander node and move it.
+    .. highlights::
+
+        *The launch command starts the robot commander node and move it.*
+
+    
 
 - In *terminal 3*, run the following commands:
 
@@ -291,7 +300,11 @@ Run the Executable
         . install/setup.bash
         ros2 run ariac_tutorials tutorial_7.py
 
-    The last command starts the competition interface node and sends the service requests to move the robots to their home positions.
+    .. highlights::
+
+        *The last command starts the competition interface node and sends the service requests to move the robots to their home positions.*
+
+    
 
 Outputs
 --------------------------------

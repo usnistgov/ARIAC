@@ -90,7 +90,6 @@ CMakelists.txt
 --------------------------------------------
 
 To allow for the competition software to be able to find the sensor configuration, it must be added to the share directory of the package. 
-To do this, add the following lines to the :inline-file:`CMakeLists.txt` file in the :inline-file:`ariac_tutorials` package.
 
 .. code-block:: cmake
     :emphasize-lines: 15-18, 26
@@ -180,7 +179,7 @@ The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with 
 
 .. highlights::
     
-    *ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ ).*
+    ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ ).
 
 
 .. code-block:: python

@@ -406,19 +406,17 @@ Code Explanation
 The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with the components described below.
 
 
+- The :inline-python:`Pose` module is needed to compute and display the pose of the parts detected by the camera.
 
-.. code-block:: python
-    :lineno-start: 5
+    .. code-block:: python
+        :lineno-start: 5
 
-    from geometry_msgs.msg import Pose
-
-
-    - The :inline-python:`Pose` module is needed to compute and display the pose of the parts detected by the camera.
-
+        from geometry_msgs.msg import Pose
 
 - :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (see `AdvancedLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`_ )
 - :inline-python:`Part`: Message class that stores the part type and color (see `Part.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Part.msg>`_ )
 - :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (see `PartPose.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/PartPose.msg>`_)
+- **Note**: These message classes are imported as aliases since the package consists of Python classes with the same name.
 
     .. code-block:: python
         :lineno-start: 6
@@ -433,7 +431,17 @@ The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with 
             )
 
 
-    - :inline-python:`ariac_tutorials.utils`: Module which contains reusable functions and classes.
+- The module :inline-python:`utils` contains reusable functions and classes.
+- The function :inline-python:`multiply_pose()` is used to compute the pose of the parts detected by the camera in the world frame.
+- The class :inline-python:`AdvancedLogicalCameraImage` is a Python class which is used to store the message published on the camera topic. Although a class is not strictly necessary, it makes the code more readable and easier to maintain.
+
+    .. code-block:: python
+        :lineno-start: 16
+
+        from ariac_tutorials.utils import (
+            multiply_pose,
+            AdvancedLogicalCameraImage
+        )
   
 - Class Variables
 

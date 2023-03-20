@@ -20,23 +20,23 @@ Topics
      - Message Definition
      - Description 
    * - :red:`/ariac/orders` 
-     - ``ariac_msgs/msg/Order``
+     - :gray:`ariac_msgs/msg/Order`
      - `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_
      - Orders that the CCS should submit
    * - :red:`/ariac/competition_state`
-     - ``ariac_msgs/msg/CompetitionState`` 
+     - :gray:`ariac_msgs/msg/CompetitionState` 
      - `CompetitionState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/CompetitionState.msg>`_
      - Current state of the competition 
    * - :red:`/ariac/bin_parts`
-     - ``ariac_msgs/msg/BinParts`` 
+     - :gray:`ariac_msgs/msg/BinParts` 
      - `BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_
      - Part information in each bin at program start-up 
    * - :red:`/ariac/conveyor_parts`
-     - ``ariac_msgs/msg/ConveyorParts`` 
+     - :gray:`ariac_msgs/msg/ConveyorParts`
      - `ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_
      - Parts that will come on the conveyor belt 
    * - :red:`/ariac/agv{n}_status`
-     - ``ariac_msgs/msg/AGVStatus``
+     - :gray:`ariac_msgs/msg/AGVStatus`
      - `AGVStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AGVStatus.msg>`_
      - State of the AGV {n} (location, position, velocity)
    * - :red:`/ariac/{robot}_gripper_state`
@@ -155,7 +155,7 @@ Sensor Topics
      - Topic Name
      - Message Type 
    * - break_beam
-     - :red:`/ariac/sensors/{sensor_name}/change` :red:`/ariac/sensors/{sensor_name}/status`
+     - :red:`/ariac/sensors/{sensor_name}/change` and :red:`/ariac/sensors/{sensor_name}/status`
      - ``ariac_msgs/BreakBeamStatus`` ``ariac_msgs/BreakBeamStatus``
    * - proximity
      - :red:`/ariac/sensors/{sensor_name}/scan`
@@ -170,7 +170,7 @@ Sensor Topics
      - :red:`/ariac/sensors/{sensor_name}/rgb_image`
      - ``sensor_msgs/Image sensor_msgs/Image``
    * - rgbd_camera
-     - :red:`/ariac/sensors/{sensor_name}/rgb_image` :red:`/ariac/sensors/{sensor_name}/depth_image`
+     - :red:`/ariac/sensors/{sensor_name}/rgb_image` and :red:`/ariac/sensors/{sensor_name}/depth_image`
      - ``sensor_msgs/Image``
    * - basic_logical_camera
      - :red:`/ariac/sensors/{sensor_name}/image`

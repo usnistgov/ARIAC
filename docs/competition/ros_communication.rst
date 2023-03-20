@@ -1,6 +1,5 @@
 .. _COMMUNICATIONS:
 
-.. role:: topic
 
 ROS Communication Overview
 ==========================
@@ -20,7 +19,7 @@ Topics
      - Message Type
      - Message Definition
      - Description 
-   * - :topic:`/ariac/orders` 
+   * - :red:`/ariac/orders` 
      - ``ariac_msgs/msg/Order``
      - `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_
      - Orders that the CCS should submit

@@ -42,10 +42,16 @@ html_theme = 'sphinx_rtd_theme'
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'tango'
 
+rst_prolog = """
+ .. include:: <s5defs.txt>
+
+ """
+ 
 source_suffix = ['.rst', '.md']
 html_static_path = ['custom']
 html_css_files = [
     'css/custom.css',
+    'css/hack.css',
 ]
 html_js_files = [
     'js/custom.js'

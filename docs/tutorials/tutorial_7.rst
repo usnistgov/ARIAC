@@ -779,6 +779,8 @@ The competition interface from :ref:`Tutorial 6 <TUTORIAL6>` was augmented with 
 Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+The competition interface from :ref:`Tutorial 6 <TUTORIAL6>` was augmented with the components described below.
+
 
 - :inline-python:`_move_floor_robot_home`: Service client for moving the floor robot to the home position.
 - :inline-python:`_move_ceiling_robot_home`: Service client for moving the ceiling robot to the home position.

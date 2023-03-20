@@ -697,6 +697,8 @@ The competition interface used in this tutorial is shown in :numref:`competition
 Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+The competition interface from :ref:`Tutorial 5 <TUTORIAL5>` was augmented with the components described below.
+
 - :inline-python:`Duration`: A :inline-python:`wait(self, duration)` method is implemented using the :inline-python:`Duration` class. The :inline-python:`wait(self, duration)` method is used to wait for a specified duration while the gripper state is being changed.
 
     .. code-block:: python

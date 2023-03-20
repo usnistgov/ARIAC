@@ -200,11 +200,15 @@ The competition interface from :ref:`Tutorial 6 <Tutorial6>` was augmented with 
 Robot Commander
 --------------------------------
 
-The robot commander node starts the :inline-cpp:`MoveGroupInterface` for the floor and ceiling robots.
+The robot commander node is a C++ node which initializes the :inline-cpp:`MoveGroupInterface` for the floor and ceiling robots. 
+
+    - The move group ``floor_robot`` is used for the floor robot. This group allows control of the arm and its displacement on the linear rail.
+    - The move group ``ceiling_robot`` is used for the ceiling robot. This group allows control of the arm and the torso of the robot on the rails.
+
 The node also hosts two services:
 
-    - ``/competitor/move_floor_robot_home`` calls the method :inline-cpp:`FloorRobotMoveHome` which moves the floor robot to its home position.
-    - ``/competitor/move_ceiling_robot_home`` calls the method :inline-cpp:`CeilingRobotMoveHome` which moves the ceiling robot to its home position.
+    - ``/competitor/move_floor_robot_home`` calls the method :inline-cpp:`FloorRobotMoveHome()` which moves the floor robot to its home position.
+    - ``/competitor/move_ceiling_robot_home`` calls the method :inline-cpp:`CeilingRobotMoveHome()` which moves the ceiling robot to its home position.
 
 
 Create the Executable

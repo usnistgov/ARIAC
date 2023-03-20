@@ -17,27 +17,33 @@
 Tutorial 2: Read Data from a Break Beam Sensor
 =========================================================
 
-.. admonition:: Source Code for Tutorial 2
+.. admonition:: Tutorial 2
   :class: attention
   :name: tutorial_2
-  
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2>`_ 
 
-  .. code-block:: bash
-    
-        cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_2
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2>`_ 
+  - **Local Branch**:
+
+    .. code-block:: bash
+        
+            cd ~/ariac_ws/ariac_tutorials
+            git checkout tutorial_2
 
 
-This tutorial covers the following steps:
+This tutorial covers the following:
 
   - Create a configuration file for sensors and cameras, 
-  - Read data published by the sensor and log the outputs.
+  - Read data published by the sensor,
+  - Log the outputs in the terminal.
 
-The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 2` is as follows:
+Package Structure
+--------------------------------------------
+
+Updates and additions that are specific to :inline-tutorial:`tutorial 2`  are highlighted in the tree below.
 
 .. code-block:: text
-    :emphasize-lines: 4,5,11
+    :emphasize-lines: 4,5,8, 11
     :class: no-copybutton
     
     ariac_tutorials
@@ -55,7 +61,8 @@ The final state of the package :inline-file:`ariac_tutorials` for :inline-tutori
 
 Sensor Configuration File
 -----------------------------------
-A sensor configuration file for a given package must be created in the folder :inline-file:`config` in the package. The file must be added to the ``CMakeLists.txt`` file in the package to allow the competition software to find the file.
+
+A sensor configuration file for a given package must be created in the folder :inline-file:`config` in the package. The file must be added to the :inline-file:`CMakeLists.txt` file in the package to allow the competition software to find the file.
 To learn more about sensor configuration files, see `https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_.
 
 Add a Break Beam Sensor
@@ -79,7 +86,7 @@ Add a break beam sensor to  :inline-file:`sensors.yaml` as seen in :numref:`sens
 
 
 
-Overview of CMakelists.txt
+CMakelists.txt
 --------------------------------------------
 
 To allow for the competition software to be able to find the sensor configuration, it must be added to the share directory of the package. 
@@ -150,170 +157,99 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
 
 
 
-Overview of the Competition Interface
+Competition Interface
 --------------------------------------------
 
-The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:`competitioninterface-tutorial2`.
+The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with the components described below.
 
 .. code-block:: python
-    :caption: competition_interface.py
-    :name: competitioninterface-tutorial2
-    :linenos:
 
-    import rclpy
-    from rclpy.node import Node
     from rclpy.qos import qos_profile_sensor_data
-    from rclpy.parameter import Parameter
+
+.. highlights::
+    
+    *ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.*
+
+.. code-block:: python
+    :emphasize-lines: 3
 
     from ariac_msgs.msg import (
         CompetitionState as CompetitionStateMsg,
         BreakBeamStatus as BreakBeamStatusMsg,
     )
 
-    from std_srvs.srv import Trigger
-
-
-    class CompetitionInterface(Node):
-        '''
-        Class for a competition interface node.
-
-        Args:
-            Node (rclpy.node.Node): Parent class for ROS nodes
-
-        Raises:
-            KeyboardInterrupt: Exception raised when the user uses Ctrl+C to kill a process
-        '''
-        _competition_states = {
-            CompetitionStateMsg.IDLE: 'idle',
-            CompetitionStateMsg.READY: 'ready',
-            CompetitionStateMsg.STARTED: 'started',
-            CompetitionStateMsg.ORDER_ANNOUNCEMENTS_DONE: 'order_announcements_done',
-            CompetitionStateMsg.ENDED: 'ended',
-        }
-        '''Dictionary for converting CompetitionState constants to strings'''
-
-        def __init__(self):
-            super().__init__('competition_interface')
-
-            sim_time = Parameter(
-                "use_sim_time",
-                rclpy.Parameter.Type.BOOL,
-                True
-            )
-
-            self.set_parameters([sim_time])
-
-            # Service client for starting the competition
-            self._start_competition_client = self.create_client(Trigger, '/ariac/start_competition')
-
-            # Subscriber to the competition state topic
-            self._competition_state_sub = self.create_subscription(
-                CompetitionStateMsg,
-                '/ariac/competition_state',
-                self._competition_state_cb,
-                10)
-            # Store the state of the competition
-            self._competition_state: CompetitionStateMsg = None
-
-            # Subscriber to the break beam status topic
-            self._break_beam0_sub = self.create_subscription(
-                BreakBeamStatusMsg,
-                '/ariac/sensors/breakbeam_0/status',
-                self._breakbeam0_cb,
-                qos_profile_sensor_data)
-            # Store the number of parts that crossed the beam
-            self._conveyor_part_count = 0
-            # Store whether the beam is broken
-            self._object_detected = False
-
-        @property
-        def conveyor_part_count(self):
-            '''Number of parts that crossed the beam.'''
-            return self._conveyor_part_count
-
-        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
-            '''Callback for the topic /ariac/sensors/breakbeam_0/status
-
-            Arguments:
-                msg -- BreakBeamStatusMsg message
-            '''
-            if not self._object_detected and msg.object_detected:
-                self._conveyor_part_count += 1
-
-            self._object_detected = msg.object_detected
-
-        def _competition_state_cb(self, msg: CompetitionStateMsg):
-            '''Callback for the topic /ariac/competition_state
-
-            Arguments:
-                msg -- CompetitionState message
-            '''
-            # Log if competition state has changed
-            if self._competition_state != msg.competition_state:
-                self.get_logger().info(
-                    f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
-                    throttle_duration_sec=1.0)
-            self._competition_state = msg.competition_state
-
-        def start_competition(self):
-            '''Function to start the competition.
-            '''
-            self.get_logger().info('Waiting for competition to be ready')
-
-            if self._competition_state == CompetitionStateMsg.STARTED:
-                return
-            # Wait for competition to be ready
-            while self._competition_state != CompetitionStateMsg.READY:
-                try:
-                    rclpy.spin_once(self)
-                except KeyboardInterrupt:
-                    return
-
-            self.get_logger().info('Competition is ready. Starting...')
-
-            # Call ROS service to start competition
-            while not self._start_competition_client.wait_for_service(timeout_sec=1.0):
-                self.get_logger().info('Waiting for /ariac/start_competition to be available...')
-
-            # Create trigger request and call starter service
-            request = Trigger.Request()
-            future = self._start_competition_client.call_async(request)
-
-            # Wait until the service call is completed
-            rclpy.spin_until_future_complete(self, future)
-
-            if future.result().success:
-                self.get_logger().info('Started competition.')
-            else:
-                self.get_logger().info('Unable to start competition')
-
-
-
-        
-
-
-
-Code Explained
-^^^^^^^^^^^^^^^^^^^^^^^
-- Imports:
-
-    - :inline-python:`ariac_msgs.msg`: The ROS2 message API for the ARIAC messages.
-
-        - :inline-python:`BreakBeamStatus`: ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ ).
-    - :inline-python:`from rclpy.qos import qos_profile_sensor_data`: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-
-- Intance Variables
-
-    - :inline-python:`_break_beam0_sub`: Subscriber to the break beam status topic. 
-    - :inline-python:`_conveyor_part_count`: Variable to store the number of parts on the conveyor belt that cross the beam.
-    - :inline-python:`_object_detected`: Variable to store whether the beam is broken.
-
-- Instance Methods
-
-    - :inline-python:`_breakbeam0_cb()`: Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
+.. highlights::
     
+    *ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ ).*
 
-Overview of the Executable
+
+.. code-block:: python
+
+    self._break_beam0_sub = self.create_subscription(
+        BreakBeamStatusMsg,
+        '/ariac/sensors/breakbeam_0/status',
+        self._breakbeam0_cb,
+        qos_profile_sensor_data)
+
+.. highlights::
+    
+    *Subscriber to the break beam status topic. Note the use of qos_profile_sensor_data.*
+
+
+
+.. code-block:: python
+
+    self._conveyor_part_count = 0
+
+.. highlights::
+    
+    *Variable to store the number of parts on the conveyor belt that cross the beam.*
+
+
+.. code-block:: python
+
+    self._object_detected = False
+
+.. highlights::
+    
+    *Variable to store whether the beam is broken.*
+
+
+.. code-block:: python
+
+    @property
+    def conveyor_part_count(self):
+        '''Number of parts that crossed the beam.'''
+        return self._conveyor_part_count
+
+.. highlights::
+    
+    *A getter is provided for the variable _object_detected*
+
+
+.. code-block:: python
+
+    def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+        '''Callback for the topic /ariac/sensors/breakbeam_0/status
+
+        Arguments:
+            msg -- BreakBeamStatusMsg message
+        '''
+        if not self._object_detected and msg.object_detected:
+            self._conveyor_part_count += 1
+
+        self._object_detected = msg.object_detected
+
+.. highlights::
+    
+    *Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.*
+
+
+
+
+
+
+Create the Executable
 --------------------------------
 
 .. code-block:: python

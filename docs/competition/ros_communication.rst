@@ -153,28 +153,28 @@ Sensor Topics
    * - Sensor Type
      - Topic Name
      - Message Type 
-   * - 'break_beam'
+   * - break_beam
      - ``/ariac/sensors/{sensor_name}/change`` ``/ariac/sensors/{sensor_name}/status``
      - ``ariac_msgs/BreakBeamStatus`` ``ariac_msgs/BreakBeamStatus``
-   * - 'proximity`
+   * - proximity
      - ``/ariac/sensors/{sensor_name}/scan``
      - ``sensor_msgs/Range``
-   * - 'laser_profiler'
+   * - laser_profiler
      - ``/ariac/sensors/{sensor_name}/scan`` 
      - ``sensor_msgs/LaserScan`` 
-   * - 'lidar'
+   * - lidar
      - ``/ariac/sensors/{sensor_name}/scan``	
      - ``sensor_msgs/PointCloud``
-   * - 'rgb_camera'
+   * - rgb_camera
      - ``/ariac/sensors/{sensor_name}/rgb_image``
      - ``sensor_msgs/Image sensor_msgs/Image``
-   * - 'rgbd_camera'
+   * - rgbd_camera
      - ``/ariac/sensors/{sensor_name}/rgb_image`` ``/ariac/sensors/{sensor_name}/depth_image``
      - ``sensor_msgs/Image``
-   * - 'basic_logical_camera'
+   * - basic_logical_camera
      - ``/ariac/sensors/{sensor_name}/image``
      - ``ariac_msgs/BasicLogicalCameraImage``
-   * - 'advanced_logical_camera'
+   * - advanced_logical_camera
      - ``/ariac/sensors/{sensor_name}/image``
      - ``ariac_msgs/AdvancedLogicalCameraImage``
 

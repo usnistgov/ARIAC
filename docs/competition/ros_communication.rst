@@ -23,39 +23,39 @@ Topics
      - ``ariac_msgs/msg/Order``
      - `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_
      - Orders that the CCS should submit
-   * - ``/ariac/competition_state``
+   * - :red:`/ariac/competition_state`
      - ``ariac_msgs/msg/CompetitionState`` 
      - `CompetitionState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/CompetitionState.msg>`_
      - Current state of the competition 
-   * - ``/ariac/bin_parts``
+   * - :red:`/ariac/bin_parts`
      - ``ariac_msgs/msg/BinParts`` 
      - `BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_
      - Part information in each bin at program start-up 
-   * - ``/ariac/conveyor_parts``
+   * - :red:`/ariac/conveyor_parts`
      - ``ariac_msgs/msg/ConveyorParts`` 
      - `ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_
      - Parts that will come on the conveyor belt 
-   * - ``/ariac/agv{n}_status``
+   * - :red:`/ariac/agv{n}_status`
      - ``ariac_msgs/msg/AGVStatus``
      - `AGVStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AGVStatus.msg>`_
      - State of the AGV {n} (location, position, velocity)
-   * - ``/ariac/{robot}_gripper_state``
+   * - :red:`/ariac/{robot}_gripper_state`
      - ``ariac_msgs/msg/VacuumGripperState``
      - `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_
      - State of {robot}'s gripper (enabled, attached, type)
-   * - ``/ariac/conveyor_state``
+   * - :red:`/ariac/conveyor_state`
      - ``ariac_msgs/msg/ConveyorBeltState``
      - `ConveyorBeltState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorBeltState.msg>`_
      - State of the conveyor (enabled, power)
-   * - ``/ariac/robot_health``
+   * - :red:`/ariac/robot_health`
      - ``ariac_msgs/msg/Robots``
      - `Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_
      - Health of the robots (enabled or disabled)
-   * - ``/ariac/sensor_health```
+   * - :red:`/ariac/sensor_health`
      - ``ariac_msgs/msg/Sensors``
      - `Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_
      - Health of the sensors (enabled or disabled)
-   * - ``/ariac_human/state```
+   * - :red:`/ariac_human/state`
      - ``ariac_msgs/msg/HumanState``
      - `Humanstate.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_
      - Position and velocity of the human and the ceiling robot
@@ -87,7 +87,7 @@ Services
      - Service type
      - Service Definition
      - Description  
-   * - ``/ariac/start_competition``
+   * - :navy:`/ariac/start_competition`
      - ``std_srvs/srv/Trigger``
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Start the competition   

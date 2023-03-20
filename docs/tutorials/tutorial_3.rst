@@ -413,13 +413,13 @@ The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with 
 
         from geometry_msgs.msg import Pose
 
-- :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (see definition of `AdvancedLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`_ )
-- :inline-python:`Part`: Message class that stores the part type and color (see definition of `Part.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Part.msg>`_ )
-- :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (see definition here: :inline-python:`PartPose.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/PartPose.msg>`)
+- :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (see `AdvancedLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`_ )
+- :inline-python:`Part`: Message class that stores the part type and color (see `Part.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Part.msg>`_ )
+- :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (see `PartPose.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/PartPose.msg>`)
 
     .. code-block:: python
         :lineno-start: 6
-        :emphasize-lines: 9-11
+        :emphasize-lines: 4-6
 
         from ariac_msgs.msg import (
             CompetitionState as CompetitionStateMsg,

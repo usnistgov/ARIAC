@@ -238,6 +238,7 @@ Create the Executable
     if __name__ == '__main__':
         main()
 
+
 Code Explained
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -291,5 +292,8 @@ Outputs
 --------------------------------
 
 The output of the above commands show both robots moving to their home positions in Gazebo.
+
+.. figure:: ../images/tutorial7_output.jpg
+        :align: center
 
 

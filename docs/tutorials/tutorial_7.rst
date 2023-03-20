@@ -13,9 +13,9 @@
 .. role:: inline-bash(code)
     :language: bash
 
-=========================================================
+
 Tutorial 7: Moving Robots with MoveIt
-=========================================================
+--------------------------------
 
 .. admonition:: Source Code for Tutorial 7
   :class: attention

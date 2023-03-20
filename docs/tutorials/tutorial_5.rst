@@ -731,9 +731,6 @@ The competition interface from :ref:`Tutorial 4 <TUTORIAL4>` was augmented with 
 
 
 
-
-
-
 Create the Executable
 --------------------------------
 
@@ -771,7 +768,7 @@ Create the Executable
     if __name__ == '__main__':
         main()
 
-Code Explained
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 This executable does the following:

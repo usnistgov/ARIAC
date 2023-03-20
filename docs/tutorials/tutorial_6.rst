@@ -23,7 +23,7 @@ Tutorial 6: Enable/Disable a Gripper
 
   - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6>`_ 
-  - **Local Branch**:
+  - **Switch Branch**:
 
     .. code-block:: bash
         
@@ -37,7 +37,7 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 6`  are hi
 
 
 .. code-block:: text
-    :emphasize-lines: 2, 16
+    :emphasize-lines: 2, 9, 16
     :class: no-copybutton
     
     ariac_tutorials
@@ -49,7 +49,7 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 6`  are hi
     │   ├── __init__.py
     │   ├── utils.py
     │   └── competition_interface.py
-    └── nodes
+    └── scripts
         ├── tutorial_1.py
         ├── tutorial_2.py
         ├── tutorial_3.py
@@ -57,6 +57,47 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 6`  are hi
         ├── tutorial_5.py
         └── tutorial_6.py
 
+CMakelists.txt
+--------------------------------------------
+
+.. code-block:: cmake
+    :emphasize-lines: 31
+
+    cmake_minimum_required(VERSION 3.8)
+    project(ariac_tutorials)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    find_package(ament_cmake REQUIRED)
+    find_package(ament_cmake_python REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(rclpy REQUIRED)
+    find_package(ariac_msgs REQUIRED)
+    find_package(orocos_kdl REQUIRED)
+
+    # Install the config directory to the package share directory
+    install(DIRECTORY 
+    config
+    DESTINATION share/${PROJECT_NAME}
+    )
+
+    # Install Python modules
+    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
+
+    # Install Python executables
+    install(PROGRAMS
+    scripts/tutorial_1.py
+    scripts/tutorial_2.py
+    scripts/tutorial_3.py
+    scripts/tutorial_4.py
+    scripts/tutorial_5.py
+    scripts/tutorial_6.py
+    DESTINATION lib/${PROJECT_NAME}
+    )
+
+    ament_package()
 
 
 
@@ -71,13 +112,17 @@ The competition interface used in this tutorial is shown in :numref:`competition
     :linenos:
 
     import rclpy
-    from rclpy.node import Node
-    from rclpy.parameter import Parameter
     from rclpy.time import Duration
-
+    from rclpy.node import Node
+    from rclpy.qos import qos_profile_sensor_data
+    from rclpy.parameter import Parameter
+    from geometry_msgs.msg import Pose
     from ariac_msgs.msg import (
         CompetitionState as CompetitionStateMsg,
+        BreakBeamStatus as BreakBeamStatusMsg,
+        AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
         Part as PartMsg,
+        PartPose as PartPoseMsg,
         Order as OrderMsg,
         AssemblyPart as AssemblyPartMsg,
         AssemblyTask as AssemblyTaskMsg,
@@ -85,19 +130,22 @@ The competition interface used in this tutorial is shown in :numref:`competition
         VacuumGripperState,
     )
 
-    from rclpy.qos import qos_profile_sensor_data
-    from std_srvs.srv import Trigger
-    from ariac_msgs.srv import MoveAGV
-    from ariac_msgs.srv import VacuumGripperControl
-
-    from ariac_tutorials.utils import (
-        KittingTask,
-        Order,
-        KittingPart,
-        AssemblyTask,
-        CombinedTask
+    from ariac_msgs.srv import (
+        MoveAGV,
+        VacuumGripperControl
     )
 
+    from std_srvs.srv import Trigger
+
+    from ariac_tutorials.utils import (
+        multiply_pose,
+        AdvancedLogicalCameraImage,
+        Order,
+        KittingTask,
+        CombinedTask,
+        AssemblyTask,
+        KittingPart
+    )
 
     class CompetitionInterface(Node):
         '''
@@ -109,12 +157,14 @@ The competition interface used in this tutorial is shown in :numref:`competition
         Raises:
             KeyboardInterrupt: Exception raised when the user uses Ctrl+C to kill a process
         '''
-        
-        _gripper_states = {
-            True: 'enabled',
-            False: 'disabled'
+        _competition_states = {
+            CompetitionStateMsg.IDLE: 'idle',
+            CompetitionStateMsg.READY: 'ready',
+            CompetitionStateMsg.STARTED: 'started',
+            CompetitionStateMsg.ORDER_ANNOUNCEMENTS_DONE: 'order_announcements_done',
+            CompetitionStateMsg.ENDED: 'ended',
         }
-        '''Dictionary for converting VacuumGripperState constants to strings'''
+        '''Dictionary for converting CompetitionState constants to strings'''
 
         _part_colors = {
             PartMsg.RED: 'red',
@@ -134,7 +184,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
         }
         '''Dictionary for converting Part color constants to emojis'''
 
-
         _part_types = {
             PartMsg.BATTERY: 'battery',
             PartMsg.PUMP: 'pump',
@@ -143,23 +192,6 @@ The competition interface used in this tutorial is shown in :numref:`competition
         }
         '''Dictionary for converting Part type constants to strings'''
 
-        _competition_states = {
-            CompetitionStateMsg.IDLE: 'idle',
-            CompetitionStateMsg.READY: 'ready',
-            CompetitionStateMsg.STARTED: 'started',
-            CompetitionStateMsg.ORDER_ANNOUNCEMENTS_DONE: 'order_announcements_done',
-            CompetitionStateMsg.ENDED: 'ended',
-        }
-        '''Dictionary for converting CompetitionState constants to strings'''
-
-        _destinations = {
-            AGVStatusMsg.KITTING: 'kitting station',
-            AGVStatusMsg.ASSEMBLY_FRONT: 'front assembly station',
-            AGVStatusMsg.ASSEMBLY_BACK: 'back assembly station',
-            AGVStatusMsg.WAREHOUSE: 'warehouse',
-        }
-        '''Dictionary for converting AGVStatus constants to strings'''
-
         _stations = {
             AssemblyTaskMsg.AS1: "assembly station 1",
             AssemblyTaskMsg.AS2: "assembly station 2",
@@ -167,6 +199,20 @@ The competition interface used in this tutorial is shown in :numref:`competition
             AssemblyTaskMsg.AS4: "assembly station 4",
         }
         '''Dictionary for converting AssemblyTask constants to strings'''
+
+        _destinations = {
+            AGVStatusMsg.KITTING: 'kitting station',
+            AGVStatusMsg.ASSEMBLY_FRONT: 'front assembly station',
+            AGVStatusMsg.ASSEMBLY_BACK: 'back assembly station',
+            AGVStatusMsg.WAREHOUSE: 'warehouse',
+        }
+        '''Dictionary for converting AGVDestination constants to strings'''
+        
+        _gripper_states = {
+            True: 'enabled',
+            False: 'disabled'
+        }
+        '''Dictionary for converting VacuumGripperState constants to strings'''
 
         def __init__(self):
             super().__init__('competition_interface')
@@ -188,16 +234,39 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 '/ariac/competition_state',
                 self._competition_state_cb,
                 10)
-
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
 
+            # Subscriber to the break beam status topic
+            self._break_beam0_sub = self.create_subscription(
+                BreakBeamStatusMsg,
+                '/ariac/sensors/breakbeam_0/status',
+                self._breakbeam0_cb,
+                qos_profile_sensor_data)
+            # Store the number of parts that crossed the beam
+            self._conveyor_part_count = 0
+            # Store whether the beam is broken
+            self._object_detected = False
+
+            # Subscriber to the logical camera topic
+            self._advanced_camera0_sub = self.create_subscription(
+                AdvancedLogicalCameraImageMsg,
+                '/ariac/sensors/advanced_camera_0/image',
+                self._advanced_camera0_cb,
+                qos_profile_sensor_data)
+            # Store each camera image as an AdvancedLogicalCameraImage object
+            self._camera_image: AdvancedLogicalCameraImage = None
+
             # Subscriber to the order topic
-            self._orders_sub = self.create_subscription(OrderMsg, '/ariac/orders', self._orders_cb, 10)
-            # List of orders
-            self._orders = []
+            self.orders_sub = self.create_subscription(
+                OrderMsg,
+                '/ariac/orders',
+                self._orders_cb,
+                10)
             # Flag for parsing incoming orders
             self._parse_incoming_order = False
+            # List of orders
+            self._orders = []
             
             # Subscriber to the floor gripper state topic
             self._floor_robot_gripper_state_sub = self.create_subscription(
@@ -215,23 +284,55 @@ The competition interface used in this tutorial is shown in :numref:`competition
             self._floor_robot_gripper_state = VacuumGripperState()
 
         @property
+        def orders(self):
+            return self._orders
+
+        @property
+        def camera_image(self):
+            return self._camera_image
+
+        @property
+        def conveyor_part_count(self):
+            return self._conveyor_part_count
+
+        @property
         def parse_incoming_order(self):
-            '''Property for the parse_incoming_order flag.'''
             return self._parse_incoming_order
 
         @parse_incoming_order.setter
-        def parse_incoming_order(self, value: bool):
+        def parse_incoming_order(self, value):
             self._parse_incoming_order = value
-            
-        def _floor_robot_gripper_state_cb(self, msg: VacuumGripperState):
-            '''
-            Callback for the floor robot gripper state topic.
 
-            Args:
-                msg (VacuumGripperState): VacuumGripperState message
-            '''        
-            self._floor_robot_gripper_state = msg
-            
+        def _orders_cb(self, msg: Order):
+            '''Callback for the topic /ariac/orders
+            Arguments:
+                msg -- Order message
+            '''
+            order = Order(msg)
+            self._orders.append(order)
+            if self._parse_incoming_order:
+                self.get_logger().info(self._parse_order(order))
+
+        def _advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+            '''Callback for the topic /ariac/sensors/advanced_camera_0/image
+
+            Arguments:
+                msg -- AdvancedLogicalCameraImage message
+            '''
+            self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
+                                                            msg.tray_poses,
+                                                            msg.sensor_pose)
+
+        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+            '''Callback for the topic /ariac/sensors/breakbeam_0/status
+
+            Arguments:
+                msg -- BreakBeamStatusMsg message
+            '''
+            if not self._object_detected and msg.object_detected:
+                self._conveyor_part_count += 1
+
+            self._object_detected = msg.object_detected
 
         def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
@@ -245,17 +346,14 @@ The competition interface used in this tutorial is shown in :numref:`competition
                     f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
                     throttle_duration_sec=1.0)
             self._competition_state = msg.competition_state
-
-        def _orders_cb(self, msg: OrderMsg):
-            '''Callback for the topic /ariac/orders
+            
+        def _floor_robot_gripper_state_cb(self, msg: VacuumGripperState):
+            '''Callback for the topic /ariac/floor_robot_gripper_state
 
             Arguments:
-                msg (OrderMsg) -- Order message
+                msg -- VacuumGripperState message
             '''
-            order = Order(msg)
-            self._orders.append(order)
-            if self._parse_incoming_order:
-                self.get_logger().info(self.parse_order(order))
+            self._floor_robot_gripper_state = msg
 
         def start_competition(self):
             '''Function to start the competition.
@@ -288,6 +386,49 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 self.get_logger().info('Started competition.')
             else:
                 self.get_logger().info('Unable to start competition')
+
+        def parse_advanced_camera_image(self):
+            '''
+            Parse an AdvancedLogicalCameraImage message and return a string representation.
+            '''
+            output = '\n\n==========================\n'
+
+            sensor_pose: Pose = self._camera_image._sensor_pose
+
+            part_pose: PartPoseMsg
+
+            counter = 1
+            for part_pose in self._camera_image._part_poses:
+                part_color = CompetitionInterface._part_colors[part_pose.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[part_pose.part.color]
+                part_type = CompetitionInterface._part_types[part_pose.part.type].capitalize()
+                output += f'Part {counter}: {part_color_emoji} {part_color} {part_type}\n'
+                output += '==========================\n'
+                output += 'Camera Frame\n'
+                output += '==========================\n'
+                position = f'x: {part_pose.pose.position.x}\n\t\ty: {part_pose.pose.position.y}\n\t\tz: {part_pose.pose.position.z}'
+                orientation = f'x: {part_pose.pose.orientation.x}\n\t\ty: {part_pose.pose.orientation.y}\n\t\tz: {part_pose.pose.orientation.z}\n\t\tw: {part_pose.pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                output += 'World Frame\n'
+                output += '==========================\n'
+                part_world_pose = multiply_pose(sensor_pose, part_pose.pose)
+                position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
+                orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+
+                counter += 1
+
+            return output
 
         def _parse_kitting_task(self, kitting_task: KittingTask):
             '''
@@ -402,7 +543,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
             return output
 
-        def parse_order(self, order: Order):
+        def _parse_order(self, order: Order):
             '''Parse an order message and return a string representation.
 
             Args:
@@ -499,7 +640,9 @@ The competition interface used in this tutorial is shown in :numref:`competition
                 self.get_logger().info(f'Moved AGV{num} to {self._stations[station]}')
             else:
                 self.get_logger().warn(future.result().message)
-                
+
+        
+
         def set_floor_robot_gripper_state(self, state):
             '''Set the gripper state of the floor robot.
 
@@ -546,32 +689,154 @@ The competition interface used in this tutorial is shown in :numref:`competition
                     raise KeyboardInterrupt from kb_error
 
 
-Code Explained
+
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-- Imports
+- :inline-python:`Duration`: A :inline-python:`wait(self, duration)` method is implemented using the :inline-python:`Duration` class. The :inline-python:`wait(self, duration)` method is used to wait for a specified duration while the gripper state is being changed.
 
-    - :inline-python:`from rclpy.time import Duration`: A :inline-python:`wait(self, duration)` method is implemented using the :inline-python:`Duration` class. The :inline-python:`wait(self, duration)` method is used to wait for a specified duration while the gripper state is being changed.
-    - :inline-python:`from rclpy.qos import qos_profile_sensor_data`: ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - :inline-python:`from ariac_msgs.msg import VacuumGripperState`: Message type for the vacuum gripper state. 
-    - :inline-python:`from ariac_msgs.srv import VacuumGripperControl`: Service type for controlling the vacuum gripper. 
+    .. code-block:: python
+        :lineno-start: 2
 
-- Class Variables
-
-    - :inline-python:`self._gripper_states`: A dictionary for converting the :inline-python:`VacuumGripperState` constants to strings. This is used for logging the gripper state.
-
-- Instance Variables
-
-    - :inline-python:`self._floor_robot_gripper_state_sub`: Subscriber to the floor robot gripper state topic.
-    - :inline-python:`self._floor_gripper_enable`: Service client for turning on/off the vacuum gripper on the floor robot.
-    - :inline-python:`self._floor_robot_gripper_state`: Attribute to store the current state of the floor robot gripper.
+        from rclpy.time import Duration
 
 
-- Instance Methods
 
-    - :inline-python:`_floor_robot_gripper_state_cb(self, msg: VacuumGripperState)`: Callback for the topic ``/ariac/floor_robot_gripper_state``. This is used to store the current state of the floor robot gripper.
-    - :inline-python:`set_floor_robot_gripper_state(self, state)`: Function to set the gripper state of the floor robot. This function calls the ROS service to change the gripper state.
-    - :inline-python:`wait(self, duration)`: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
+- :inline-python:`VacuumGripperState`: Message class for the vacuum gripper state. This is used to determine the current state of the vacuum gripper.
+
+    .. code-block:: python
+        :lineno-start: 7
+        :emphasize-lines: 17
+
+        from ariac_msgs.msg import (
+            CompetitionState as CompetitionStateMsg,
+            BreakBeamStatus as BreakBeamStatusMsg,
+            AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
+            Part as PartMsg,
+            PartPose as PartPoseMsg,
+            Order as OrderMsg,
+            AssemblyPart as AssemblyPartMsg,
+            AssemblyTask as AssemblyTaskMsg,
+            AGVStatus as AGVStatusMsg,
+            VacuumGripperState,
+        )
+
+- :inline-python:`VacuumGripperControl`: Service type for controlling the vacuum gripper. 
+
+    .. code-block:: python
+        :lineno-start: 20
+        :emphasize-lines: 22
+
+- :inline-python:`_gripper_states`: A dictionary for converting the :inline-python:`VacuumGripperState` constants to strings. This is used for logging the gripper state.
+
+
+    .. code-block:: python
+        :lineno-start: 98
+
+        _gripper_states = {
+            True: 'enabled',
+            False: 'disabled'
+        }
+        '''Dictionary for converting VacuumGripperState constants to strings'''
+
+- :inline-python:`_floor_robot_gripper_state_sub`: Subscriber to the floor robot gripper state topic.
+
+    .. code-block:: python
+        :lineno-start: 159
+
+        self._floor_robot_gripper_state_sub = self.create_subscription(
+            VacuumGripperState,
+            '/ariac/floor_robot_gripper_state',
+            self._floor_robot_gripper_state_cb,
+            qos_profile_sensor_data)
+
+
+- :inline-python:`_floor_gripper_enable`: Service client for turning on/off the vacuum gripper on the floor robot.
+
+    .. code-block:: python
+        :lineno-start: 166
+
+        self._floor_gripper_enable = self.create_client(
+            VacuumGripperControl,
+            "/ariac/floor_robot_enable_gripper")
+
+- :inline-python:`_floor_robot_gripper_state`: Attribute to store the current state of the floor robot gripper.
+
+    .. code-block:: python
+        :lineno-start: 171
+
+        self._floor_robot_gripper_state = VacuumGripperState()
+
+
+- :inline-python:`_floor_robot_gripper_state_cb(self, msg: VacuumGripperState)`: Callback for the topic ``/ariac/floor_robot_gripper_state``. This is used to store the current state of the floor robot gripper.
+
+    .. code-block:: python
+        :lineno-start: 237
+
+        def _floor_robot_gripper_state_cb(self, msg: VacuumGripperState):
+            '''Callback for the topic /ariac/floor_robot_gripper_state
+
+            Arguments:
+                msg -- VacuumGripperState message
+            '''
+            self._floor_robot_gripper_state = msg
+
+
+- :inline-python:`set_floor_robot_gripper_state(self, state)`: Function to set the gripper state of the floor robot. This function calls the ROS service to change the gripper state.
+
+    .. code-block:: python
+        :lineno-start: 533
+
+        def set_floor_robot_gripper_state(self, state):
+            '''Set the gripper state of the floor robot.
+
+            Arguments:
+                state -- True to enable, False to disable
+
+            Raises:
+                KeyboardInterrupt: Exception raised when the user presses Ctrl+C
+            '''
+            if self._floor_robot_gripper_state.enabled == state:
+                self.get_logger().warn(f'Gripper is already {self._gripper_states[state]}')
+                return
+
+            request = VacuumGripperControl.Request()
+            request.enable = state
+
+            future = self._floor_gripper_enable.call_async(request)
+
+            try:
+                rclpy.spin_until_future_complete(self, future)
+            except KeyboardInterrupt as kb_error:
+                raise KeyboardInterrupt from kb_error
+
+            if future.result().success:
+                self.get_logger().info(f'Changed gripper state to {self._gripper_states[state]}')
+            else:
+                self.get_logger().warn('Unable to change gripper state')
+
+
+- :inline-python:`wait(self, duration)`: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
+
+    .. code-block:: python
+        :lineno-start: 561
+
+        def wait(self, duration):
+            '''Wait for a specified duration.
+
+            Arguments:
+                duration -- Duration to wait in seconds
+
+            Raises:
+                KeyboardInterrupt: Exception raised when the user presses Ctrl+C
+            '''
+            start = self.get_clock().now()
+
+            while self.get_clock().now() <= start + Duration(seconds=duration):
+                try:
+                    rclpy.spin_once(self)
+                except KeyboardInterrupt as kb_error:
+                    raise KeyboardInterrupt from kb_error
 
 
 Create the Executable
@@ -606,11 +871,13 @@ Create the Executable
     if __name__ == '__main__':
         main()
 
-Code Explained
+
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 This executable does the following:
 
+    - Initialize the ROS client library.
     - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - In a while loop:
@@ -654,7 +921,7 @@ Outputs
 
 
 .. code-block:: console
-    :caption: Terminal outputs
+    :caption: terminal 1 output
     :class: no-copybutton
     
     [INFO] [1679048497.138846958] [competition_interface]: Waiting for competition to be ready

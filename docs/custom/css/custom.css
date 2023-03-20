@@ -23,6 +23,10 @@ button.copybtn {
    color: red;
 }
 
+.orange {
+    color:rgb(202, 107, 6);
+}
+
 
 /* code.literal {
     color: #404040 !important;

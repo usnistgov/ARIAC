@@ -139,7 +139,7 @@ Overview of  CMakeLists.txt
 Competition Interface
 --------------------------------
 
-The competition interface from :ref:`Tutorial 6 <Tutorial 6>` was augmented with the components described below.
+The competition interface from :ref:`Tutorial 6 <Tutorial6>` was augmented with the components described below.
 
 .. code-block:: python
 

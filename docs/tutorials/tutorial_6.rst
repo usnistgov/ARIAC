@@ -33,6 +33,10 @@ Tutorial 6: Enable/Disable a Gripper
 
 This tutorial shows how to use service calls to enable and disable the gripper of the floor robot. 
 
+
+Package Structure
+--------------------------------------------
+
 Updates and additions that are specific to :inline-tutorial:`tutorial 6`  are highlighted in the tree below.
 
 
@@ -702,7 +706,7 @@ Code Explanation
 
 
 
-- :inline-python:`VacuumGripperState`: Message class for the vacuum gripper state. This is used to determine the current state of the vacuum gripper.
+- :inline-python:`VacuumGripperState`: Message class for the vacuum gripper state (see `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_). This message is used to determine if the gripper is enabled or disabled, if an object is attached, and the type of the gripper.
 
     .. code-block:: python
         :lineno-start: 7
@@ -721,7 +725,7 @@ Code Explanation
             VacuumGripperState,
         )
 
-- :inline-python:`VacuumGripperControl`: Service type for controlling the vacuum gripper. 
+- :inline-python:`VacuumGripperControl`: Service type for controlling the vacuum gripper (see `VacuumGripperControl.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/VacuumGripperControl.srv>`_).
 
     .. code-block:: python
         :lineno-start: 20

@@ -353,13 +353,13 @@ The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with 
 
 - Getter for the variable :inline-python:`_conveyor_part_count`.
 
-.. code-block:: python
-    :lineno-start: 67
+    .. code-block:: python
+        :lineno-start: 67
 
-    @property
-    def conveyor_part_count(self):
-        '''Number of parts that crossed the beam.'''
-        return self._conveyor_part_count
+        @property
+        def conveyor_part_count(self):
+            '''Number of parts that crossed the beam.'''
+            return self._conveyor_part_count
 
 
 - Callback for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.

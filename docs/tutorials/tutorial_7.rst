@@ -152,8 +152,6 @@ Competition Interface
 The competition interface used in this tutorial is shown in :numref:`competitioninterface-tutorial7`.
 
 
-The competition interface from :ref:`Tutorial 6 <TUTORIAL6>` was augmented with the components described below.
-
 .. code-block:: python
     :caption: competition_interface.py
     :name: competitioninterface-tutorial7
@@ -786,16 +784,16 @@ The competition interface from :ref:`Tutorial 6 <TUTORIAL6>` was augmented with 
 - :inline-python:`_move_ceiling_robot_home`: Service client for moving the ceiling robot to the home position.
 
 
-.. code-block:: python
-    :lineno-start: 171
+    .. code-block:: python
+        :lineno-start: 171
 
-    # Service client for moving the floor robot to the home position
-    self._move_floor_robot_home = self.create_client(
-        Trigger, '/competitor/move_floor_robot_home')
+        # Service client for moving the floor robot to the home position
+        self._move_floor_robot_home = self.create_client(
+            Trigger, '/competitor/move_floor_robot_home')
 
-    # Service client for moving the ceiling robot to the home position
-    self._move_ceiling_robot_home = self.create_client(
-        Trigger, '/competitor/move_ceiling_robot_home')
+        # Service client for moving the ceiling robot to the home position
+        self._move_ceiling_robot_home = self.create_client(
+            Trigger, '/competitor/move_ceiling_robot_home')
 
 - :inline-python:`move_robot_home(self, robot_name)`: public method is used in the main function to move each robot to its home position. The method takes the name of the robot to move as an argument. The method then calls the appropriate service client to move the robot to its home position.
 

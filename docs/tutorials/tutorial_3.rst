@@ -17,28 +17,35 @@
 Tutorial 3: Read Data from an Advanced Logical Camera
 =========================================================
 
-.. admonition:: Source Code for Tutorial 3
+.. admonition:: Tutorial 3
   :class: attention
   :name: tutorial_3
-  
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3>`_ 
 
-  .. code-block:: bash
-    
-        cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_3
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3>`_ 
+  - **Switch Branch**:
+
+    .. code-block:: bash
+        
+            cd ~/ariac_ws/ariac_tutorials
+            git checkout tutorial_3
 
 This tutorial covers the following topics:
 
   - Add a camera to the environment,
-  - Receive messages from a camera, 
+  - Receive messages from the camera, 
   - Store camera data internally as an instance of a class,
   - Display the stored data on the standard output.
 
-The final state of the package :inline-file:`ariac_tutorials` for :inline-tutorial:`tutorial 3` is as follows:
+
+Package Structure
+--------------------------------------------
+
+Updates and additions that are specific to :inline-tutorial:`tutorial 3`  are highlighted in the tree below.
+
 
 .. code-block:: text
-    :emphasize-lines: 8, 11
+    :emphasize-lines: 2, 5, 8, 9, 13
     :class: no-copybutton
     
     ariac_tutorials
@@ -51,13 +58,61 @@ The final state of the package :inline-file:`ariac_tutorials` for :inline-tutori
     │   ├── utils.py
     │   └── competition_interface.py
     └── nodes
+        ├── tutorial_1.py
+        ├── tutorial_2.py
         └── tutorial_3.py
+
+
+CMakelists.txt
+--------------------------------------------
+
+.. code-block:: cmake
+    :emphasize-lines: 28
+
+    cmake_minimum_required(VERSION 3.8)
+    project(ariac_tutorials)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    find_package(ament_cmake REQUIRED)
+    find_package(ament_cmake_python REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(rclpy REQUIRED)
+    find_package(ariac_msgs REQUIRED)
+    find_package(orocos_kdl REQUIRED)
+
+    # Install the config directory to the package share directory
+    install(DIRECTORY 
+    config
+    DESTINATION share/${PROJECT_NAME}
+    )
+
+    # Install Python modules
+    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
+
+    # Install Python executables
+    install(PROGRAMS
+    scripts/tutorial_1.py
+    scripts/tutorial_2.py
+    scripts/tutorial_3.py
+    DESTINATION lib/${PROJECT_NAME}
+    )
+
+    ament_package()
+
+
 
 Sensor Configuration File
 -----------------------------------
 
+Reuse the same sensor configuration file created in :ref:`Tutorial 2 <TUTORIAL2>`.
 
-Add an advanced logical camera to  :inline-file:`sensors.yaml` (lines 8-13 in :numref:`sensors-camera-yaml`). 
+Add a Logical Camera
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Add an advanced logical camera to  :inline-file:`sensors.yaml` (see lines 8-13 in :numref:`sensors-camera-yaml`). 
 
 .. code-block:: yaml
     :caption: sensors.yaml
@@ -118,11 +173,11 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
     from rclpy.qos import qos_profile_sensor_data
     from rclpy.parameter import Parameter
     from geometry_msgs.msg import Pose
-
     from ariac_msgs.msg import (
         CompetitionState as CompetitionStateMsg,
-        Part as PartMsg,
+        BreakBeamStatus as BreakBeamStatusMsg,
         AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
+        Part as PartMsg,
         PartPose as PartPoseMsg
     )
 
@@ -144,32 +199,6 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
         Raises:
             KeyboardInterrupt: Exception raised when the user uses Ctrl+C to kill a process
         '''
-
-        _part_colors = {
-            PartMsg.RED: 'red',
-            PartMsg.BLUE: 'blue',
-            PartMsg.GREEN: 'green',
-            PartMsg.ORANGE: 'orange',
-            PartMsg.PURPLE: 'purple',
-        }
-
-        _part_colors_emoji = {
-            PartMsg.RED: '🟥',
-            PartMsg.BLUE: '🟦',
-            PartMsg.GREEN: '🟩',
-            PartMsg.ORANGE: '🟧',
-            PartMsg.PURPLE: '🟪',
-        }
-        '''Dictionary for converting PartColor constants to strings'''
-
-        _part_types = {
-            PartMsg.BATTERY: 'battery',
-            PartMsg.PUMP: 'pump',
-            PartMsg.REGULATOR: 'regulator',
-            PartMsg.SENSOR: 'sensor',
-        }
-        '''Dictionary for converting PartType constants to strings'''
-
         _competition_states = {
             CompetitionStateMsg.IDLE: 'idle',
             CompetitionStateMsg.READY: 'ready',
@@ -178,6 +207,33 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
             CompetitionStateMsg.ENDED: 'ended',
         }
         '''Dictionary for converting CompetitionState constants to strings'''
+        
+        _part_colors = {
+            PartMsg.RED: 'red',
+            PartMsg.BLUE: 'blue',
+            PartMsg.GREEN: 'green',
+            PartMsg.ORANGE: 'orange',
+            PartMsg.PURPLE: 'purple',
+        }
+        '''Dictionary for converting Part color constants to strings'''
+
+        _part_colors_emoji = {
+            PartMsg.RED: '🟥',
+            PartMsg.BLUE: '🟦',
+            PartMsg.GREEN: '🟩',
+            PartMsg.ORANGE: '🟧',
+            PartMsg.PURPLE: '🟪',
+        }
+        '''Dictionary for converting Part color constants to emojis'''
+
+        _part_types = {
+            PartMsg.BATTERY: 'battery',
+            PartMsg.PUMP: 'pump',
+            PartMsg.REGULATOR: 'regulator',
+            PartMsg.SENSOR: 'sensor',
+        }
+        '''Dictionary for converting Part type constants to strings'''
+        
 
         def __init__(self):
             super().__init__('competition_interface')
@@ -202,6 +258,17 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
 
+            # Subscriber to the break beam status topic
+            self._break_beam0_sub = self.create_subscription(
+                BreakBeamStatusMsg,
+                '/ariac/sensors/breakbeam_0/status',
+                self._breakbeam0_cb,
+                qos_profile_sensor_data)
+            # Store the number of parts that crossed the beam
+            self._conveyor_part_count = 0
+            # Store whether the beam is broken
+            self._object_detected = False
+            
             # Subscriber to the logical camera topic
             self._advanced_camera0_sub = self.create_subscription(
                 AdvancedLogicalCameraImageMsg,
@@ -210,10 +277,36 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
                 qos_profile_sensor_data)
             # Store each camera image as an AdvancedLogicalCameraImage object
             self._camera_image: AdvancedLogicalCameraImage = None
+            
 
         @property
         def camera_image(self):
             return self._camera_image
+
+        @property
+        def conveyor_part_count(self):
+            return self._conveyor_part_count
+    
+        def _advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+            '''Callback for the topic /ariac/sensors/advanced_camera_0/image
+
+            Arguments:
+                msg -- AdvancedLogicalCameraImage message
+            '''
+            self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
+                                                            msg.tray_poses,
+                                                            msg.sensor_pose)
+
+        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+            '''Callback for the topic /ariac/sensors/breakbeam_0/status
+
+            Arguments:
+                msg -- BreakBeamStatusMsg message
+            '''
+            if not self._object_detected and msg.object_detected:
+                self._conveyor_part_count += 1
+
+            self._object_detected = msg.object_detected
 
         def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
@@ -259,16 +352,8 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
                 self.get_logger().info('Started competition.')
             else:
                 self.get_logger().info('Unable to start competition')
-
-        def _advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
-            '''Callback for the topic /ariac/sensors/advanced_camera_0/image
-
-            Arguments:
-                msg -- AdvancedLogicalCameraImage message
-            '''
-            self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
-                                                            msg.tray_poses,
-                                                            msg.sensor_pose)
+                
+        
 
         def parse_advanced_camera_image(self):
             '''
@@ -312,14 +397,38 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
                 counter += 1
 
             return output
+    
 
 
-Code Explained
-^^^^^^^^^^^^^^^^^^^^^^^
+Code Explanation
+^^^^^^^^^^^^^^^^^
 
-- Imports
+The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with the components described below.
 
-    - :inline-python:`ariac_msgs.msg`: Messages from the package :inline-file:`ariac_msgs`.
+
+- The :inline-python:`Pose` module is needed to compute and display the pose of the parts detected by the camera.
+
+    .. code-block:: python
+        :lineno-start: 5
+
+        from geometry_msgs.msg import Pose
+
+- :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (see definition here: :inline-python:`AdvancedLogicalCameraImage.msg <ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`)
+- :inline-python:`Part`: Message class that stores the part poses and sensor pose of the advanced logical camera (see definition here: :inline-python:`AdvancedLogicalCameraImage.msg <ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`)
+- :inline-python:`PartPose`: Message class that stores the part poses and sensor pose of the advanced logical camera (see definition here: :inline-python:`AdvancedLogicalCameraImage.msg <ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`)
+
+    .. code-block:: python
+        :lineno-start: 6
+
+        from ariac_msgs.msg import (
+            CompetitionState as CompetitionStateMsg,
+            BreakBeamStatus as BreakBeamStatusMsg,
+            AdvancedLogicalCameraImage as AdvancedLogicalCameraImageMsg,
+            Part as PartMsg,
+            PartPose as PartPoseMsg
+            )
+
+
     - :inline-python:`ariac_tutorials.utils`: Module which contains reusable functions and classes.
   
 - Class Variables

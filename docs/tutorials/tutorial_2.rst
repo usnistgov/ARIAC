@@ -1,5 +1,5 @@
 
-.. _TUTORIAL_2:
+.. _TUTORIAL2:
 
 .. only:: builder_html or readthedocs
 
@@ -23,7 +23,7 @@ Tutorial 2: Read Data from a Break Beam Sensor
 
   - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2>`_ 
-  - **Local Branch**:
+  - **Switch Branch**:
 
     .. code-block:: bash
         

@@ -26,7 +26,7 @@ Tutorial 7: Move Robots with MoveIt
 
   - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7>`_ 
-  - **Local Branch**:
+  - **Switch Branch**:
 
     .. code-block:: bash
         

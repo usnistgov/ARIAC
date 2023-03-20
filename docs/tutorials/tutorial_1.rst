@@ -21,7 +21,7 @@ Tutorial 1: Create a Competition Package
 
   - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ 
-  - **Local Branch**:
+  - **Switch Branch**:
 
     .. code-block:: bash
         

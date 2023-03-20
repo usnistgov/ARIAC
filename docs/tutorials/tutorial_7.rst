@@ -151,7 +151,9 @@ The competition interface from :ref:`Tutorial 6 <Tutorial6>` was augmented with 
     self._move_ceiling_robot_home = self.create_client(
         Trigger, '/competitor/move_ceiling_robot_home')
 
-Two service clients were added to the competition interface. Calls to these service clients will be used to move the robots to their home positions.
+.. compound::
+    
+    Two service clients were added to the competition interface. Calls to these service clients will be used to move the robots to their home positions.
 
 
 .. code-block:: python

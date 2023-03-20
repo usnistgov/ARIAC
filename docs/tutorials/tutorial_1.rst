@@ -32,11 +32,12 @@ This tutorial details the steps necessary to create a competition package that i
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 1`  are highlighted in the tree below.
+Package Structure
+--------------------------------------------
+
 
 .. code-block:: text
     :class: no-copybutton
-    :emphasize-lines: 6-8
     
     ariac_tutorials
     ├── CMakeLists.txt
@@ -50,10 +51,6 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 1`  are hi
 
 CMakelists.txt
 --------------------------------
-
-Updates and additions that are specific to :inline-tutorial:`tutorial 1`  are highlighted in the :inline-file:`CMakeLists.txt` below.
-
-
 
 .. code-block:: cmake
     :emphasize-lines: 19
@@ -81,6 +78,33 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 1`  are hi
     )
 
     ament_package()
+
+package.xml
+--------------------------------
+
+.. code-block:: xml
+    
+    <?xml version="1.0"?>
+    <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+    <package format="3">
+    <name>ariac_tutorials</name>
+    <version>0.0.0</version>
+    <description>Tutorial 1</description>
+    <maintainer email="justin.albrecht@nist.gov">Justin Albrecht</maintainer>
+    <license>Apache License 2.0</license>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+
+    <depend>rclcpp</depend>
+    <depend>rclpy</depend>
+    <depend>ariac_msgs</depend>
+    <depend>geometry_msgs</depend>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>
+
 
 
 

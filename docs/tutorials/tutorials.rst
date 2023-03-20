@@ -31,6 +31,8 @@ A brief description of each tutorial is provided below.
 - :inline-tutorial:`Tutorial 7` (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7>`_ ): This tutorial shows how to use custom services to move the floor and the ceiling robots to their respective home positions. MoveIt is used in this tutorial. The service clients are implemented in Python while the service servers are hosted in C++. 
 
 
+Each tutorial uses the code from the previous tutorial to which new functionalities and files are added.
+
 .. todo::
 
   Clone the package :inline-file:`ariac_tutorials` in the workspace :inline-file:`~/ariac_ws` by running the following command in the terminal:

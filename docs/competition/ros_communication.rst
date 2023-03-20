@@ -88,11 +88,11 @@ Services
      - Description  
    * - ``/ariac/start_competition``
      - ``std_srvs/srv/Trigger``
-     - -
+     - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Start the competition   
    * - ``/ariac/end_competition``
      - ``std_srvs/srv/Trigger``
-     - -
+     - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - End the competition
    * - ``/ariac/submit_order``
      - ``ariac_msgs/srv/SubmitOrder``
@@ -112,11 +112,11 @@ Services
      - Move the AGV {n} to the requested location  
    * - ``/ariac/agv{n}_lock_tray``  
      - ``std_srvs/srv/Trigger``
-     - -
+     - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Lock a kit tray to AGV {n} 
    * - ``/ariac/agv{n}_unlock_tray``` 
      - ``std_srvs/srv/Trigger``
-     - -
+     - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Unlock a kit tray to AGV {n} 
    * - ``/ariac/{robot}_enable_gripper``
      - ``ariac_msgs/srv/VacuumGripperControl``

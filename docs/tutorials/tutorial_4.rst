@@ -41,7 +41,7 @@ This tutorial shows how to read each order published by the ARIAC manager. The f
 Package Structure
 --------------------------------------------
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 3`  are highlighted in the tree below.
+Updates and additions that are specific to :inline-tutorial:`tutorial 4`  are highlighted in the tree below.
 
 
 .. code-block:: text
@@ -567,7 +567,7 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 - :inline-python:`_destinations` is a dictionary that maps the integer values of the AGV destination to their string representations.
 
     .. code-block:: python
-        :lineno-start: 76
+        :lineno-start: 77
         
         _destinations = {
             AGVStatusMsg.KITTING: 'kitting station',
@@ -581,7 +581,7 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 - :inline-python:`_orders_sub`: ROS subscriber to the topic ``/ariac/orders``
 
     .. code-block:: python
-        :lineno-start: 138
+        :lineno-start: 131
 
         self.orders_sub = self.create_subscription(
             OrderMsg,
@@ -592,14 +592,14 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 - :inline-python:`self._parse_incoming_order`: Flag  for logging an order in the terminal. If the flag is set to :inline-python:`True`, the order is logged in the terminal. If the flag is set to :inline-python:`False`, the order is not logged in the terminal.
 
     .. code-block:: python
-        :lineno-start: 144
+        :lineno-start: 137
 
         self._parse_incoming_order = False
 
 - :inline-python:`self._orders`: List of orders. Each order announced by the competition interface is stored in this list.
 
     .. code-block:: python
-        :lineno-start: 146
+        :lineno-start: 139
 
         self._orders = []
 
@@ -607,7 +607,7 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 - Getter for the list of orders :inline-python:`self._orders`
 
     .. code-block:: python
-        :lineno-start: 148
+        :lineno-start: 141
 
         @property
         def orders(self):
@@ -616,7 +616,7 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 - Getter and setter for the flag :inline-python:`self._parse_incoming_order`
 
     .. code-block:: python
-        :lineno-start: 160
+        :lineno-start: 153
 
         @property
         def parse_incoming_order(self):
@@ -632,7 +632,7 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 - :inline-python:`_orders_cb(self, msg: OrderMsg)`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`self._orders`
 
     .. code-block:: python
-        :lineno-start: 168
+        :lineno-start: 161
 
         def _orders_cb(self, msg: Order):
         '''Callback for the topic /ariac/orders
@@ -645,13 +645,10 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
             self.get_logger().info(self._parse_order(order))
 
 
-
-
-
 - :inline-python:`_parse_order(self, order: Order)`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
 
     .. code-block:: python
-        :lineno-start: 403
+        :lineno-start: 396
 
         def _parse_order(self, order: Order):
             '''Parse an order message and return a string representation.
@@ -676,10 +673,11 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
                 output += 'Type: Unknown\n'
             return output
 
+
 - :inline-python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a :inline-python:`KittingTask` object and returns a string representation.
 
     .. code-block:: python
-        :lineno-start: 290
+        :lineno-start: 283
 
         def _parse_kitting_task(self, kitting_task: KittingTask):
             '''
@@ -719,10 +717,11 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 
             return output
 
+
 - :inline-python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an :inline-python:`AssemblyTask` object and returns a string representation.
 
     .. code-block:: python
-        :lineno-start: 328
+        :lineno-start: 321
 
         def _parse_assembly_task(self, assembly_task: AssemblyTask):
             '''
@@ -767,7 +766,7 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 - :inline-python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a :inline-python:`CombinedTask` object and returns a string representation.
 
     .. code-block:: python
-        :lineno-start: 367
+        :lineno-start: 360
 
         def _parse_combined_task(self, combined_task: CombinedTask):
             '''
@@ -843,9 +842,10 @@ Code Explanation
 
 This executable does the following:
 
-    - Creates an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
-    - Starts the competition.
-    - Logs  each published message to the terminal.
+    - Initialize the ROS client library.
+    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Start the competition.
+    - Log each published message to the terminal.
 
 
 

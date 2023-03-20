@@ -10,7 +10,7 @@ Topics
 
 
 .. list-table:: List of topics with message types.
-   :widths: 50 60 25 50
+   :widths: 50 100 25 50
    :header-rows: 1
    :name: communications-topics
 
@@ -78,7 +78,7 @@ Services
 --------
 
 .. list-table:: List of services with service types.
-   :widths: 50 60 25 50
+   :widths: 100 60 25 50
    :header-rows: 1
    :name: communications-services
 

@@ -622,16 +622,116 @@ Code Explanation
 
 The competition interface from :ref:`Tutorial 4 <TUTORIAL4>` was augmented with the components described below.
 
+- :inline-python:`MoveAGV`: Service class which is used to move an AGV to a preset location  (see `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_ )
 
-- Imports
+    .. code-block:: python
+        :lineno-start: 17
 
-    - :inline-python:`from ariac_msgs.srv import MoveAGV`: Service for moving an AGV.
+
+        from ariac_msgs.srv import (
+            MoveAGV)
+
+- :inline-python:`_stations` is a dictionary that maps the integer values of the AGV station to their string representations.
+
+    .. code-block:: python
+        :lineno-start: 77
+        
+        _stations = {
+            AssemblyTaskMsg.AS1: "assembly station 1",
+            AssemblyTaskMsg.AS2: "assembly station 2",
+            AssemblyTaskMsg.AS3: "assembly station 3",
+            AssemblyTaskMsg.AS4: "assembly station 4",
+        }
+        '''Dictionary for converting AssemblyTask constants to strings'''
+
+- :inline-python:`lock_agv_tray(self, num)`: Method to lock the tray of an AGV. This method creates a client to the ``/ariac/agv{num}_lock_tray`` service and calls it. The AGV number is passed as an argument to the method.
+
+    .. code-block:: python
+        :lineno-start: 422
+
+        def lock_agv_tray(self, num):
+            '''
+            Lock the tray of an AGV and parts on the tray. This will prevent tray and parts from moving during transport.
+
+            Args:
+                num (int):  AGV number
+
+            Raises:
+                KeyboardInterrupt: Exception raised when the user presses Ctrl+C
+            '''
+
+            # Create a client to send a request to the `/ariac/agv{num}_lock_tray` service
+            tray_locker = self.create_client(
+                Trigger,
+                f'/ariac/agv{num}_lock_tray'
+            )
+
+            # Build the request
+            request = Trigger.Request()
+            # Send the request
+            future = tray_locker.call_async(request)
+
+            # Wait for the response
+            try:
+                rclpy.spin_until_future_complete(self, future)
+            except KeyboardInterrupt as kb_error:
+                raise KeyboardInterrupt from kb_error
+
+            # Check the response
+            if future.result().success:
+                self.get_logger().info(f'Locked AGV{num}\'s tray')
+            else:
+                self.get_logger().warn('Unable to lock tray')
+
+- :inline-python:`move_agv_to_station(self, num, station)`: Method to move an AGV to a station. This method creates a client to the ``/ariac/move_agv{num}`` service and calls it. The AGV number and station are passed as arguments to the method.
+
+    .. code-block:: python
+        :lineno-start: 456
+        
+        def move_agv_to_station(self, num, station):
+            '''
+            Move an AGV to an assembly station.
+
+            Args:
+                num (int): AGV number
+                station (int): Assembly station number
+
+            Raises:
+                KeyboardInterrupt: Exception raised when the user presses Ctrl+C
+            '''
+
+            # Create a client to send a request to the `/ariac/move_agv` service.
+            mover = self.create_client(
+                MoveAGV,
+                f'/ariac/move_agv{num}')
+
+            # Create a request object.
+            request = MoveAGV.Request()
+
+            # Set the request location.
+            if station in [AssemblyTaskMsg.AS1, AssemblyTaskMsg.AS3]:
+                request.location = MoveAGV.Request.ASSEMBLY_FRONT
+            else:
+                request.location = MoveAGV.Request.ASSEMBLY_BACK
+
+            # Send the request.
+            future = mover.call_async(request)
+
+            # Wait for the server to respond.
+            try:
+                rclpy.spin_until_future_complete(self, future)
+            except KeyboardInterrupt as kb_error:
+                raise KeyboardInterrupt from kb_error
+
+            # Check the result of the service call.
+            if future.result().success:
+                self.get_logger().info(f'Moved AGV{num} to {self._stations[station]}')
+            else:
+                self.get_logger().warn(future.result().message)
 
 
-- Instance Methods
 
-    - :inline-python:`move_agv_to_station(self, num, station)`: Method to move an AGV to a station. This method creates a client to the ``/ariac/move_agv{num}`` service and calls it. The AGV number and station are passed as arguments to the method.
-    - :inline-python:`lock_agv_tray(self, num)`: Method to lock the tray of an AGV. This method creates a client to the ``/ariac/agv{num}_lock_tray`` service and calls it. The AGV number is passed as an argument to the method.
+
 
 
 Create the Executable
@@ -676,11 +776,12 @@ Code Explained
 
 This executable does the following:
 
+    - Initialize the ROS client library.
     - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - Iterate through the list of orders and retrieve orders with assembly tasks.
 
-        - **Note**: See :ref:`Tutorial 4 <Tutorial 4>` for more information on retrieving orders.
+        - **Note**: See :ref:`Tutorial 4 <TUTORIAL4>` for more information on retrieving orders.
 
     - Retrieve AGVs for the assembly tasks.
     - For each AGV:
@@ -725,7 +826,7 @@ Outputs
 
 
 .. code-block:: console
-    :caption: Terminal outputs
+    :caption: terminal 1 output
     :class: no-copybutton
     
     [INFO] [1679043864.680244149] [competition_interface]: Waiting for competition to be ready

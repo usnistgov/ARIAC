@@ -20,7 +20,7 @@
 Tutorial 7: Moving Robots with MoveIt
 =========================================================
 
-.. admonition:: Todo List for Tutorial 7
+.. admonition:: Tutorial 7
   :class: attention
   :name: tutorial_7
 

@@ -91,39 +91,39 @@ Services
      - ``std_srvs/srv/Trigger``
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Start the competition   
-   * - ``/ariac/end_competition``
+   * - :navy:`/ariac/end_competition`
      - ``std_srvs/srv/Trigger``
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - End the competition
-   * - ``/ariac/submit_order``
+   * - :navy:`/ariac/submit_order`
      - ``ariac_msgs/srv/SubmitOrder``
      - `SubmitOrder.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/SubmitOrder.srv>`_
      - Submit an order with the requested ``order_id`` 
-   * - ``/ariac/perform_quality_check``
+   * - :navy:`/ariac/perform_quality_check`
      - ``ariac_msgs/srv/PerformQualityCheck``
      - `PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_
      - Check the quality of a kitting order with the requested ``order_id``
-   * - ``/ariac/get_pre_assembly_poses``
+   * - :navy:`/ariac/get_pre_assembly_poses`
      - ``ariac_msgs/srv/GetPreAssemblyPoses``
      - `GetPreAssemblyPoses.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/GetPreAssemblyPoses.srv>`_
      - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with ``order_id``
-   * - ``/ariac/move_agv{n}``  
+   * - :navy:`/ariac/move_agv{n}` 
      - ``ariac_msgs/srv/MoveAGV``
      - `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_
      - Move the AGV {n} to the requested location  
-   * - ``/ariac/agv{n}_lock_tray``  
+   * - :navy:`/ariac/agv{n}_lock_tray` 
      - ``std_srvs/srv/Trigger``
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Lock a kit tray to AGV {n} 
-   * - ``/ariac/agv{n}_unlock_tray``` 
+   * - :navy:`/ariac/agv{n}_unlock_tray`
      - ``std_srvs/srv/Trigger``
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Unlock a kit tray to AGV {n} 
-   * - ``/ariac/{robot}_enable_gripper``
+   * - :navy:`/ariac/{robot}_enable_gripper`
      - ``ariac_msgs/srv/VacuumGripperControl``
      - `VacuumGripperControl.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/VacuumGripperControl.srv>`_
      - Set the state of {robot}'s gripper to the request state
-   * - ``/ariac/{robot}_change_gripper``
+   * - :navy:`/ariac/{robot}_change_gripper`
      - ``ariac_msgs/srv/ChangeGripper`` 
      - `ChangeGripper.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/ChangeGripper.srv>`_
      - Change the type of {robot}'s gripper to the request type
@@ -155,28 +155,28 @@ Sensor Topics
      - Topic Name
      - Message Type 
    * - break_beam
-     - ``/ariac/sensors/{sensor_name}/change`` ``/ariac/sensors/{sensor_name}/status``
+     - :red:`/ariac/sensors/{sensor_name}/change` :red:`/ariac/sensors/{sensor_name}/status`
      - ``ariac_msgs/BreakBeamStatus`` ``ariac_msgs/BreakBeamStatus``
    * - proximity
-     - ``/ariac/sensors/{sensor_name}/scan``
+     - :red:`/ariac/sensors/{sensor_name}/scan`
      - ``sensor_msgs/Range``
    * - laser_profiler
-     - ``/ariac/sensors/{sensor_name}/scan`` 
+     - :red:`/ariac/sensors/{sensor_name}/scan`
      - ``sensor_msgs/LaserScan`` 
    * - lidar
-     - ``/ariac/sensors/{sensor_name}/scan``	
+     - :red:`/ariac/sensors/{sensor_name}/scan`	
      - ``sensor_msgs/PointCloud``
    * - rgb_camera
-     - ``/ariac/sensors/{sensor_name}/rgb_image``
+     - :red:`/ariac/sensors/{sensor_name}/rgb_image`
      - ``sensor_msgs/Image sensor_msgs/Image``
    * - rgbd_camera
-     - ``/ariac/sensors/{sensor_name}/rgb_image`` ``/ariac/sensors/{sensor_name}/depth_image``
+     - :red:`/ariac/sensors/{sensor_name}/rgb_image` :red:`/ariac/sensors/{sensor_name}/depth_image`
      - ``sensor_msgs/Image``
    * - basic_logical_camera
-     - ``/ariac/sensors/{sensor_name}/image``
+     - :red:`/ariac/sensors/{sensor_name}/image`
      - ``ariac_msgs/BasicLogicalCameraImage``
    * - advanced_logical_camera
-     - ``/ariac/sensors/{sensor_name}/image``
+     - :red:`/ariac/sensors/{sensor_name}/image`
      - ``ariac_msgs/AdvancedLogicalCameraImage``
 
 ..

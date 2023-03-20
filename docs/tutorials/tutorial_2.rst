@@ -163,7 +163,7 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
 
 .. code-block:: python
     :caption: competition_interface.py
-    :name: competitioninterface-tutorial3
+    :name: competitioninterface-tutorial2
     :linenos:
 
     import rclpy
@@ -299,6 +299,7 @@ Code Explanation
 The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with the components described below.
 
 .. code-block:: python
+    :lineno-start: 3
 
     from rclpy.qos import qos_profile_sensor_data
 
@@ -308,6 +309,7 @@ The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with 
 
 .. code-block:: python
     :emphasize-lines: 3
+    :lineno-start: 6
 
     from ariac_msgs.msg import (
         CompetitionState as CompetitionStateMsg,

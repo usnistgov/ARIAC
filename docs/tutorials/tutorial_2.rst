@@ -298,14 +298,13 @@ Code Explanation
 
 The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with the components described below.
 
-.. code-block:: python
-    :lineno-start: 3
+- ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
 
-    from rclpy.qos import qos_profile_sensor_data
+    .. code-block:: python
+        :lineno-start: 3
 
-.. highlights::
-    
-    ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
+        from rclpy.qos import qos_profile_sensor_data
+
 
 .. code-block:: python
     :emphasize-lines: 3

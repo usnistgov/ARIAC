@@ -14,7 +14,7 @@
     :language: bash
 
 =========================================================
-Tutorial 2: Reading Data from a Break Beam Sensor
+Tutorial 2: Read Data from a Break Beam Sensor
 =========================================================
 
 .. admonition:: Source Code for Tutorial 2

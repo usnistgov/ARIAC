@@ -15,7 +15,7 @@
     :language: bash
 
 =========================================================
-Tutorial 4: Reading an Order
+Tutorial 4: Read an Order
 =========================================================
 
 .. admonition:: Source Code for Tutorial 4

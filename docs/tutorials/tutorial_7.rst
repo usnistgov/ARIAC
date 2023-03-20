@@ -17,7 +17,7 @@
     :language: bash
 
 =========================================================
-Tutorial 7: Moving Robots with MoveIt
+Tutorial 7: Move Robots with MoveIt
 =========================================================
 
 .. admonition:: Tutorial 7

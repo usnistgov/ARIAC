@@ -14,7 +14,7 @@
     :language: bash
 
 =========================================================
-Tutorial 3: Reading Data from an Advanced Logical Camera
+Tutorial 3: Read Data from an Advanced Logical Camera
 =========================================================
 
 .. admonition:: Source Code for Tutorial 3

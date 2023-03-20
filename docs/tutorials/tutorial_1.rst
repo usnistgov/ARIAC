@@ -12,7 +12,7 @@
 .. role:: inline-tutorial(file)
 
 =========================================================
-Tutorial 1: Creating a Competition Package
+Tutorial 1: Create a Competition Package
 =========================================================
 
 .. admonition:: Tutorial 1

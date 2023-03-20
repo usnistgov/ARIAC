@@ -280,7 +280,7 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
             
 
         @property
-        def camera_image(self):
+        def camera_image(self)  -> AdvancedLogicalCameraImage:
             return self._camera_image
 
         @property
@@ -442,31 +442,143 @@ The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with 
             multiply_pose,
             AdvancedLogicalCameraImage
         )
-  
-- Class Variables
 
-    - :inline-python:`_part_colors` and :inline-python:`_part_types` are dictionaries that map the integer values of the part color and type to their string representations. :inline-python:`_part_colors_emoji` is a dictionary that maps the integer values of the part color to their emoji representations. These dictionaries are mainly used to display the part color and type in a human-readable format.
+- :inline-python:`_part_colors` is a dictionary that maps the integer values of the part color to their string representations. 
+- :inline-python:`_part_types` is a dictionary that maps the integer values of the part type to their string representations. 
+- :inline-python:`_part_colors_emoji` is a dictionary that maps the integer values of the part color to their emoji representations. 
+- **Note**: These dictionaries are mainly used to display the part color and type in a human-readable format.
 
-- Instance Variables
+    .. code-block:: python
+        :lineno-start: 41
+        
+        _part_colors = {
+            PartMsg.RED: 'red',
+            PartMsg.BLUE: 'blue',
+            PartMsg.GREEN: 'green',
+            PartMsg.ORANGE: 'orange',
+            PartMsg.PURPLE: 'purple',
+        }
+        '''Dictionary for converting Part color constants to strings'''
 
-    - :inline-python:`_camera_image` is an object of the class :inline-python:`AdvancedLogicalCameraImage` that stores the latest message published on the camera topic.
+        _part_colors_emoji = {
+            PartMsg.RED: '🟥',
+            PartMsg.BLUE: '🟦',
+            PartMsg.GREEN: '🟩',
+            PartMsg.ORANGE: '🟧',
+            PartMsg.PURPLE: '🟪',
+        }
+        '''Dictionary for converting Part color constants to emojis'''
 
-- Instance Methods
+        _part_types = {
+            PartMsg.BATTERY: 'battery',
+            PartMsg.PUMP: 'pump',
+            PartMsg.REGULATOR: 'regulator',
+            PartMsg.SENSOR: 'sensor',
+        }
+        '''Dictionary for converting Part type constants to strings'''
 
-    - :inline-python:`advanced_camera0_cb()`: Callback for the camera topic which stores the latest published message in  :inline-python:`_camera_image`.
-    - :inline-python:`parse_advanced_camera_image()` parses the message stored in :inline-python:`_camera_image` and returns a string representation of the message. This method is used to display the part color, type, and pose in a human-readable format. The output is printed in the following format:
+
+
+
+- :inline-python:`_advanced_camera0_sub` is a subscriber to the camera topic. The callback function :inline-python:`advanced_camera0_cb()` is called when a message is published on the camera topic. 
     
-        - Emoji for the part color using the class attribute :inline-python:`part_colors_emoji_`.
-        - Part color using the class attribute :inline-python:`part_colors_`.
-        - Part type using the class attribute :inline-python:`part_types_`.
-        - Part pose in the camera frame: This is the pose returned by the camera.
-        - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method :inline-python:`multiply_pose()`.
+    .. code-block:: python
+        :lineno-start: 103
+
+        self._advanced_camera0_sub = self.create_subscription(
+            AdvancedLogicalCameraImageMsg,
+            '/ariac/sensors/advanced_camera_0/image',
+            self._advanced_camera0_cb,
+            qos_profile_sensor_data)
+
+- :inline-python:`_camera_image` is an object of the class :inline-python:`AdvancedLogicalCameraImage` that stores the latest message published on the camera topic.
+
+    .. code-block:: python
+        :lineno-start: 109
+
+        self._camera_image: AdvancedLogicalCameraImage = None
+
+- A getter to the :inline-python:`_camera_image` attribute is provided to access the latest message published on the camera topic.
+
+    .. code-block:: python
+        :lineno-start: 112
+
+        @property
+        def camera_image(self) -> AdvancedLogicalCameraImage:
+            return self._camera_image
+
+- :inline-python:`_advanced_camera0_cb(self, msg)` is the callback function for the camera topic. It stores the message in the :inline-python:`_camera_image` attribute.
+
+    .. code-block:: python
+        :lineno-start: 120
+
+        def _advanced_camera0_cb(self, msg: AdvancedLogicalCameraImageMsg):
+            '''Callback for the topic /ariac/sensors/advanced_camera_0/image
+
+            Arguments:
+                msg -- AdvancedLogicalCameraImage message
+            '''
+            self._camera_image = AdvancedLogicalCameraImage(msg.part_poses,
+                                                            msg.tray_poses,
+                                                            msg.sensor_pose)
+
+- :inline-python:`parse_advanced_camera_image(self)` parses the message stored in :inline-python:`_camera_image` and returns a string representation of the message. This method is used to display the part color, type, and pose in a human-readable format. The output is printed in the following format:
+    
+    - Emoji for the part color using the class attribute :inline-python:`part_colors_emoji_`.
+    - Part color using the class attribute :inline-python:`part_colors_`.
+    - Part type using the class attribute :inline-python:`part_types_`.
+    - Part pose in the camera frame: This is the pose returned by the camera.
+    - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method :inline-python:`multiply_pose()`.
+
+    .. code-block:: python
+        :lineno-start: 188
+
+        def parse_advanced_camera_image(self):
+            '''
+            Parse an AdvancedLogicalCameraImage message and return a string representation.
+            '''
+            output = '\n\n==========================\n'
+
+            sensor_pose: Pose = self._camera_image._sensor_pose
+
+            part_pose: PartPoseMsg
+
+            counter = 1
+            for part_pose in self._camera_image._part_poses:
+                part_color = CompetitionInterface._part_colors[part_pose.part.color].capitalize()
+                part_color_emoji = CompetitionInterface._part_colors_emoji[part_pose.part.color]
+                part_type = CompetitionInterface._part_types[part_pose.part.type].capitalize()
+                output += f'Part {counter}: {part_color_emoji} {part_color} {part_type}\n'
+                output += '==========================\n'
+                output += 'Camera Frame\n'
+                output += '==========================\n'
+                position = f'x: {part_pose.pose.position.x}\n\t\ty: {part_pose.pose.position.y}\n\t\tz: {part_pose.pose.position.z}'
+                orientation = f'x: {part_pose.pose.orientation.x}\n\t\ty: {part_pose.pose.orientation.y}\n\t\tz: {part_pose.pose.orientation.z}\n\t\tw: {part_pose.pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+                output += 'World Frame\n'
+                output += '==========================\n'
+                part_world_pose = multiply_pose(sensor_pose, part_pose.pose)
+                position = f'x: {part_world_pose.position.x}\n\t\ty: {part_world_pose.position.y}\n\t\tz: {part_world_pose.position.z}'
+                orientation = f'x: {part_world_pose.orientation.x}\n\t\ty: {part_world_pose.orientation.y}\n\t\tz: {part_world_pose.orientation.z}\n\t\tw: {part_world_pose.orientation.w}'
+
+                output += '\tPosition:\n'
+                output += f'\t\t{position}\n'
+                output += '\tOrientation:\n'
+                output += f'\t\t{orientation}\n'
+                output += '==========================\n'
+
+                counter += 1
+
+            return output
 
 
 
-
-
-Overview of the Executable
+Create the Executable
 --------------------------------
 
 .. code-block:: python
@@ -500,14 +612,15 @@ Overview of the Executable
     main()
 
 
-Code Explained
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 This executable does the following:
 
-    - Creates an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
-    - Starts the competition.
-    - Logs the content of :inline-python:`_camera_image` every 2 seconds.
+    - Initialize the ROS client library.
+    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Start the competition.
+    - Log the content of :inline-python:`_camera_image` every 2 seconds.
 
 
 

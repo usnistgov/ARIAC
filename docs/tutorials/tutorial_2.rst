@@ -414,7 +414,12 @@ Create the Executable
 Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
- This executable creates an instance of the interface, starts the competition and logs the :inline-python:`conveyor_part_count` variable every 2 seconds. 
+This executable does the following:
+
+    - Initialize the ROS client library.
+    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Start the competition.
+    - Log the number of parts that crossed the beam every 2 seconds.
 
 
 Run the Executable

@@ -10,7 +10,7 @@
 .. role:: inline-tutorial(file)
 
 =========================================================
-Introduction to ARIAC Tutorials
+⚠️ Introduction to ARIAC Tutorials ⚠️
 =========================================================
 
 This section contains multiple tutorials on how to achieve basic tasks in ARIAC using Python. Some competitors may find these tutorials useful as a starting point for their own code.

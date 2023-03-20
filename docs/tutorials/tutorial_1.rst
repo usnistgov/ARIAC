@@ -289,7 +289,7 @@ Run the Executable
 
     .. highlights::
 
-        *This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. Orders will also be announced.*
+        *This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, start the conveyor belt, and start order announcements.*
 
     
 

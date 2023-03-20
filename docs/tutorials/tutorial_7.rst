@@ -20,16 +20,18 @@
 Tutorial 7: Moving Robots with MoveIt
 =========================================================
 
-.. admonition:: Source Code for Tutorial 7
+.. admonition:: Tutorial 7
   :class: attention
   :name: tutorial_7
-  
-  `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7>`_ 
 
-  .. code-block:: bash
-    
-        cd ~/ariac_ws/ariac_tutorials
-        git checkout tutorial_7
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7>`_ 
+  - **Local Branch**:
+  
+    .. code-block:: bash
+        
+            cd ~/ariac_ws/ariac_tutorials
+            git checkout tutorial_7
 
 
 This tutorial shows how to move the robots through service calls using the following steps:

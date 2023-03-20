@@ -22,7 +22,7 @@ The code for each tutorial is located in a separate branch of the repository. Th
 
 A brief description of each tutorial is provided below.
 
-- :inline-tutorial:`Tutorial 1` (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ ): This tutorial shows how to start the competition based on the state of the competition.
+- :inline-tutorial:`Tutorial 1` (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_1>`_ ): This tutorial shows how to create a package and start the competition based on the state of the competition.
 - :inline-tutorial:`Tutorial 2` (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2>`_ ): This tutorial shows how to add a sensor to the sensor configuration file. The sensor is then used to keep track of the number of parts that are spawned on the conveyor belt.
 - :inline-tutorial:`Tutorial 3` (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3>`_ ): This tutorial shows how to add a logical camera to the sensor configuration file. The tutorial then retrieves information about parts detected by the camera and print the result in the terminal.
 - :inline-tutorial:`Tutorial 4` (`https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4>`_ ): This tutorial shows how to retrieve published orders and print the result in the terminal. Multiple OOP Python classes are used to store each order and its contents.
@@ -32,7 +32,7 @@ A brief description of each tutorial is provided below.
 
 .. important::
 
-  Each tutorial uses the code from the previous tutorial to which new functionalities and files are added. This means that code from previous tutorials can be used in later tutorials.
+  Tutorials are meant to be followed in order as each tutorial uses the code from the previous tutorial to which new functionalities and files are added. This allows code from previous tutorials to be used in later tutorials. 
 
 
 .. todo::

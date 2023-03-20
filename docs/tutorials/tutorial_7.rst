@@ -72,7 +72,7 @@ Overview of  CMakeLists.txt
 --------------------------------
 
 .. code-block:: cmake
-    :emphasize-lines: 14, 33, 40, 45-46, 47-50, 52-54
+    :emphasize-lines: 14, 33, 40, 45-46, 48-51, 53-55
     :linenos:
 
     cmake_minimum_required(VERSION 3.8)

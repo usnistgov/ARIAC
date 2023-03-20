@@ -406,16 +406,19 @@ Code Explanation
 The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with the components described below.
 
 
-- The :inline-python:`Pose` module is needed to compute and display the pose of the parts detected by the camera.
 
-    .. code-block:: python
-        :lineno-start: 5
+.. code-block:: python
+    :lineno-start: 5
 
-        from geometry_msgs.msg import Pose
+    from geometry_msgs.msg import Pose
+
+
+    - The :inline-python:`Pose` module is needed to compute and display the pose of the parts detected by the camera.
+
 
 - :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (see `AdvancedLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`_ )
 - :inline-python:`Part`: Message class that stores the part type and color (see `Part.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Part.msg>`_ )
-- :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (see `PartPose.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/PartPose.msg>`)
+- :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (see `PartPose.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/PartPose.msg>`_)
 
     .. code-block:: python
         :lineno-start: 6

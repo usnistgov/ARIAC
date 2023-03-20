@@ -215,8 +215,8 @@ Code Explained
 
 - Instance Methods
 
-    - :inline-python:`_competition_state_cb()`: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable :inline-python:`self._competition_state`.
-    - :inline-python:`start_competition()`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`self._competition_state` and then calls the service ``/ariac/start_competition`` through the client :inline-python:`self._start_competition_client`.
+    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable :inline-python:`self._competition_state`.
+    - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`self._competition_state` and then calls the service ``/ariac/start_competition`` through the client :inline-python:`self._start_competition_client`.
 
 
 
@@ -289,7 +289,7 @@ Run the Executable
 
     .. highlights::
 
-        *This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. Orders will also be announced.*
+        *This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, and start the conveyor belt. Orders will also be announced.*
 
     
 

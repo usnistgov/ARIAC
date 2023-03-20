@@ -20,7 +20,7 @@ Tutorial 5: Move AGVs to Stations
   :class: attention
   :name: tutorial_5
 
-  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>` and :ref:`Tutorial 4 <TUTORIAL4>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_5>`_ 
   - **Switch Branch**:
 

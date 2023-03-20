@@ -21,7 +21,7 @@ Tutorial 3: Read Data from an Advanced Logical Camera
   :class: attention
   :name: tutorial_3
 
-  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>` :ref:`Tutorial 2 <TUTORIAL2>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_3>`_ 
   - **Switch Branch**:
 

@@ -21,7 +21,7 @@ Tutorial 6: Enable/Disable a Gripper
   :class: attention
   :name: tutorial_6
 
-  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>` and :ref:`Tutorial 5 <TUTORIAL5>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_6>`_ 
   - **Switch Branch**:
 

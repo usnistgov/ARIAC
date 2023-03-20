@@ -22,7 +22,7 @@ Tutorial 4: Read an Order
   :class: attention
   :name: tutorial_4
 
-  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>` and :ref:`Tutorial 3 <TUTORIAL3>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_4>`_ 
   - **Switch Branch**:
 

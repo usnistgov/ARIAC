@@ -21,7 +21,7 @@ Tutorial 2: Read Data from a Break Beam Sensor
   :class: attention
   :name: tutorial_2
 
-  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>` and :ref:`Tutorial 1 <TUTORIAL1>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_2>`_ 
   - **Switch Branch**:
 

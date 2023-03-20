@@ -24,7 +24,7 @@ Tutorial 7: Move Robots with MoveIt
   :class: attention
   :name: tutorial_7
 
-  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>`
+  - **Prerequisites:** :ref:`Introduction to Tutorials <TUTORIALS>` and :ref:`Tutorial 6 <TUTORIAL6>`
   - **Source Code**: `https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7 <https://github.com/jaybrecht/ariac_tutorials/tree/tutorial_7>`_ 
   - **Switch Branch**:
 

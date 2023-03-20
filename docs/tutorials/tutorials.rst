@@ -14,7 +14,7 @@ Introduction to Tutorials
 =========================================================
 
 This section contains multiple tutorials on how to achieve basic tasks in ARIAC using Python. Some competitors may find these tutorials useful as a starting point for their own code.
-Some of these tutorials use both Python and C++ code. The Python code provides the interface to the ROS and ARIAC systems, while the C++ code provides the interface for robot controls with and without Moveit.
+Some of these tutorials use both Python and C++ code. The Python code provides the interface to the ROS and ARIAC systems, while the C++ code provides the interface for robot controls with or without Moveit.
 
 The code for tutorials can be found in a Github repository which is separated from the official NIST ARIAC repository. 
 The Github repository can be found here: `ariac_tutorials <https://github.com/jaybrecht/ariac_tutorials>`_

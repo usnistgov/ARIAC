@@ -305,55 +305,53 @@ The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with 
 
         from rclpy.qos import qos_profile_sensor_data
 
+- ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ 
 
-.. code-block:: python
-    :emphasize-lines: 3
-    :lineno-start: 6
+    .. code-block:: python
+        :emphasize-lines: 3
+        :lineno-start: 6
 
-    from ariac_msgs.msg import (
-        CompetitionState as CompetitionStateMsg,
-        BreakBeamStatus as BreakBeamStatusMsg,
-    )
+        from ariac_msgs.msg import (
+            CompetitionState as CompetitionStateMsg,
+            BreakBeamStatus as BreakBeamStatusMsg,
+        )
 
-.. highlights::
-    
-    ROS message for the break beam status, used to subscribe to the break beam status topic. The message is defined in  `ariac_msgs/msg/BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ 
+- Subscriber to the break beam status topic. Note the use of qos_profile_sensor_data.
+
+    .. code-block:: python
+        :lineno-start: 57
+
+        self._break_beam0_sub = self.create_subscription(
+            BreakBeamStatusMsg,
+            '/ariac/sensors/breakbeam_0/status',
+            self._breakbeam0_cb,
+            qos_profile_sensor_data)
+
+- Callback for the break beam status topic. This callback is called when a message is received on the topic. The callback increments the variable :inline-python:`_conveyor_part_count` when the beam is broken and the variable :inline-python:`_object_detected` is false. The variable :inline-python:`_object_detected` is set to true when the beam is broken.
+
+    .. code-block:: python
+        :lineno-start: 63
+
+        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+            '''Callback for the topic /ariac/sensors/breakbeam_0/status
+
+            Arguments:
+                msg -- BreakBeamStatusMsg message
+            '''
+            if not self._object_detected and msg.object_detected:
+                self._conveyor_part_count += 1
+
+            self._object_detected = msg.object_detected
+
+- Variable to store the number of parts that crossed the beam.
+
+    .. code-block:: python
+        :lineno-start: 65
+
+        self._conveyor_part_count = 0
 
 
-.. code-block:: python
-    :lineno-start: 57
-
-    self._break_beam0_sub = self.create_subscription(
-        BreakBeamStatusMsg,
-        '/ariac/sensors/breakbeam_0/status',
-        self._breakbeam0_cb,
-        qos_profile_sensor_data)
-
-.. highlights::
-    
-    Subscriber to the break beam status topic. Note the use of qos_profile_sensor_data.
-
-
-
-.. code-block:: python
-
-    self._conveyor_part_count = 0
-    :lineno-start: 63
-
-.. highlights::
-    
-    Variable to store the number of parts on the conveyor belt that cross the beam.
-
-
-.. code-block:: python
-    :lineno-start: 65
-
-    self._object_detected = False
-
-.. highlights::
-    
-    Variable to store whether the beam is broken.
-
+- Getter for the variable :inline-python:`_conveyor_part_count`.
 
 .. code-block:: python
     :lineno-start: 67
@@ -363,29 +361,22 @@ The competition interface from :ref:`Tutorial 1 <TUTORIAL1>` was augmented with 
         '''Number of parts that crossed the beam.'''
         return self._conveyor_part_count
 
-.. highlights::
-    
-    A getter is provided for the variable :inline-python:`_object_detected`
 
+- Callback for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
 
-.. code-block:: python
-    :lineno-start: 71
+    .. code-block:: python
+        :lineno-start: 71
 
-    def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
-        '''Callback for the topic /ariac/sensors/breakbeam_0/status
+        def _breakbeam0_cb(self, msg: BreakBeamStatusMsg):
+            '''Callback for the topic /ariac/sensors/breakbeam_0/status
 
-        Arguments:
-            msg -- BreakBeamStatusMsg message
-        '''
-        if not self._object_detected and msg.object_detected:
-            self._conveyor_part_count += 1
+            Arguments:
+                msg -- BreakBeamStatusMsg message
+            '''
+            if not self._object_detected and msg.object_detected:
+                self._conveyor_part_count += 1
 
-        self._object_detected = msg.object_detected
-
-.. highlights::
-    
-    Callback function for the break beam status topic. It increments the variable :inline-python:`_part_count` if the beam is broken and the variable :inline-python:`_object_detected` is :inline-python:`False`. It also sets the variable :inline-python:`_object_detected` to :inline-python:`True` if the beam is broken.
-
+            self._object_detected = msg.object_detected
 
 
 

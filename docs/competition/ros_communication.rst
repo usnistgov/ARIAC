@@ -98,15 +98,15 @@ Services
    * - :navy:`/ariac/submit_order`
      - :gray:`ariac_msgs/srv/SubmitOrder`
      - `SubmitOrder.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/SubmitOrder.srv>`_
-     - Submit an order with the requested ``order_id`` 
+     - Submit an order with the requested **order_id**
    * - :navy:`/ariac/perform_quality_check`
      - :gray:`ariac_msgs/srv/PerformQualityCheck`
      - `PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_
-     - Check the quality of a kitting order with the requested ``order_id``
+     - Check the quality of a kitting order with the requested **order_id**
    * - :navy:`/ariac/get_pre_assembly_poses`
      - :gray:`ariac_msgs/srv/GetPreAssemblyPoses`
      - `GetPreAssemblyPoses.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/GetPreAssemblyPoses.srv>`_
-     - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with ``order_id``
+     - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with **order_id**
    * - :navy:`/ariac/move_agv{n}` 
      - :gray:`ariac_msgs/srv/MoveAGV`
      - `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_

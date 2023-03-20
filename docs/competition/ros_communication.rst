@@ -40,23 +40,23 @@ Topics
      - `AGVStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AGVStatus.msg>`_
      - State of the AGV {n} (location, position, velocity)
    * - :red:`/ariac/{robot}_gripper_state`
-     - ``ariac_msgs/msg/VacuumGripperState``
+     - :gray:`ariac_msgs/msg/VacuumGripperState`
      - `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_
      - State of {robot}'s gripper (enabled, attached, type)
    * - :red:`/ariac/conveyor_state`
-     - ``ariac_msgs/msg/ConveyorBeltState``
+     - :gray:`ariac_msgs/msg/ConveyorBeltState`
      - `ConveyorBeltState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorBeltState.msg>`_
      - State of the conveyor (enabled, power)
    * - :red:`/ariac/robot_health`
-     - ``ariac_msgs/msg/Robots``
+     - :gray:`ariac_msgs/msg/Robots`
      - `Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_
      - Health of the robots (enabled or disabled)
    * - :red:`/ariac/sensor_health`
-     - ``ariac_msgs/msg/Sensors``
+     - :gray:`ariac_msgs/msg/Sensors`
      - `Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_
      - Health of the sensors (enabled or disabled)
    * - :red:`/ariac_human/state`
-     - ``ariac_msgs/msg/HumanState``
+     - :gray:`ariac_msgs/msg/HumanState`
      - `Humanstate.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_
      - Position and velocity of the human and the ceiling robot
 
@@ -88,43 +88,43 @@ Services
      - Service Definition
      - Description  
    * - :navy:`/ariac/start_competition`
-     - ``std_srvs/srv/Trigger``
+     - :gray:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Start the competition   
    * - :navy:`/ariac/end_competition`
-     - ``std_srvs/srv/Trigger``
+     - :gray:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - End the competition
    * - :navy:`/ariac/submit_order`
-     - ``ariac_msgs/srv/SubmitOrder``
+     - :gray:`ariac_msgs/srv/SubmitOrder`
      - `SubmitOrder.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/SubmitOrder.srv>`_
      - Submit an order with the requested ``order_id`` 
    * - :navy:`/ariac/perform_quality_check`
-     - ``ariac_msgs/srv/PerformQualityCheck``
+     - :gray:`ariac_msgs/srv/PerformQualityCheck`
      - `PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_
      - Check the quality of a kitting order with the requested ``order_id``
    * - :navy:`/ariac/get_pre_assembly_poses`
-     - ``ariac_msgs/srv/GetPreAssemblyPoses``
+     - :gray:`ariac_msgs/srv/GetPreAssemblyPoses`
      - `GetPreAssemblyPoses.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/GetPreAssemblyPoses.srv>`_
      - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with ``order_id``
    * - :navy:`/ariac/move_agv{n}` 
-     - ``ariac_msgs/srv/MoveAGV``
+     - :gray:`ariac_msgs/srv/MoveAGV`
      - `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_
      - Move the AGV {n} to the requested location  
    * - :navy:`/ariac/agv{n}_lock_tray` 
-     - ``std_srvs/srv/Trigger``
+     - :gray:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Lock a kit tray to AGV {n} 
    * - :navy:`/ariac/agv{n}_unlock_tray`
-     - ``std_srvs/srv/Trigger``
+     - :gray:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Unlock a kit tray to AGV {n} 
    * - :navy:`/ariac/{robot}_enable_gripper`
-     - ``ariac_msgs/srv/VacuumGripperControl``
+     - :gray:`ariac_msgs/srv/VacuumGripperControl`
      - `VacuumGripperControl.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/VacuumGripperControl.srv>`_
      - Set the state of {robot}'s gripper to the request state
    * - :navy:`/ariac/{robot}_change_gripper`
-     - ``ariac_msgs/srv/ChangeGripper`` 
+     - :gray:`ariac_msgs/srv/ChangeGripper` 
      - `ChangeGripper.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/ChangeGripper.srv>`_
      - Change the type of {robot}'s gripper to the request type
 
@@ -156,28 +156,28 @@ Sensor Topics
      - Message Type 
    * - break_beam
      - :red:`/ariac/sensors/{sensor_name}/change` and :red:`/ariac/sensors/{sensor_name}/status`
-     - ``ariac_msgs/BreakBeamStatus`` ``ariac_msgs/BreakBeamStatus``
+     - :gray:`ariac_msgs/BreakBeamStatus` and :gray:`ariac_msgs/BreakBeamStatus`
    * - proximity
      - :red:`/ariac/sensors/{sensor_name}/scan`
-     - ``sensor_msgs/Range``
+     - :gray:`sensor_msgs/Range`
    * - laser_profiler
      - :red:`/ariac/sensors/{sensor_name}/scan`
-     - ``sensor_msgs/LaserScan`` 
+     - :gray:`sensor_msgs/LaserScan` 
    * - lidar
      - :red:`/ariac/sensors/{sensor_name}/scan`	
-     - ``sensor_msgs/PointCloud``
+     - :gray:`sensor_msgs/PointCloud`
    * - rgb_camera
      - :red:`/ariac/sensors/{sensor_name}/rgb_image`
-     - ``sensor_msgs/Image sensor_msgs/Image``
+     - :gray:`sensor_msgs/Image sensor_msgs/Image`
    * - rgbd_camera
      - :red:`/ariac/sensors/{sensor_name}/rgb_image` and :red:`/ariac/sensors/{sensor_name}/depth_image`
-     - ``sensor_msgs/Image``
+     - :gray:`sensor_msgs/Image`
    * - basic_logical_camera
      - :red:`/ariac/sensors/{sensor_name}/image`
-     - ``ariac_msgs/BasicLogicalCameraImage``
+     - :gray:`ariac_msgs/BasicLogicalCameraImage`
    * - advanced_logical_camera
      - :red:`/ariac/sensors/{sensor_name}/image`
-     - ``ariac_msgs/AdvancedLogicalCameraImage``
+     - :gray:`ariac_msgs/AdvancedLogicalCameraImage`
 
 ..
     List of sensor topics and their msg types:

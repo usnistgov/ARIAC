@@ -10,7 +10,7 @@ Topics
 
 
 .. list-table:: List of topics with message types.
-   :widths: 50 100 25 50
+   :widths: auto
    :header-rows: 1
    :name: communications-topics
 

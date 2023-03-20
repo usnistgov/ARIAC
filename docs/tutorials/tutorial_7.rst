@@ -6,6 +6,9 @@
 .. role:: inline-python(code)
     :language: python
 
+.. role:: inline-cpp(code)
+    :language: cpp
+
 .. role:: inline-file(file)
 
 .. role:: inline-tutorial(file)
@@ -193,6 +196,15 @@ The competition interface from :ref:`Tutorial 6 <Tutorial6>` was augmented with 
 .. highlights::
 
     *This public method is used in the main function to move each robot to its home position. The method takes the name of the robot to move as an argument. The method then calls the appropriate service client to move the robot to its home position.*
+
+Robot Commander
+--------------------------------
+
+The robot commander node starts the :inline-cpp:`MoveGroupInterface` for the floor and ceiling robots.
+The node also hosts two services:
+
+    - ``/competitor/move_floor_robot_home`` calls the method :inline-cpp:`FloorRobotMoveHome` which moves the floor robot to its home position.
+    - ``/competitor/move_ceiling_robot_home`` calls the method :inline-cpp:`CeilingRobotMoveHome` which moves the ceiling robot to its home position.
 
 
 Create the Executable

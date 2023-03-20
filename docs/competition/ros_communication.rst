@@ -78,7 +78,7 @@ Services
 --------
 
 .. list-table:: List of services with service types.
-   :widths: 100 60 25 50
+   :widths: auto
    :header-rows: 1
    :name: communications-services
 

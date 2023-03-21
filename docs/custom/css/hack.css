@@ -96,6 +96,10 @@
     text-decoration: underline;
 }
 
+.underline {
+    text-decoration: underline;
+}
+
 .over {
     text-decoration: overline;
 }

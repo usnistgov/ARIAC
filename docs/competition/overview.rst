@@ -20,6 +20,9 @@
 .. role:: inline-yaml(code)
     :language: yaml
 
+.. role:: underline
+    :class: underline
+
 
 
 Overview of the Competition

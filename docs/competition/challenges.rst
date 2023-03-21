@@ -282,6 +282,7 @@ The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor 
   
   * `duration`: The duration of the sensor blackout in seconds.
   * `sensors_to_disable`: A list of sensor types to disable:
+  
     * ``'break_beam'``
     * ``'proximity'``
     * ``'laser_profiler'``

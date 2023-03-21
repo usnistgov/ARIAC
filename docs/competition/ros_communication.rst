@@ -131,7 +131,7 @@ Sensor Topics
 Services
 --------
 
-.. list-table:: List of services with service types.
+.. list-table:: List of services.
    :widths: auto
    :header-rows: 1
    :name: communications-services
@@ -176,7 +176,7 @@ Services
      - :gray:`ariac_msgs/srv/VacuumGripperControl`
      - `VacuumGripperControl.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/VacuumGripperControl.srv>`_
      - Set the state of {robot}'s gripper to the request state
-   * - :navy:`/ariac/`{robot} :navy:`_change_gripper`
+   * - :navy:`/ariac/{robot}_change_gripper`
      - :gray:`ariac_msgs/srv/ChangeGripper` 
      - `ChangeGripper.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/ChangeGripper.srv>`_
      - Change the type of {robot}'s gripper to the request type

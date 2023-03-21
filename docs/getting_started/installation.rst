@@ -36,8 +36,8 @@ Installing ARIAC
     - See the `ROS2 Galactic installation instructions <https://docs.ros.org/en/galactic/Installation.html>`_ for more information.
 
 
-Instructions
-------------
+Cloning the ARIAC Repository
+----------------------------
 
 - Create a new ROS2 workspace:
 
@@ -45,15 +45,53 @@ Instructions
 
         source /opt/ros/galactic/setup.bash
         mkdir -p ~/ariac_ws/src
-        cd ~/ariac_ws/src
+        cd ~/ariac_ws
 
 
 - Clone the ARIAC repository:
 
     .. code-block:: bash
         
-        git clone https://github.com/usnistgov/ARIAC.git
+        git clone https://github.com/usnistgov/ARIAC.git src/ariac
 
     **Note:** Always use the ``ARIAC2023`` branch.
 
-    
+
+- Install the dependencies:
+
+    .. code-block:: bash
+
+        sudo apt install python3-rosdep
+        sudo rosdep init
+        rosdep update --include-eol-distros
+        rosdep install --from-paths src -y --ignore-src
+
+    **Note:** If you are using a virtual machine, you may need to install the ``python3-vcstool`` package.
+
+
+Building the ARIAC Package
+--------------------------
+
+- Build the ARIAC package:
+
+    .. code-block:: bash
+
+        sudo apt install python3-colcon-common-extensions
+        colcon build --packages-select ariac
+
+- Source the workspace:
+
+    .. code-block:: bash
+
+        source install/setup.bash
+
+    **Note:** You may need to add the following line to your ``~/.bashrc`` file: ``source ~/ariac_ws/install/setup.bash``
+
+Starting the ARIAC Simulator
+----------------------------
+
+- Start the ARIAC simulator:
+
+    .. code-block:: bash
+
+        ros2 launch ariac ariac.launch.py

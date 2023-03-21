@@ -256,7 +256,7 @@ The sensor blackout challenge simulates a situation where some sensors stop repo
 
   The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
 
-The sensor blackout challenge is triggered based on :ref:`CONDITIONS`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
+The sensor blackout challenge is triggered based on :ref:`conditions <CONDITIONS>`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
 
 
 
@@ -316,7 +316,7 @@ The high-priority orders challenge simulates an order that must be completed bef
 
 
 .. warning::
-  A high-priority order can be announced in one of the two following :ref:`CONDITIONS`: Time or part placement. The submission condition is not used to announce a high-priority order.
+  A high-priority order can be announced in one of the two following :ref:`conditions <CONDITIONS>`: Time or part placement. The submission condition is not used to announce a high-priority order.
 
 .. note::
   A high-priority order will only be announced when only regular-priority orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.

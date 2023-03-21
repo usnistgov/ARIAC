@@ -71,18 +71,6 @@ More information on the fields of the service message is provided as follows:
   * Information for each quadrant is reported as a `QualityIssue.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/QualityIssue.msg>`_
 
 
-  .. code-block:: bash
-    :caption: QualityIssue.msg
-    :name: quality-issue-msg
-
-    bool all_passed           # True if everything is correct in the quadrant
-    bool missing_part         # True if a part is missing in the quadrant
-    bool flipped_part         # True if a part is flipped in the quadrant
-    bool faulty_part          # True if a part is faulty in the quadrant
-    bool incorrect_part_type  # True if a part has the wrong type in the quadrant
-    bool incorrect_part_color # True if a part has the wrong color in the quadrant
-
-
 
 .. _FLIPPED_PARTS:
 
@@ -209,16 +197,6 @@ Detection
 
 To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state`. 
 This topic publishes messages of type `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
-
-  
-.. code-block:: bash
-  :caption: VacuumGripperState.msg
-  :name: vacuum-gripper-state-yaml
-  
-  bool enabled  # is the succion enabled?
-  bool attached # is an object attached to the gripper?
-  string type   # type of the gripper attached to the arm
-
 
 
 
@@ -402,20 +380,6 @@ Detection
 
 To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders`. The message type for this topic is `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_. For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
-.. code-block:: bash
-  :caption: Order.msg
-  :name: order-msg
-  
-  uint8 KITTING=0
-  uint8 ASSEMBLY=1
-  uint8 COMBINED=2
-
-  string id
-  uint8 type
-  bool priority
-  ariac_msgs/KittingTask kitting_task 
-  ariac_msgs/AssemblyTask assembly_task
-  ariac_msgs/CombinedTask combined_task
 
 
 Insufficient Parts
@@ -483,7 +447,7 @@ To figure out if the insufficient parts challenge is part of a trial, the CCS ca
 Bins
 ^^^^^
 
-The topic :red:`/ariac/bin_parts` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+The topic :red:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
   .. code-block:: bash
     :caption: Message published on the topic :red:`/ariac/bin_parts`.
@@ -508,7 +472,7 @@ The topic :red:`/ariac/bin_parts` (**BinParts.msg**) outputs for each bin: The t
 
 Conveyor Belt
 ^^^^^^^^^^^^^^^
-The topic :red:`/ariac/conveyor_parts` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+The topic :red:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
   .. code-block:: bash

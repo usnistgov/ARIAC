@@ -367,7 +367,7 @@ The high-priority orders challenge simulates an order that must be completed bef
 
 
 .. warning::
-  A high-priority order can be announced in one of the two following :ref:`CONDITIONS` time and part placement. The submission condition is not used to announce a high-priority order.
+  A high-priority order can be announced in one of the two following :ref:`conditions <CONDITIONS>`: Time or part placement. The submission condition is not used to announce a high-priority order.
 
 .. note::
   A high-priority order will only be announced when only regular-priority orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.

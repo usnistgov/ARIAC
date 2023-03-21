@@ -147,4 +147,61 @@ Competitors will need to create their own competitor package and use their own s
 
                     ros2 launch ariac ariac.launch.py competitor_pkg:=my_competitor_pkg sensor_config:=my_sensors trial_name:=assembly
 
-             
+
+Moving the Robots
+-----------------
+
+To verify that the robots can be controlled properly you will need three terminals:
+
+- *terminal 1*: Start the environment.
+
+    .. code-block:: bash
+
+        ros2 launch ariac_gazebo ariac.launch.py
+
+
+- *terminal 2*: Start the moveit node.
+
+    .. code-block:: bash
+
+        ros2 launch ariac_moveit_config ariac_robots_moveit.launch.py
+
+- *terminal 3*: Start the moveit test node.
+
+    .. code-block:: bash
+
+        ros2 launch test_competitor moveit_test.launch.py
+
+
+This should start the competition and move each of the robots to the home position. It will also open an RVIZ window showing the robot's planning scene. 
+
+
+Running the Test Competitor
+---------------------------
+
+A test competitor has been created to demonstrate how to complete some of the basic functions (no challenges) of working with the ARIAC environment.
+The test competitor has been tested with ``kitting.yaml``, ``assembly.yaml``, ``combined.yaml``, ``kitting_assembly.yaml``, and ``kitting_combined.yaml``.
+There is no guarantee that the test competitor will work with other trials as the goal of the test competitor is to demonstrate how to work with the ARIAC environment.
+
+The test competitor is located in the ``test_competitor`` package. To run the test competitor, use the following commands:
+
+- *terminal 1*: Start the environment.
+
+    .. code-block:: bash
+
+        ros2 launch ariac_gazebo ariac.launch.py trial_name:=<trial_file>
+
+
+- *terminal 2*: Start the moveit node.
+
+    .. code-block:: bash
+
+        ros2 launch ariac_moveit_config ariac_robots_moveit.launch.py
+
+- *terminal 3*: Start the competitor node.
+
+    .. code-block:: bash
+
+        ros2 launch test_competitor competitor.launch.py
+
+The test competitor will start the competition, subscribe to camera and orders topics, and complete orders. 

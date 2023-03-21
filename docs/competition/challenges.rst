@@ -378,7 +378,7 @@ Detection
 -------------------------------
 
 
-To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders`. The message type for this topic is `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_. For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders` (`Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
 
 

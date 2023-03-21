@@ -115,7 +115,7 @@ Custom Configuration
 
         ros2 launch ariac ariac.launch.py trial_name:=<trial_file>
 
-    Replace ``<trial_file>`` with the name of a trial file (without the ``.yaml`` extension). This trial file must be located in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/``.
+    Replace ``<trial_file>`` with the name of a trial file (without the ``.yaml`` extension). **Reminder:** This trial file **MUST** be placed in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/``.
     
     **Example:** To start ARIAC with ``assembly.yaml`` trial file, run the following command:
 

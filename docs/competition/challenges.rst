@@ -257,7 +257,7 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the CCS needs a subscriber to the topic :red:`/ariac/robot_health`. The message type for this topic is `Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_. The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+To detect a robot malfunction, the CCS needs a subscriber to the topic :red:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
 
 
 
@@ -282,7 +282,7 @@ The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor 
   
   * `duration`: The duration of the sensor blackout in seconds.
   * `sensors_to_disable`: A list of sensor types to disable:
-  
+
     * ``'break_beam'``
     * ``'proximity'``
     * ``'laser_profiler'``

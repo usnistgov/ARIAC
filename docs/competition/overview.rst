@@ -1,3 +1,27 @@
+
+.. only:: builder_html or readthedocs
+
+.. role:: inline-python(code)
+    :language: python
+
+.. role:: inline-cpp(code)
+    :language: cpp
+
+.. role:: inline-file(file)
+
+.. role:: inline-tutorial(file)
+
+.. role:: inline-bash(code)
+    :language: bash
+
+.. role:: inline-xml(code)
+    :language: xml
+
+.. role:: inline-yaml(code)
+    :language: yaml
+
+
+
 Overview of the Competition
 ===========================
 
@@ -24,11 +48,18 @@ Start Commands
 
 To compete in ARIAC, competitors have to issue two commands in two different terminals.
 
-1. **terminal 1**: In the first terminal, competitors **start the trial** with the following command:
+- *terminal 1*: In the first terminal, competitors **start the trial** with the following command:
 
     .. code-block:: bash
 
-        ros2 launch ariac_gazebo ariac.launch.py trial_config:=<trial_yaml_file> sensor_config:=<sensor_yaml_file>
+        ros2 launch ariac_gazebo ariac.launch.py trial_name:={name_of_trial} competitor_pkg:={package_name} sensor_config:={name_of_sensor_config}
+
+    - :bash:`{name_of_trial}` is the name of the trial file to be run. Trial files are located in :underline:`ariac_gazebo/config/trials`. For example, to run the trial from ``kitting.yaml`` trial, the command would be:
+
+        .. code-block:: bash
+
+            ros2 launch ariac_gazebo ariac.launch.py trial_name:=kitting
+
 
     ``trial_yaml_file`` and ``sensor_yaml_file`` are yaml file names without the ``.yaml`` suffix. If ``trial_yaml_file`` is not provided, it defaults to ``kitting.yaml``. If ``sensor_yaml_file`` is not provided, it defaults to ``sensors.yaml``
     

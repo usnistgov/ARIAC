@@ -40,21 +40,9 @@ Detection
 ----------------------------
 
 
-The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check`. The argument passed to this service call is an order ID (see :numref:`perform-quality-check-srv`). When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). The argument passed to this service call is an order ID. When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
 
-.. code-block:: bash
-  :caption: PerformQualityCheck.srv
-  :name: perform-quality-check-srv
 
-  string order_id
-  ---
-  bool valid_id
-  bool all_passed
-  bool incorrect_tray
-  ariac_msgs/QualityIssue quadrant1
-  ariac_msgs/QualityIssue quadrant2
-  ariac_msgs/QualityIssue quadrant3
-  ariac_msgs/QualityIssue quadrant4
 
 More information on the fields of the service message is provided as follows:
   * The service returns a Boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
@@ -195,9 +183,7 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state`. 
-This topic publishes messages of type `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
-
+To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state` (`VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_).
 
 
 .. _target to robot malfunction:

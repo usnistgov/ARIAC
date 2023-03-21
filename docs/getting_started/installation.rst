@@ -115,7 +115,7 @@ To start ARIAC with a different trial, use the following command:
 
         ros2 launch ariac ariac.launch.py trial_name:=<trial_file>
 
-    Replace ``<trial_file>`` with the name of a trial file (without the ``.yaml`` extension) located in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/``.
+    Replace ``<trial_file>`` with the name of a trial file (without the ``.yaml`` extension). This trial file must be located in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/``.
     
     **Example:** To start ARIAC with ``assembly.yaml`` trial file, run the following command:
 
@@ -141,7 +141,7 @@ Competitors will need to create their own competitor package and use their own s
 
                 ros2 launch ariac ariac.launch.py competitor_pkg:=<package> sensor_config:=<sensor_file> trial_name:=<trial_file>
 
-            **Example:** To start ARIAC with ``assembly.yaml`` using ``my_sensors.yaml`` sensor configuration file, located in the package ``my_competitor_pkg``, run the following command:
+            **Example:** To start ARIAC with ``assembly.yaml`` using ``my_sensors.yaml`` sensor configuration file (located in ``my_competitor_pkg/config``), run the following command:
 
                 .. code-block:: bash
 

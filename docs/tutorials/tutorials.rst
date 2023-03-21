@@ -20,8 +20,8 @@ The code for tutorials can be found in a `GitHub repository <https://github.com/
 
 A brief description of each tutorial is provided below.
 
-- :inline-tutorial:`Tutorial 1:` Demonstrates how to create a package and start the competition based on the state of the competition.
-- :inline-tutorial:`Tutorial 2` Demonstrates how to add a sensor to the sensor configuration file. The sensor is then used to keep track of the number of parts that are spawned on the conveyor belt.
+- :inline-tutorial:`Tutorial 1: <TUTORIAL1>` Demonstrates how to create a package and start the competition based on the state of the competition.
+- :inline-tutorial:`Tutorial 2:` Demonstrates how to add a sensor to the sensor configuration file. The sensor is then used to keep track of the number of parts that are spawned on the conveyor belt.
 - :inline-tutorial:`Tutorial 3:` Demonstrates how to add a logical camera to the sensor configuration file. The tutorial then retrieves information about parts detected by the camera and print the result in the terminal.
 - :inline-tutorial:`Tutorial 4:` Demonstrates how to retrieve published orders and print the result in the terminal. Multiple OOP Python classes are used to store each order and its contents.
 - :inline-tutorial:`Tutorial 5:` Demonstrates how to retrieve information from published assembly tasks and move the AGVs to the correct station. Service calls to lock and move AGVs are used in this tutorial.
@@ -34,13 +34,13 @@ A brief description of each tutorial is provided below.
 
 .. todo::
 
-  **Prerequisites:** :ref:`Installing ARIAC <INSTALLATION>`
-  Clone the package ``ariac_tutorials`` in the workspace ``~/ariac_ws`` by running the following command in the terminal:
+  - **Prerequisites:** :ref:`Installing ARIAC <INSTALLATION>`
+  - Clone the package ``ariac_tutorials`` in the workspace ``~/ariac_ws`` by running the following command in the terminal:
 
     .. code-block:: bash
     
         cd ~/ariac_ws/src
-        git clone https://github.com/jaybrecht/ariac_tutorials -b tutorial_1
+        git clone https://github.com/jaybrecht/ariac_tutorials
         cd ..
         rosdep install --from-paths src -y --ignore-src
         colcon build

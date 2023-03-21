@@ -584,7 +584,7 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
     - ``'indifferent'``
     - ``'antagonistic'``
     - ``'helpful'``
-  * :ref:`CONDITIONS` to trigger the challenge.
+  * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 
 .. code-block:: yaml

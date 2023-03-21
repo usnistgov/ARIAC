@@ -37,7 +37,7 @@ A brief description of each tutorial is provided below.
 
 .. todo::
 
-  Clone the package :inline-file:`ariac_tutorials` in the workspace :inline-file:`~/ariac_ws` by running the following command in the terminal:
+  Clone the package ``ariac_tutorials`` in the workspace ``~/ariac_ws`` by running the following command in the terminal:
 
     .. code-block:: bash
     
@@ -45,4 +45,4 @@ A brief description of each tutorial is provided below.
         git clone https://github.com/jaybrecht/ariac_tutorials
         cd ..
         colcon build
-        . install/setup.bash
+        source install/setup.bash

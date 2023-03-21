@@ -62,13 +62,13 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 2`  are hi
 Sensor Configuration File
 -----------------------------------
 
-A sensor configuration file for a given package must be created in the folder :inline-file:`config` in the package. The file must be added to the :inline-file:`CMakeLists.txt` file in the package to allow the competition software to find the file.
+A sensor configuration file for a given package must be created in the folder ``config`` in the package. The file must be added to the ``CMakeLists.txt`` file in the package to allow the competition software to find the file.
 To learn more about sensor configuration files, see the Sensor configuration file `section  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_.
 
 Add a Break Beam Sensor
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add a break beam sensor to  :inline-file:`sensors.yaml` as seen in :numref:`sensors-yaml-break-beam`. 
+Add a break beam sensor to ``sensors.yaml`` as seen in :numref:`sensors-yaml-break-beam`. 
 
 .. code-block:: yaml
     :caption: Add a break beam sensor in sensors.yaml
@@ -142,7 +142,7 @@ To test  the sensor was correctly added to the environment, run the following co
 .. admonition:: Attention
   :class: warning
   
-  By default, the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials` uses the sensor configuration file :inline-file:`ariac_tutorials/config/sensors.yaml`. If you want to use a different sensor configuration file, you need to use the argument :inline-bash:`sensor_config:={name_of_sensor_config}`. For example, to use the sensor configuration file :inline-file:`sensors_test.yaml`, you would use the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials sensor_config:=sensors_test`.
+  By default, the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials` uses the sensor configuration file ``ariac_tutorials/config/sensors.yaml``. If you want to use a different sensor configuration file, you need to use the argument :inline-bash:`sensor_config:={name_of_sensor_config}`. For example, to use the sensor configuration file ``sensors_test.yaml``, you would use the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials sensor_config:=sensors_test`.
 
 
 

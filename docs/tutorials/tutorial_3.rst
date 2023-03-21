@@ -112,7 +112,7 @@ Reuse the same sensor configuration file created in :ref:`Tutorial 2 <TUTORIAL2>
 Add a Logical Camera
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Add an advanced logical camera to  :inline-file:`sensors.yaml` (see lines 8-13 in :numref:`sensors-camera-yaml`). 
+Add an advanced logical camera to  ``sensors.yaml`` (see lines 8-13 in :numref:`sensors-camera-yaml`). 
 
 .. code-block:: yaml
     :caption: sensors.yaml

@@ -36,12 +36,12 @@ Tutorial 7: Move Robots with MoveIt
 
 This tutorial shows how to move the robots through service calls using the following steps:
 
-  - Create a C++ class for interfacing with MoveIt (:inline-file:`src/robot_commander.cpp`).
+  - Create a C++ class for interfacing with MoveIt (``src/robot_commander.cpp``).
 
     - Initialize a MoveGroupInterface object for each robot.
     - Create a service server for each robot. Service requests sent to these service servers will be used to move the robots to their home position.
   - Create a Python method for each robot that will be used to move the robot to its home position. Each one of these methods consists of a service client.
-  - Call the Python methods from the script :inline-file:`tutorial_7.py` to move the robots to their home positions.
+  - Call the Python methods from the script ``tutorial_7.py`` to move the robots to their home positions.
 
 Package Structure
 --------------------------------------------
@@ -78,7 +78,7 @@ Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are hi
 CMakeLists.txt
 --------------------------------
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are highlighted in the :inline-file:`CMakeLists.txt` below.
+Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are highlighted in the ``CMakeLists.txt`` below.
 
 
 .. code-block:: cmake

@@ -35,4 +35,25 @@ Installing ARIAC
 
     - See the `ROS2 Galactic installation instructions <https://docs.ros.org/en/galactic/Installation.html>`_ for more information.
 
+
+Instructions
+------------
+
+- Create a new ROS2 workspace:
+
+    .. code-block:: bash
+
+        source /opt/ros/galactic/setup.bash
+        mkdir -p ~/ariac_ws/src
+        cd ~/ariac_ws/src
+
+
+- Clone the ARIAC repository:
+
+    .. code-block:: bash
+        
+        git clone https://github.com/usnistgov/ARIAC.git
+
+    **Note:** Always use the ``ARIAC2023`` branch.
+
     

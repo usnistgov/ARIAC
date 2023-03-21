@@ -101,10 +101,10 @@ The following command starts ARIAC with the default configuration:
 
         ros2 launch ariac ariac.launch.py
 
-    - The default trial file is ``kitting.yaml``, located in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/``
+    - The default trial file is ``kitting.yaml``, located in `ariac_gazebo/config/trials/ <https://github.com/usnistgov/ARIAC/tree/ariac2023/ariac_gazebo/config/trials>`_
 
         - **Note:** All trial files must be placed in this folder.
-    - The default sensor configuration is ``sensors.yaml``, located in ``~/ariac_ws/src/ariac/test_competitor/config/``
+    - The default sensor configuration is ``sensors.yaml``, located in `test_competitor/config/ <https://github.com/usnistgov/ARIAC/tree/ariac2023/test_competitor/config>`_
 
 Custom Configuration
 ~~~~~~~~~~~~~~~~~~~~
@@ -195,7 +195,8 @@ A test competitor has been created to demonstrate how to complete some of the ba
 The test competitor has been tested with ``kitting.yaml``, ``assembly.yaml``, ``combined.yaml``, ``kitting_assembly.yaml``, and ``kitting_combined.yaml``.
 There is no guarantee that the test competitor will work with other trials as the goal of the test competitor is to demonstrate how to interface with the ARIAC environment.
 
-The test competitor is located in the ``test_competitor`` package. To run the test competitor, use the following commands:
+
+The test competitor is located in the `test_competitor <https://github.com/usnistgov/ARIAC/tree/ariac2023/test_competitor/config>`_ package. To run the test competitor, use the following commands:
 
 - *terminal 1*: Start the environment.
 

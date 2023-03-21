@@ -136,6 +136,10 @@
     font-size: small;
 }
 
+span.underlined {
+  text-decoration: underline;
+}
+
 
 /* Style pour les badges en bas de la page. */
 

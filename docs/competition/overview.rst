@@ -20,8 +20,8 @@
 .. role:: inline-yaml(code)
     :language: yaml
 
-.. role:: underline
-    :class: underline
+.. role:: underlined
+    :class: underlined
 
 
 
@@ -57,7 +57,7 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
 
         ros2 launch ariac_gazebo ariac.launch.py trial_name:={name_of_trial} competitor_pkg:={package_name} sensor_config:={name_of_sensor_config}
 
-    - :bash:`{name_of_trial}` is the name of the trial file to be run. Trial files are located in :underline:`ariac_gazebo/config/trials`. For example, to run the trial from ``kitting.yaml`` trial, the command would be:
+    - :bash:`{name_of_trial}` is the name of the trial file to be run. Trial files are located in :underlined:`ariac_gazebo/config/trials`. For example, to run the trial from ``kitting.yaml`` trial, the command would be:
 
         .. code-block:: bash
 

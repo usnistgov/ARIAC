@@ -11,7 +11,7 @@
 
 .. role:: inline-tutorial(file)
 
-.. role:: inline-bash(code)
+.. role:: bash(code)
     :language: bash
 
 .. role:: inline-xml(code)

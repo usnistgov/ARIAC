@@ -68,7 +68,7 @@ More information on the fields of the service message is provided as follows:
     * All parts are of the correct color.
 
   * The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
-  * Information for each quadrant is reported as a **QualityIssue.msg** (see :numref:`quality-issue-msg`).
+  * Information for each quadrant is reported as a `QualityIssue.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/QualityIssue.msg>`_
 
 
   .. code-block:: bash
@@ -207,7 +207,8 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state`. This topic publishes messages of type **VacuumGripperState.msg**, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
+To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state`. 
+This topic publishes messages of type `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
 
   
 .. code-block:: bash
@@ -278,14 +279,8 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the CCS needs a subscriber to the topic :red:`/ariac/robot_health`. The message type for this topic is **Robots.msg** (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+To detect a robot malfunction, the CCS needs a subscriber to the topic :red:`/ariac/robot_health`. The message type for this topic is `Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_. The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
 
-.. code-block:: bash
-  :caption: Robots.msg
-  :name: robots-health
-  
-  bool floor_robot
-  bool ceiling_robot
 
 
 .. _target to sensor blackout:
@@ -343,19 +338,8 @@ Detection
 -----------------------------
 
 
-To detect a sensor blackout the CCS needs a subscriber to the topic :red:`/ariac/sensor_health`. The message type for this topic is **Sensors.msg** (see :numref:`sensors-health`). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+To detect a sensor blackout the CCS needs a subscriber to the topic :red:`/ariac/sensor_health`. The message type for this topic is `Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_. The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
 
-.. code-block:: bash
-  :caption: Sensors.msg
-  :name: sensors-health
-  
-  # Sensors.msg
-  bool break_beam
-  bool proximity
-  bool laser_profiler
-  bool lidar
-  bool camera
-  bool logical_camera
 
 
 High-priority Orders
@@ -416,7 +400,7 @@ Detection
 -------------------------------
 
 
-To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders`. The message type for this topic is **Order.msg** (see :numref:`order-msg`). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders`. The message type for this topic is `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_. For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
 .. code-block:: bash
   :caption: Order.msg
@@ -600,10 +584,10 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
 Detection
 -----------------------------
 
-The pose of the human is published to the topic :red:`/ariac_human/state` (:ref:`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
+The pose of the human is published to the topic :red:`/ariac_human/state` (`HumanState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash
-    :caption: Message published on the topic ``/ariac_human/state``.
+    :caption: Message published on the topic :red:`/ariac_human/state`.
     :name: human-state-outputs
 
     ---

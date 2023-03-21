@@ -20,13 +20,13 @@ The code for tutorials can be found in a `GitHub repository <https://github.com/
 
 A brief description of each tutorial is provided below.
 
-- :inline-tutorial:`Tutorial 1: <TUTORIAL1>` Demonstrates how to create a package and start the competition based on the state of the competition.
-- :inline-tutorial:`Tutorial 2:` Demonstrates how to add a sensor to the sensor configuration file. The sensor is then used to keep track of the number of parts that are spawned on the conveyor belt.
-- :inline-tutorial:`Tutorial 3:` Demonstrates how to add a logical camera to the sensor configuration file. The tutorial then retrieves information about parts detected by the camera and print the result in the terminal.
-- :inline-tutorial:`Tutorial 4:` Demonstrates how to retrieve published orders and print the result in the terminal. Multiple OOP Python classes are used to store each order and its contents.
-- :inline-tutorial:`Tutorial 5:` Demonstrates how to retrieve information from published assembly tasks and move the AGVs to the correct station. Service calls to lock and move AGVs are used in this tutorial.
-- :inline-tutorial:`Tutorial 6:` Demonstrates using service calls to activate/deactivate the gripper of the floor robot.
-- :inline-tutorial:`Tutorial 7:` Demonstrates how to use custom services to move the floor and the ceiling robots to their respective home positions. MoveIt is used in this tutorial. The service clients are implemented in Python while the service servers are hosted in C++. 
+- :inline-tutorial:`Tutorial 1:` :ref:`Demonstrates how to create a package and start the competition based on the state of the competition. <TUTORIAL1>`
+- :inline-tutorial:`Tutorial 2:` :ref:`Demonstrates how to add a sensor to the sensor configuration file. The sensor is then used to keep track of the number of parts that are spawned on the conveyor belt. <TUTORIAL2>`
+- :inline-tutorial:`Tutorial 3:` :ref:`Demonstrates how to add a logical camera to the sensor configuration file. The tutorial then retrieves information about parts detected by the camera and print the result in the terminal. <TUTORIAL3>`
+- :inline-tutorial:`Tutorial 4:` :ref:`Demonstrates how to retrieve published orders and print the result in the terminal. Multiple OOP Python classes are used to store each order and its contents. <TUTORIAL4>`
+- :inline-tutorial:`Tutorial 5:` :ref:`Demonstrates how to retrieve information from published assembly tasks and move the AGVs to the correct station. Service calls to lock and move AGVs are used in this tutorial. <TUTORIAL5>`
+- :inline-tutorial:`Tutorial 6:` :ref:`Demonstrates using service calls to activate/deactivate the gripper of the floor robot. <TUTORIAL6>`
+- :inline-tutorial:`Tutorial 7:` :ref:`Demonstrates how to use custom services to move the floor and the ceiling robots to their respective home positions. MoveIt is used in this tutorial. The service clients are implemented in Python while the service servers are hosted in C++. <TUTORIAL7>`
 
 .. important::
 

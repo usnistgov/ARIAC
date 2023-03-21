@@ -25,8 +25,8 @@ Tutorial 1: Create a Competition Package
 
     .. code-block:: bash
         
-            cd ~/ariac_ws/ariac_tutorials
-            git checkout tutorial_1
+            cd ~/ariac_ws/src/ariac_tutorials
+            git switch tutorial_1
 
 This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
 This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
@@ -53,7 +53,6 @@ CMakelists.txt
 --------------------------------
 
 .. code-block:: cmake
-    :emphasize-lines: 19
     
     cmake_minimum_required(VERSION 3.8)
     project(ariac_tutorials)
@@ -105,7 +104,9 @@ package.xml
         </export>
     </package>
 
+.. important::
 
+    Make sure to update the description, maintainer(s) and license for your package. 
 
 
 Competition Interface
@@ -160,16 +161,18 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
 
             self.set_parameters([sim_time])
             # Service client for starting the competition
-            self._start_competition_client = self.create_client(Trigger, '/ariac/start_competition')
+            self._start_competition_client = self.create_client(
+                Trigger, '/ariac/start_competition')
+            
             # Subscriber to the competition state topic
             self._competition_state_sub = self.create_subscription(
                 CompetitionStateMsg,
                 '/ariac/competition_state',
                 self._competition_state_cb,
                 10)
+            
             # Store the state of the competition
             self._competition_state: CompetitionStateMsg = None
-            # Subscriber to the logical camera topic
 
         def _competition_state_cb(self, msg: CompetitionStateMsg):
             '''Callback for the topic /ariac/competition_state
@@ -179,9 +182,9 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
             '''
             # Log if competition state has changed
             if self._competition_state != msg.competition_state:
-                self.get_logger().info(
-                    f'Competition state is: {CompetitionInterface._competition_states[msg.competition_state]}',
-                    throttle_duration_sec=1.0)
+                state = CompetitionInterface._competition_states[msg.competition_state]
+                self.get_logger().info(f'Competition state is: {state}', throttle_duration_sec=1.0)
+            
             self._competition_state = msg.competition_state
 
         def start_competition(self):
@@ -200,9 +203,10 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
 
             self.get_logger().info('Competition is ready. Starting...')
 
-            # Call ROS service to start competition
-            while not self._start_competition_client.wait_for_service(timeout_sec=1.0):
-                self.get_logger().info('Waiting for /ariac/start_competition to be available...')
+            # Check if service is available
+            if not self._start_competition_client.wait_for_service(timeout_sec=3.0):
+                self.get_logger().error('Service \'/ariac/start_competition\' is not available.')
+                return
 
             # Create trigger request and call starter service
             request = Trigger.Request()
@@ -214,7 +218,7 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
             if future.result().success:
                 self.get_logger().info('Started competition.')
             else:
-                self.get_logger().info('Unable to start competition')
+                self.get_logger().warn('Unable to start competition')
 
 
 Code Explanation
@@ -233,13 +237,13 @@ Code Explanation
 
 - Instance Variables
 
-    - :inline-python:`self._start_competition_client` is a client for the service :navy:`/ariac/start_competition`.
-    - :inline-python:`self._competition_state_sub` is a subscriber for the topic :red:`/ariac/competition_state`.
-    - :inline-python:`self._competition_state` is a variable to store the current competition state.
+    - :inline-python:`self._start_competition_client` ROS client for the service :navy:`/ariac/start_competition`.
+    - :inline-python:`self._competition_state_sub` ROS subscriber for the topic :green:`/ariac/competition_state`.
+    - :inline-python:`self._competition_state` a variable to store the current competition state.
 
 - Instance Methods
 
-    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :red:`/ariac/competition_state`. This method stores the competition state in the variable :inline-python:`_competition_state`.
+    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :green:`/ariac/competition_state`. This method stores the competition state in the variable :inline-python:`_competition_state`.
     - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`_competition_state` and then calls the service :navy:`/ariac/start_competition` through the client :inline-python:`_start_competition_client`.
 
 

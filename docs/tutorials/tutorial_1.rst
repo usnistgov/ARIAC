@@ -239,8 +239,8 @@ Code Explanation
 
 - Instance Methods
 
-    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :red:`/ariac/competition_state`. This method stores the competition state in the variable :inline-python:`self._competition_state`.
-    - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`self._competition_state` and then calls the service :navy:`/ariac/start_competition` through the client :inline-python:`self._start_competition_client`.
+    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :red:`/ariac/competition_state`. This method stores the competition state in the variable :inline-python:`_competition_state`.
+    - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`_competition_state` and then calls the service :navy:`/ariac/start_competition` through the client :inline-python:`_start_competition_client`.
 
 
 

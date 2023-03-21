@@ -71,7 +71,7 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
 
     .. warning:: 
         
-        To submit a kitting order, the CCS first has to move the AGV to the warehouse with the service ``/ariac/move_agv{n}`` (see :ref:`/ariac/move_agv{n} <moveAGV>`).
+        To submit a kitting order, the CCS first has to move the AGV to the warehouse with the service :navy:`/ariac/move_agv{n}` (see :ref:`/ariac/move_agv{n} <moveAGV>`).
         Once the AGV is at the warehouse, then the submission service should be called. 
         To know the location of an AGV in the workcell, the CCS has to subscribe to the topic :red:`/ariac/agv{n}_status`.
 

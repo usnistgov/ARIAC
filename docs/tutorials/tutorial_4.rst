@@ -73,7 +73,7 @@ The competition interface for :inline-tutorial:`tutorial 4` is shown in :numref:
 .. code-block:: python
     :caption: competition_interface.py
     :name: competitioninterface-tutorial4
-    :emphasize-lines: 12-15, 25-29, 77-92, 141-152, 154-156, 166-168, 170-172, 174-182, 301-337, 339-383, 385-426, 428-449
+    :emphasize-lines: 12-15, 25-29, 78-92, 141-152, 154-156, 166-168, 170-172, 174-182, 301-337, 339-383, 385-426, 428-449
     :linenos:
 
     import rclpy
@@ -619,6 +619,47 @@ This executable does the following:
     - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - Log each published message to the terminal.
+
+Build Instructions
+------------------
+
+.. code-block:: cmake
+    :emphasize-lines: 29
+    :caption: CMakeLists.txt
+
+    cmake_minimum_required(VERSION 3.8)
+    project(ariac_tutorials)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    find_package(ament_cmake REQUIRED)
+    find_package(ament_cmake_python REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(rclpy REQUIRED)
+    find_package(ariac_msgs REQUIRED)
+    find_package(orocos_kdl REQUIRED)
+
+    # Install the config directory to the package share directory
+    install(DIRECTORY 
+    config
+    DESTINATION share/${PROJECT_NAME}
+    )
+
+    # Install Python modules
+    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
+
+    # Install Python executables
+    install(PROGRAMS
+    scripts/tutorial_1.py
+    scripts/tutorial_2.py
+    scripts/tutorial_3.py
+    scripts/tutorial_4.py
+    DESTINATION lib/${PROJECT_NAME}
+    )
+
+    ament_package()
 
 
 Run the Executable

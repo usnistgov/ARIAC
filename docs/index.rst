@@ -18,7 +18,7 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    :hidden:
 
    getting_started/updates
-   getting_started/installation
+   getting_started/installation.rst
    getting_started/registering
    getting_started/events
 

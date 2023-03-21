@@ -7,13 +7,16 @@
 .. role:: inline-python(code)
     :language: python
 
+.. role:: inline-bash(code)
+    :language: bash
+
 .. role:: inline-file(file)
 
 .. role:: inline-tutorial(file)
 
-=========================================================
+****************************************
 Tutorial 1: Create a Competition Package
-=========================================================
+****************************************
 
 .. admonition:: Tutorial 1
   :class: attention
@@ -33,7 +36,7 @@ This competition package will use a python node to listen to the competition sta
 
 
 Package Structure
---------------------------------------------
+=================
 
 
 .. code-block:: text
@@ -48,9 +51,15 @@ Package Structure
     └── scripts
         └── tutorial_1.py
 
+Updated/Created Files
+=====================
 
-CMakelists.txt
---------------------------------
+The following sections will show the modified files in the package with highlighted sections for additions since the previous tutorial. For tutorial_1 all the files are new so there are no highlights. 
+
+Build Instructions :inline-file:`CMakeLists.txt`
+-----------------------------------------------
+
+The CMakeLists defines the build instructions that are used for this package when :inline-bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :inline-file:`ariac_tutorials` python module is installed, and the :inline-file:`tutorial_1.py` executable is installed. 
 
 .. code-block:: cmake
     
@@ -78,8 +87,8 @@ CMakelists.txt
 
     ament_package()
 
-package.xml
---------------------------------
+Package Manifest :inline-file:`package.xml`
+-------------------------------------------
 
 .. code-block:: xml
     
@@ -109,8 +118,8 @@ package.xml
     Make sure to update the description, maintainer(s) and license for your package. 
 
 
-Competition Interface
---------------------------------------------
+Competition Interface :inline-file:`competition_interface.py`
+-------------------------------------------------------------
 
 The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`.
 
@@ -222,7 +231,7 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
 
 
 Code Explanation
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 - Imports:
 
@@ -248,8 +257,8 @@ Code Explanation
 
 
 
-Create the Executable
---------------------------------
+Executable :inline-file:`tutorial_1.py`
+--------------------------------------
 
 .. code-block:: python
     :caption: tutorial_1.py
@@ -271,7 +280,7 @@ Create the Executable
 
 
 Code Explanation
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 
 This executable does the following:
@@ -282,8 +291,8 @@ This executable does the following:
 
 
 
-Run the Executable
---------------------------------
+Running the Executable
+======================
 
 
 - In *terminal 1*, run the following commands:
@@ -319,11 +328,9 @@ Run the Executable
 
     This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, start the conveyor belt, and start order announcements.
 
-    
-
 
 Outputs
---------------------------------
+=======
 
 .. code-block:: console
     :caption: terminal 1 output

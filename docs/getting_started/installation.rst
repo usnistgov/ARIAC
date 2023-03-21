@@ -1,3 +1,4 @@
+.. _INSTALLATION:
 
 .. only:: builder_html or readthedocs
 
@@ -85,7 +86,7 @@ Building the ARIAC Package
 
         source install/setup.bash
 
-    **Note:** You may need to add the following line to your ``~/.bashrc`` file: ``source ~/ariac_ws/install/setup.bash``
+    **Note:** You may want to add the following line to your ``~/.bashrc`` file: ``source ~/ariac_ws/install/setup.bash``
 
 Starting the ARIAC Simulator
 ----------------------------
@@ -196,7 +197,7 @@ The test competitor has been tested with ``kitting.yaml``, ``assembly.yaml``, ``
 There is no guarantee that the test competitor will work with other trials as the goal of the test competitor is to demonstrate how to interface with the ARIAC environment.
 
 
-The test competitor is located in the `test_competitor <https://github.com/usnistgov/ARIAC/tree/ariac2023/test_competitor/config>`_ package. To run the test competitor, use the following commands:
+The test competitor is located in the `test_competitor <https://github.com/usnistgov/ARIAC/tree/ariac2023/test_competitor>`_ package. To run the test competitor, use the following commands:
 
 - *terminal 1*: Start the environment.
 
@@ -205,7 +206,7 @@ The test competitor is located in the `test_competitor <https://github.com/usnis
         ros2 launch ariac_gazebo ariac.launch.py trial_name:=<trial_file>
 
 
-- *terminal 2*: Start the moveit node.
+- *terminal 2*: Start the MoveIt node.
 
     .. code-block:: bash
 

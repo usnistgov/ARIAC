@@ -40,7 +40,7 @@ Detection
 ----------------------------
 
 
-The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service ``/ariac/perform_quality_check``. The argument passed to this service call is an order ID (see :numref:`perform-quality-check-srv`). When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check`. The argument passed to this service call is an order ID (see :numref:`perform-quality-check-srv`). When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
 
 .. code-block:: bash
   :caption: PerformQualityCheck.srv
@@ -207,7 +207,7 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type **VacuumGripperState.msg**, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
+To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state`. This topic publishes messages of type **VacuumGripperState.msg**, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
 
   
 .. code-block:: bash
@@ -278,7 +278,7 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is **Robots.msg** (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+To detect a robot malfunction, the CCS needs a subscriber to the topic :red:`/ariac/robot_health`. The message type for this topic is **Robots.msg** (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
 
 .. code-block:: bash
   :caption: Robots.msg
@@ -343,7 +343,7 @@ Detection
 -----------------------------
 
 
-To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. The message type for this topic is **Sensors.msg** (see :numref:`sensors-health`). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+To detect a sensor blackout the CCS needs a subscriber to the topic :red:`/ariac/sensor_health`. The message type for this topic is **Sensors.msg** (see :numref:`sensors-health`). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
 
 .. code-block:: bash
   :caption: Sensors.msg
@@ -416,7 +416,7 @@ Detection
 -------------------------------
 
 
-To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is **Order.msg** (see :numref:`order-msg`). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders`. The message type for this topic is **Order.msg** (see :numref:`order-msg`). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
 .. code-block:: bash
   :caption: Order.msg
@@ -499,10 +499,10 @@ To figure out if the insufficient parts challenge is part of a trial, the CCS ca
 Bins
 ^^^^^
 
-The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+The topic :red:`/ariac/bin_parts` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
   .. code-block:: bash
-    :caption: Message published on the topic ``/ariac/bin_parts``.
+    :caption: Message published on the topic :red:`/ariac/bin_parts`.
     :name: bin-parts-outputs
 
     ---
@@ -524,11 +524,11 @@ The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type
 
 Conveyor Belt
 ^^^^^^^^^^^^^^^
-The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+The topic :red:`/ariac/conveyor_parts` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
   .. code-block:: bash
-    :caption: Message published on the topic ``/ariac/conveyor_parts``.
+    :caption: Message published on the topic :red:`/ariac/conveyor_parts`.
     :name: conveyor-parts-outputs
 
     ---

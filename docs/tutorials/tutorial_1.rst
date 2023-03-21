@@ -311,9 +311,9 @@ Run the Executable
         . install/setup.bash
         ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
 
-    .. highlights::
 
-        *This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, start the conveyor belt, and start order announcements.*
+
+    This should start gazebo. Once the environment is loaded and the competition state is ready, the interface node running in terminal 1 will start the competition. This will activate all sensors, enable the robot controllers, start the conveyor belt, and start order announcements.
 
     
 

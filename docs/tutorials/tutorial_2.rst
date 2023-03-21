@@ -63,7 +63,7 @@ Sensor Configuration File
 -----------------------------------
 
 A sensor configuration file for a given package must be created in the folder :inline-file:`config` in the package. The file must be added to the :inline-file:`CMakeLists.txt` file in the package to allow the competition software to find the file.
-To learn more about sensor configuration files, see `https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_.
+To learn more about sensor configuration files, see the Sensor configuration file `section  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_.
 
 Add a Break Beam Sensor
 ^^^^^^^^^^^^^^^^^^^^^^^^

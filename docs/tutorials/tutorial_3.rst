@@ -13,9 +13,9 @@
 .. role:: inline-bash(code)
     :language: bash
 
-=========================================================
+*****************************************************
 Tutorial 3: Read Data from an Advanced Logical Camera
-=========================================================
+*****************************************************
 
 .. admonition:: Tutorial 3
   :class: attention
@@ -39,7 +39,7 @@ This tutorial covers the following topics:
 
 
 Package Structure
---------------------------------------------
+=================
 
 Updates and additions that are specific to :inline-tutorial:`tutorial 3`  are highlighted in the tree below.
 
@@ -459,6 +459,7 @@ Build Instructions
 
 .. code-block:: cmake
     :emphasize-lines: 28
+    :caption: CMakeLists.txt
 
     cmake_minimum_required(VERSION 3.8)
     project(ariac_tutorials)
@@ -493,6 +494,36 @@ Build Instructions
 
     ament_package()
 
+Package Manifest
+----------------
+
+.. code-block:: xml
+    :emphasize-lines: 16-17
+    :caption: package.xml
+
+    <?xml version="1.0"?>
+    <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+    <package format="3">
+        <name>ariac_tutorials</name>
+        <version>0.0.0</version>
+        <description>Tutorial 3</description>
+        <maintainer email="justin.albrecht@nist.gov">Justin Albrecht</maintainer>
+        <license>Apache License 2.0</license>
+
+        <buildtool_depend>ament_cmake</buildtool_depend>
+
+        <depend>rclcpp</depend>
+        <depend>rclpy</depend>
+        <depend>ariac_msgs</depend>
+        <depend>geometry_msgs</depend>
+        <depend>orocos_kdl</depend>
+        <depend>python3-pykdl</depend>
+
+        <export>
+            <build_type>ament_cmake</build_type>
+        </export>
+    </package>
+
 
 
 Test the Sensor Configuration
@@ -515,7 +546,7 @@ You should see the camera above bins 1-4 as shown in the figure below.
 
 
 Run the Executable
---------------------------------
+==================
 
 - In *terminal 1*, run the following commands:
 
@@ -537,7 +568,7 @@ Run the Executable
 
         cd ~/ariac_ws
         . install/setup.bash
-        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
+        ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=ariac_tutorials
 
 
     Once the environment is loaded and the competition state is ready, the interface node running in *terminal 1* will start the competition and the sensor will start publishing data.

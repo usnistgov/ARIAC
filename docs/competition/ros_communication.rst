@@ -170,7 +170,10 @@ Sensor Topics
      - :red:`/ariac/sensors/{sensor_name}/rgb_image`
      - :gray:`sensor_msgs/Image sensor_msgs/Image`
    * - rgbd_camera
-     - :red:`/ariac/sensors/{sensor_name}/rgb_image` and :red:`/ariac/sensors/{sensor_name}/depth_image`
+     - :red:`/ariac/sensors/{sensor_name}/rgb_image`
+     - :gray:`sensor_msgs/Image`
+   * - 
+     - :red:`/ariac/sensors/{sensor_name}/depth_image`
      - :gray:`sensor_msgs/Image`
    * - basic_logical_camera
      - :red:`/ariac/sensors/{sensor_name}/image`

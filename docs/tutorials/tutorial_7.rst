@@ -875,7 +875,7 @@ Create the Executable
         main()
 
 
-Code Explained
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 This executable does the following:

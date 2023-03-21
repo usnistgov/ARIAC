@@ -217,7 +217,7 @@ The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:
                 self.get_logger().info('Unable to start competition')
 
 
-Code Explained
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 - Imports:
@@ -233,14 +233,14 @@ Code Explained
 
 - Instance Variables
 
-    - :inline-python:`self._start_competition_client` is a client for the service ``/ariac/start_competition``.
-    - :inline-python:`self._competition_state_sub` is a subscriber for the topic ``/ariac/competition_state``.
+    - :inline-python:`self._start_competition_client` is a client for the service :navy:`/ariac/start_competition`.
+    - :inline-python:`self._competition_state_sub` is a subscriber for the topic :red:`/ariac/competition_state`.
     - :inline-python:`self._competition_state` is a variable to store the current competition state.
 
 - Instance Methods
 
-    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic ``/ariac/competition_state``. This method stores the competition state in the variable :inline-python:`self._competition_state`.
-    - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`self._competition_state` and then calls the service ``/ariac/start_competition`` through the client :inline-python:`self._start_competition_client`.
+    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :red:`/ariac/competition_state`. This method stores the competition state in the variable :inline-python:`self._competition_state`.
+    - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`self._competition_state` and then calls the service :navy:`/ariac/start_competition` through the client :inline-python:`self._start_competition_client`.
 
 
 
@@ -266,7 +266,7 @@ Create the Executable
         main()
 
 
-Code Explained
+Code Explanation
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 

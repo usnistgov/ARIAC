@@ -240,6 +240,7 @@ Setup
 ----------------------------
 
 The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
+  
   * ``duration``: The duration of the robot malfunction in seconds.
   * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
   * :ref:`CONDITIONS` that can trigger the robot malfunction.
@@ -305,6 +306,7 @@ Setup
 
 
 The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor blackout challenge. The relevant fields for this agility challenge are listed below.
+  
   * `duration`: The duration of the sensor blackout in seconds.
   * `sensors_to_disable`: A list of sensor types to disable:
     * ``'break_beam'``
@@ -562,9 +564,9 @@ The human challenge consists of a simulated human navigating the workcell.
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
 
- **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
-  * **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
-  * **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
+- **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
+- **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
+- **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
 .. note::
   The behavior does not change within a trial, it stays the same for the whole trial.
@@ -576,6 +578,7 @@ Setup
 
 
 The subfield ``human`` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+  
   * ``behavior``: The behavior of the human operator. The possible values are:
 
     - ``'indifferent'``
@@ -597,7 +600,7 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
 Detection
 -----------------------------
 
-The pose of the human is published to the topic ``/ariac_human/state`` (:ref:`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
+The pose of the human is published to the topic :red:`/ariac_human/state` (:ref:`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash
     :caption: Message published on the topic ``/ariac_human/state``.

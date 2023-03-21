@@ -127,6 +127,18 @@ Competitors will need to create their own competitor package and use their own s
 
         - To create a new competitor package, see :ref:`tutorial 1 <TUTORIAL1>`.
         - To use a custom sensor configuration file, create a directory named ``config`` in your competitor package and place your sensor configuration file in that directory. 
+
+            - Below is an example of competitor package structure with a custom sensor configuration file named ``my_sensors.yaml``.
+
+            .. code-block:: text
+                :class: no-copybutton
+                
+                my_competitor_pkg
+                ├── CMakeLists.txt
+                ├── package.xml
+                └── config
+                    └── my_sensors.yaml
+
         - Make sure to edit ``CMakelists.txt`` in your competitor package to include the ``config`` directory.
 
             .. code-block:: cmake
@@ -181,7 +193,7 @@ Running the Test Competitor
 
 A test competitor has been created to demonstrate how to complete some of the basic functions (no challenges) of working with the ARIAC environment.
 The test competitor has been tested with ``kitting.yaml``, ``assembly.yaml``, ``combined.yaml``, ``kitting_assembly.yaml``, and ``kitting_combined.yaml``.
-There is no guarantee that the test competitor will work with other trials as the goal of the test competitor is to demonstrate how to work with the ARIAC environment.
+There is no guarantee that the test competitor will work with other trials as the goal of the test competitor is to demonstrate how to interface with the ARIAC environment.
 
 The test competitor is located in the ``test_competitor`` package. To run the test competitor, use the following commands:
 

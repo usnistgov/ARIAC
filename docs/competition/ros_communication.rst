@@ -160,6 +160,8 @@ Services
      - :gray:`ariac_msgs/srv/GetPreAssemblyPoses`
      - `GetPreAssemblyPoses.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/GetPreAssemblyPoses.srv>`_
      - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with **order_id**
+   
+       .. _moveAGV:
    * - :navy:`/ariac/move_agv{n}` 
      - :gray:`ariac_msgs/srv/MoveAGV`
      - `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_

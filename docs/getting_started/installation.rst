@@ -98,14 +98,33 @@ Starting the ARIAC Simulator
 
     **Note:** This command starts ARIAC with the default configuration:
 
-    - The default trial file is ``kitting.yaml``, located in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/kitting.yaml``.
-    - The default sensor configuration is ``sensors.yaml``, located in ``~/ariac_ws/src/ariac/test_competitor/config/sensors.yaml``.
+    - The default trial file is ``kitting.yaml``, located in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/``.
+    - The default sensor configuration is ``sensors.yaml``, located in ``~/ariac_ws/src/ariac/test_competitor/config/``.
 
 
     .. admonition:: Custom Configuration
         :class: danger
 
-        To start ARIAC with a custom configuration, you must specify the ``trial_file`` and ``sensor_config`` arguments. For example:
+        Competitors will need to create their own competitor package and use their own sensor configuration file.
+
+        - To create a new competitor package, see the `Create a Competitor Package`_ section.
+        - To use a custom sensor configuration file, create a directory named ``config`` in your competitor package and place your sensor configuration file in that directory. 
+        - Start ARIAC with your custom configuration by running the following command:
+
+            .. code-block:: bash
+
+                ros2 launch ariac ariac.launch.py competitor_pkg:=<package> sensor_config:=<sensor_file>
+
+            - Replace ``<package>`` with the name of your package.
+            - Replace ``<sensor_file>`` with the name of your sensor configuration file.
+
+            **Note:** The ``<sensor_file>`` must not include the ``yaml`` file extension.
+
+            **Example:** To start ARIAC with the ``kitting.yaml`` trial file and the ``sensors.yaml`` sensor configuration file, run the following command:
+
+                .. code-block:: bash
+
+                    ros2 launch ariac ariac.launch.py trial:=kitting sensors:=sensors
 
         
 

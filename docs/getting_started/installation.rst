@@ -54,7 +54,7 @@ Cloning the ARIAC Repository
         
         git clone https://github.com/usnistgov/ARIAC.git src/ariac
 
-    **Note:** Always use the ``ARIAC2023`` branch.
+    **Note:** Always use the ``ariac2023`` branch.
 
 
 - Install the dependencies:
@@ -95,3 +95,11 @@ Starting the ARIAC Simulator
     .. code-block:: bash
 
         ros2 launch ariac ariac.launch.py
+
+
+    .. admonition:: Custom Configuration
+        :class: danger
+
+        ARIAC 2023 is built for ROS2 Galactic running on Ubuntu 20.04 (Focal Fossa). It is not compatible with ROS2 Foxy or Ubuntu 18.04.
+
+    

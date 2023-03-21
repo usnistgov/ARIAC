@@ -109,7 +109,7 @@ The following command starts ARIAC with the default configuration:
 Custom Configuration
 ~~~~~~~~~~~~~~~~~~~~
 
-To start ARIAC with a different trial, use the following command:
+- To start ARIAC with a different trial, use the following command:
 
     .. code-block:: bash
 
@@ -123,7 +123,7 @@ To start ARIAC with a different trial, use the following command:
 
             ros2 launch ariac ariac.launch.py trial_name:=assembly
 
-Competitors will need to create their own competitor package and use their own sensor configuration file.
+- Competitors will need to create their own competitor package and use their own sensor configuration file.
 
         - To create a new competitor package, see :ref:`tutorial 1 <TUTORIAL1>`.
         - To use a custom sensor configuration file, create a directory named ``config`` in your competitor package and place your sensor configuration file in that directory. 

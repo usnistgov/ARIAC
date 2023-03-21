@@ -56,73 +56,10 @@ Updated/Created Files
 
 The following sections will show the modified files in the package with highlighted sections for additions since the previous tutorial. For tutorial_1 all the files are new so there are no highlights. 
 
-Build Instructions :inline-file:`CMakeLists.txt`
------------------------------------------------
+Competition Interface
+---------------------
 
-The CMakeLists defines the build instructions that are used for this package when :inline-bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :inline-file:`ariac_tutorials` python module is installed, and the :inline-file:`tutorial_1.py` executable is installed. 
-
-.. code-block:: cmake
-    
-    cmake_minimum_required(VERSION 3.8)
-    project(ariac_tutorials)
-
-    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall -Wextra -Wpedantic)
-    endif()
-
-    find_package(ament_cmake REQUIRED)
-    find_package(ament_cmake_python REQUIRED)
-    find_package(rclcpp REQUIRED)
-    find_package(rclpy REQUIRED)
-    find_package(ariac_msgs REQUIRED)
-
-    # Install Python modules
-    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
-
-    # Install Python executables
-    install(PROGRAMS
-    scripts/tutorial_1.py
-    DESTINATION lib/${PROJECT_NAME}
-    )
-
-    ament_package()
-
-Package Manifest :inline-file:`package.xml`
--------------------------------------------
-
-.. code-block:: xml
-    
-    <?xml version="1.0"?>
-    <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-    <package format="3">
-        <name>ariac_tutorials</name>
-        <version>0.0.0</version>
-        <description>Tutorial 1</description>
-        <maintainer email="justin.albrecht@nist.gov">Justin Albrecht</maintainer>
-        <license>Apache License 2.0</license>
-
-        <buildtool_depend>ament_cmake</buildtool_depend>
-
-        <depend>rclcpp</depend>
-        <depend>rclpy</depend>
-        <depend>ariac_msgs</depend>
-        <depend>geometry_msgs</depend>
-
-        <export>
-            <build_type>ament_cmake</build_type>
-        </export>
-    </package>
-
-.. important::
-
-    Make sure to update the description, maintainer(s) and license for your package. 
-
-
-Competition Interface :inline-file:`competition_interface.py`
--------------------------------------------------------------
-
-The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`.
-
+The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the CompetitionInterface class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (ariac_tutorials).   
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -256,17 +193,24 @@ Code Explanation
     - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`_competition_state` and then calls the service :navy:`/ariac/start_competition` through the client :inline-python:`_start_competition_client`.
 
 
+Executable
+----------
 
-Executable :inline-file:`tutorial_1.py`
---------------------------------------
+The entry point to the node is located in the executable :inline-file:`tutorial_1.py`. Each tutorial will have a separate executable but will share the same interface. 
 
 .. code-block:: python
     :caption: tutorial_1.py
     
     #!/usr/bin/env python3
+    '''
+    To test this script, run the following commands in separate terminals:
+    - ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial
+    - ros2 run ariac_tutorials tutorial_1.py
+    '''
 
     import rclpy
     from ariac_tutorials.competition_interface import CompetitionInterface
+
 
     def main(args=None):
         rclpy.init(args=args)
@@ -275,6 +219,7 @@ Executable :inline-file:`tutorial_1.py`
         interface.destroy_node()
         rclpy.shutdown()
 
+
     if __name__ == '__main__':
         main()
 
@@ -282,13 +227,77 @@ Executable :inline-file:`tutorial_1.py`
 Code Explanation
 ^^^^^^^^^^^^^^^^
 
-
 This executable does the following:
 
     - Initialize the ROS client library.
     - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
     - Start the competition.
 
+
+Build Instructions
+------------------
+
+The CMakeLists defines the build instructions that are used for this package when :inline-bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :inline-file:`ariac_tutorials` python module is installed, and the :inline-file:`tutorial_1.py` executable is installed. 
+
+.. code-block:: cmake
+    :caption: CMakeLists.txt
+    
+    cmake_minimum_required(VERSION 3.8)
+    project(ariac_tutorials)
+
+    if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    endif()
+
+    find_package(ament_cmake REQUIRED)
+    find_package(ament_cmake_python REQUIRED)
+    find_package(rclcpp REQUIRED)
+    find_package(rclpy REQUIRED)
+    find_package(ariac_msgs REQUIRED)
+
+    # Install Python modules
+    ament_python_install_package(${PROJECT_NAME} SCRIPTS_DESTINATION lib/${PROJECT_NAME})
+
+    # Install Python executables
+    install(PROGRAMS
+    scripts/tutorial_1.py
+    DESTINATION lib/${PROJECT_NAME}
+    )
+
+    ament_package()
+
+Package Manifest
+----------------
+
+The manifest is used for metadata about the ROS package. It is also used by rosdep to ensure all necessary packages are installed. 
+
+.. code-block:: xml
+    :caption: package.xml
+    
+    <?xml version="1.0"?>
+    <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+    <package format="3">
+        <name>ariac_tutorials</name>
+        <version>0.0.0</version>
+        <description>Tutorial 1</description>
+        <maintainer email="justin.albrecht@nist.gov">Justin Albrecht</maintainer>
+        <license>Apache License 2.0</license>
+
+        <buildtool_depend>ament_cmake</buildtool_depend>
+
+        <depend>rclcpp</depend>
+        <depend>rclpy</depend>
+        <depend>ariac_msgs</depend>
+        <depend>geometry_msgs</depend>
+
+        <export>
+            <build_type>ament_cmake</build_type>
+        </export>
+    </package>
+
+.. important::
+
+    Make sure to update the description, maintainer(s) and license when creating your team's competition package. 
 
 
 Running the Executable
@@ -322,7 +331,7 @@ Running the Executable
 
         cd ~/ariac_ws
         . install/setup.bash
-        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorials
+        ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=ariac_tutorials trial_name:=tutorial
 
 
 

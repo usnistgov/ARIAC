@@ -90,43 +90,43 @@ Sensor Topics
    * - break_beam
      - :red:`/ariac/sensors/{sensor_name}/change`
      - :gray:`ariac_msgs/BreakBeamStatus`
-     -
+     - `BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_
    * - 
      - :red:`/ariac/sensors/{sensor_name}/status`
      - :gray:`ariac_msgs/BreakBeamStatus`
-     -
+     - `BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_
    * - proximity
      - :red:`/ariac/sensors/{sensor_name}/scan`
      - :gray:`sensor_msgs/Range`
-     -
+     - `Range.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Range.html>`_
    * - laser_profiler
      - :red:`/ariac/sensors/{sensor_name}/scan`
      - :gray:`sensor_msgs/LaserScan` 
-     -
+     - `LaserScan.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/LaserScan.html>`_
    * - lidar
      - :red:`/ariac/sensors/{sensor_name}/scan`	
      - :gray:`sensor_msgs/PointCloud`
-     -
+     - `PointCloud.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/PointCloud.html>`_
    * - rgb_camera
      - :red:`/ariac/sensors/{sensor_name}/rgb_image`
-     - :gray:`sensor_msgs/Image sensor_msgs/Image`
-     -
+     - :gray:`sensor_msgs/Image`
+     - `Image.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Image.html>`_
    * - rgbd_camera
      - :red:`/ariac/sensors/{sensor_name}/rgb_image`
      - :gray:`sensor_msgs/Image`
-     -
+     - `Image.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Image.html>`_
    * - 
      - :red:`/ariac/sensors/{sensor_name}/depth_image`
      - :gray:`sensor_msgs/Image`
-     -
+     - `Image.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Image.html>`_
    * - basic_logical_camera
      - :red:`/ariac/sensors/{sensor_name}/image`
      - :gray:`ariac_msgs/BasicLogicalCameraImage`
-     -
+     - `BasicLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BasicLogicalCameraImage.msg>`_
    * - advanced_logical_camera
      - :red:`/ariac/sensors/{sensor_name}/image`
      - :gray:`ariac_msgs/AdvancedLogicalCameraImage`
-     -
+     - `AdvancedLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`_
 
 Services
 --------

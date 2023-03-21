@@ -316,7 +316,7 @@ Detection
 -----------------------------
 
 
-To detect a sensor blackout the CCS needs a subscriber to the topic :red:`/ariac/sensor_health`. The message type for this topic is `Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_. The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+To detect a sensor blackout the CCS needs a subscriber to the topic :red:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
 
 
 

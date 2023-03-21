@@ -542,7 +542,7 @@ To test  the camera was correctly added to the environment, run the following co
 
 You should see the camera above bins 1-4 as shown in the figure below.
 
-.. figure:: ../images/tutorial3/advanced_camera_0.jpg
+.. figure:: ../images/advanced_camera_0.png
    :align: center
 
 

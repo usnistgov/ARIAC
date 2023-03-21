@@ -191,7 +191,7 @@ To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/
 Robot Malfunction
 ==================
 
-The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`CONDITIONS` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
+The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`conditions <CONDITIONS>` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
   The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
@@ -275,7 +275,7 @@ The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor 
     * ``'lidar'``
     * ``'camera'``
     * ``'logical_camera'``
-  * :ref:`CONDITIONS` to trigger the challenge.
+  * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 
 The sensor blackout challenge can occur multiple times in the same trial.  :numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 

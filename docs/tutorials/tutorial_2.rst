@@ -90,7 +90,7 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
 .. code-block:: python
     :caption: competition_interface.py
     :name: competitioninterface-tutorial2
-    :emphasize-lines: 3, 8, 57-95
+    :emphasize-lines: 3, 8, 57-68, 70-72, 74-83, 85-95
     :linenos:
 
     import rclpy
@@ -344,8 +344,8 @@ Executable
         rclpy.shutdown()
 
 
-if __name__ == '__main__':
-    main()
+    if __name__ == '__main__':
+        main()
 
 Code Explanation
 ^^^^^^^^^^^^^^^^
@@ -357,10 +357,10 @@ This executable does the following:
     - Start the competition.
     - Log the number of parts that crossed the beam every 2 seconds.
 
-CMakelists.txt
---------------
+Build Instructions
+------------------
 
-To allow for the competition software to be able to find the sensor configuration, it must be installed to the share directory of the package. 
+To allow for the competition software to be able to find the sensor configuration, it must be installed to the share directory of the package. The tutorial_2 executable also needs to be installed.
 
 .. code-block:: cmake
     :emphasize-lines: 15-18, 26
@@ -398,7 +398,7 @@ To allow for the competition software to be able to find the sensor configuratio
 
 
 Test the Sensor Configuration
------------------------------
+=============================
 
 To test the sensor was correctly added to the environment, run the following commands:
 
@@ -424,7 +424,7 @@ You should see a break beam sensor on the right side of the conveyor belt, as sh
 
 
 Run the Executable
-------------------
+==================
 
 - In *terminal 1*, run the following commands:
 
@@ -455,7 +455,7 @@ Run the Executable
 
 
 Outputs
---------------------------------
+=======
 
 
 .. code-block:: console

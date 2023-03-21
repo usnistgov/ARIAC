@@ -96,10 +96,17 @@ Starting the ARIAC Simulator
 
         ros2 launch ariac ariac.launch.py
 
+    **Note:** This command starts ARIAC with the default configuration:
+
+    - The default trial file is ``kitting.yaml``, located in ``~/ariac_ws/src/ariac/ariac_gazebo/config/trials/kitting.yaml``.
+    - The default sensor configuration is ``sensors.yaml``, located in ``~/ariac_ws/src/ariac/test_competitor/config/sensors.yaml``.
+
 
     .. admonition:: Custom Configuration
         :class: danger
 
-        ARIAC 2023 is built for ROS2 Galactic running on Ubuntu 20.04 (Focal Fossa). It is not compatible with ROS2 Foxy or Ubuntu 18.04.
+        To start ARIAC with a custom configuration, you must specify the ``trial_file`` and ``sensor_config`` arguments. For example:
+
+        
 
     

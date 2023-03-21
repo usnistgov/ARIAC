@@ -155,8 +155,11 @@ Sensor Topics
      - Topic Name
      - Message Type 
    * - break_beam
-     - :red:`/ariac/sensors/{sensor_name}/change` and :red:`/ariac/sensors/{sensor_name}/status`
-     - :gray:`ariac_msgs/BreakBeamStatus` and :gray:`ariac_msgs/BreakBeamStatus`
+     - :red:`/ariac/sensors/{sensor_name}/change`
+     - :gray:`ariac_msgs/BreakBeamStatus`
+   * - 
+     - :red:`/ariac/sensors/{sensor_name}/status`
+     - :gray:`ariac_msgs/BreakBeamStatus`
    * - proximity
      - :red:`/ariac/sensors/{sensor_name}/scan`
      - :gray:`sensor_msgs/Range`

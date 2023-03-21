@@ -98,7 +98,7 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
 .. code-block:: python
     :caption: competition_interface.py
     :name: competitioninterface-tutorial3
-    :emphasize-lines: 9-11, 16-21, 43-67, 106-114, 116-118, 190-239
+    :emphasize-lines: 9-11, 16-21, 43-67, 106-114, 116-118, 124-132, 190-239
     :linenos:
 
     import rclpy
@@ -340,22 +340,7 @@ The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:
                 output += '==========================\n\n'
 
             return output
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     
-
 
 Code Explanation
 ^^^^^^^^^^^^^^^^^
@@ -576,7 +561,7 @@ Run the Executable
     Each part detected by the camera will be logged to the terminal.
 
 Outputs
---------------------------------
+=======
 
 
 .. code-block:: console

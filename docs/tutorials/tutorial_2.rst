@@ -407,7 +407,7 @@ To test the sensor was correctly added to the environment, run the following com
   cd ~/ariac_ws
   colcon build
   . install/setup.bash
-  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials
+  ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=ariac_tutorials
 
 
 .. .. admonition:: Attention

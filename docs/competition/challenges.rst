@@ -208,7 +208,7 @@ The robot malfunction challenge is specified with the field ``robot_malfunction`
   
   * ``duration``: The duration of the robot malfunction in seconds.
   * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
-  * :ref:`CONDITIONS` that can trigger the robot malfunction.
+  * :ref:`One condition <CONDITIONS>` that can trigger the robot malfunction.
 
 Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
 

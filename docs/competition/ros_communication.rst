@@ -10,7 +10,7 @@ Topics
 ------
 
 
-.. list-table:: List of topics with message types.
+.. list-table:: List of topics.
    :widths: auto
    :header-rows: 1
    :name: communications-topics
@@ -74,6 +74,59 @@ Topics
     | `/ariac/conveyor_state`        | `ariac_msgs/msg/ConveyorBeltState`  | State of the conveyor (enabled, power)               |
     | `/ariac/robot_health`          | `ariac_msgs/msg/Robots`             | Health of the robots                                 |
     | `/ariac/sensor_health`         | `ariac_msgs/msg/Sensors`            | Health of the sensors                                |
+
+Sensor Topics
+-------------
+
+.. list-table:: List of sensor topics.
+   :widths: auto
+   :header-rows: 1
+   :name: communications-sensor-topics
+
+   * - Sensor Type
+     - Topic Name
+     - Message Type 
+     - Message Definition
+   * - break_beam
+     - :red:`/ariac/sensors/{sensor_name}/change`
+     - :gray:`ariac_msgs/BreakBeamStatus`
+     -
+   * - 
+     - :red:`/ariac/sensors/{sensor_name}/status`
+     - :gray:`ariac_msgs/BreakBeamStatus`
+     -
+   * - proximity
+     - :red:`/ariac/sensors/{sensor_name}/scan`
+     - :gray:`sensor_msgs/Range`
+     -
+   * - laser_profiler
+     - :red:`/ariac/sensors/{sensor_name}/scan`
+     - :gray:`sensor_msgs/LaserScan` 
+     -
+   * - lidar
+     - :red:`/ariac/sensors/{sensor_name}/scan`	
+     - :gray:`sensor_msgs/PointCloud`
+     -
+   * - rgb_camera
+     - :red:`/ariac/sensors/{sensor_name}/rgb_image`
+     - :gray:`sensor_msgs/Image sensor_msgs/Image`
+     -
+   * - rgbd_camera
+     - :red:`/ariac/sensors/{sensor_name}/rgb_image`
+     - :gray:`sensor_msgs/Image`
+     -
+   * - 
+     - :red:`/ariac/sensors/{sensor_name}/depth_image`
+     - :gray:`sensor_msgs/Image`
+     -
+   * - basic_logical_camera
+     - :red:`/ariac/sensors/{sensor_name}/image`
+     - :gray:`ariac_msgs/BasicLogicalCameraImage`
+     -
+   * - advanced_logical_camera
+     - :red:`/ariac/sensors/{sensor_name}/image`
+     - :gray:`ariac_msgs/AdvancedLogicalCameraImage`
+     -
 
 Services
 --------
@@ -143,47 +196,7 @@ Services
     | `/ariac/{robot}_enable_gripper` | `ariac_msgs/srv/VacuumGripperControl` | Set the state of {robot}'s gripper to the request state            |
     | `/ariac/{robot}_change_gripper` | `ariac_msgs/srv/ChangeGripper`        | Change the type of {robot}'s gripper to the request type           |
 
-Sensor Topics
--------------
 
-.. list-table:: List of sensor topics with message types.
-   :widths: 25 50 50
-   :header-rows: 1
-   :name: communications-sensor-topics
-
-   * - Sensor Type
-     - Topic Name
-     - Message Type 
-   * - break_beam
-     - :red:`/ariac/sensors/{sensor_name}/change`
-     - :gray:`ariac_msgs/BreakBeamStatus`
-   * - 
-     - :red:`/ariac/sensors/{sensor_name}/status`
-     - :gray:`ariac_msgs/BreakBeamStatus`
-   * - proximity
-     - :red:`/ariac/sensors/{sensor_name}/scan`
-     - :gray:`sensor_msgs/Range`
-   * - laser_profiler
-     - :red:`/ariac/sensors/{sensor_name}/scan`
-     - :gray:`sensor_msgs/LaserScan` 
-   * - lidar
-     - :red:`/ariac/sensors/{sensor_name}/scan`	
-     - :gray:`sensor_msgs/PointCloud`
-   * - rgb_camera
-     - :red:`/ariac/sensors/{sensor_name}/rgb_image`
-     - :gray:`sensor_msgs/Image sensor_msgs/Image`
-   * - rgbd_camera
-     - :red:`/ariac/sensors/{sensor_name}/rgb_image`
-     - :gray:`sensor_msgs/Image`
-   * - 
-     - :red:`/ariac/sensors/{sensor_name}/depth_image`
-     - :gray:`sensor_msgs/Image`
-   * - basic_logical_camera
-     - :red:`/ariac/sensors/{sensor_name}/image`
-     - :gray:`ariac_msgs/BasicLogicalCameraImage`
-   * - advanced_logical_camera
-     - :red:`/ariac/sensors/{sensor_name}/image`
-     - :gray:`ariac_msgs/AdvancedLogicalCameraImage`
 
 ..
     List of sensor topics and their msg types:

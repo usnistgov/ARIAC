@@ -458,7 +458,7 @@ Build Instructions
 ------------------
 
 .. code-block:: cmake
-    :emphasize-lines: 28
+    :emphasize-lines: 13, 28
     :caption: CMakeLists.txt
 
     cmake_minimum_required(VERSION 3.8)
@@ -497,6 +497,8 @@ Build Instructions
 Package Manifest
 ----------------
 
+This tutorial adds a dependency to the PyKDL module. This is added to the package manifest.
+
 .. code-block:: xml
     :emphasize-lines: 16-17
     :caption: package.xml
@@ -525,7 +527,6 @@ Package Manifest
     </package>
 
 
-
 Test the Sensor Configuration
 =============================
 
@@ -547,19 +548,19 @@ You should see the camera above bins 1-4 as shown in the figure below.
 
 Run the Executable
 ==================
-
 - In *terminal 1*, run the following commands:
 
 
     .. code-block:: bash
 
         cd ~/ariac_ws
+        rosdep install --from-paths src -y --ignore-src
         colcon build
         . install/setup.bash
         ros2 run ariac_tutorials tutorial_3.py
 
 
-    The node will wait until the competition is ready.
+    *The rosdep command needs to be run again because the package.xml was updated with a new dependency.*
 
 
 - In *terminal 2*, run the following commands:
@@ -581,56 +582,114 @@ Outputs
 .. code-block:: console
     :caption: terminal 1 output
     :class: no-copybutton
-    
+
+    [INFO] [1679430757.556470727] [competition_interface]: Waiting for competition to be ready
+    [INFO] [1679430770.831452522] [competition_interface]: Competition state is: idle
+    [INFO] [1679430778.086868765] [competition_interface]: Competition state is: ready
+    [INFO] [1679430778.087507486] [competition_interface]: Competition is ready. Starting...
+    [INFO] [1679430778.090600012] [competition_interface]: Started competition.
+    [INFO] [1679430778.252110253] [competition_interface]: 
+
     ==========================
     Part 1: 🟪 Purple Pump
-    ==========================
+    --------------------------
     Camera Frame
-    ==========================
-        Position:
-            x: 1.0772143770406752
-            y: 0.5150000388121461
-            z: -0.2060067933778063
-        Orientation:
-            x: -0.0006855918720226918
-            y: -0.7063449441335629
-            z: -0.0006911150034743035
-            w: 0.7078671289308405
-    ==========================
+    --------------------------
+    Position:
+        x: 1.077 (m)
+        y: 0.515 (m)
+        z: -0.206 (m)
+    Orientation:
+        roll: 0°
+        pitch: -90°
+        yaw: 0°
+    --------------------------
     World Frame
+    --------------------------
+    Position:
+        x: -2.080 (m)
+        y: 2.445 (m)
+        z: 0.723 (m)
+    Orientation:
+        roll: 0°
+        pitch: 0°
+        yaw: 180°
     ==========================
-        Position:
-            x: -2.0799998435394826
-            y: 2.4450000325688257
-            z: 0.7227843196083803
-        Orientation:
-            x: -0.0010731836296401
-            y: -0.0009734789503818064
-            z: 0.9999989503002881
-            w: 3.7353182917545933e-06
+
     ==========================
     Part 2: 🟪 Purple Pump
-    ==========================
+    --------------------------
     Camera Frame
-    ==========================
-        Position:
-            x: 1.0774243270564583
-            y: 0.15500079119043203
-            z: -0.20600655688080022
-        Orientation:
-            x: 0.0003549575317311197
-            y: -0.7072292680009703
-            z: 0.00035219184924200627
-            w: 0.7069840963196159
-    ==========================
+    --------------------------
+    Position:
+        x: 1.077 (m)
+        y: 0.155 (m)
+        z: -0.206 (m)
+    Orientation:
+        roll: 179°
+        pitch: -90°
+        yaw: -178°
+    --------------------------
     World Frame
+    --------------------------
+    Position:
+        x: -2.080 (m)
+        y: 2.805 (m)
+        z: 0.723 (m)
+    Orientation:
+        roll: 0°
+        pitch: 0°
+        yaw: 180°
     ==========================
-        Position:
-            x: -2.080000206072213
-            y: 2.8049992801904398
-            z: 0.7225743696009308
-        Orientation:
-            x: 0.0001765258688373336
-            y: 0.0005000301498669066
-            z: 0.9999998594026379
-            w: 1.7808459680221148e-06
+
+    ==========================
+    Part 3: 🟪 Purple Pump
+    --------------------------
+    Camera Frame
+    --------------------------
+    Position:
+        x: 1.077 (m)
+        y: 0.515 (m)
+        z: -0.566 (m)
+    Orientation:
+        roll: 177°
+        pitch: -90°
+        yaw: -177°
+    --------------------------
+    World Frame
+    --------------------------
+    Position:
+        x: -1.720 (m)
+        y: 2.445 (m)
+        z: 0.723 (m)
+    Orientation:
+        roll: 0°
+        pitch: 0°
+        yaw: 180°
+    ==========================
+
+    ==========================
+    Part 4: 🟪 Purple Pump
+    --------------------------
+    Camera Frame
+    --------------------------
+    Position:
+        x: 1.077 (m)
+        y: 0.155 (m)
+        z: -0.566 (m)
+    Orientation:
+        roll: 0°
+        pitch: -90°
+        yaw: 0°
+    --------------------------
+    World Frame
+    --------------------------
+    Position:
+        x: -1.720 (m)
+        y: 2.805 (m)
+        z: 0.723 (m)
+    Orientation:
+        roll: 0°
+        pitch: 0°
+        yaw: 180°
+    ==========================

@@ -39,7 +39,7 @@ This tutorial shows how to move AGVs to assembly stations.
   - Move the AGVs to the assembly station.
 
 Package Structure
---------------------------------------------
+=================
 
 Updates and additions that are specific to :inline-tutorial:`tutorial 5`  are highlighted in the tree below.
 
@@ -69,11 +69,11 @@ Updated/Created Files
 Competition Interface
 ---------------------
 
-The competition interface for :inline-tutorial:`tutorial 4` is shown in :numref:`competitioninterface-tutorial4`.
+The competition interface for :inline-tutorial:`tutorial 5` is shown in :numref:`competitioninterface-tutorial5`.
 
 .. code-block:: python
     :caption: competition_interface.py
-    :name: competitioninterface-tutorial4
+    :name: competitioninterface-tutorial5
     :emphasize-lines: 18-19, 453-485, 487-526
     :linenos:
 

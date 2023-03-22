@@ -40,21 +40,9 @@ Detection
 ----------------------------
 
 
-The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service ``/ariac/perform_quality_check``. The argument passed to this service call is an order ID (see :numref:`perform-quality-check-srv`). When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). The argument passed to this service call is an order ID. When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
 
-.. code-block:: bash
-  :caption: PerformQualityCheck.srv
-  :name: perform-quality-check-srv
 
-  string order_id
-  ---
-  bool valid_id
-  bool all_passed
-  bool incorrect_tray
-  ariac_msgs/QualityIssue quadrant1
-  ariac_msgs/QualityIssue quadrant2
-  ariac_msgs/QualityIssue quadrant3
-  ariac_msgs/QualityIssue quadrant4
 
 More information on the fields of the service message is provided as follows:
   * The service returns a Boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
@@ -68,19 +56,7 @@ More information on the fields of the service message is provided as follows:
     * All parts are of the correct color.
 
   * The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
-  * Information for each quadrant is reported as a **QualityIssue.msg** (see :numref:`quality-issue-msg`).
-
-
-  .. code-block:: bash
-    :caption: QualityIssue.msg
-    :name: quality-issue-msg
-
-    bool all_passed           # True if everything is correct in the quadrant
-    bool missing_part         # True if a part is missing in the quadrant
-    bool flipped_part         # True if a part is flipped in the quadrant
-    bool faulty_part          # True if a part is faulty in the quadrant
-    bool incorrect_part_type  # True if a part has the wrong type in the quadrant
-    bool incorrect_part_color # True if a part has the wrong color in the quadrant
+  * Information for each quadrant is reported as a `QualityIssue.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/QualityIssue.msg>`_
 
 
 
@@ -207,18 +183,7 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type **VacuumGripperState.msg**, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
-
-  
-.. code-block:: bash
-  :caption: VacuumGripperState.msg
-  :name: vacuum-gripper-state-yaml
-  
-  bool enabled  # is the succion enabled?
-  bool attached # is an object attached to the gripper?
-  string type   # type of the gripper attached to the arm
-
-
+To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state` (`VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_).
 
 
 .. _target to robot malfunction:
@@ -226,7 +191,7 @@ To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{rob
 Robot Malfunction
 ==================
 
-The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`CONDITIONS` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
+The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`conditions <CONDITIONS>` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
   The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
@@ -240,9 +205,10 @@ Setup
 ----------------------------
 
 The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
+  
   * ``duration``: The duration of the robot malfunction in seconds.
   * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
-  * :ref:`CONDITIONS` that can trigger the robot malfunction.
+  * :ref:`One condition <CONDITIONS>` that can trigger the robot malfunction.
 
 Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
 
@@ -277,14 +243,8 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is **Robots.msg** (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+To detect a robot malfunction, the CCS needs a subscriber to the topic :red:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
 
-.. code-block:: bash
-  :caption: Robots.msg
-  :name: robots-health
-  
-  bool floor_robot
-  bool ceiling_robot
 
 
 .. _target to sensor blackout:
@@ -296,7 +256,7 @@ The sensor blackout challenge simulates a situation where some sensors stop repo
 
   The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
 
-The sensor blackout challenge is triggered based on :ref:`CONDITIONS`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
+The sensor blackout challenge is triggered based on :ref:`conditions <CONDITIONS>`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
 
 
 
@@ -305,15 +265,17 @@ Setup
 
 
 The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor blackout challenge. The relevant fields for this agility challenge are listed below.
+  
   * `duration`: The duration of the sensor blackout in seconds.
   * `sensors_to_disable`: A list of sensor types to disable:
+
     * ``'break_beam'``
     * ``'proximity'``
     * ``'laser_profiler'``
     * ``'lidar'``
     * ``'camera'``
     * ``'logical_camera'``
-  * :ref:`CONDITIONS` to trigger the challenge.
+  * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 
 The sensor blackout challenge can occur multiple times in the same trial.  :numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
@@ -341,19 +303,8 @@ Detection
 -----------------------------
 
 
-To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. The message type for this topic is **Sensors.msg** (see :numref:`sensors-health`). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+To detect a sensor blackout the CCS needs a subscriber to the topic :red:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
 
-.. code-block:: bash
-  :caption: Sensors.msg
-  :name: sensors-health
-  
-  # Sensors.msg
-  bool break_beam
-  bool proximity
-  bool laser_profiler
-  bool lidar
-  bool camera
-  bool logical_camera
 
 
 High-priority Orders
@@ -365,7 +316,7 @@ The high-priority orders challenge simulates an order that must be completed bef
 
 
 .. warning::
-  A high-priority order can be announced in one of the two following :ref:`CONDITIONS` time and part placement. The submission condition is not used to announce a high-priority order.
+  A high-priority order can be announced in one of the two following :ref:`conditions <CONDITIONS>`: Time or part placement. The submission condition is not used to announce a high-priority order.
 
 .. note::
   A high-priority order will only be announced when only regular-priority orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.
@@ -414,22 +365,8 @@ Detection
 -------------------------------
 
 
-To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is **Order.msg** (see :numref:`order-msg`). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders` (`Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
 
-.. code-block:: bash
-  :caption: Order.msg
-  :name: order-msg
-  
-  uint8 KITTING=0
-  uint8 ASSEMBLY=1
-  uint8 COMBINED=2
-
-  string id
-  uint8 type
-  bool priority
-  ariac_msgs/KittingTask kitting_task 
-  ariac_msgs/AssemblyTask assembly_task
-  ariac_msgs/CombinedTask combined_task
 
 
 Insufficient Parts
@@ -497,10 +434,10 @@ To figure out if the insufficient parts challenge is part of a trial, the CCS ca
 Bins
 ^^^^^
 
-The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+The topic :red:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
   .. code-block:: bash
-    :caption: Message published on the topic ``/ariac/bin_parts``.
+    :caption: Message published on the topic :red:`/ariac/bin_parts`.
     :name: bin-parts-outputs
 
     ---
@@ -522,11 +459,11 @@ The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type
 
 Conveyor Belt
 ^^^^^^^^^^^^^^^
-The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+The topic :red:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
   .. code-block:: bash
-    :caption: Message published on the topic ``/ariac/conveyor_parts``.
+    :caption: Message published on the topic :red:`/ariac/conveyor_parts`.
     :name: conveyor-parts-outputs
 
     ---
@@ -562,9 +499,9 @@ The human challenge consists of a simulated human navigating the workcell.
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
 
- **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
-  * **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
-  * **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
+- **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
+- **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
+- **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
 .. note::
   The behavior does not change within a trial, it stays the same for the whole trial.
@@ -576,12 +513,13 @@ Setup
 
 
 The subfield ``human`` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+  
   * ``behavior``: The behavior of the human operator. The possible values are:
 
     - ``'indifferent'``
     - ``'antagonistic'``
     - ``'helpful'``
-  * :ref:`CONDITIONS` to trigger the challenge.
+  * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 
 .. code-block:: yaml
@@ -597,10 +535,10 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
 Detection
 -----------------------------
 
-The pose of the human is published to the topic ``/ariac_human/state`` (:ref:`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
+The pose of the human is published to the topic :red:`/ariac_human/state` (`HumanState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash
-    :caption: Message published on the topic ``/ariac_human/state``.
+    :caption: Message published on the topic :red:`/ariac_human/state`.
     :name: human-state-outputs
 
     ---

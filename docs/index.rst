@@ -17,8 +17,8 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    :maxdepth: 3
    :hidden:
 
-   getting_started/updates
-   getting_started/installation
+   getting_started/updates.rst
+   getting_started/installation.rst
    getting_started/registering
    getting_started/events
 
@@ -43,9 +43,19 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    :maxdepth: 3
    :hidden:
 
-   tutorials/tutorial_1.md
-   tutorials/tutorial_2.md
-   tutorials/tutorial_3.md
-   tutorials/tutorial_4.md
-   tutorials/tutorial_5.md
+   tutorials/tutorials.rst
+   tutorials/tutorial_1.rst
+   tutorials/tutorial_2.rst
+   tutorials/tutorial_3.rst
+   tutorials/tutorial_4.rst
+   tutorials/tutorial_5.rst
+   tutorials/tutorial_6.rst
+   tutorials/tutorial_7.rst
+
+.. toctree::
+   :caption: Automated Evaluation
+   :maxdepth: 3
+   :hidden:
+
+   automated_evaluation/docker_setup.md
  

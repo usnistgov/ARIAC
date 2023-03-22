@@ -167,7 +167,7 @@ The competition interface for :inline-tutorial:`tutorial 4` is shown in :numref:
             AssemblyTaskMsg.AS3: 'assembly station 3',
             AssemblyTaskMsg.AS4: 'assembly station 4',
         }
-        '''Dictionary for converting AGVDestination constants to strings'''
+        '''Dictionary for converting AssemblyTask constants to strings'''
 
         def __init__(self):
             super().__init__('competition_interface')

@@ -8,7 +8,8 @@ import ros.SubscriptionRequestMsg;
 import ros.msgs.geometry_msgs.Point;
 import ros.msgs.std_msgs.PrimitiveMsg;
 import ros.msgs.std_msgs.Bool;
-import ros.msgs.ariac_msgs.HumanState;
+import ros.msgs.ariac_msgs.AGVStatus;  
+import ros.msgs.ariac_msgs.HumanState; 
 import ros.msgs.ariac_msgs.Robots;
 import ros.tools.MessageUnpacker;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -21,6 +22,9 @@ public class RosEnv extends Environment {
 	int ctrDt = 0;
 	int ctrUnsf = 0;
 
+	double hpX = -15.0;
+	double hpY = -10.0;
+
 	double gpX = 0.0;
 	double gpY = 0.0;
 	double gpZ = 0.0;
@@ -28,6 +32,7 @@ public class RosEnv extends Environment {
 	double lastHumanState_MsgT = System.currentTimeMillis();
 	double lastUnsafeD_MsgT    = System.currentTimeMillis();
 	double previousDistance = 50.0;
+	double minAgvDist = 1.0;
 	boolean isAproximating = false;
 	
 	boolean simulationStarted = false; 	
@@ -41,6 +46,122 @@ public class RosEnv extends Environment {
 		bridge.connect("ws://localhost:9090", true);
 		logger.info("Environment started, connection with ROS established.");
 		
+		/* Subscribe for calculating the distance between the Human and AGV1 */
+		bridge.subscribe(SubscriptionRequestMsg.generate("/ariac/agv1_status") 
+				.setType("ariac_msgs/msg/AGVStatus") 
+				.setThrottleRate(1)
+				.setQueueLength(1),
+			new RosListenDelegate() {
+				public void receive(JsonNode data, String stringRep) {
+					long timeNow = System.currentTimeMillis();   //Time check
+
+					MessageUnpacker<AGVStatus> unpacker = new MessageUnpacker<AGVStatus>(AGVStatus.class);
+					AGVStatus msg = unpacker.unpackRosMessage(data);
+
+					double distance_agvHuman = calculateDistanceAgvH(1, msg);
+					//logger.info("AGV1 distance: " + distance_agvHuman);
+
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
+					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
+						//clearPercepts("human");
+						logger.info("AGV1 too close, teleporting human!");
+						lastUnsafeD_MsgT = timeNow;
+
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
+						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
+						addPercept("human",gUnsafeLit); 
+					}
+				}
+			} 
+		); // END bridge.subscribe(..."/ariac/agv1_status") 
+	
+		/* Subscribe for calculating the distance between the Human and AGV2 */
+		bridge.subscribe(SubscriptionRequestMsg.generate("/ariac/agv2_status") 
+				.setType("ariac_msgs/msg/AGVStatus") 
+				.setThrottleRate(1)
+				.setQueueLength(1),
+			new RosListenDelegate() {
+				public void receive(JsonNode data, String stringRep) {
+					long timeNow = System.currentTimeMillis();   //Time check
+
+					MessageUnpacker<AGVStatus> unpacker = new MessageUnpacker<AGVStatus>(AGVStatus.class);
+					AGVStatus msg = unpacker.unpackRosMessage(data);
+
+					double distance_agvHuman = calculateDistanceAgvH(2, msg);
+					//logger.info("AGV2 distance: " + distance_agvHuman);
+
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
+					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
+						//clearPercepts("human");
+						logger.info("AGV2 too close, teleporting human!");
+						lastUnsafeD_MsgT = timeNow;
+
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
+						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
+						addPercept("human",gUnsafeLit); 
+					}
+				}
+			} 
+		); // END bridge.subscribe(..."/ariac/agv2_status") 
+	
+		/* Subscribe for calculating the distance between the Human and AGV3 */
+		bridge.subscribe(SubscriptionRequestMsg.generate("/ariac/agv3_status") 
+				.setType("ariac_msgs/msg/AGVStatus") 
+				.setThrottleRate(1)
+				.setQueueLength(1),
+			new RosListenDelegate() {
+				public void receive(JsonNode data, String stringRep) {
+					long timeNow = System.currentTimeMillis();   //Time check
+
+					MessageUnpacker<AGVStatus> unpacker = new MessageUnpacker<AGVStatus>(AGVStatus.class);
+					AGVStatus msg = unpacker.unpackRosMessage(data);
+
+					double distance_agvHuman = calculateDistanceAgvH(3, msg);
+					//logger.info("AGV3 distance: " + distance_agvHuman);
+
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
+					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
+						//clearPercepts("human");
+						logger.info("AGV3 too close, teleporting human!");
+						lastUnsafeD_MsgT = timeNow;
+
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
+						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
+						addPercept("human",gUnsafeLit); 
+					}
+				}
+			} 
+		); // END bridge.subscribe(..."/ariac/agv3_status") 
+	
+		/* Subscribe for calculating the distance between the Human and AGV4 */
+		bridge.subscribe(SubscriptionRequestMsg.generate("/ariac/agv4_status") 
+				.setType("ariac_msgs/msg/AGVStatus") 
+				.setThrottleRate(1)
+				.setQueueLength(1),
+			new RosListenDelegate() {
+				public void receive(JsonNode data, String stringRep) {
+					long timeNow = System.currentTimeMillis();   //Time check
+
+					MessageUnpacker<AGVStatus> unpacker = new MessageUnpacker<AGVStatus>(AGVStatus.class);
+					AGVStatus msg = unpacker.unpackRosMessage(data);
+
+					double distance_agvHuman = calculateDistanceAgvH(4, msg);
+					//logger.info("AGV4 distance: " + distance_agvHuman);
+
+					if((distance_agvHuman < minAgvDist) && (simulationStarted==true) && 
+					   (timeNow-lastUnsafeD_MsgT > 10000)){ 
+						//clearPercepts("human");
+						logger.info("AGV4 too close, teleporting human!");
+						lastUnsafeD_MsgT = timeNow;
+
+						Literal gUnsafeLit = new LiteralImpl("agv_danger"); 
+						gUnsafeLit.addTerm(new NumberTermImpl(ctrUnsf++)); 
+						addPercept("human",gUnsafeLit); 
+					}
+				}
+			} 
+		); // END bridge.subscribe(..."/ariac/agv4_status") 
+	
 		/* Subscribe for calculating the distance between the Gantry and the human */
 		bridge.subscribe(SubscriptionRequestMsg.generate("/ariac_human/state") 
 				.setType("ariac_msgs/msg/HumanState") 
@@ -51,8 +172,8 @@ public class RosEnv extends Environment {
 					MessageUnpacker<HumanState> unpacker = new MessageUnpacker<HumanState>(HumanState.class);
 					HumanState msg = unpacker.unpackRosMessage(data);
 
-					gpX = msg.robot_position.x;
-					gpY = msg.robot_position.y;
+					gpX = msg.robot_position.x;   hpX = msg.human_position.x;
+					gpY = msg.robot_position.y;   hpY = msg.human_position.y;
 					gpZ = msg.robot_position.z;
 					
 					double distance_robotHuman = calculateDistanceRH(msg);
@@ -67,7 +188,7 @@ public class RosEnv extends Environment {
 
 					long timeNow = System.currentTimeMillis();   //Time check
 
-					if ((distance_robotHuman < safe_distanceRH*2) && 
+					if ((distance_robotHuman < safe_distanceRH*1.75) && 
 						(timeNow-lastHumanState_MsgT > 20000) && (isAproximating == true)){
 						//clearPercepts("human");
 						lastHumanState_MsgT=timeNow;
@@ -81,7 +202,7 @@ public class RosEnv extends Environment {
 			} 
 		); // END bridge.subscribe(..."/ariac_human/state") 
 	
-		/* Subscriber for getting the information that the Gantry has been disabled. Note that the topic is made up, it should be replaced with the correct one later */
+		/* Subscriber for getting the information that the Gantry has been disabled */
 		bridge.subscribe(SubscriptionRequestMsg.generate("/ariac_human/unsafe_distance") 
 				.setType("std_msgs/Bool")
 				.setThrottleRate(1)
@@ -135,7 +256,7 @@ public class RosEnv extends Environment {
 				public void receive(JsonNode data, String stringRep) {
 					MessageUnpacker<PrimitiveMsg<Boolean>> unpacker = new MessageUnpacker<PrimitiveMsg<Boolean>>(PrimitiveMsg.class);
 					PrimitiveMsg<Boolean> msg = unpacker.unpackRosMessage(data);
-					logger.info("Simulation will start!");
+					//logger.info("Simulation will start!");
 					if (msg.data){
 						//clearPercepts("human");
 						logger.info("Simulation started!");
@@ -147,15 +268,30 @@ public class RosEnv extends Environment {
 		); // END bridge.subscribe(..."/ariac/start_human")
 	} // END init()
 
-	// Distance calculation 
+	// Calculate distance from AGV and Human
+	public double calculateDistanceAgvH(int agvId, AGVStatus msg){
+		double x1 = hpX;          //human_position.x;
+		double x2 = -2.7 - msg.position; //robot_position.x;
+		double y1 = hpY;          //human_position.y;
+		double y2 = 0.0;          //robot_position.y is STATIC
+		if(agvId==1)      y2 = 4.8;
+		else if(agvId==2) y2 = 1.2;
+		else if(agvId==3) y2 =-1.2;
+		else if(agvId==4) y2 =-4.8;
+
+		double dis=Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+		return dis;
+	}
+
+	// Calculate distance from Robot (Gantry) and Human
 	public double calculateDistanceRH(HumanState msg){
 		double x1 = msg.human_position.x;
 		double x2 = msg.robot_position.x;
 		double y1 = msg.human_position.y;
 		double y2 = msg.robot_position.y;
 
-		double disRH=Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
-		return disRH;
+		double dis=Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
+		return dis;
 	}
 
 	// SAFE-Distance calculation 
@@ -194,6 +330,9 @@ public class RosEnv extends Environment {
 		else if (act.getFunctor().equals("teleport_safe")) { 
 			teleport();
 		}
+		else if (act.getFunctor().equals("teleport_agv")) { 
+			teleportAGV();
+		}
 		else if (act.getFunctor().equals("move_to_gantry")) { 
 			move_to_gantry(); 
 		}
@@ -220,6 +359,18 @@ public class RosEnv extends Environment {
 	// Published topic is read by movebaser_node.py; it than calls a service in the Gazebo plugin TeleportHuman
 	public void teleport() { 
 		Publisher teleport_h = new Publisher("/ariac_human/go_home", "std_msgs/Bool", bridge);	
+		teleport_h.publish(new Bool(true));	
+
+		// Reset "smart" orientation variables
+		lastHumanState_MsgT = System.currentTimeMillis();
+		lastUnsafeD_MsgT = System.currentTimeMillis();
+		previousDistance = 50.0;
+		isAproximating = false;
+	}
+
+	// Published topic is read by movebaser_node.py; it than calls a service in the Gazebo plugin TeleportHuman
+	public void teleportAGV() { 
+		Publisher teleport_h = new Publisher("/ariac_human/go_home_agv", "std_msgs/Bool", bridge);	
 		teleport_h.publish(new Bool(true));	
 
 		// Reset "smart" orientation variables
@@ -257,4 +408,4 @@ public class RosEnv extends Environment {
     public void stop() {
         super.stop();
     }
- }
+}

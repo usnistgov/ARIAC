@@ -102,7 +102,7 @@ def launch_setup(context, *args, **kwargs):
         
     cmd += "-p " + pkg_share + "/agent/"
 
-    subprocess.Popen([cmd], shell=True)
+    subprocess.Popen([cmd], shell=True, stdout=subprocess.DEVNULL)
 
     # RVIZ 
     rviz_config_file = PathJoinSubstitution(

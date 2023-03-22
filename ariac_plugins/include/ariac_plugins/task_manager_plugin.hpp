@@ -111,17 +111,17 @@ namespace ariac_plugins
             std::shared_ptr<ariac_msgs::srv::SubmitOrder::Response> response);
 
         /**
-         * @brief
+         * @brief Callback for the end competition service
          * @param request
          * @param response
-         * @return true
-         * @return false
+         * @return true If the service was successfully called
+         * @return false If the service was not successfully called
          */
         bool EndCompetitionServiceCallback(
             const std::shared_ptr<std_srvs::srv::Trigger::Request> _request,
             std::shared_ptr<std_srvs::srv::Trigger::Response> _response);
 
-        bool SetHumanSafeZonePenaltyServiceCallback(
+        bool SafeZonePenaltyServiceCallback(
             const std::shared_ptr<std_srvs::srv::Trigger::Request> _request,
             std::shared_ptr<std_srvs::srv::Trigger::Response> _response);
 
@@ -143,7 +143,11 @@ namespace ariac_plugins
         void StoreFaultyPartChallenges(const ariac_msgs::msg::FaultyPartChallenge &_challenge);
         void StoreDroppedPartChallenges(const ariac_msgs::msg::DroppedPartChallenge &_challenge);
         void StoreHumanChallenge(const ariac_msgs::msg::HumanChallenge &_challenge);
-        void HandleSafeZonePenalty();
+        /**
+         * @brief Start the penalty for the human challenge
+         * 
+         */
+        void StartSafeZonePenalty();
         /**
          * @brief Build ariac_common::RobotMalfunctionChallenge from ROS message and store them in a list.
          *
@@ -209,8 +213,8 @@ namespace ariac_plugins
         void ProcessTemporalHumanChallenge();
         void ProcessOnPartPlacementHumanChallenge();
         void ProcessOnOrderSubmissionHumanChallenge();
-        void ProcessSafeZonePenalty();
-        
+        void ProcessEndSafeZonePenalty();
+
         void UpdateSensorsHealth();
         void UpdateRobotsHealth();
         void DisableAllSensors();

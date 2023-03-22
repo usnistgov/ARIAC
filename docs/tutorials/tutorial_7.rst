@@ -87,6 +87,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
     :caption: competition_interface.py
     :name: competitioninterface-tutorial7
     :linenos:
+    :emphasize-lines: 181-187, 606-636
 
     import rclpy
     from rclpy.time import Duration
@@ -885,7 +886,7 @@ The node also hosts two services:
 Launch File
 -----------
 
-The RobotCommander node and the MoveIt node is started using the launch file shown in  :numref:`robot_commander_launch_file`. Nodes that use the MoveGroupInterface need to be launched with specific ROS parameters. A python function in the ariac_moveit_config module :inline-python:`generate_parameters` has been generated to easily create those parameters. The launch file :inline-file:`ariac_robots_moveit.launch.py` is also called to start the move group node. 
+The RobotCommander node and the MoveIt node is started using the launch file shown in  :numref:`robot_commander_launch_file`. Nodes that use the MoveGroupInterface need to be launched with specific ROS parameters. A python function in the ariac_moveit_config module :inline-python:`generate_parameters` has been added to easily create those parameters. The launch file :inline-file:`ariac_robots_moveit.launch.py` is also called to start the move group node. 
 
 .. code-block:: python
     :caption: robot_commander.launch.py

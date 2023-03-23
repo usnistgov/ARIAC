@@ -143,11 +143,11 @@ The faulty gripper challenge can be set up in the trial configuration file with 
 
     challenges:
       - dropped_part:
-        robot: 'ceiling_robot'
-        type: 'pump'
-        color: 'red'
-        drop_after: 1
-        delay: 5
+          robot: 'ceiling_robot'
+          type: 'pump'
+          color: 'red'
+          drop_after: 1
+          delay: 5
 
 
 
@@ -157,23 +157,23 @@ The faulty gripper challenge can be set up in the trial configuration file with 
 
     challenges:
       - dropped_part:
-        robot: 'ceiling_robot'
-        type: 'pump'
-        color: 'red'
-        drop_after: 1
-        delay: 5
+          robot: 'ceiling_robot'
+          type: 'pump'
+          color: 'red'
+          drop_after: 1
+          delay: 5
       - dropped_part:
-        robot: 'floor_robot'
-        type: 'battery'
-        color: 'green'
-        drop_after: 1
-        delay: 3
+          robot: 'floor_robot'
+          type: 'battery'
+          color: 'green'
+          drop_after: 1
+          delay: 3
       - dropped_part:
-        robot: 'floor_robot'
-        type: 'regulator'
-        color: 'orange'
-        drop_after: 2
-        delay: 15
+          robot: 'floor_robot'
+          type: 'regulator'
+          color: 'orange'
+          drop_after: 2
+          delay: 15
 
 .. note::
     The gripper can drop a part even if the robot is not moving.
@@ -196,7 +196,7 @@ The robot malfunction challenge simulates a robot malfunction. The robot can mal
   The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
 .. note::
-  It can happen that both robots malfunction at the same time. In this case, the CSS must wait until the malfunction is resolved before continuing with the trial.
+  It can happen that both robots malfunction at the same time. In this case, the CCS must wait until the malfunction is resolved before continuing with the trial.
 
 
 

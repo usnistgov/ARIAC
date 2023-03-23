@@ -31,9 +31,9 @@ The faulty parts challenge is set with the field ``faulty_part`` under the ``cha
 
   challenges:
     - faulty_part:
-      order_id: 'MMB30H56'
-      quadrant1: true
-      quadrant2: true
+        order_id: 'MMB30H56'
+        quadrant1: true
+        quadrant2: true
 
 
 Detection

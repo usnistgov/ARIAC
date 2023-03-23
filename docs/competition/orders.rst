@@ -36,10 +36,10 @@ Orders and challenges are announced under some conditions. There are 3 types of 
       :name: part-placement-condition
 
       announcement:
-      part_place_condition:
-        agv: 2
-        type: 'pump'
-        color: 'red'
+        part_place_condition:
+          agv: 2
+          type: 'pump'
+          color: 'red'
 
   * **Submission condition**: When this condition is used, an order or a challenge is announced as soon as another order is submitted.
     :numref:`submission-condition` shows an example of a submission condition which announces an order or a challenge when the order ``'MMB30H56'`` is submitted.

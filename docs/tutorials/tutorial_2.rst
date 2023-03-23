@@ -90,7 +90,7 @@ The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:
 .. code-block:: python
     :caption: competition_interface.py
     :name: competitioninterface-tutorial2
-    :emphasize-lines: 3, 8, 57-68, 70-72, 74-83, 85-95
+    :emphasize-lines: 3, 8, 57-68, 70-72, 74-83
     :linenos:
 
     import rclpy

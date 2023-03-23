@@ -372,12 +372,11 @@ The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with 
 - Instance Variables
 
     - :inline-python:`_advanced_camera0_sub` is a subscriber to the camera topic. The callback function :inline-python:`advanced_camera0_cb()` is called when a message is published on the camera topic. 
-
     - :inline-python:`_camera_image` is an object of the class :inline-python:`AdvancedLogicalCameraImage` that stores the latest message published on the camera topic.
 
 - Instance Methods
 
-    - :inline-python:`camera_image(self)` is getter to the :inline-python:`_camera_image` attribute is provided to access the latest message published on the camera topic.
+    - :inline-python:`camera_image(self)` is a getter to the :inline-python:`_camera_image` attribute and is provided to access the latest message published on the camera topic.
 
     - :inline-python:`_advanced_camera0_cb(self, msg)` is the callback function for the camera topic. It stores the message in the :inline-python:`_camera_image` attribute.
 

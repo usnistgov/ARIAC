@@ -2656,8 +2656,8 @@ namespace ariac_plugins
     {
         if (impl_->safe_zone_penalty_started_)
         {
-            RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Elapsed time: " << impl_->elapsed_time_);
-            RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Penalty time: " << impl_->safe_zone_penalty_start_time_ + impl_->safe_zone_penalty_duration_);
+            // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Elapsed time: " << impl_->elapsed_time_);
+            // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Penalty time: " << impl_->safe_zone_penalty_start_time_ + impl_->safe_zone_penalty_duration_);
             if (impl_->elapsed_time_ >= impl_->safe_zone_penalty_start_time_ + impl_->safe_zone_penalty_duration_)
             {
                 impl_->safe_zone_penalty_started_ = false;

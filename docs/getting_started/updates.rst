@@ -2,8 +2,14 @@ Updates
 ========
 
 
-Release 2023, March 21
+Release 2023_v1.1 March 21
 --------------------------------------------
+
+- Modified tutorials 1 and 2.
+- Added tutorials 3-7.
+- Documentation improvements.
+- Added human challenge.
+- Fixed assembly bug with battery.
 
 Release 2023, March 1 -- Competition Version
 --------------------------------------------

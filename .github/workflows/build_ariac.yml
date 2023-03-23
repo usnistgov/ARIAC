@@ -1,6 +1,12 @@
 name: ARIAC Build
 
-on: [push, pull_request, pull_request_review]
+on:
+  push:
+    paths: ["ariac_description/**","ariac_gazebo/**","ariac_gui/**","ariac_human/**","ariac_moveit_config/**","ariac_msgs/**","ariac_plugins/**","ariac_sensors/**","test_competitor/**"]
+  pull_request:
+    paths: ["ariac_description/**","ariac_gazebo/**","ariac_gui/**","ariac_human/**","ariac_moveit_config/**","ariac_msgs/**","ariac_plugins/**","ariac_sensors/**","docs/**","test_competitor/**"]
+  pull_request_review:
+    paths: ["ariac_description/**","ariac_gazebo/**","ariac_gui/**","ariac_human/**","ariac_moveit_config/**","ariac_msgs/**","ariac_plugins/**","ariac_sensors/**","docs/**","test_competitor/**"]
 
 jobs:
   build:

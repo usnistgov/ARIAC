@@ -44,5 +44,7 @@ def generate_parameters():
 
     parameters.append({"robot_description_kinematics": load_yaml("ariac_moveit_config", "config/kinematics.yaml")})
 
+    parameters.append({"use_sim_time": True})
+
     return parameters
 

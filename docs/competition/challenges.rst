@@ -564,7 +564,6 @@ Detection
 -----------------------------
 
 The pose of the human is published to the topic :red:`/ariac_human/state` (`HumanState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_).
-
 An output from :command:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash

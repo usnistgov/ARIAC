@@ -542,7 +542,7 @@ Setup
 ---------------------------
 
 
-The subfield :inline-yaml:`human` of :inline-yaml:`challenges` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+The subfield :yaml:`human` of :yaml:`challenges` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
   
   * :inline-yaml:`behavior`: The behavior of the human operator. The possible values are:
 

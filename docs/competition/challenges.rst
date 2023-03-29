@@ -10,6 +10,8 @@
 .. role:: inline-bash(code)
     :language: bash
 
+.. role:: inline-yaml(code)
+    :language: yaml
 
 .. _AGILITY_CHALLENGES:
 
@@ -535,7 +537,7 @@ Setup
 ---------------------------
 
 
-The subfield ``human`` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+The subfield :inline-yaml:`human` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
   
   * ``behavior``: The behavior of the human operator. The possible values are:
 

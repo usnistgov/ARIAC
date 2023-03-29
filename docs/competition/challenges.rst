@@ -12,6 +12,7 @@
 
 .. role:: inline-yaml(code)
     :language: yaml
+    :class: yaml
 
 .. _AGILITY_CHALLENGES:
 
@@ -512,8 +513,8 @@ The human challenge consists of a simulated human navigating the workcell.
   The ceiling robot has to keep a safe distance from the human at any time. 
   If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 
   
-  1. The human is teleported to a safe location.
-  2. The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS. 
+  #. The human is teleported to a safe location.
+  #. The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS. 
 
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
@@ -526,10 +527,10 @@ When the human challenge is used in a trial, the simulated human is assigned one
   The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior :inline-yaml:`'helpful'`, the human will always be helpful throughout the trial. 
   The human in the environment will go to each assembly station in the following order:
 
-  1. Assembly station 4
-  2. Assembly station 2
-  3. Assembly station 1
-  4. Assembly station 3
+  #. Assembly station 4
+  #. Assembly station 2
+  #. Assembly station 1
+  #. Assembly station 3
 
   When the human reaches assembly station 3, he will repeat the process starting with assembly station 4.
 
@@ -564,7 +565,7 @@ Detection
 
 The pose of the human is published to the topic :red:`/ariac_human/state` (`HumanState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_).
 
-An output from :inline-bash:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
+An output from :command:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash
     :caption: Message published on the topic :red:`/ariac_human/state`.

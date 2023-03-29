@@ -494,7 +494,10 @@ Human
 
 The human challenge consists of a simulated human navigating the workcell. 
 
-  The goal of this challenge is to test whether or not the CCS is capable of ensuring the safety of humans on the shop floor. The ceiling robot has to keep a safe distance from the human at any time. If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 1) The human is teleported to a safe location and 2) The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS.
+  The goal of this challenge is to test whether or not the CCS is capable of ensuring the safety of humans on the shop floor. 
+  The ceiling robot has to keep a safe distance from the human at any time. 
+  If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 
+  1) The human is teleported to a safe location and 2) The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS. 
 
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
@@ -504,7 +507,15 @@ When the human challenge is used in a trial, the simulated human is assigned one
 - **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
 .. note::
-  The behavior does not change within a trial, it stays the same for the whole trial.
+  The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior ``'helpful'``, the human will always be helpful throughout the trial. 
+  The human in the environment will go to each assembly station in the following order:
+
+  1. Assembly station 4
+  2. Assembly station 2
+  3. Assembly station 1
+  4. Assembly station 3
+
+  When the human reaches assembly station 3, he will repeat the process starting with assembly station 4.
 
 
 

@@ -511,7 +511,9 @@ The human challenge consists of a simulated human navigating the workcell.
   The goal of this challenge is to test whether or not the CCS is capable of ensuring the safety of humans on the shop floor. 
   The ceiling robot has to keep a safe distance from the human at any time. 
   If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 
-  1) The human is teleported to a safe location and 2) The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS. 
+  
+  1. The human is teleported to a safe location.
+  2. The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS. 
 
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
@@ -537,13 +539,13 @@ Setup
 ---------------------------
 
 
-The subfield :inline-yaml:`human` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+The subfield :inline-yaml:`human` of :inline-yaml:`challenges` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
   
-  * ``behavior``: The behavior of the human operator. The possible values are:
+  * :inline-yaml:`behavior`: The behavior of the human operator. The possible values are:
 
-    - ``'indifferent'``
-    - ``'antagonistic'``
-    - ``'helpful'``
+    - :inline-yaml:`'indifferent'`
+    - :inline-yaml:`'antagonistic'`
+    - :inline-yaml:`'helpful'`
   * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 

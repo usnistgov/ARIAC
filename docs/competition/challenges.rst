@@ -12,7 +12,7 @@
 
 .. role:: inline-yaml(code)
     :language: yaml
-    :class: yaml
+    :class: highlight
 
 .. _AGILITY_CHALLENGES:
 
@@ -34,7 +34,9 @@ Faulty Parts
 
 Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to AGVs.
 
-  The goal of this challenge is to test the ability of the :term:`CCS<Competitor Control System (CCS)>` to 1) correctly use the quality check sensor to detect faulty parts and 2) replace them with new parts.
+  The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)`.
+  #. Correctly use the quality check sensor to detect faulty parts. 
+  #. Replace them with new parts.
 
 
 Setup

@@ -521,7 +521,7 @@ When the human challenge is used in a trial, the simulated human is assigned one
 - **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
 .. note::
-  The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior ``'helpful'``, the human will always be helpful throughout the trial. 
+  The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior :inline-yaml:`'helpful'`, the human will always be helpful throughout the trial. 
   The human in the environment will go to each assembly station in the following order:
 
   1. Assembly station 4

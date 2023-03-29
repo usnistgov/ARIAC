@@ -10,7 +10,6 @@ release = '1.0'
 version = '0.1.0'
 
 
-
 # -- General configuration
 
 extensions = [
@@ -49,8 +48,15 @@ rst_prolog = """
     :language: yaml
     :class: highlight
 
+ .. role:: python(code)
+    :language: python
+    :class: highlight
+    
+ .. role:: bash(code)
+    :language: bash
+    :class: highlight    
  """
- 
+
 source_suffix = ['.rst', '.md']
 html_static_path = ['custom']
 html_css_files = [

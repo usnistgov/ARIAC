@@ -1,18 +1,4 @@
-.. only:: builder_html or readthedocs
 
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
-.. role:: inline-bash(code)
-    :language: bash
-
-.. role:: inline-yaml(code)
-    :language: yaml
-    :class: highlight
 
 .. _AGILITY_CHALLENGES:
 
@@ -42,7 +28,10 @@ Faulty parts are parts that are not in good condition. They are not suitable for
 Setup
 ----------------------------
 
-The faulty parts challenge is set with the field ``faulty_part`` under the ``challenges`` field  in the trial configuration file. Only the first part placed in a quadrant is faulty. In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order ``MMB30H56`` is faulty. If these parts are removed and replaced with new parts, the new parts will be non-faulty.
+The faulty parts challenge is set with the field :yaml:`faulty_part` under the :yaml:`challenges` field  in the trial configuration file. 
+Only the first part placed in a quadrant is faulty. 
+In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order :yaml:`'MMB30H56'` is faulty. 
+If these parts are removed and replaced with new parts, the new parts will be non-faulty.
 
 .. code-block:: yaml
 
@@ -57,14 +46,19 @@ Detection
 ----------------------------
 
 
-The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). The argument passed to this service call is an order ID. When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+The quality control sensor located above an AGV is capable of detecting faulty parts. 
+A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). 
+The argument passed to this service call is an order ID. 
+When a faulty part is detected, the :abbr:`CCS (Competitor Control System)` has to discard the part and replace it with a new part. 
+The new part will automatically be set to non-faulty by the :abbr:`AM (ARIAC Manager)`.
 
 
 
 More information on the fields of the service message is provided as follows:
-  * The service returns a Boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
+  * The service returns a Boolean value for the field :yaml:`valid_id` indicating whether or not the order ID is valid. 
+  An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
 
-  * The field ``all_passed`` is set to ``true`` only if:
+  * The field :yaml:`all_passed` is set to :yaml:`true` only if:
 
     * All parts in the kitting tray are NOT faulty.
     * All parts are present in the kitting tray (no empty quadrant).
@@ -72,7 +66,7 @@ More information on the fields of the service message is provided as follows:
     * All parts are of the correct type.
     * All parts are of the correct color.
 
-  * The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
+  * The field :yaml:`incorrect_tray` informs on whether or not the kitting task was performed in the correct kitting tray.
   * Information for each quadrant is reported as a `QualityIssue.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/QualityIssue.msg>`_
 
 
@@ -82,23 +76,19 @@ More information on the fields of the service message is provided as follows:
 Flipped Parts
 ================
 
-The environment can be started with parts that are flipped. Flipped parts are parts that are upside down. When a part is spawned as flipped, the CCS is required to flip this part again so it ends up with the correct orientation. If an order is submitted with flipped parts, these parts are not considered for scoring. 
+The environment can be started with parts that are flipped. Flipped parts are parts that are upside down. When a part is spawned as flipped, the :abbr:`CCS (Competitor Control System)` is required to flip this part again so it ends up with the correct orientation. If an order is submitted with flipped parts, these parts are not considered for scoring. 
 
-  The goal of this challenge is to evaluate the approach used by the CCS to flip a part. 
+  The goal of this challenge is to evaluate the approach used by the :abbr:`CCS (Competitor Control System)` to flip a part. 
 
 .. attention::
-  Competitors should keep in mind that one of the two robots can malfunction at any point during the trial. This means that the CCS should be able to handle the case where one of the robots is not available to flip a part.
-
-
-
-
+  Competitors should keep in mind that one of the two robots can malfunction at any point during the trial. This means that the :abbr:`CCS (Competitor Control System)` should be able to handle the case where one of the robots is not available to flip a part.
 
 
 
 Setup
 ----------------------------
 
-Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple regulators as flipped in ``bin3``. :numref:`flipped-parts-on-conveyor-belt` describes all orange batteries as flipped on the conveyor belt.
+Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the :yaml:`flipped` field in the trial configuration file must be set as :yaml:`true` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple regulators as flipped in :yaml:`bin3`. :numref:`flipped-parts-on-conveyor-belt` describes all orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
   :caption: Setting flipped parts in a bin.
@@ -146,7 +136,10 @@ Faulty Gripper
 
 The faulty gripper challenge simulates a faulty gripper which can drop a part after the part has been picked up. The gripper can drop a part at any time during the trial. The gripper can drop a part that is in the gripper's grasp even if the gripper or robot is not moving. 
 
-  The goal of this challenge is to test the ability of the CCS to 1) recognize that the part has dropped from the gripper, and 2) pick a part of the same type and color.
+  The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)` to: 
+  
+  #. Recognize that the part has dropped from the gripper. 
+  #. Pick a part of the same type and color.
 
 Setup
 ----------------------------
@@ -200,7 +193,7 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state` (`VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_).
+To detect a faulty gripper the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state` (`VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_).
 
 
 .. _target to robot malfunction:
@@ -208,13 +201,13 @@ To detect a faulty gripper the CCS needs a subscriber to the topic :red:`/ariac/
 Robot Malfunction
 ==================
 
-The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`conditions <CONDITIONS>` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
+The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`conditions <CONDITIONS>` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the :abbr:`CCS (Competitor Control System)`. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
-  The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
+  The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)` to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
 .. note::
-  It can happen that both robots malfunction at the same time. In this case, the CCS must wait until the malfunction is resolved before continuing with the trial.
-
+  It can happen that both robots malfunction at the same time. 
+  In this case, the :abbr:`CCS (Competitor Control System)` must wait until the malfunction is resolved before continuing with the trial.
 
 
 
@@ -260,7 +253,7 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the CCS needs a subscriber to the topic :red:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+To detect a robot malfunction, the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of :yaml:`true` indicates that the robot is healthy and can be controlled by the :abbr:`CCS (Competitor Control System)`. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the :abbr:`CCS (Competitor Control System)`.
 
 
 
@@ -271,7 +264,7 @@ Sensor Blackout
 
 The sensor blackout challenge simulates a situation where some sensors stop reporting data for :math:`x` seconds. 
 
-  The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
+  The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)` to use an internal world model to continue the tasks that were being performed before the blackout.
 
 The sensor blackout challenge is triggered based on :ref:`conditions <CONDITIONS>`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
 
@@ -320,7 +313,7 @@ Detection
 -----------------------------
 
 
-To detect a sensor blackout the CCS needs a subscriber to the topic :red:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+To detect a sensor blackout the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
 
 
 
@@ -329,7 +322,7 @@ High-priority Orders
 
 The high-priority orders challenge simulates an order that must be completed before a regular-priority order. The high-priority order must be completed and  submitted before the regular-priority order.
 
-  The goal of this challenge is to test the ability of the CCS to prioritize  high-priority orders over regular-priority orders. This requires the CCS to  be able to detect when a high-priority order is announced and to switch task.
+  The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)` to prioritize  high-priority orders over regular-priority orders. This requires the :abbr:`CCS (Competitor Control System)` to  be able to detect when a high-priority order is announced and to switch task.
 
 
 .. warning::
@@ -391,7 +384,7 @@ Insufficient Parts
 
 The insufficient parts challenge simulates a situation where the workcell does not contain enough parts to complete one or multiple orders. 
 
-  The goal of this challenge is to test whether or not the CCS is capable of identifying insufficient parts to complete one or multiple orders. When an insufficient parts challenge takes place, the CCS must submit incomplete orders.
+  The goal of this challenge is to test whether or not the :abbr:`CCS (Competitor Control System)` is capable of identifying insufficient parts to complete one or multiple orders. When an insufficient parts challenge takes place, the :abbr:`CCS (Competitor Control System)` must submit incomplete orders.
 
 Setup
 -----------------------------
@@ -446,7 +439,7 @@ Detection
 -------------------------------
 
 
-To figure out if the insufficient parts challenge is part of a trial, the CCS can rely on two important topics to retrieve part type, color, and quantity from bins and the conveyor belt.
+To figure out if the insufficient parts challenge is part of a trial, the :abbr:`CCS (Competitor Control System)` can rely on two important topics to retrieve part type, color, and quantity from bins and the conveyor belt.
 
 Bins
 ^^^^^
@@ -511,12 +504,12 @@ Human
 
 The human challenge consists of a simulated human navigating the workcell. 
 
-  The goal of this challenge is to test whether or not the CCS is capable of ensuring the safety of humans on the shop floor. 
+  The goal of this challenge is to test whether or not the :abbr:`CCS (Competitor Control System)` is capable of ensuring the safety of humans on the shop floor. 
   The ceiling robot has to keep a safe distance from the human at any time. 
   If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 
   
   #. The human is teleported to a safe location.
-  #. The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS. 
+  #. The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the :abbr:`CCS (Competitor Control System)`. 
 
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
@@ -544,7 +537,7 @@ Setup
 
 The subfield :yaml:`human` of :yaml:`challenges` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
   
-  * :inline-yaml:`behavior`: The behavior of the human operator. The possible values are:
+  * :yaml:`behavior`: The behavior of the human operator. The possible values are:
 
     - :inline-yaml:`'indifferent'`
     - :inline-yaml:`'antagonistic'`

@@ -33,6 +33,7 @@ Cloning the ARIAC Repository
         
         git clone https://github.com/usnistgov/ARIAC.git src/ariac
 
+    
     **Note:** Always use the ``ariac2023`` branch.
 
 
@@ -47,7 +48,10 @@ Cloning the ARIAC Repository
         rosdep update --include-eol-distros
         rosdep install --from-paths src -y --ignore-src
 
-    **Note:** If you are using a virtual machine, you may need to install the ``python3-vcstool`` package.
+    .. note::
+
+        - :console:`sudo apt install openjdk-17-jdk` is required to install the Java 17 JDK for the human challenge.
+        - If you are using a virtual machine, you may need to install the :file:`python3-vcstool` package.
 
 
 Building the ARIAC Package

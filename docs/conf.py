@@ -21,7 +21,7 @@ extensions = [
     # External stuff
     "myst_parser",
     "sphinx_copybutton",
-    'sphinx.ext.inlinesyntaxhighlight'
+    'sphinxcontrib.inlinesyntaxhighlight'
 ]
 
 todo_include_todos = True

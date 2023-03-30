@@ -23,6 +23,13 @@ extensions = [
     "sphinx_copybutton"
 ]
 
+
+# use language set by highlight directive if no language is set by role
+inline_highlight_respect_highlight = False
+
+# use language set by highlight directive if no role is set
+inline_highlight_literals = False
+
 todo_include_todos = True
 
 templates_path = ['_templates']

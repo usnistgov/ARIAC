@@ -18,9 +18,10 @@ There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023
 Faulty Parts
 ================
 
-Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to AGVs.
+Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to :abbr:`AGVs (Automated Guided Vehicles)`.
 
-  The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)`.
+  The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)` to:
+
   #. Correctly use the quality check sensor to detect faulty parts. 
   #. Replace them with new parts.
 
@@ -46,7 +47,7 @@ Detection
 ----------------------------
 
 
-The quality control sensor located above an AGV is capable of detecting faulty parts. 
+The quality control sensor located above an :abbr:`AGV (Automated Guided Vehicle)` is capable of detecting faulty parts. 
 A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). 
 The argument passed to this service call is an order ID. 
 When a faulty part is detected, the :abbr:`CCS (Competitor Control System)` has to discard the part and replace it with a new part. 
@@ -81,14 +82,20 @@ The environment can be started with parts that are flipped. Flipped parts are pa
   The goal of this challenge is to evaluate the approach used by the :abbr:`CCS (Competitor Control System)` to flip a part. 
 
 .. attention::
-  Competitors should keep in mind that one of the two robots can malfunction at any point during the trial. This means that the :abbr:`CCS (Competitor Control System)` should be able to handle the case where one of the robots is not available to flip a part.
+  Competitors should keep in mind that one of the two robots can malfunction at any point during the trial.
+  This means that the :abbr:`CCS (Competitor Control System)` should be able to handle the case where 
+  one of the robots is not available to flip a part.
 
 
 
 Setup
 ----------------------------
 
-Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the :yaml:`flipped` field in the trial configuration file must be set as :yaml:`true` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple regulators as flipped in :yaml:`bin3`. :numref:`flipped-parts-on-conveyor-belt` describes all orange batteries as flipped on the conveyor belt.
+Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. 
+To set parts as flipped, the :yaml:`flipped` field in the trial configuration file must be set 
+as :yaml:`true` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple 
+regulators as flipped in :yaml:`bin3`. :numref:`flipped-parts-on-conveyor-belt` describes all 
+orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
   :caption: Setting flipped parts in a bin.
@@ -124,7 +131,8 @@ Detection
 ----------------------------
 
 
-Flipped parts detection is performed similarly to faulty parts detection. A quality check informs whether or not a part is flipped. See the :ref:`FAULTY_PARTS` section for more information on how to perform a quality check.
+Flipped parts detection is performed similarly to faulty parts detection. 
+A quality check informs whether or not a part is flipped. See the :ref:`FAULTY_PARTS` section for more information on how to perform a quality check.
 
 
 
@@ -144,7 +152,7 @@ The faulty gripper challenge simulates a faulty gripper which can drop a part af
 Setup
 ----------------------------
 
-The faulty gripper challenge can be set up in the trial configuration file with the field `dropped_part` under the `challenges` field. :numref:`faulty-gripper-setup` describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump (specified with the `drop_after` field). Multiple occurrences of this challenge may be set up in the trial configuration file as seen in :numref:`multiple-faulty-gripper-setup`.
+The faulty gripper challenge can be set up in the trial configuration file with the field :yaml:`dropped_part` under the :yaml:`challenges` field. :numref:`faulty-gripper-setup` describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump (specified with the :yaml:`drop_after` field). Multiple occurrences of this challenge may be set up in the trial configuration file as seen in :numref:`multiple-faulty-gripper-setup`.
 
 
 .. code-block:: yaml
@@ -214,10 +222,10 @@ The robot malfunction challenge simulates a robot malfunction. The robot can mal
 Setup
 ----------------------------
 
-The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
+The robot malfunction challenge is specified with the field :yaml:`robot_malfunction` as a subfield of :yaml:`challenges` in the trial configuration file. The relevant fields for this agility challenge are listed below.
   
-  * ``duration``: The duration of the robot malfunction in seconds.
-  * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
+  * :yaml:`duration`: The duration of the robot malfunction in seconds.
+  * :yaml:`robots_to_disable`: A list of robots that malfunction. It can be either :yaml:`'floor_robot'` or :yaml:`'ceiling_robot'` or both.
   * :ref:`One condition <CONDITIONS>` that can trigger the robot malfunction.
 
 Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
@@ -274,21 +282,26 @@ Setup
 ---------------------------
 
 
-The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor blackout challenge. The relevant fields for this agility challenge are listed below.
+The subfield :yaml:`sensor_blackout` of :yaml:`challenges` is used to describe a sensor blackout challenge.
+The relevant fields for this agility challenge are listed below.
   
-  * `duration`: The duration of the sensor blackout in seconds.
-  * `sensors_to_disable`: A list of sensor types to disable:
+  * :yaml:`duration`: The duration of the sensor blackout in seconds.
+  * :yaml:`sensors_to_disable`: A list of sensor types to disable:
 
-    * ``'break_beam'``
-    * ``'proximity'``
-    * ``'laser_profiler'``
-    * ``'lidar'``
-    * ``'camera'``
-    * ``'logical_camera'``
+    * :yaml:`'break_beam'`
+    * :yaml:`'proximity'`
+    * :yaml:`'laser_profiler'`
+    * :yaml:`'lidar'`
+    * :yaml:`'camera'`
+    * :yaml:`'logical_camera'`
   * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 
-The sensor blackout challenge can occur multiple times in the same trial.  :numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
+The sensor blackout challenge can occur multiple times in the same trial.
+:numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. 
+One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the 
+competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar 
+and logical camera sensor types for 15 seconds when an order is submitted. 
 
 
 
@@ -313,7 +326,12 @@ Detection
 -----------------------------
 
 
-To detect a sensor blackout the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+To detect a sensor blackout the :abbr:`CCS (Competitor Control System)` needs a subscriber to 
+the topic :red:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). 
+The message contains Boolean-type fields which provide information on the health of each sensor type. 
+A :yaml:`true` value indicates that all sensors of a type are healthy (they are publishing to topics) 
+and a :yaml:`false` value indicates that all sensors of a type are malfunctioning 
+(they are not publishing to topics).
 
 
 

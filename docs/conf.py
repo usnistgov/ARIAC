@@ -20,8 +20,7 @@ extensions = [
     'sphinx.ext.todo',
     # External stuff
     "myst_parser",
-    "sphinx_copybutton",
-    'sphinxcontrib.inlinesyntaxhighlight'
+    "sphinx_copybutton"
 ]
 
 todo_include_todos = True

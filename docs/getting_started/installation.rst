@@ -103,10 +103,10 @@ Custom Configuration
 
 - Competitors will need to create their own competitor package and use their own sensor configuration file.
 
-        - To create a new competitor package, see :doc:`tutorial 1 <TUTORIAL1>`.
-        - To use a custom sensor configuration file, create a directory named ``config`` in your competitor package and place your sensor configuration file in that directory. 
+        - To create a new competitor package, see :ref:`tutorial 1 <TUTORIAL1>`.
+        - To use a custom sensor configuration file, create a directory named :file:`config` in your competitor package and place your sensor configuration file in that directory. 
 
-            - Below is an example of competitor package structure with a custom sensor configuration file named ``my_sensors.yaml``.
+            - Below is an example of competitor package structure with a custom sensor configuration file named :file:`my_sensors.yaml`.
 
             .. code-block:: text
                 :class: no-copybutton
@@ -117,7 +117,7 @@ Custom Configuration
                 └── config
                     └── my_sensors.yaml
 
-        - Make sure to edit ``CMakelists.txt`` in your competitor package to include the ``config`` directory.
+        - Make sure to edit :file:`CMakelists.txt` in your competitor package to include the :file:`config` directory.
 
             .. code-block:: cmake
 
@@ -131,7 +131,7 @@ Custom Configuration
 
                 ros2 launch ariac ariac.launch.py competitor_pkg:=<package> sensor_config:=<sensor_file> trial_name:=<trial_file>
 
-            **Example:** To start ARIAC with ``assembly.yaml`` using ``my_sensors.yaml`` sensor configuration file (located in ``my_competitor_pkg/config``), run the following command:
+            **Example:** To start ARIAC with :file:`assembly.yaml` using :file:`my_sensors.yaml` sensor configuration file (located in :file:`my_competitor_pkg/config`), run the following command:
 
                 .. code-block:: bash
 
@@ -145,20 +145,23 @@ To verify that the robots can be controlled properly you will need three termina
 
 - *terminal 1*: Start the environment.
 
-    .. code-block:: bash
+    .. code-block:: command
+        :class: highlight
 
         ros2 launch ariac_gazebo ariac.launch.py
 
 
 - *terminal 2*: Start the moveit node.
 
-    .. code-block:: bash
+    .. code-block:: command
+        :class: highlight
 
         ros2 launch ariac_moveit_config ariac_robots_moveit.launch.py
 
 - *terminal 3*: Start the moveit test node.
 
-    .. code-block:: bash
+    .. code-block:: command
+        :class: highlight
 
         ros2 launch test_competitor moveit_test.launch.py
 

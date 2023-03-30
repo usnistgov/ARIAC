@@ -8,17 +8,23 @@ Agility Challenges
 
 
 
-There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. A description of each challenge is provided below. Besides the :ref:`HUMANS` challenge, all other challenges can occur multiple times in a trial. 
+There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. 
+A description of each challenge is provided below. Besides the :ref:`HUMANS` challenge, 
+all other challenges can occur multiple times in a trial. 
 
 .. note::
-  A trial may consist of some of the challenges described in this page, may consist of no  challenge at all, or may consist of all the challenges.
+  A trial may consist of some of the challenges described in this page, may consist of no 
+  challenge at all, or may consist of all the challenges.
 
 .. _FAULTY_PARTS:
 
 Faulty Parts
 ================
 
-Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to :abbr:`AGVs (Automated Guided Vehicles)`.
+Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. 
+If an order is submitted with faulty parts, these parts are not considered for scoring. 
+Faulty parts are identified by quality control sensors, which are attached 
+to :abbr:`AGVs (Automated Guided Vehicles)`.
 
   The goal of this challenge is to test the ability of the :abbr:`CCS (Competitor Control System)` to:
 
@@ -29,9 +35,11 @@ Faulty parts are parts that are not in good condition. They are not suitable for
 Setup
 ----------------------------
 
-The faulty parts challenge is set with the field :yaml:`faulty_part` under the :yaml:`challenges` field  in the trial configuration file. 
+The faulty parts challenge is set with the field :yaml:`faulty_part` under the :yaml:`challenges` field 
+in the trial configuration file. 
 Only the first part placed in a quadrant is faulty. 
-In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order :yaml:`'MMB30H56'` is faulty. 
+In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by 
+order :yaml:`'MMB30H56'` is faulty. 
 If these parts are removed and replaced with new parts, the new parts will be non-faulty.
 
 .. code-block:: yaml
@@ -47,17 +55,21 @@ Detection
 ----------------------------
 
 
-The quality control sensor located above an :abbr:`AGV (Automated Guided Vehicle)` is capable of detecting faulty parts. 
+The quality control sensor located above an :abbr:`AGV (Automated Guided Vehicle)` is capable of 
+detecting faulty parts. 
 A quality check can be performed by calling the service :navy:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). 
 The argument passed to this service call is an order ID. 
-When a faulty part is detected, the :abbr:`CCS (Competitor Control System)` has to discard the part and replace it with a new part. 
+When a faulty part is detected, the :abbr:`CCS (Competitor Control System)` has to discard the 
+part and replace it with a new part. 
 The new part will automatically be set to non-faulty by the :abbr:`AM (ARIAC Manager)`.
 
 
 
 More information on the fields of the service message is provided as follows:
-  * The service returns a Boolean value for the field :yaml:`valid_id` indicating whether or not the order ID is valid. 
-  An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
+  * The service returns a Boolean value for the field :yaml:`valid_id` indicating whether or not 
+  the order ID is valid. 
+  An order ID is not valid if the order ID does not exist or if the quality check was already called 
+  for this order ID.
 
   * The field :yaml:`all_passed` is set to :yaml:`true` only if:
 
@@ -261,7 +273,7 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of :yaml:`true` indicates that the robot is healthy and can be controlled by the :abbr:`CCS (Competitor Control System)`. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the :abbr:`CCS (Competitor Control System)`.
+To detect a robot malfunction, the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of :yaml:`true` indicates that the robot is healthy and can be controlled by the :abbr:`CCS (Competitor Control System)`. A value of :yaml:`false` indicates that the robot is malfunctioning and cannot be controlled by the :abbr:`CCS (Competitor Control System)`.
 
 
 

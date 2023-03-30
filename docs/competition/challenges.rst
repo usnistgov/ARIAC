@@ -550,6 +550,7 @@ When the human challenge is used in a trial, the simulated human is assigned one
 
 .. note::
   The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior :yaml:`'helpful'`, the human will always be helpful throughout the trial. 
+
   The human in the environment will go to each assembly station in the following order:
 
   #. Assembly station 4
@@ -557,7 +558,7 @@ When the human challenge is used in a trial, the simulated human is assigned one
   #. Assembly station 1
   #. Assembly station 3
 
-  When the human reaches assembly station 3, he will repeat the process starting with assembly station 4.
+  When the human reaches assembly station 3, he will repeat the process from the beginning.
 
 
 

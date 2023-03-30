@@ -1,4 +1,4 @@
 myst_parser
 sphinx_copybutton
-sphinxcontrib
+sphinxcontrib-inlinesyntaxhighlight
 # docutils<0.17

@@ -82,7 +82,7 @@ The following command starts ARIAC with the default configuration:
     - The default trial file is :file:`kitting.yaml`, located in `ariac_gazebo/config/trials/ <https://github.com/usnistgov/ARIAC/tree/ariac2023/ariac_gazebo/config/trials>`_
 
         - **Note:** All trial files must be placed in this folder.
-    - The default sensor configuration is ``sensors.yaml``, located in `test_competitor/config/ <https://github.com/usnistgov/ARIAC/tree/ariac2023/test_competitor/config>`_
+    - The default sensor configuration is :file:`sensors.yaml`, located in `test_competitor/config/ <https://github.com/usnistgov/ARIAC/tree/ariac2023/test_competitor/config>`_
 
 Custom Configuration
 ~~~~~~~~~~~~~~~~~~~~
@@ -93,7 +93,7 @@ Custom Configuration
 
         ros2 launch ariac ariac.launch.py trial_name:=<trial_file>
 
-    Replace ``<trial_file>`` with the name of a trial file (without the ``.yaml`` extension). **Reminder:** This trial file **MUST** be placed in ``ariac_gazebo/config/trials/``.
+    Replace :samp:`{<trial_file>}` with the name of a trial file (without the ``.yaml`` extension). **Reminder:** This trial file **MUST** be placed in ``ariac_gazebo/config/trials/``.
     
     **Example:** To start ARIAC with ``assembly.yaml`` trial file, run the following command:
 

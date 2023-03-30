@@ -19,6 +19,7 @@ Cloning the ARIAC Repository
 - Create a new ROS2 workspace:
 
     .. code-block:: bash
+        :class: highlight
 
         source /opt/ros/galactic/setup.bash
         mkdir -p ~/ariac_ws/src
@@ -28,6 +29,7 @@ Cloning the ARIAC Repository
 - Clone the ARIAC repository:
 
     .. code-block:: bash
+        :class: highlight
         
         git clone https://github.com/usnistgov/ARIAC.git src/ariac
 
@@ -37,6 +39,7 @@ Cloning the ARIAC Repository
 - Install the dependencies:
 
     .. code-block:: bash
+        :class: highlight
 
         sudo apt install python3-rosdep
         sudo apt install openjdk-17-jdk
@@ -53,6 +56,7 @@ Building the ARIAC Package
 - Build the ARIAC package:
 
     .. code-block:: bash
+        :class: highlight
 
         sudo apt install python3-colcon-common-extensions
         colcon build --packages-select ariac
@@ -60,6 +64,7 @@ Building the ARIAC Package
 - Source the workspace:
 
     .. code-block:: bash
+        :class: highlight
 
         source install/setup.bash
 
@@ -75,7 +80,8 @@ Default Configuration
 
 The following command starts ARIAC with the default configuration:
 
-    .. code-block:: bash
+    .. code-block:: console
+        :class: highlight
 
         ros2 launch ariac ariac.launch.py
 
@@ -89,7 +95,8 @@ Custom Configuration
 
 - To start ARIAC with a different trial, use the following command:
 
-    .. code-block:: bash
+    .. code-block:: console
+        :class: highlight
 
         ros2 launch ariac ariac.launch.py trial_name:=<trial_file>
 
@@ -97,7 +104,8 @@ Custom Configuration
     
     **Example:** To start ARIAC with :file:`assembly.yaml` trial file, run the following command:
 
-        .. code-block:: bash
+        .. code-block:: console
+            :class: highlight
 
             ros2 launch ariac ariac.launch.py trial_name:=assembly
 
@@ -127,13 +135,15 @@ Custom Configuration
 
         - Start ARIAC with a custom trial and with a custom sensor configuration file by running the following command:
 
-            .. code-block:: bash
+            .. code-block:: console
+                :class: highlight
 
                 ros2 launch ariac ariac.launch.py competitor_pkg:=<package> sensor_config:=<sensor_file> trial_name:=<trial_file>
 
             **Example:** To start ARIAC with :file:`assembly.yaml` using :file:`my_sensors.yaml` sensor configuration file (located in :file:`my_competitor_pkg/config`), run the following command:
 
-                .. code-block:: bash
+                .. code-block:: console
+                    :class: highlight
 
                     ros2 launch ariac ariac.launch.py competitor_pkg:=my_competitor_pkg sensor_config:=my_sensors trial_name:=assembly
 
@@ -145,7 +155,7 @@ To verify that the robots can be controlled properly you will need three termina
 
 - *terminal 1*: Start the environment.
 
-    .. code-block:: command
+    .. code-block:: console
         :class: highlight
 
         ros2 launch ariac_gazebo ariac.launch.py
@@ -153,14 +163,14 @@ To verify that the robots can be controlled properly you will need three termina
 
 - *terminal 2*: Start the moveit node.
 
-    .. code-block:: command
+    .. code-block:: console
         :class: highlight
 
         ros2 launch ariac_moveit_config ariac_robots_moveit.launch.py
 
 - *terminal 3*: Start the moveit test node.
 
-    .. code-block:: command
+    .. code-block:: console
         :class: highlight
 
         ros2 launch test_competitor moveit_test.launch.py
@@ -173,7 +183,7 @@ Running the Test Competitor
 ---------------------------
 
 A test competitor has been created to demonstrate how to complete some of the basic functions (no challenges) of working with the ARIAC environment.
-The test competitor has been tested with ``kitting.yaml``, ``assembly.yaml``, ``combined.yaml``, ``kitting_assembly.yaml``, and ``kitting_combined.yaml``.
+The test competitor has been tested with ``kitting.yaml``, ``assembly.yaml``, ``combined.yaml``, :class: :file:`kitting_assembly.yaml`, and :file:`kitting_combined.yaml`.
 There is no guarantee that the test competitor will work with other trials as the goal of the test competitor is to demonstrate how to interface with the ARIAC environment.
 
 
@@ -181,20 +191,23 @@ The test competitor is located in the `test_competitor <https://github.com/usnis
 
 - *terminal 1*: Start the environment.
 
-    .. code-block:: bash
+    .. code-block:: console
+        :class: highlight
 
         ros2 launch ariac_gazebo ariac.launch.py trial_name:=<trial_file>
 
 
 - *terminal 2*: Start the MoveIt node.
 
-    .. code-block:: bash
+    .. code-block:: console
+        :class: highlight
 
         ros2 launch ariac_moveit_config ariac_robots_moveit.launch.py
 
 - *terminal 3*: Start the competitor node.
 
-    .. code-block:: bash
+    .. code-block:: console
+        :class: highlight
 
         ros2 launch test_competitor competitor.launch.py
 

@@ -365,11 +365,11 @@ The high-priority orders challenge simulates an order that must be completed bef
 Setup
 -----------------------------
 
-To specify a high-priority order, the ``priority`` field is set to ``true`` in the order description. :numref:`high-priority-order-yaml` shows a high-priority order for order ``MMB30H57`` and a regular-priority order for order ``MMB30H58``.
+To specify a high-priority order, the :yaml:`priority` field is set to :yaml:`true` in the order description. :numref:`high-priority-order-yaml` shows a high-priority order for order :yaml:`MMB30H57` and a regular-priority order for order :yaml:`'MMB30H58'`.
 
 
 .. code-block:: yaml
-  :caption: Example of a high-priority order for order MMB30H57.
+  :caption: Example of a high-priority order for order :yaml:`'MMB30H58'`.
   :name: high-priority-order-yaml
 
   orders:
@@ -405,7 +405,7 @@ Detection
 -------------------------------
 
 
-To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders` (`Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders` (`Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_). For a high-priority order, the value for the field :yaml:`priority` is set to :yaml:`true`. For a regular-priority order, the value for the field :yaml:`priority` is set to :yaml:`false`.
 
 
 
@@ -419,7 +419,7 @@ The insufficient parts challenge simulates a situation where the workcell does n
 Setup
 -----------------------------
 
-There is no specific field in the trial configuration file to specify this challenge.  :numref:`insufficient-parts-yaml` shows a trial configuration file where the workcell does not have enough parts to complete order ``MMB30H58``. The order requires 4 blue batteries but the whole workcell has only 2 blue batteries (located in bin1).
+There is no specific field in the trial configuration file to specify this challenge.  :numref:`insufficient-parts-yaml` shows a trial configuration file where the workcell does not have enough parts to complete order :yaml:`'MMB30H58'`. The order requires 4 blue batteries but the whole workcell has only 2 blue batteries (located in bin1).
 
 .. code-block:: yaml
   :caption: Example of insufficient parts challenge.
@@ -474,7 +474,7 @@ To figure out if the insufficient parts challenge is part of a trial, the :abbr:
 Bins
 ^^^^^
 
-The topic :red:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+The topic :red:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from :command:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
   .. code-block:: bash
     :caption: Message published on the topic :red:`/ariac/bin_parts`.
@@ -499,7 +499,7 @@ The topic :red:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/A
 
 Conveyor Belt
 ^^^^^^^^^^^^^^^
-The topic :red:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+The topic :red:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from :command:`ros2 topic echo /ariac/conveyor_parts` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
   .. code-block:: bash
@@ -549,7 +549,7 @@ When the human challenge is used in a trial, the simulated human is assigned one
 - **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
 .. note::
-  The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior :inline-yaml:`'helpful'`, the human will always be helpful throughout the trial. 
+  The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior :yaml:`'helpful'`, the human will always be helpful throughout the trial. 
   The human in the environment will go to each assembly station in the following order:
 
   #. Assembly station 4
@@ -569,9 +569,9 @@ The subfield :yaml:`human` of :yaml:`challenges` is used to describe a human cha
   
   * :yaml:`behavior`: The behavior of the human operator. The possible values are:
 
-    - :inline-yaml:`'indifferent'`
-    - :inline-yaml:`'antagonistic'`
-    - :inline-yaml:`'helpful'`
+    - :yaml:`'indifferent'`
+    - :yaml:`'antagonistic'`
+    - :yaml:`'helpful'`
   * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 

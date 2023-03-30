@@ -50,7 +50,7 @@ Cloning the ARIAC Repository
 
     .. note::
 
-        - :console:`sudo apt install openjdk-17-jdk` is required to install the Java 17 JDK for the human challenge.
+        - :file:`openjdk-17-jdk` is required to install the Java 17 JDK for the human challenge.
         - If you are using a virtual machine, you may need to install the :file:`python3-vcstool` package.
 
 

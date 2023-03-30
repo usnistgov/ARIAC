@@ -93,9 +93,9 @@ Custom Configuration
 
         ros2 launch ariac ariac.launch.py trial_name:=<trial_file>
 
-    Replace :samp:`{<trial_file>}` with the name of a trial file (without the ``.yaml`` extension). **Reminder:** This trial file **MUST** be placed in ``ariac_gazebo/config/trials/``.
+    Replace :samp:`{<trial_file>}` with the name of a trial file (without the ``.yaml`` extension). **Reminder:** This trial file **MUST** be placed in :file:`ariac_gazebo/config/trials/`.
     
-    **Example:** To start ARIAC with ``assembly.yaml`` trial file, run the following command:
+    **Example:** To start ARIAC with :file:`assembly.yaml` trial file, run the following command:
 
         .. code-block:: bash
 
@@ -103,7 +103,7 @@ Custom Configuration
 
 - Competitors will need to create their own competitor package and use their own sensor configuration file.
 
-        - To create a new competitor package, see :ref:`tutorial 1 <TUTORIAL1>`.
+        - To create a new competitor package, see :doc:`tutorial 1 <TUTORIAL1>`.
         - To use a custom sensor configuration file, create a directory named ``config`` in your competitor package and place your sensor configuration file in that directory. 
 
             - Below is an example of competitor package structure with a custom sensor configuration file named ``my_sensors.yaml``.

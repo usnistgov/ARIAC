@@ -1,5 +1,5 @@
 Conditions, Orders, and Tasks
-================
+==============================
 
 This page describes the different types of conditions, orders and tasks that can be found in a trial configuration file.
 

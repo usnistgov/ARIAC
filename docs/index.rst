@@ -32,7 +32,7 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    competition/environment
    competition/orders
    competition/sensors
-   competition/trials
+   competition/trials.rst
    competition/ros_communication
    competition/challenges
    competition/tf_frames

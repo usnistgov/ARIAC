@@ -35,7 +35,7 @@ to :abbr:`AGVs (Automated Guided Vehicles)`.
 Setup
 ----------------------------
 
-The faulty parts challenge is set with the field :yaml:`faulty_part` under the :yaml:`challenges` field 
+The faulty parts challenge is set with the field :yamlname:`faulty_part` under the :yamlname:`challenges` field 
 in the trial configuration file. 
 Only the first part placed in a quadrant is faulty. 
 In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by 
@@ -66,12 +66,12 @@ The new part will automatically be set to non-faulty by the :abbr:`AM (ARIAC Man
 
 
 More information on the fields of the service message is provided as follows:
-  * The service returns a Boolean value for the field :yaml:`valid_id` indicating whether or not 
+  * The service returns a Boolean value for the field :yamlname:`valid_id` indicating whether or not 
   the order ID is valid. 
   An order ID is not valid if the order ID does not exist or if the quality check was already called 
   for this order ID.
 
-  * The field :yaml:`all_passed` is set to :yaml:`true` only if:
+  * The field :yamlname:`all_passed` is set to :yaml:`true` only if:
 
     * All parts in the kitting tray are NOT faulty.
     * All parts are present in the kitting tray (no empty quadrant).
@@ -79,7 +79,7 @@ More information on the fields of the service message is provided as follows:
     * All parts are of the correct type.
     * All parts are of the correct color.
 
-  * The field :yaml:`incorrect_tray` informs on whether or not the kitting task was performed in the correct kitting tray.
+  * The field :yamlname:`incorrect_tray` informs on whether or not the kitting task was performed in the correct kitting tray.
   * Information for each quadrant is reported as a `QualityIssue.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/QualityIssue.msg>`_
 
 
@@ -104,9 +104,9 @@ Setup
 ----------------------------
 
 Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. 
-To set parts as flipped, the :yaml:`flipped` field in the trial configuration file must be set 
+To set parts as flipped, the :yamlname:`flipped` field in the trial configuration file must be set 
 as :yaml:`true` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple 
-regulators as flipped in :yaml:`bin3`. :numref:`flipped-parts-on-conveyor-belt` describes all 
+regulators as flipped in :yamlname:`bin3`. :numref:`flipped-parts-on-conveyor-belt` describes all 
 orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
@@ -164,7 +164,7 @@ The faulty gripper challenge simulates a faulty gripper which can drop a part af
 Setup
 ----------------------------
 
-The faulty gripper challenge can be set up in the trial configuration file with the field :yaml:`dropped_part` under the :yaml:`challenges` field. :numref:`faulty-gripper-setup` describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump (specified with the :yaml:`drop_after` field). Multiple occurrences of this challenge may be set up in the trial configuration file as seen in :numref:`multiple-faulty-gripper-setup`.
+The faulty gripper challenge can be set up in the trial configuration file with the field :yamlname:`dropped_part` under the :yamlname:`challenges` field. :numref:`faulty-gripper-setup` describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump (specified with the :yamlname:`drop_after` field). Multiple occurrences of this challenge may be set up in the trial configuration file as seen in :numref:`multiple-faulty-gripper-setup`.
 
 
 .. code-block:: yaml
@@ -213,7 +213,7 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/{robot}_gripper_state` (`VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_).
+To detect a faulty gripper the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :topic:`/ariac/{robot}_gripper_state` (`VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_).
 
 
 .. _target to robot malfunction:
@@ -234,10 +234,10 @@ The robot malfunction challenge simulates a robot malfunction. The robot can mal
 Setup
 ----------------------------
 
-The robot malfunction challenge is specified with the field :yaml:`robot_malfunction` as a subfield of :yaml:`challenges` in the trial configuration file. The relevant fields for this agility challenge are listed below.
+The robot malfunction challenge is specified with the field :yamlname:`robot_malfunction` as a subfield of :yamlname:`challenges` in the trial configuration file. The relevant fields for this agility challenge are listed below.
   
-  * :yaml:`duration`: The duration of the robot malfunction in seconds.
-  * :yaml:`robots_to_disable`: A list of robots that malfunction. It can be either :yaml:`'floor_robot'` or :yaml:`'ceiling_robot'` or both.
+  * :yamlname:`duration`: The duration of the robot malfunction in seconds.
+  * :yamlname:`robots_to_disable`: A list of robots that malfunction. It can be either :yaml:`'floor_robot'` or :yaml:`'ceiling_robot'` or both.
   * :ref:`One condition <CONDITIONS>` that can trigger the robot malfunction.
 
 Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
@@ -273,7 +273,7 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :red:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of :yaml:`true` indicates that the robot is healthy and can be controlled by the :abbr:`CCS (Competitor Control System)`. A value of :yaml:`false` indicates that the robot is malfunctioning and cannot be controlled by the :abbr:`CCS (Competitor Control System)`.
+To detect a robot malfunction, the :abbr:`CCS (Competitor Control System)` needs a subscriber to the topic :topic:`/ariac/robot_health` (`Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_). The message contains Boolean-type fields which provide information on the health of the robots. A value of :yaml:`true` indicates that the robot is healthy and can be controlled by the :abbr:`CCS (Competitor Control System)`. A value of :yaml:`false` indicates that the robot is malfunctioning and cannot be controlled by the :abbr:`CCS (Competitor Control System)`.
 
 
 
@@ -294,11 +294,11 @@ Setup
 ---------------------------
 
 
-The subfield :yaml:`sensor_blackout` of :yaml:`challenges` is used to describe a sensor blackout challenge.
+The subfield :yamlname:`sensor_blackout` of :yamlname:`challenges` is used to describe a sensor blackout challenge.
 The relevant fields for this agility challenge are listed below.
   
-  * :yaml:`duration`: The duration of the sensor blackout in seconds.
-  * :yaml:`sensors_to_disable`: A list of sensor types to disable:
+  * :yamlname:`duration`: The duration of the sensor blackout in seconds.
+  * :yamlname:`sensors_to_disable`: A list of sensor types to disable:
 
     * :yaml:`'break_beam'`
     * :yaml:`'proximity'`
@@ -339,7 +339,7 @@ Detection
 
 
 To detect a sensor blackout the :abbr:`CCS (Competitor Control System)` needs a subscriber to 
-the topic :red:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). 
+the topic :topic:`/ariac/sensor_health` (`Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_). 
 The message contains Boolean-type fields which provide information on the health of each sensor type. 
 A :yaml:`true` value indicates that all sensors of a type are healthy (they are publishing to topics) 
 and a :yaml:`false` value indicates that all sensors of a type are malfunctioning 
@@ -365,7 +365,7 @@ The high-priority orders challenge simulates an order that must be completed bef
 Setup
 -----------------------------
 
-To specify a high-priority order, the :yaml:`priority` field is set to :yaml:`true` in the order description. :numref:`high-priority-order-yaml` shows a high-priority order for order :yaml:`MMB30H57` and a regular-priority order for order :yaml:`'MMB30H58'`.
+To specify a high-priority order, the :yamlname:`priority` field is set to :yaml:`true` in the order description. :numref:`high-priority-order-yaml` shows a high-priority order for order :yaml:`'MMB30H57'` and a regular-priority order for order :yaml:`'MMB30H58'`.
 
 
 .. code-block:: yaml
@@ -405,7 +405,7 @@ Detection
 -------------------------------
 
 
-To find out out the priority of an order, the CCS is required to parse messages published to the topic :red:`/ariac/orders` (`Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_). For a high-priority order, the value for the field :yaml:`priority` is set to :yaml:`true`. For a regular-priority order, the value for the field :yaml:`priority` is set to :yaml:`false`.
+To find out out the priority of an order, the CCS is required to parse messages published to the topic :topic:`/ariac/orders` (`Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_). For a high-priority order, the value for the field :yamlname:`priority` is set to :yaml:`true`. For a regular-priority order, the value for the field :yamlname:`priority` is set to :yaml:`false`.
 
 
 
@@ -474,10 +474,10 @@ To figure out if the insufficient parts challenge is part of a trial, the :abbr:
 Bins
 ^^^^^
 
-The topic :red:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from :command:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+The topic :topic:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from :command:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
   .. code-block:: bash
-    :caption: Message published on the topic :red:`/ariac/bin_parts`.
+    :caption: Message published on the topic :topic:`/ariac/bin_parts`.
     :name: bin-parts-outputs
 
     ---
@@ -499,7 +499,7 @@ The topic :red:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/A
 
 Conveyor Belt
 ^^^^^^^^^^^^^^^
-The topic :red:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from :command:`ros2 topic echo /ariac/conveyor_parts` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+The topic :topic:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from :command:`ros2 topic echo /ariac/conveyor_parts` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
   .. code-block:: bash
@@ -566,9 +566,9 @@ Setup
 ---------------------------
 
 
-The subfield :yaml:`human` of :yaml:`challenges` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+The subfield :yamlname:`human` of :yamlname:`challenges` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
   
-  * :yaml:`behavior`: The behavior of the human operator. The possible values are:
+  * :yamlname:`behavior`: The behavior of the human operator. The possible values are:
 
     - :yaml:`'indifferent'`
     - :yaml:`'antagonistic'`

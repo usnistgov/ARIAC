@@ -27,6 +27,10 @@ button.copybtn {
     color: rgb(255,0,0);
 }
 
+.service {
+    color: rgb(102, 0, 255);
+}
+
 .yamlname {
     color: #204a87 !important;
     font-weight: bold;

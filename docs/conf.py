@@ -53,6 +53,9 @@ rst_prolog = """
  
  .. role:: topic
     :class: topic
+
+ .. role:: service
+    :class: service
     
  .. role:: yamlname(code)
     :class: yamlname

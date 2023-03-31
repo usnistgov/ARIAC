@@ -52,12 +52,10 @@ rst_prolog = """
  .. include:: <s5defs.txt>
  
  .. role:: topic
-    :color: red
+    :class: topic
     
- .. role:: yamlname(code)
-    :language: yaml
-    :class: highlight
-    :color: #729fcf
+ .. role:: yamlname
+    :class: yamlname
     
  .. role:: yaml(code)
     :language: yaml

@@ -27,6 +27,10 @@ button.copybtn {
     color:rgb(202, 107, 6);
 }
 
+.yamlname {
+    color: #204a87 !important;
+}
+
 
 /* code.literal {
     color: #404040 !important;

@@ -20,9 +20,11 @@ extensions = [
     'sphinx.ext.todo',
     # External stuff
     "myst_parser",
-    "sphinx_copybutton"
+    "sphinx_copybutton",
+    'sphinxemoji.sphinxemoji',
 ]
 
+sphinxemoji_style = 'twemoji'
 
 # use language set by highlight directive if no language is set by role
 inline_highlight_respect_highlight = False

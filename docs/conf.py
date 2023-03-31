@@ -18,6 +18,7 @@ extensions = [
     'sphinx_rtd_theme',
     'sphinx.ext.autosectionlabel',
     'sphinx.ext.todo',
+    'sphinxemoji.sphinxemoji',
     # External stuff
     "myst_parser",
     "sphinx_copybutton"

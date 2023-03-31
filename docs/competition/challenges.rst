@@ -474,7 +474,7 @@ To figure out if the insufficient parts challenge is part of a trial, the :abbr:
 Bins
 ^^^^^
 
-The topic :topic:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from :command:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+The topic :topic:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from :console:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
   .. code-block:: console
     :class: no-copybutton
@@ -500,7 +500,7 @@ The topic :topic:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov
 
 Conveyor Belt
 ^^^^^^^^^^^^^^^
-The topic :topic:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from :command:`ros2 topic echo /ariac/conveyor_parts` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+The topic :topic:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from :console:`ros2 topic echo /ariac/conveyor_parts` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
   .. code-block:: console

@@ -67,7 +67,7 @@ Each task consists of at least one part of a specific color and type. Orders are
     * :yaml:`'kitting'`: Only kitting is to be performed.
     * :yaml:`'assembly'`: Only assembly is to be performed.
     * :yaml:`'combined'`: Both kitting and assembly are to be performed.
-  * :yaml:`priority` (boolean): Each order has a priority. When set to :yaml:`false` the order is a regular order and when set to :yaml:`true`, the order is of high priority.
+  * :yaml:`priority` (Boolean): Each order has a priority. When set to :yaml:`false` the order is a regular order and when set to :yaml:`true`, the order is of high priority.
   * :yaml:`announcement`: One of the 3 :ref:`CONDITIONS`.
   * Manufacturing task: Only one of the manufacturing tasks below must be provided:
     
@@ -179,7 +179,7 @@ Setup
 An example of an assembly task in a trial configuration file is presented in :numref:`assembly-task-yaml` with the following description:
 
 - Assembly is required to be performed at assembly station 4 (:yaml:`station: 'as4'`).
-- Parts required to do assembly can be found on AGV3 and AGV4 (:yaml:`agv_number: [4,3]`).
+- Parts required to do assembly can be found on AGV 3 and AGV 4 (:yaml:`agv_number: [4,3]`).
 - Each part needed for the assembly is specified under the :yaml:`products` field.
 
     - :yaml:`type`: The type of the part.

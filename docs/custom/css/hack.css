@@ -8,6 +8,11 @@
 /* Colors and text decoration.
  For example, :black:`text in black` or :blink:`text blinking` in rST. */
 
+ .test::after{
+    content: ":";
+    color: white;
+}
+
 .black {
     color: black;
 }

@@ -21,6 +21,7 @@ extensions = [
     # External stuff
     "myst_parser",
     "sphinx_copybutton",
+    'sphinx.ext.intersphinx',
     'sphinxemoji.sphinxemoji',
 ]
 

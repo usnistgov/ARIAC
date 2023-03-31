@@ -143,4 +143,6 @@ Kitting trays are defined with the :yamlnam:`kitting_trays` field. Information i
    :name: kittraytables
    :class: no-border
 
+   Tray tables with slots.
+
 

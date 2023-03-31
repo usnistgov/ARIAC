@@ -154,3 +154,46 @@ Kitting trays are defined with the :yamlname:`kitting_trays` field. Information 
       kitting_trays: # Which kitting trays will be spawn
         tray_ids: [1, 6] 
         slots: [2, 4]
+
+Part Locations
+~~~~~~~~~~~~~~~~~~
+
+Parts can be found in 3 different location types: Bins, conveyor belt, and AGVs. The locations of parts in the environment are defined with the :yamlname:`parts` field. This field can have three subfields: :yamlname:`bins`, :yamlname:`agvs`, :yamlname:`conveyor_belt`.
+
+Bins
+^^^^
+
+.. code-block:: yaml
+      :caption: Parts in bins.
+      :name: parts-in-bins
+
+      bins: # bin params - 8 total bins each bin has nine total slots (1-9)
+        bin1: 
+        - type: 'pump'
+            color: 'red'
+            slots: [1, 5, 9]
+            rotation: 'pi/6'
+            flipped: true
+        - type: 'battery'
+            color: 'blue'
+            slots: [4, 2]
+            rotation: 'pi/2'
+        bin3:
+        - type: 'regulator'
+            color: 'purple'
+            slots: [1, 2]
+            rotation: 'pi/2'
+        - type: 'regulator'
+            color: 'purple'
+            slots: [3, 4]
+            rotation: 'pi/6'
+            flipped: true
+        - type: 'regulator'
+            color: 'purple'
+            slots: [5, 6]
+            rotation: 0
+            flipped: true
+
+The :yamlname:`bins` field can have 8 subfields: :yamlname:`bin1`, :yamlname:`bin2`, :yamlname:`bin3`, :yamlname:`bin4`, :yamlname:`bin5`, :yamlname:`bin6`, :yamlname:`bin7`, and :yamlname:`bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on bin slots). The :yamlname:`type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In :numref:`parts-in-bins`, there are 3 pumps and 2 batteries in :yamlname:`bin1` and 6 purple regulators in :yamlname:`bin3`. The way part locations are defined in :yamlname:`bin3` allows for the same part type and color with different orientations and flipped states to be placed in the same bin.
+
+The :yamlname:`color` field describes the part color in a bin. The :yamlname:`slots` field describes the slots in a bin where the part can be found. The :yamlname:`rotation` field describes the rotation of the part in a bin. The :yamlname:`flipped` field describes whether the parts are flipped in a bin. The :yamlname:`flipped` field can be set to :yaml:`true` or :yaml:`false`. If the :yamlname:`flipped` field is not defined, the parts will not be flipped. In the provided example, all red pumps in bin1 are flipped and all the blue batteries in bin1 are not flipped. See the :doc:`Challenges section <./challenges.rst>` page for more information about flipped parts.

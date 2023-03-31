@@ -57,7 +57,7 @@ Detection
 
 The quality control sensor located above an :abbr:`AGV (Automated Guided Vehicle)` is capable of 
 detecting faulty parts. 
-A quality check can be performed by calling the service :service:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). 
+A quality check can be performed by calling the service :rosservice:`/ariac/perform_quality_check` (`PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_). 
 The argument passed to this service call is an order ID. 
 When a faulty part is detected, the :abbr:`CCS (Competitor Control System)` has to discard the 
 part and replace it with a new part. 

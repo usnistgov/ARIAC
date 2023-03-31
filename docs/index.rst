@@ -3,6 +3,7 @@ ARIAC Documentation
 
 Welcome to ARIAC 2023!
 
+:octocat:
 Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.com/usnistgov/ARIAC/>`_
 
 

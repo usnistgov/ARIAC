@@ -13,7 +13,7 @@ Orders and challenges are announced under some conditions. There are 3 types of 
   * **Time-based condition**: This condition is used to announce an order when the competition time has reached the time provided in the condition. 
 
     .. note:: 
-        The competition time is set when the competitor starts the competition with the service call :navy:`/ariac/start_competition`. This is different from the simulation time which is set when Gazebo starts.
+        The competition time is set when the competitor starts the competition with the service call :rosservice:`/ariac/start_competition`. This is different from the simulation time which is set when Gazebo starts.
 
    
     For each trial, the first order always uses a time-based condition with the value 0. 

@@ -63,6 +63,10 @@ rst_prolog = """
  .. role:: yaml(code)
     :language: yaml
     :class: highlight
+    
+ .. role:: console(code)
+    :language: console
+    :class: highlight
 
  .. role:: python(code)
     :language: python

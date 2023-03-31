@@ -126,7 +126,6 @@ Time Limit
 
 The time limit is defined with the :yamlname:`time_limit` field. The time limit is defined in (simulation) seconds and can be defined using floating-point values. A time limit of :yaml:`-1` means that there is no time limit (infinite) for this trial. Competitors can set no time limit during testing. 
 
-**This field is mandatory.**
 
 .. attention:: 
     During the qualifiers and the finals, a finite time limit will be set for each trial.
@@ -134,7 +133,7 @@ The time limit is defined with the :yamlname:`time_limit` field. The time limit 
 Kitting Trays
 ~~~~~~~~~~~~~~~~~~
 
-Kitting trays are defined with the :yamlnam:`kitting_trays` field. Information in this field is used to spawn kitting trays in the environment. The tray IDs are provided in a list of integers and set with the field :yamlname:`tray_ids`. Kitting tray IDs range from 0 to 9. The location of kitting trays in the environment is defined in the field :yamlname:`slots`, which are slots located on the tray tables. Each tray table has 3 slots. Slots 1-3 for one tray table and slots 4-6 for the other tray table (see :numref:`kittraytables`).
+Kitting trays are defined with the :yamlname:`kitting_trays` field. Information in this field is used to spawn kitting trays in the environment. The tray IDs are provided in a list of integers and set with the field :yamlname:`tray_ids`. Kitting tray IDs range from 0 to 9. The location of kitting trays in the environment is defined in the field :yamlname:`slots`, which are slots located on the tray tables. Each tray table has 3 slots. Slots 1-3 for one tray table and slots 4-6 for the other tray table (see :numref:`kittraytables`).
 
 .. figure:: ../images/TableSlots.jpeg
    :alt: kittraytables
@@ -146,3 +145,12 @@ Kitting trays are defined with the :yamlnam:`kitting_trays` field. Information i
    Tray tables with slots.
 
 
+:numref:`kit-tray-yaml` describes 2 kitting trays which are located in slots 2 and 4 on the tray tables. The tray IDs are 1 and 6 respectively.
+
+.. code-block:: yaml
+      :caption: Example of kit tray locations.
+      :name: kit-tray-yaml
+
+      kitting_trays: # Which kitting trays will be spawn
+        tray_ids: [1, 6] 
+        slots: [2, 4]

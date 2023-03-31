@@ -97,3 +97,34 @@ Placing Sensors in the Environment
 To add sensors in the environment, one can start the simulation environment and use Gazebo's GUI to add sensors. The sensors can be added by clicking on the :guilabel:`Insert` button and then selecting the desired sensor type. The sensors can be placed in the environment by clicking on the :guilabel:`Move` button and then clicking on the desired location in the environment. The sensors can be rotated by clicking on the :guilabel:`Rotate` button and then clicking on the desired orientation in the environment.  The sensors can be deleted by clicking on the :guilabel:`Delete` button and then clicking on the desired sensor in the environment. Once the sensors are placed in the environment, the sensor configuration file can be updated with the new sensor information.
 
 Another way to place sensors is to add them in the sensor configuration file and then run the simulation environment. The sensors will be added to the environment automatically. They can the been moved and rotated in the environment. Once the sensors are placed in the environment, the sensor configuration file can be updated with the new sensor information.
+
+Trial Configuration File
+--------------------------------
+
+Trials are the main way to test your robot's performance. Multiple trials are used during the qualifiers and the finals. The results of each trial are recorded and then used to rank competitors.
+
+.. admonition:: Graphical User Interface
+  :class: attention
+  :name: gui
+
+  A graphical user interface (GUI) for creating trial configuration yaml files was developed for ARIAC2023. The use of this tool is demonstrated in `this youtube video <https://youtu.be/8xqCEhBE4-s>`_.
+
+To run the GUI, build and source the workspace using the :ref:`installation instructions <INSTALLATION>` and run:
+
+.. code-block:: console
+        :class: highlight
+
+        ros2 run ariac_gui gui
+
+Trial Configuration Fields
+--------------------------------
+
+A trial configuration file (:file:`sample.yaml`) is provided in the `ariac_gazebo package <https://github.com/usnistgov/ARIAC/tree/ariac2023/ariac_gazebo/config/trials>`_. Below is a description of the different sections in the trial configuration file. 
+
+Time Limit
+~~~~~~~~~~~~~~
+
+The time limit is defined with the :yamlname:`time_limit` field. The time limit is defined in (simulation) seconds and can be defined using floating-point values. A time limit of :yaml:`-1` means that there is no time limit (infinite) for this trial. Competitors can set no time limit during testing. 
+
+.. attention:: 
+    During the qualifiers and the finals, a finite time limit will be set for each trial.

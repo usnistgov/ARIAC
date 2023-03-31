@@ -503,7 +503,7 @@ The topic :topic:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com
 
 
   .. code-block:: bash
-    :caption: Message published on the topic :red:`/ariac/conveyor_parts`.
+    :caption: Message published on the topic :topic:`/ariac/conveyor_parts`.
     :name: conveyor-parts-outputs
 
     ---
@@ -589,11 +589,11 @@ The subfield :yamlname:`human` of :yamlname:`challenges` is used to describe a h
 Detection
 -----------------------------
 
-The pose of the human is published to the topic :red:`/ariac_human/state` (`HumanState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_).
-An output from :command:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
+The pose of the human is published to the topic :topic:`/ariac_human/state` (`HumanState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_).
+An output from :console:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: bash
-    :caption: Message published on the topic :red:`/ariac_human/state`.
+    :caption: Message published on the topic :topic:`/ariac_human/state`.
     :name: human-state-outputs
 
     ---

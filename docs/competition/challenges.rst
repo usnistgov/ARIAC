@@ -66,8 +66,7 @@ The new part will automatically be set to non-faulty by the :abbr:`AM (ARIAC Man
 
 
 More information on the fields of the service message is provided as follows:
-  * The service returns a Boolean value for the field :yamlname:`valid_id` indicating whether or not 
-  the order ID is valid. 
+  * The service returns a Boolean value for the field :yamlname:`valid_id` indicating whether or not the order ID is valid. 
   An order ID is not valid if the order ID does not exist or if the quality check was already called 
   for this order ID.
 

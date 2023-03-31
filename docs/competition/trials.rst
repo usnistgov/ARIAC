@@ -104,17 +104,17 @@ Trial Configuration File
 Trials are the main way to test your robot's performance. Multiple trials are used during the qualifiers and the finals. The results of each trial are recorded and then used to rank competitors.
 
 .. admonition:: Graphical User Interface
-  :class: attention
+  :class: tip
   :name: gui
 
   A graphical user interface (GUI) for creating trial configuration yaml files was developed for ARIAC2023. The use of this tool is demonstrated in `this youtube video <https://youtu.be/8xqCEhBE4-s>`_.
+  
+  To run the GUI, build and source the workspace using the :ref:`installation instructions <INSTALLATION>` and run:
+  
+  .. code-block:: console
+    :class: highlight
 
-To run the GUI, build and source the workspace using the :ref:`installation instructions <INSTALLATION>` and run:
-
-.. code-block:: console
-        :class: highlight
-
-        ros2 run ariac_gui gui
+    ros2 run ariac_gui gui
 
 Trial Configuration Fields
 --------------------------------
@@ -126,5 +126,21 @@ Time Limit
 
 The time limit is defined with the :yamlname:`time_limit` field. The time limit is defined in (simulation) seconds and can be defined using floating-point values. A time limit of :yaml:`-1` means that there is no time limit (infinite) for this trial. Competitors can set no time limit during testing. 
 
+**This field is mandatory.**
+
 .. attention:: 
     During the qualifiers and the finals, a finite time limit will be set for each trial.
+
+Kitting Trays
+~~~~~~~~~~~~~~~~~~
+
+Kitting trays are defined with the :yamlnam:`kitting_trays` field. Information in this field is used to spawn kitting trays in the environment. The tray IDs are provided in a list of integers and set with the field :yamlname:`tray_ids`. Kitting tray IDs range from 0 to 9. The location of kitting trays in the environment is defined in the field :yamlname:`slots`, which are slots located on the tray tables. Each tray table has 3 slots. Slots 1-3 for one tray table and slots 4-6 for the other tray table (see :numref:`kittraytables`).
+
+.. figure:: ../images/TableSlots.jpeg
+   :alt: kittraytables
+   :align: center
+   :figclass: align-center
+   :name: kittraytables
+   :class: no-border
+
+

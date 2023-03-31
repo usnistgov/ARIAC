@@ -90,3 +90,10 @@ Below is a description of the different fields in the sensor configuration file.
             pose:
                 xyz: [-2.286, -2.96, 1.8]
                 rpy: [pi, pi/2, 0]
+
+Placing Sensors in the Environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To add sensors in the environment, one can start the simulation environment and use Gazebo's GUI to add sensors. The sensors can be added by clicking on the :guilabel:`Insert` button and then selecting the desired sensor type. The sensors can be placed in the environment by clicking on the :guilabel:`Move` button and then clicking on the desired location in the environment. The sensors can be rotated by clicking on the :guilabel:`Rotate` button and then clicking on the desired orientation in the environment.  The sensors can be deleted by clicking on the :guilabel:`Delete` button and then clicking on the desired sensor in the environment. Once the sensors are placed in the environment, the sensor configuration file can be updated with the new sensor information.
+
+Another way to place sensors is to add them in the sensor configuration file and then run the simulation environment. The sensors will be added to the environment automatically. They can the been moved and rotated in the environment. Once the sensors are placed in the environment, the sensor configuration file can be updated with the new sensor information.

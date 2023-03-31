@@ -477,6 +477,7 @@ Bins
 The topic :topic:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from :command:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
   .. code-block:: console
+    :class: no-copybutton
     :caption: Message published on the topic :topic:`/ariac/bin_parts`.
     :name: bin-parts-outputs
 
@@ -503,6 +504,7 @@ The topic :topic:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com
 
 
   .. code-block:: console
+    :class: no-copybutton
     :caption: Message published on the topic :topic:`/ariac/conveyor_parts`.
     :name: conveyor-parts-outputs
 
@@ -593,6 +595,7 @@ The pose of the human is published to the topic :topic:`/ariac_human/state` (`Hu
 An output from :console:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
 
   .. code-block:: console
+    :class: no-copybutton
     :caption: Message published on the topic :topic:`/ariac_human/state`.
     :name: human-state-outputs
 

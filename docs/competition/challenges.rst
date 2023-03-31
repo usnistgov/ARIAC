@@ -476,7 +476,7 @@ Bins
 
 The topic :topic:`/ariac/bin_parts` (`BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_) outputs for each bin: The type, the color, and the quantity of parts. An  output from :command:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
-  .. code-block:: bash
+  .. code-block:: console
     :caption: Message published on the topic :topic:`/ariac/bin_parts`.
     :name: bin-parts-outputs
 
@@ -502,7 +502,7 @@ Conveyor Belt
 The topic :topic:`/ariac/conveyor_parts` (`ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_) outputs information on parts that are expected to spawn on the conveyor belt. An output from :command:`ros2 topic echo /ariac/conveyor_parts` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
-  .. code-block:: bash
+  .. code-block:: console
     :caption: Message published on the topic :topic:`/ariac/conveyor_parts`.
     :name: conveyor-parts-outputs
 
@@ -592,7 +592,7 @@ Detection
 The pose of the human is published to the topic :topic:`/ariac_human/state` (`HumanState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_).
 An output from :console:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
 
-  .. code-block:: bash
+  .. code-block:: console
     :caption: Message published on the topic :topic:`/ariac_human/state`.
     :name: human-state-outputs
 

@@ -118,7 +118,7 @@ Kitting Task Score
 
    .. math::
 
-        S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
+        S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{ep} , 0]}) \times (\texttt{destination})
 
 
 Assembly Task Score

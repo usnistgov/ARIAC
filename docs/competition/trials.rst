@@ -12,8 +12,8 @@ The sensor configuration file describes the location of the sensors in the workc
 
 Below is a description of the different fields in the sensor configuration file. This file contains 4 sensors which have to be described under the field :yamlname:`sensors` and each sensor consists of:
 
-#. A name (e.g. :yaml:`right_bins_camera`). This name has to be unique among all sensors in the same configuration file.
-#. A type (e.g. :yaml:`advanced_logical_camera`). This type has to be one of the types defined in the :yamlname:`sensor_types` field.
+#. A name (e.g. :yamlname:`right_bins_camera`). This name has to be unique among all sensors in the same configuration file.
+#. A type (e.g. :yaml:`type: advanced_logical_camera`). This type has to be one of the types defined in the :yamlname:`sensor_types` field.
 
     * :yaml:`break_beam`
     * :yaml:`proximity`
@@ -23,7 +23,7 @@ Below is a description of the different fields in the sensor configuration file.
     * :yaml:`rgbd_camera`
     * :yaml:`basic_logical_camera`
     * :yaml:`advanced_logical_camera`
-#. A pose (defined in the world frame):
+#. A pose (defined in the world frame with the field :yamlname:`pose`):
 
     * Position (e.g. :yaml:`xyz: [-2.286, 2.96, 1.8]`).
     * Orientation (e.g. :yaml:`rpy: [pi, pi/2, 0]`). The orientation is defined using the `roll-pitch-yaw <https://en.wikipedia.org/wiki/Euler_angles>`_ convention. The orientation is defined in radians and can be defined using floating-point values or with the :yaml:`pi` constant (:yaml:`pi`, :yaml:`pi/2`, :yaml:`pi/4`, etc.).

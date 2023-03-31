@@ -51,6 +51,14 @@ pygments_style = 'tango'
 rst_prolog = """
  .. include:: <s5defs.txt>
  
+ .. role:: topic
+    :color: red
+    
+ .. role:: yamlname(code)
+    :language: yaml
+    :class: highlight
+    :color: #729fcf
+    
  .. role:: yaml(code)
     :language: yaml
     :class: highlight

@@ -14,22 +14,22 @@ A brief description of each tutorial is provided below.
 - :tuto:`Tutorial 1:` :doc:`Create a Competition Package <tutorial_1>`
     
     - Demonstrates how to create a package and start the competition based on the state of the competition
-- :inline-tutorial:`Tutorial 2:` :ref:`Read Data from a Break Beam Sensor <TUTORIAL2>`
+- :tuto:`Tutorial 2:` :doc:`Read Data from a Break Beam Sensor <tutorial_2>`
     
     - Demonstrates how to add a sensor to the sensor configuration file. The sensor is then used to keep track of the number of parts that are spawned on the conveyor belt.
-- :inline-tutorial:`Tutorial 3:` :ref:`Read Data from an Advanced Logical Camera <TUTORIAL3>`
+- :tuto:`Tutorial 3:` :doc:`Read Data from an Advanced Logical Camera <tutorial_3>`
     
     - Demonstrates how to add a logical camera to the sensor configuration file. The tutorial then retrieves information about parts detected by the camera and print the result in the terminal.
-- :inline-tutorial:`Tutorial 4:` :ref:`Read an Order <TUTORIAL4>`
+- :tuto:`Tutorial 4:` :doc:`Read an Order <tutorial_4>`
     
     - Demonstrates how to retrieve published orders and print the result in the terminal. Multiple OOP Python classes are used to store each order and its contents. 
-- :inline-tutorial:`Tutorial 5:` :ref:`Move AGVs to Stations <TUTORIAL5>`
+- :tuto:`Tutorial 5:` :doc:`Move AGVs to Stations <tutorial_5>`
     
     - Demonstrates how to retrieve information from published assembly tasks and move the AGVs to the correct station. Service calls to lock and move AGVs are used in this tutorial.
-- :inline-tutorial:`Tutorial 6:` :ref:`Enable/Disable a Gripper <TUTORIAL6>`
+- :tuto:`Tutorial 6:` :doc:`Enable/Disable a Gripper <tutorial_6>`
     
     - Demonstrates using service calls to activate/deactivate the gripper of the floor robot. 
-- :inline-tutorial:`Tutorial 7:` :ref:`Move Robots with MoveIt <TUTORIAL7>`
+- :tuto:`Tutorial 7:` :doc:`Move Robots with MoveIt <tutorial_7>`
     
     - Demonstrates how to use custom services to move the floor and the ceiling robots to their respective home positions. MoveIt is used in this tutorial. The service clients are implemented in Python while the service servers are hosted in C++.
 
@@ -39,7 +39,7 @@ A brief description of each tutorial is provided below.
 
 .. todo::
 
-  - **Prerequisites:** :ref:`Installing ARIAC <INSTALLATION>`
+  - **Prerequisites:** :doc:`Installing ARIAC <../getting_started/installation>`
   - Clone the package ``ariac_tutorials`` in the workspace ``~/ariac_ws`` by running the following command in the terminal:
 
     .. code-block:: bash

@@ -23,7 +23,7 @@ extensions = [
     "sphinx_copybutton",
     'sphinx.ext.intersphinx',
     'sphinxemoji.sphinxemoji',
-    'hoverxref.extension'
+    'hoverxref.extension',
 ]
 
 hoverxref_roles = [
@@ -49,13 +49,52 @@ templates_path = ['_templates']
 # Make sure the target is unique
 autosectionlabel_prefix_document = True
 
+# intersphinx_mapping = {
+#     'python': ('https://docs.python.org/3/', None),
+#     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
+# }
+
 intersphinx_mapping = {
-    'python': ('https://docs.python.org/3/', None),
+    'readthedocs': ('https://docs.readthedocs.io/en/stable/', None),
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
+    'sympy': ('https://docs.sympy.org/latest/', None),
+    'numpy': ('https://numpy.org/doc/stable/', None),
+    'python': ('https://docs.python.org/3/', None),
+}
+hoverxref_intersphinx = [
+    'readthedocs',
+    'sphinx',
+    'sympy',
+    'numpy',
+    'python',
+]
+hoverxref_intersphinx_types = {
+    'readthedocs': 'modal',
+    'sphinx': 'tooltip',
 }
 intersphinx_disabled_domains = ['std']
-hoverxref_domains = ['intersphinx', 'py', 'std', 'cpp', 'c', 'js', 'html', 'rst']
+
+hoverxref_tooltip_maxwidth = 650
 hoverxref_auto_ref = True
+hoverxref_roles = [
+    'confval',
+    'term',
+]
+hoverxref_role_types = {
+    'hoverxref': 'tooltip',
+    'ref': 'modal',
+    'confval': 'tooltip',
+    'mod': 'modal',
+    'class': 'modal',
+    'obj': 'tooltip',
+}
+hoverxref_domains = [
+    'py',
+    'cite',
+]
+
+
+
 sphinxemoji_style = 'twemoji'
 
 html_theme = 'sphinx_rtd_theme'

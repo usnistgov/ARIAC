@@ -27,10 +27,11 @@ extensions = [
 
 hoverxref_roles = [
     'numref',
-    'ref',
     'confval',
     'setting',
 ]
+
+hoverxref_auto_ref = True
 
 sphinxemoji_style = 'twemoji'
 

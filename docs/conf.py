@@ -29,7 +29,10 @@ hoverxref_roles = [
     'numref',
     'confval',
     'setting',
+    'term',
 ]
+
+hoverxref_domains = [ 'py', 'std', 'cpp', 'c', 'js', 'html', 'rst' ]
 
 hoverxref_auto_ref = True
 

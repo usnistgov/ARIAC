@@ -194,9 +194,13 @@ Bins
             rotation: 0
             flipped: true
 
-The :yamlname:`bins` field can have 8 subfields: :yamlname:`bin1`, :yamlname:`bin2`, :yamlname:`bin3`, :yamlname:`bin4`, :yamlname:`bin5`, :yamlname:`bin6`, :yamlname:`bin7`, and :yamlname:`bin8`. Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on bin slots). The :yamlname:`type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In :numref:`parts-in-bins`, there are 3 pumps and 2 batteries in :yamlname:`bin1` and 6 purple regulators in :yamlname:`bin3`. The way part locations are defined in :yamlname:`bin3` allows for the same part type and color with different orientations and flipped states to be placed in the same bin.
+- The :yamlname:`bins` field can have 8 different :yamlname:`binX` subfields where :yamlname:`X` is the bin number. The bin numbers range from 1 to 8. 
 
-The :yamlname:`color` field describes the part color in a bin. The :yamlname:`slots` field describes the slots in a bin where the part can be found. The :yamlname:`rotation` field describes the rotation of the part in a bin. The :yamlname:`flipped` field describes whether the parts are flipped in a bin. The :yamlname:`flipped` field can be set to :yaml:`true` or :yaml:`false`. If the :yamlname:`flipped` field is not defined, the parts will not be flipped. In the provided example, all red pumps in bin1 are flipped and all the blue batteries in :yamlname:`bin1` are not flipped. See :doc:`challenges` for more information about flipped parts.
+    - Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on bin slots). 
+    - The :yamlname:`type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In :numref:`parts-in-bins`, there are 3 pumps and 2 batteries in :yamlname:`bin1` and 6 purple regulators in :yamlname:`bin3`. The way part locations are defined in :yamlname:`bin3` allows for the same part type and color with different orientations and flipped states to be placed in the same bin.
+    - The :yamlname:`color` field describes the part color in a bin. 
+    - The :yamlname:`slots` field describes the slots in a bin where the part can be found. - The :yamlname:`rotation` field describes the rotation of the part in a bin. 
+    - The :yamlname:`flipped` field describes whether the parts are flipped in a bin. In the provided example, all red pumps in :yamlname:`bin1` are flipped and all the blue batteries in :yamlname:`bin1` are not flipped. See :ref:`Flipped Parts <FLIPPED_PARTS>` for more information about flipped parts.
 
 Automated Guided Vehicles (AGVs)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -213,7 +217,7 @@ In trials where assembly is required, the environment starts with parts already 
         - The :yamlname:`color` field describes the part color on the AGV. 
         - The :yamlname:`quadrant` field describes the quadrant of the AGV where the part is located. 
         - The :yamlname:`rotation` field describes the rotation of the part on the AGV. 
-        - The :yamlname:`flipped` field describes whether the part is flipped on the AGV. The :yamlname:`flipped` field can be set to :yaml:`true` or :yaml:`false`. If the :yamlname:`flipped` field is not defined, the parts will not be flipped. See the :ref:`Flipped Parts <FLIPPED_PARTS>` challenge for more information about flipped parts. :numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
+        - The :yamlname:`flipped` field describes whether the part is flipped on the AGV. :numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
 
 .. note:: 
     In all trials, AGVs are always located at their respective kitting stations. Competitors have to move the AGVs to the assembly station to assemble the parts.

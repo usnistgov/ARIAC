@@ -195,11 +195,11 @@ Bins
             flipped: true
 
 - The :yamlname:`bins` field can have 8 different :yamlname:`binX` subfields where :yamlname:`X` is the bin number. The bin numbers range from 1 to 8. 
-
-    - Each bin has 9 slots. The slots are numbered from 1 to 9 (see :doc:`environment.md`  for more information on bin slots). 
+ 
     - The :yamlname:`type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In :numref:`parts-in-bins`, there are 3 pumps and 2 batteries in :yamlname:`bin1` and 6 purple regulators in :yamlname:`bin3`. The way part locations are defined in :yamlname:`bin3` allows for the same part type and color with different orientations and flipped states to be placed in the same bin.
     - The :yamlname:`color` field describes the part color in a bin. 
-    - The :yamlname:`slots` field describes the slots in a bin where the part can be found. - The :yamlname:`rotation` field describes the rotation of the part in a bin. 
+    - The :yamlname:`slots` field describes the slots in a bin where the part can be found. Each bin has 9 slots. The slots are numbered from 1 to 9 (see :doc:`environment.md`  for more information on bin slots).
+    - The :yamlname:`rotation` field describes the rotation of the part in a bin. 
     - The :yamlname:`flipped` field describes whether the parts are flipped in a bin. In the provided example, all red pumps in :yamlname:`bin1` are flipped and all the blue batteries in :yamlname:`bin1` are not flipped. See :ref:`Flipped Parts <FLIPPED_PARTS>` for more information about flipped parts.
 
 Automated Guided Vehicles (AGVs)
@@ -289,3 +289,16 @@ The conveyor belt is the third location where parts can be found.
             flipped: true
             rotation: 'pi/3'
                 
+- The top level field :yamlname:`conveyor_belt` specifies the parameters for the conveyor belt.
+
+    - The :yamlname:`active` field specifies whether the conveyor belt is active. If the conveyor belt is active, parts will spawn on the conveyor belt. If the conveyor belt is not active, no parts will spawn on the conveyor belt.
+    - The :yamlname:`spawn_rate` field specifies the rate at which parts spawn on the conveyor belt. The spawn rate is measured in seconds. In the provided example, parts spawn on the conveyor belt every 3 seconds.
+    - The :yamlname:`order` field specifies the order in which parts spawn on the conveyor belt. The order can be either :yaml:`'random'` or :yaml:`'sequential'`.
+    - The :yamlname:`parts_to_spawn` field specifies the parts that spawn on the conveyor belt. The :yamlname:`parts_to_spawn` field can have multiple part types. In the provided example, there are 2 red batteries, 2 green sensors, 3 blue regulators, and 1 orange pump that spawn on the conveyor belt. 
+    
+        - The :yamlname:`type` field specifies the part type that spawns on the conveyor belt. 
+        - The :yamlname:`color` field specifies the part color that spawns on the conveyor belt. 
+        - The :yamlname:`number` field specifies the number of parts that spawn on the conveyor belt. 
+        - The :yamlname:`offset` field specifies the offset of the parts that spawn on the conveyor belt. The offset is measured in meters and ranges from -1 to 1. The offset is the distance between the center of the part and the center of the conveyor belt. In the provided example, the red batteries spawn 0.15 meters to the left of the center of the conveyor belt, the green sensors spawn 0.1 meters to the right of the center of the conveyor belt, the blue regulators spawn 0.2 meters to the left of the center of the conveyor belt, and the orange pump spawns 0.15 meters to the right of the center of the conveyor belt. 
+        - The :yamlname:`flipped` field specifies whether the parts that spawn on the conveyor belt are flipped. 
+        - The :yamlname:`rotation` field specifies the rotation of the parts that spawn on the conveyor belt.

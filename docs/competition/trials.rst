@@ -1,7 +1,7 @@
 Configuration Files
 ==============================
 
-Configuration files are described in the YAML format. YAML is a human-readable data serialization format. It is commonly used for configuration files and in applications where data is being stored or transmitted. For more information on YAML, see the :hoverxref:`YAML website <http://yaml.org/>`.
+Configuration files are described in the YAML format. YAML is a human-readable data serialization format. It is commonly used for configuration files and in applications where data is being stored or transmitted. For more information on YAML, see the `YAML website <http://yaml.org/>`_.
 
 ARIAC consists of two main configuration files, which are described below in the following subsections.
 

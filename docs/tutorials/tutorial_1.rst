@@ -19,8 +19,7 @@ Tutorial 1: Create a Competition Package
             cd ~/ariac_ws/src/ariac_tutorials
             git switch tutorial_1
 
-This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. 
-This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
+This tutorial details the steps necessary to create a competition package that is able to interface with the ARIAC competition. This competition package will use a python node to listen to the competition state and call a ROS service to start the competition when ready.
 
 
 Package Structure
@@ -47,7 +46,7 @@ The following sections will show the modified files in the package with highligh
 Competition Interface
 ---------------------
 
-The competition interface for :tuto:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the CompetitionInterface class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (ariac_tutorials).   
+The competition interface for :tuto:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the CompetitionInterface class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (:file:`ariac_tutorials`).   
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -171,14 +170,14 @@ Code Explanation
 
 - Instance Variables
 
-    - :python:`self._start_competition_client` ROS client for the service :service:`/ariac/start_competition`.
+    - :python:`self._start_competition_client` ROS client for the service :rosservice:`/ariac/start_competition`.
     - :python:`self._competition_state_sub` ROS subscriber for the topic :topic:`/ariac/competition_state`.
     - :python:`self._competition_state` a variable to store the current competition state.
 
 - Instance Methods
 
     - :python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :topic:`/ariac/competition_state`. This method stores the competition state in the variable :python:`_competition_state`.
-    - :python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :python:`_competition_state` and then calls the service :service:`/ariac/start_competition` through the client :python:`_start_competition_client`.
+    - :python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :python:`_competition_state` and then calls the service :rosservice:`/ariac/start_competition` through the client :python:`_start_competition_client`.
 
 
 Executable
@@ -187,7 +186,7 @@ Executable
 The entry point to the node is located in the executable :file:`tutorial_1.py`. Each tutorial will have a separate executable but will share the same interface. 
 
 .. code-block:: python
-    :caption: tutorial_1.py
+    :caption: :file:`tutorial_1.py`
     
     #!/usr/bin/env python3
     '''

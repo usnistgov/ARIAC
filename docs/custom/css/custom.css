@@ -36,6 +36,13 @@ button.copybtn {
     font-weight: bold;
 }
 
+.tuto {
+    color: #b928d2 !important;
+    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-style:  italic;
+}
+
 
 /* code.literal {
     color: #404040 !important;

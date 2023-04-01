@@ -7,6 +7,10 @@ build:
 
 python:
   install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
     - requirements: requirements.txt
 
 sphinx:

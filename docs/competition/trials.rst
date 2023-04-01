@@ -1,7 +1,7 @@
 Configuration Files
 ==============================
 
-Configuration files are described in the YAML format. YAML is a human-readable data serialization format. It is commonly used for configuration files and in applications where data is being stored or transmitted. For more information on YAML, see the `YAML website <http://yaml.org/>`_.
+Configuration files are described in the YAML format. YAML is a human-readable data serialization format. It is commonly used for configuration files and in applications where data is being stored or transmitted. For more information on YAML, see the :hoverxref:`YAML website <http://yaml.org/>`.
 
 ARIAC consists of two main configuration files, which are described below in the following subsections.
 
@@ -295,7 +295,7 @@ The conveyor belt is the third location where parts can be found.
     - The :yamlname:`spawn_rate` field specifies the rate at which parts spawn on the conveyor belt. The spawn rate is measured in seconds. In the provided example, parts spawn on the conveyor belt every 3 seconds.
     - The :yamlname:`order` field specifies the order in which parts spawn on the conveyor belt. The order can be either :yaml:`'random'` or :yaml:`'sequential'`.
     - The :yamlname:`parts_to_spawn` field specifies the parts that spawn on the conveyor belt. The :yamlname:`parts_to_spawn` field can have multiple part types. In the provided example, there are 2 red batteries, 2 green sensors, 3 blue regulators, and 1 orange pump that spawn on the conveyor belt. 
-    
+
         - The :yamlname:`type` field specifies the part type that spawns on the conveyor belt. 
         - The :yamlname:`color` field specifies the part color that spawns on the conveyor belt. 
         - The :yamlname:`number` field specifies the number of parts that spawn on the conveyor belt. 

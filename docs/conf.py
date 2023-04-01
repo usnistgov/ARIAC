@@ -29,14 +29,11 @@ hoverxref_roles = [
     'numref',
     'confval',
     'setting',
+    "doc",
     'term',
 ]
 
-hoverxref_domains = ['intersphinx', 'py', 'std', 'cpp', 'c', 'js', 'html', 'rst']
 
-hoverxref_auto_ref = True
-
-sphinxemoji_style = 'twemoji'
 
 # use language set by highlight directive if no language is set by role
 inline_highlight_respect_highlight = False
@@ -56,6 +53,9 @@ intersphinx_mapping = {
     'sphinx': ('https://www.sphinx-doc.org/en/master/', None),
 }
 intersphinx_disabled_domains = ['std']
+hoverxref_domains = ['intersphinx', 'py', 'std', 'cpp', 'c', 'js', 'html', 'rst']
+hoverxref_auto_ref = True
+sphinxemoji_style = 'twemoji'
 
 html_theme = 'sphinx_rtd_theme'
 

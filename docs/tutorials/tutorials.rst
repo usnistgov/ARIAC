@@ -11,7 +11,7 @@ The code for tutorials can be found in a `GitHub repository <https://github.com/
 
 A brief description of each tutorial is provided below.
 
-- :tuto:`Tutorial 1:` :doc:`Create a Competition Package </docs/tutorials/tutorial_1>`
+- :tuto:`Tutorial 1:` :doc:`Create a Competition Package <tutorial_1>`
     
     - Demonstrates how to create a package and start the competition based on the state of the competition
 - :inline-tutorial:`Tutorial 2:` :ref:`Read Data from a Break Beam Sensor <TUTORIAL2>`

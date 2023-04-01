@@ -24,7 +24,7 @@ Terminology
 
     Trial
       Each run of the competition is called a trial. The configuration for that trial is defined by a configuration file (YAML). :term:`Competitors<Competitor>` do not and must not directly read trial files but needs to use topics and services provided by the competition environment. More information on how to use the competition environment can be found in the 
-      :doc:`Communication Overview</competition/ros_communication>`.
+      :doc:`ros_communication`.
 
     Part
       Parts are used during pick-and-place operations. There are four available parts (battery, pump, regulator, and sensor) and each part can be one of five possible colors (red, green, blue, orange, and purple).

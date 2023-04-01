@@ -201,7 +201,19 @@ The :yamlname:`color` field describes the part color in a bin. The :yamlname:`sl
 Automated Guided Vehicles (AGVs)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-In trials where assembly is required, the environment starts with parts already located on the AGVs. The field :yamlname:`agvs` specifies each AGV in the environment that has parts located on their back at the start of the simulation. The :yamlname:`agvs` field can have 4 subfields: :yamlname:`agv1`, :yamlname:`agv2`, :yamlname:`agv3`, and :yamlname:`agv4`. Each one of these subfields contains a tray ID and a list of parts. The :yamlname:`tray_id` field describes the tray ID located on the AGV. By convention, tray IDs located on AGVs at the start of the environment are 0. The :yamlname:`parts` field describes the parts on the AGV. The :yamlname:`type` field describes the part type on the AGV. The :yamlname:`color` field describes the part color on the AGV. The :yamlname:`quadrant` field describes the quadrant of the AGV where the part is located. The :yamlname:`rotation` field describes the rotation of the part on the AGV. The :yamlname:`flipped` field describes whether the part is flipped on the AGV. The :yamlname:`flipped` field can be set to :yaml:`true` or :yaml:`false`. If the :yamlname:`flipped` field is not defined, the parts will not be flipped. See the `Flipped Parts <FLIPPED_PARTS>` challenge for more information about flipped parts. :numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
+In trials where assembly is required, the environment starts with parts already located on the AGVs. 
+
+- The field :yamlname:`agvs` specifies each AGV in the environment that has parts located on their back at the start of the simulation. 
+
+    - The :yamlname:`agvs` field can have 4 subfields: :yamlname:`agv1`, :yamlname:`agv2`, :yamlname:`agv3`, and :yamlname:`agv4`. Each one of these subfields contains a tray ID and a list of parts. 
+    - The :yamlname:`tray_id` field describes the tray ID located on the AGV. By convention, tray IDs located on AGVs at the start of the environment are 0. 
+    - The :yamlname:`parts` field describes the parts on the AGV. 
+    
+        - The :yamlname:`type` field describes the part type on the AGV. 
+        - The :yamlname:`color` field describes the part color on the AGV. 
+        - The :yamlname:`quadrant` field describes the quadrant of the AGV where the part is located. 
+        - The :yamlname:`rotation` field describes the rotation of the part on the AGV. 
+        - The :yamlname:`flipped` field describes whether the part is flipped on the AGV. The :yamlname:`flipped` field can be set to :yaml:`true` or :yaml:`false`. If the :yamlname:`flipped` field is not defined, the parts will not be flipped. See the `Flipped Parts <FLIPPED_PARTS>` challenge for more information about flipped parts. :numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
 
 .. note:: 
     In all trials, AGVs are always located at their respective kitting stations. Competitors have to move the AGVs to the assembly station to assemble the parts.

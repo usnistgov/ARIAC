@@ -185,6 +185,11 @@ Services
      - `ChangeGripper.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/ChangeGripper.srv>`_
      - Change the type of {robot}'s gripper to the request type
 
+
+Message and Service Definitions
+-------------------------------
+
+
 ..
     List of service with the service type and a brief description.
 

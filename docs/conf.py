@@ -92,9 +92,8 @@ hoverxref_role_types = {
 #     'cite',
 # ]
 
-# hoverxref_tooltip_maxwidth = 650
+hoverxref_tooltip_maxwidth = 650
 hoverxref_auto_ref = True
-hoverxref_auto_doc = True
 
 
 sphinxemoji_style = 'twemoji'

@@ -2,18 +2,6 @@
 .. _TUTORIAL1:
 
 
-.. only:: builder_html or readthedocs
-
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-bash(code)
-    :language: bash
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
 ****************************************
 Tutorial 1: Create a Competition Package
 ****************************************
@@ -59,7 +47,7 @@ The following sections will show the modified files in the package with highligh
 Competition Interface
 ---------------------
 
-The competition interface for :inline-tutorial:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the CompetitionInterface class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (ariac_tutorials).   
+The competition interface for :tuto:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the CompetitionInterface class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (ariac_tutorials).   
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -172,31 +160,31 @@ Code Explanation
 
 - Imports:
 
-    - :inline-python:`ariac_msgs.msg`: The ROS2 message API for the ARIAC messages.
+    - :python:`ariac_msgs.msg`: The ROS2 message API for the ARIAC messages.
 
-        - :inline-python:`CompetitionState`: The competition state message (defined in  `ariac_msgs/msg/CompetitionState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/CompetitionState.msg>`_ ).
-    - :inline-python:`std_srvs.srv`: The ROS2 service API for the standard services.
+        - :python:`CompetitionState`: The competition state message (defined in  `ariac_msgs/msg/CompetitionState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/CompetitionState.msg>`_ ).
+    - :python:`std_srvs.srv`: The ROS2 service API for the standard services.
 
 - Class Variables
 
-    -  :inline-python:`self._competition_states`: A dictionary used for logging purposes.
+    -  :python:`self._competition_states`: A dictionary used for logging purposes.
 
 - Instance Variables
 
-    - :inline-python:`self._start_competition_client` ROS client for the service :navy:`/ariac/start_competition`.
-    - :inline-python:`self._competition_state_sub` ROS subscriber for the topic :green:`/ariac/competition_state`.
-    - :inline-python:`self._competition_state` a variable to store the current competition state.
+    - :python:`self._start_competition_client` ROS client for the service :service:`/ariac/start_competition`.
+    - :python:`self._competition_state_sub` ROS subscriber for the topic :topic:`/ariac/competition_state`.
+    - :python:`self._competition_state` a variable to store the current competition state.
 
 - Instance Methods
 
-    - :inline-python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :green:`/ariac/competition_state`. This method stores the competition state in the variable :inline-python:`_competition_state`.
-    - :inline-python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :inline-python:`_competition_state` and then calls the service :navy:`/ariac/start_competition` through the client :inline-python:`_start_competition_client`.
+    - :python:`_competition_state_cb(self, msg: CompetitionStateMsg)`: Callback for the topic :topic:`/ariac/competition_state`. This method stores the competition state in the variable :python:`_competition_state`.
+    - :python:`start_competition(self)`: Method to start the competition. This method waits for the competition to be ready by checking the value of :python:`_competition_state` and then calls the service :service:`/ariac/start_competition` through the client :python:`_start_competition_client`.
 
 
 Executable
 ----------
 
-The entry point to the node is located in the executable :inline-file:`tutorial_1.py`. Each tutorial will have a separate executable but will share the same interface. 
+The entry point to the node is located in the executable :file:`tutorial_1.py`. Each tutorial will have a separate executable but will share the same interface. 
 
 .. code-block:: python
     :caption: tutorial_1.py
@@ -230,14 +218,14 @@ Code Explanation
 This executable does the following:
 
     - Initialize the ROS client library.
-    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Create an instance of the class :python:`CompetitionInterface` as a ROS node.
     - Start the competition.
 
 
 Build Instructions
 ------------------
 
-The CMakeLists defines the build instructions that are used for this package when :inline-bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :inline-file:`ariac_tutorials` python module is installed, and the :inline-file:`tutorial_1.py` executable is installed. 
+The CMakeLists defines the build instructions that are used for this package when :bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :file:`ariac_tutorials` python module is installed, and the :file:`tutorial_1.py` executable is installed. 
 
 .. code-block:: cmake
     :caption: CMakeLists.txt

@@ -235,7 +235,7 @@ The final completion score :math:`CompletionScore` combines the kitting, assembl
 
 
 .. admonition:: Completion Score
-  :class: caution
+  :class: tip
   :name: completion-score
 
    .. math::

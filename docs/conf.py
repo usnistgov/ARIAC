@@ -68,7 +68,7 @@ hoverxref_intersphinx = [
     'python',
 ]
 hoverxref_intersphinx_types = {
-    'readthedocs': 'tooltip',
+    'readthedocs': 'modal',
     'sphinx': 'tooltip',
 }
 
@@ -80,7 +80,7 @@ intersphinx_disabled_domains = ['std']
 # ]
 hoverxref_role_types = {
     'hoverxref': 'tooltip',
-    'ref': 'tooltip',
+    'ref': 'modal',
     'confval': 'tooltip',
     'mod': 'modal',
     'class': 'modal',

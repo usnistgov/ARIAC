@@ -2,6 +2,5 @@ myst_parser
 sphinx_copybutton
 sphinxcontrib_inlinesyntaxhighlight
 sphinxemoji
-sphinx_hoverxref
 
 # docutils<0.17

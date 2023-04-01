@@ -23,7 +23,7 @@ extensions = [
     "sphinx_copybutton",
     'sphinx.ext.intersphinx',
     'sphinxemoji.sphinxemoji',
-    'hoverxref.extension',
+   #  'hoverxref.extension',
 ]
 
 hoverxref_roles = [

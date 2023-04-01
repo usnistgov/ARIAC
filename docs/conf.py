@@ -32,7 +32,7 @@ hoverxref_roles = [
     'term',
 ]
 
-hoverxref_domains = [ 'py', 'std', 'cpp', 'c', 'js', 'html', 'rst' ]
+hoverxref_domains = ['intersphinx', 'py', 'std', 'cpp', 'c', 'js', 'html', 'rst']
 
 hoverxref_auto_ref = True
 

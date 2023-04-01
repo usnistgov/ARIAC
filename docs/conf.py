@@ -72,14 +72,15 @@ hoverxref_intersphinx_types = {
     'readthedocs': 'modal',
     'sphinx': 'tooltip',
 }
+
 intersphinx_disabled_domains = ['std']
 
 hoverxref_tooltip_maxwidth = 650
 hoverxref_auto_ref = True
-hoverxref_roles = [
-    'confval',
-    'term',
-]
+# hoverxref_roles = [
+#     'confval',
+#     'term',
+# ]
 hoverxref_role_types = {
     'hoverxref': 'tooltip',
     'ref': 'modal',

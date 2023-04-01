@@ -49,7 +49,7 @@ Competition Interface
 The competition interface for :tuto:`tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the CompetitionInterface class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (:file:`ariac_tutorials`).   
 
 .. code-block:: python
-    :caption: competition_interface.py
+    :caption: :file:`competition_interface.py`
     :name: competitioninterface-tutorial1
 
     import rclpy
@@ -259,7 +259,7 @@ Package Manifest
 The manifest is used for metadata about the ROS package. It is also used by rosdep to ensure all necessary packages are installed. 
 
 .. code-block:: xml
-    :caption: package.xml
+    :caption: :file:`package.xml``
     
     <?xml version="1.0"?>
     <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>

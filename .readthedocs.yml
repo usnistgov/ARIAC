@@ -4,10 +4,6 @@ build:
   os: "ubuntu-20.04"
   tools:
     python: "3.8"
-  jobs: 
-    post_build: 
-    - echo "Command run at 'post_build' step" 
-    - echo `date`
 
 python:
   install:

@@ -86,10 +86,10 @@ hoverxref_role_types = {
     'class': 'modal',
     'obj': 'tooltip',
 }
-hoverxref_domains = [
-    'py',
-    'cite',
-]
+# hoverxref_domains = [
+#     'py',
+#     'cite',
+# ]
 
 hoverxref_tooltip_maxwidth = 650
 hoverxref_auto_ref = True

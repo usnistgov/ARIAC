@@ -17,6 +17,11 @@ Terminology
     Competitor
       Person competing in ARIAC. Sometimes competitor is referred as "team" or "participant".
 
+    Automated Guided Vehicle (AGV)
+      An automated guided vehicle (AGV) is a mobile robot that follows markers or wires in the floor, or uses vision, magnets, or lasers for navigation. AGVs are used to transport :term:`parts<Part>` from one location to another.
+
+
+
     Trial
       Each run of the competition is called a trial. The configuration for that trial is defined by a configuration file (YAML). :term:`Competitors<Competitor>` do not and must not directly read trial files but needs to use topics and services provided by the competition environment. More information on how to use the competition environment can be found in the 
       :doc:`Communication Overview</competition/ros_communication>`.

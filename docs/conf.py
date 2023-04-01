@@ -25,6 +25,13 @@ extensions = [
     'sphinxemoji.sphinxemoji',
 ]
 
+hoverxref_roles = [
+    'numref',
+    'ref',
+    'confval',
+    'setting',
+]
+
 sphinxemoji_style = 'twemoji'
 
 # use language set by highlight directive if no language is set by role

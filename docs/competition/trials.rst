@@ -196,7 +196,7 @@ Bins
 
 - The :yamlname:`bins` field can have 8 different :yamlname:`binX` subfields where :yamlname:`X` is the bin number. The bin numbers range from 1 to 8. 
 
-    - Each bin has 9 slots. The slots are numbered from 1 to 9 (see the [Environment](environment.md) page for more information on bin slots). 
+    - Each bin has 9 slots. The slots are numbered from 1 to 9 (see :doc:`environment.md`  for more information on bin slots). 
     - The :yamlname:`type` field describes the part type in a bin. There can be multiple parts of different types in a bin and multiple parts of the same type. In :numref:`parts-in-bins`, there are 3 pumps and 2 batteries in :yamlname:`bin1` and 6 purple regulators in :yamlname:`bin3`. The way part locations are defined in :yamlname:`bin3` allows for the same part type and color with different orientations and flipped states to be placed in the same bin.
     - The :yamlname:`color` field describes the part color in a bin. 
     - The :yamlname:`slots` field describes the slots in a bin where the part can be found. - The :yamlname:`rotation` field describes the rotation of the part in a bin. 

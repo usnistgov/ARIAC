@@ -213,7 +213,7 @@ In trials where assembly is required, the environment starts with parts already 
         - The :yamlname:`color` field describes the part color on the AGV. 
         - The :yamlname:`quadrant` field describes the quadrant of the AGV where the part is located. 
         - The :yamlname:`rotation` field describes the rotation of the part on the AGV. 
-        - The :yamlname:`flipped` field describes whether the part is flipped on the AGV. The :yamlname:`flipped` field can be set to :yaml:`true` or :yaml:`false`. If the :yamlname:`flipped` field is not defined, the parts will not be flipped. See the `Flipped Parts <FLIPPED_PARTS>` challenge for more information about flipped parts. :numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
+        - The :yamlname:`flipped` field describes whether the part is flipped on the AGV. The :yamlname:`flipped` field can be set to :yaml:`true` or :yaml:`false`. If the :yamlname:`flipped` field is not defined, the parts will not be flipped. See the :ref:`Flipped Parts <FLIPPED_PARTS>` challenge for more information about flipped parts. :numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
 
 .. note:: 
     In all trials, AGVs are always located at their respective kitting stations. Competitors have to move the AGVs to the assembly station to assemble the parts.

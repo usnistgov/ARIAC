@@ -13,6 +13,7 @@ version = '0.1.0'
 # -- General configuration
 
 extensions = [
+    'hoverxref.extension',
     'myst_parser',
     'sphinx.ext.mathjax',
     'sphinx_rtd_theme',
@@ -22,8 +23,7 @@ extensions = [
     "myst_parser",
     "sphinx_copybutton",
     'sphinx.ext.intersphinx',
-    'sphinxemoji.sphinxemoji',
-    'hoverxref.extension',
+    'sphinxemoji.sphinxemoji'
 ]
 
 

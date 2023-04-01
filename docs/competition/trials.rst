@@ -217,7 +217,9 @@ In trials where assembly is required, the environment starts with parts already 
         - The :yamlname:`color` field describes the part color on the AGV. 
         - The :yamlname:`quadrant` field describes the quadrant of the AGV where the part is located. 
         - The :yamlname:`rotation` field describes the rotation of the part on the AGV. 
-        - The :yamlname:`flipped` field describes whether the part is flipped on the AGV. :numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
+        - The :yamlname:`flipped` field describes whether the part is flipped on the AGV. 
+        
+:numref:`parts-on-agvs` shows an example of how to start the simulation with 2 parts located on AGV 4.
 
 .. note:: 
     In all trials, AGVs are always located at their respective kitting stations. Competitors have to move the AGVs to the assembly station to assemble the parts.
@@ -241,3 +243,49 @@ In trials where assembly is required, the environment starts with parts already 
                 color: 'green'
                 quadrant: 3
                 rotation: 'pi'
+
+
+Conveyor Belt
+^^^^^^^^^^^^^^^^
+
+The conveyor belt is the third location where parts can be found. 
+
+- Parts on the conveyor belt travel at a constant speed of 0.2 m/s. 
+- When a part reaches the end of the conveyor belt, it is removed from the environment.
+
+:numref:`parts-on-conveyor` shows an example of how to spawn parts on the conveyor belt.
+
+.. code-block:: yaml
+      :caption: Parts on the conveyor belt.
+      :name: parts-on-conveyor
+
+      conveyor_belt: 
+        active: true
+        spawn_rate: 3.0 
+        order: 'random' 
+        parts_to_spawn:
+        - type: 'battery'
+            color: 'red'
+            number: 2
+            offset: 0.15 # between -1 and 1
+            flipped: false
+            rotation: 'pi/6'
+        - type: 'sensor'
+            color: 'green'
+            number: 2
+            offset: 0.1 # between -1 and 1
+            flipped: true
+            rotation: 'pi'
+        - type: 'regulator'
+            color: 'blue'
+            number: 3
+            offset: -0.2 # between -1 and 1
+            flipped: false
+            rotation: 'pi/2'
+        - type: 'pump'
+            color: 'orange'
+            number: 1
+            offset: -0.15 # between -1 and 1
+            flipped: true
+            rotation: 'pi/3'
+                

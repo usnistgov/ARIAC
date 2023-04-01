@@ -26,15 +26,6 @@ extensions = [
    #  'hoverxref.extension',
 ]
 
-hoverxref_roles = [
-    'numref',
-    'confval',
-    'setting',
-    "doc",
-    'term',
-]
-
-
 
 # use language set by highlight directive if no language is set by role
 inline_highlight_respect_highlight = False
@@ -61,6 +52,14 @@ intersphinx_mapping = {
     'numpy': ('https://numpy.org/doc/stable/', None),
     'python': ('https://docs.python.org/3/', None),
 }
+
+hoverxref_roles = [
+    'numref',
+    'confval',
+    'setting',
+    "doc",
+    'term',
+]
 hoverxref_intersphinx = [
     'readthedocs',
     'sphinx',
@@ -75,8 +74,6 @@ hoverxref_intersphinx_types = {
 
 intersphinx_disabled_domains = ['std']
 
-hoverxref_tooltip_maxwidth = 650
-hoverxref_auto_ref = True
 # hoverxref_roles = [
 #     'confval',
 #     'term',
@@ -94,10 +91,11 @@ hoverxref_domains = [
     'cite',
 ]
 
+hoverxref_tooltip_maxwidth = 650
+hoverxref_auto_ref = True
 
 
 sphinxemoji_style = 'twemoji'
-
 html_theme = 'sphinx_rtd_theme'
 
 # The name of the Pygments (syntax highlighting) style to use.

@@ -224,7 +224,7 @@ This executable does the following:
 Build Instructions
 ------------------
 
-The CMakeLists defines the build instructions that are used for this package when :bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :file:`ariac_tutorials` python module is installed, and the :file:`tutorial_1.py` executable is installed. 
+:file:`CMakeLists.txt` defines the build instructions that are used for this package when :bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :file:`ariac_tutorials` python module is installed, and the :file:`tutorial_1.py` executable is installed. 
 
 .. code-block:: cmake
     :caption: CMakeLists.txt

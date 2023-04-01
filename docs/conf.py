@@ -125,7 +125,7 @@ rst_prolog = """
     :language: console
     :class: highlight
     
- .. role:: bash(code)
+ .. role:: bash
     :language: bash
     :class: highlight
 

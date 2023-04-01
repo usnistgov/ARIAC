@@ -112,7 +112,7 @@ Kitting Task Score
         0, &\text{otherwise} \\
         \end{cases}
 
-.. admonition:: Task Score
+.. admonition:: Kitting Task Score
   :class: tip
   :name: task-score
 
@@ -164,7 +164,7 @@ Assembly Task Score
         0, &\text{otherwise} \\
         \end{cases}
 
-.. admonition:: Task Score
+.. admonition:: Assembly Task Score
   :class: tip
   :name: task-score-assembly
 
@@ -218,7 +218,7 @@ Combined Task Score
         0, &\text{otherwise} \\
         \end{cases}
 
-.. admonition:: Task Score
+.. admonition:: Combined Task Score
   :class: tip
   :name: task-score-combined
 

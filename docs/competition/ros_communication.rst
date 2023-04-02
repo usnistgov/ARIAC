@@ -25,55 +25,175 @@ Topics
      - Orders that the CCS should submit
    * - :topic:`/ariac/competition_state`
      - :gray:`ariac_msgs/msg/CompetitionState` 
-     - `CompetitionState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/CompetitionState.msg>`_
+     - :term:`CompetitionState.msg`
      - Current state of the competition 
    * - :topic:`/ariac/bin_parts`
      - :gray:`ariac_msgs/msg/BinParts` 
-     - `BinParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BinParts.msg>`_
+     - :term:`BinParts.msg`
      - Part information in each bin at program start-up 
    * - :topic:`/ariac/conveyor_parts`
      - :gray:`ariac_msgs/msg/ConveyorParts`
-     - `ConveyorParts.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorParts.msg>`_
+     - :term:`ConveyorParts.msg`
      - Parts that will come on the conveyor belt 
    * - :topic:`/ariac/agv{n}_status`
      - :gray:`ariac_msgs/msg/AGVStatus`
-     - `AGVStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AGVStatus.msg>`_
+     - :term:`AGVStatus.msg`
      - State of the AGV {n} (location, position, velocity)
    * - :topic:`/ariac/{robot}_gripper_state`
      - :gray:`ariac_msgs/msg/VacuumGripperState`
-     - `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_
+     - :term:`VacuumGripperState.msg`
      - State of {robot}'s gripper (enabled, attached, type)
    * - :topic:`/ariac/conveyor_state`
      - :gray:`ariac_msgs/msg/ConveyorBeltState`
-     - `ConveyorBeltState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/ConveyorBeltState.msg>`_
+     - :term:`ConveyorBeltState.msg`
      - State of the conveyor (enabled, power)
    * - :topic:`/ariac/robot_health`
      - :gray:`ariac_msgs/msg/Robots`
-     - `Robots.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Robots.msg>`_
+     - :term:`Robots.msg`
      - Health of the robots (enabled or disabled)
    * - :topic:`/ariac/sensor_health`
      - :gray:`ariac_msgs/msg/Sensors`
-     - `Sensors.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Sensors.msg>`_
+     - :term:`Sensors.msg`
      - Health of the sensors (enabled or disabled)
    * - :topic:`/ariac_human/state`
      - :gray:`ariac_msgs/msg/HumanState`
-     - `Humanstate.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/HumanState.msg>`_
+     - :term:`Humanstate.msg`
      - Position and velocity of the human and the ceiling robot
+                              |
 
-..
-    List of topics with the message type and a brief description.
+Message Definitions
+^^^^^^^^^^^^^^^^^^^
 
-    | Topic Name                     | MSG type                            | Description                                          |
-    | ---                            | ---                                 | ---                                                  | 
-    | `/ariac/orders`                | `ariac_msgs/msg/Order`              | Orders that the competitors should submit            |
-    | `/ariac/competition_state`     | `ariac_msgs/msg/CompetitionState`   | Current state of the competition                     | 
-    | `/ariac/bin_parts`             | `ariac_msgs/msg/BinParts`           | Parts in each bin at program start-up                |
-    | `/ariac/conveyor_parts`        | `ariac_msgs/msg/ConveyorParts`      | Parts that will come on the conveyor belt            |
-    | `/ariac/agv{n}_status`         | `ariac_msgs/msg/AGVStatus`          | State of the AGV {n} (location, position, velocity)  |
-    | `/ariac/{robot}_gripper_state` | `ariac_msgs/msg/VacuumGripperState` | State of {robot}'s gripper (enabled, attached, type) |
-    | `/ariac/conveyor_state`        | `ariac_msgs/msg/ConveyorBeltState`  | State of the conveyor (enabled, power)               |
-    | `/ariac/robot_health`          | `ariac_msgs/msg/Robots`             | Health of the robots                                 |
-    | `/ariac/sensor_health`         | `ariac_msgs/msg/Sensors`            | Health of the sensors                                |
+
+.. glossary::
+    :sorted:
+
+    Order.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY=1
+        uint8 COMBINED=2
+
+        string id
+        uint8 type # KITTING, ASSEMBLY, or COMBINED
+        bool priority
+        ariac_msgs/KittingTask kitting_task 
+        ariac_msgs/AssemblyTask assembly_task
+        ariac_msgs/CombinedTask combined_task
+
+    CompetitionState.msg
+      .. code-block:: text
+        
+        uint8 IDLE=0   
+        uint8 READY=1  
+        uint8 STARTED=2 
+        uint8 ORDER_ANNOUNCEMENTS_DONE=3 
+        uint8 ENDED=4 
+
+        uint8 competition_state
+
+    BinParts.msg
+      .. code-block:: text
+        
+        ariac_msgs/BinInfo[] bins
+
+
+    ConveyorParts.msg
+      .. code-block:: text
+        
+        ariac_msgs/PartLot[] parts
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+    VacuumGripperState.msg
+      .. code-block:: text
+
+        bool enabled # is the suction enabled?
+        bool attached # is an object attached to the gripper?
+        string type # type of the gripper
+
+    ConveyorBeltState.msg
+      .. code-block:: text
+
+        float64 power
+        bool enabled  
+
+    Robots.msg
+      .. code-block:: text
+
+        bool floor_robot
+        bool ceiling_robot
+
+    Sensors.msg
+      .. code-block:: text
+
+        bool break_beam
+        bool proximity
+        bool laser_profiler
+        bool lidar
+        bool camera
+        bool logical_camera
+
+    HumanState.msg
+      .. code-block:: text
+
+        geometry_msgs/Point human_position
+        geometry_msgs/Point robot_position
+        geometry_msgs/Vector3 human_velocity
+        geometry_msgs/Vector3 robot_velocity
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+
 
 Sensor Topics
 -------------
@@ -222,6 +342,104 @@ Message and Service Definitions
       .. code-block:: text
         
         ariac_msgs/BinInfo[] bins
+
+
+    ConveyorParts.msg
+      .. code-block:: text
+        
+        ariac_msgs/PartLot[] parts
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+    VacuumGripperState.msg
+      .. code-block:: text
+
+        bool enabled # is the suction enabled?
+        bool attached # is an object attached to the gripper?
+        string type # type of the gripper
+
+    ConveyorBeltState.msg
+      .. code-block:: text
+
+        float64 power
+        bool enabled  
+
+    Robots.msg
+      .. code-block:: text
+
+        bool floor_robot
+        bool ceiling_robot
+
+    Sensors.msg
+      .. code-block:: text
+
+        bool break_beam
+        bool proximity
+        bool laser_profiler
+        bool lidar
+        bool camera
+        bool logical_camera
+
+    HumanState.msg
+      .. code-block:: text
+
+        geometry_msgs/Point human_position
+        geometry_msgs/Point robot_position
+        geometry_msgs/Vector3 human_velocity
+        geometry_msgs/Vector3 robot_velocity
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+    AGVStatus.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY_FRONT=1
+        uint8 ASSEMBLY_BACK=2
+        uint8 WAREHOUSE=3
+        uint8 UNKNOWN=99
+
+        int8 location
+        float64 position
+        float64 velocity
+
+
+    
 
 
 ..

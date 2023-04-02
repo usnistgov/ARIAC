@@ -17,174 +17,40 @@ Topics
 
    * - Topic Name
      - Message Type
-     - Message Definition
      - Description 
    * - :topic:`/ariac/orders` 
-     - :gray:`ariac_msgs/msg/Order`
-     - :term:`Order.msg`
+     - :term:`ariac_msgs/msg/Order`
      - Orders that the CCS should submit
    * - :topic:`/ariac/competition_state`
-     - :gray:`ariac_msgs/msg/CompetitionState` 
-     - :term:`CompetitionState.msg`
+     - :term:`ariac_msgs/msg/CompetitionState`
      - Current state of the competition 
    * - :topic:`/ariac/bin_parts`
-     - :gray:`ariac_msgs/msg/BinParts` 
-     - :term:`BinParts.msg`
+     - :term:`ariac_msgs/msg/BinParts`
      - Part information in each bin at program start-up 
    * - :topic:`/ariac/conveyor_parts`
-     - :gray:`ariac_msgs/msg/ConveyorParts`
-     - :term:`ConveyorParts.msg`
+     - :term:`ariac_msgs/msg/ConveyorParts`
      - Parts that will come on the conveyor belt 
    * - :topic:`/ariac/agv{n}_status`
-     - :gray:`ariac_msgs/msg/AGVStatus`
-     - :term:`AGVStatus.msg`
+     - :term:`ariac_msgs/msg/AGVStatus`
      - State of the AGV {n} (location, position, velocity)
    * - :topic:`/ariac/{robot}_gripper_state`
-     - :gray:`ariac_msgs/msg/VacuumGripperState`
-     - :term:`VacuumGripperState.msg`
+     - :term:`ariac_msgs/msg/VacuumGripperState`
      - State of {robot}'s gripper (enabled, attached, type)
    * - :topic:`/ariac/conveyor_state`
-     - :gray:`ariac_msgs/msg/ConveyorBeltState`
-     - :term:`ConveyorBeltState.msg`
+     - :term:`ariac_msgs/msg/ConveyorBeltState`
      - State of the conveyor (enabled, power)
    * - :topic:`/ariac/robot_health`
-     - :gray:`ariac_msgs/msg/Robots`
-     - :term:`Robots.msg`
+     - :term:`ariac_msgs/msg/Robots`
      - Health of the robots (enabled or disabled)
    * - :topic:`/ariac/sensor_health`
-     - :gray:`ariac_msgs/msg/Sensors`
-     - :term:`Sensors.msg`
+     - :term:`ariac_msgs/msg/Sensors`
      - Health of the sensors (enabled or disabled)
    * - :topic:`/ariac_human/state`
-     - :gray:`ariac_msgs/msg/HumanState`
-     - :term:`Humanstate.msg`
+     - :term:`ariac_msgs/msg/HumanState`
      - Position and velocity of the human and the ceiling robot
                               |
 
-Message Definitions
-^^^^^^^^^^^^^^^^^^^
 
-
-.. glossary::
-    :sorted:
-
-    Order.msg
-      .. code-block:: text
-
-        uint8 KITTING=0
-        uint8 ASSEMBLY=1
-        uint8 COMBINED=2
-
-        string id
-        uint8 type # KITTING, ASSEMBLY, or COMBINED
-        bool priority
-        ariac_msgs/KittingTask kitting_task 
-        ariac_msgs/AssemblyTask assembly_task
-        ariac_msgs/CombinedTask combined_task
-
-    CompetitionState.msg
-      .. code-block:: text
-        
-        uint8 IDLE=0   
-        uint8 READY=1  
-        uint8 STARTED=2 
-        uint8 ORDER_ANNOUNCEMENTS_DONE=3 
-        uint8 ENDED=4 
-
-        uint8 competition_state
-
-    BinParts.msg
-      .. code-block:: text
-        
-        ariac_msgs/BinInfo[] bins
-
-
-    ConveyorParts.msg
-      .. code-block:: text
-        
-        ariac_msgs/PartLot[] parts
-
-    AGVStatus.msg
-      .. code-block:: text
-
-        uint8 KITTING=0
-        uint8 ASSEMBLY_FRONT=1
-        uint8 ASSEMBLY_BACK=2
-        uint8 WAREHOUSE=3
-        uint8 UNKNOWN=99
-
-        int8 location
-        float64 position
-        float64 velocity
-
-    VacuumGripperState.msg
-      .. code-block:: text
-
-        bool enabled # is the suction enabled?
-        bool attached # is an object attached to the gripper?
-        string type # type of the gripper
-
-    ConveyorBeltState.msg
-      .. code-block:: text
-
-        float64 power
-        bool enabled  
-
-    Robots.msg
-      .. code-block:: text
-
-        bool floor_robot
-        bool ceiling_robot
-
-    Sensors.msg
-      .. code-block:: text
-
-        bool break_beam
-        bool proximity
-        bool laser_profiler
-        bool lidar
-        bool camera
-        bool logical_camera
-
-    HumanState.msg
-      .. code-block:: text
-
-        geometry_msgs/Point human_position
-        geometry_msgs/Point robot_position
-        geometry_msgs/Vector3 human_velocity
-        geometry_msgs/Vector3 robot_velocity
-
-    Part.msg
-      .. code-block:: text
-        
-        # part color
-        uint8 RED=0
-        uint8 GREEN=1
-        uint8 BLUE=2
-        uint8 ORANGE=3
-        uint8 PURPLE=4
-
-        # part type
-        uint8 BATTERY=10
-        uint8 PUMP=11
-        uint8 SENSOR=12
-        uint8 REGULATOR=13
-
-        uint8 color
-        uint8 type
-
-    PartPose.msg
-      .. code-block:: text
-        
-        ariac_msgs/Part part
-        geometry_msgs/Pose pose
-
-    AdvancedLogicalCameraImage.msg
-      .. code-block:: text
-        
-        ariac_msgs/PartPose[] part_poses
-        ariac_msgs/KitTrayPose[] tray_poses
-        geometry_msgs/Pose sensor_pose
 
 Sensor Topics
 -------------
@@ -197,47 +63,36 @@ Sensor Topics
    * - Sensor Type
      - Topic Name
      - Message Type 
-     - Message Definition
    * - break_beam
      - :topic:`/ariac/sensors/{sensor_name}/change`
-     - :gray:`ariac_msgs/BreakBeamStatus`
-     - `BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_
+     - :term:`ariac_msgs/msg/BreakBeamStatus`
    * - 
      - :topic:`/ariac/sensors/{sensor_name}/status`
-     - :gray:`ariac_msgs/BreakBeamStatus`
-     - `BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_
+     - :term:`ariac_msgs/msg/BreakBeamStatus`
    * - proximity
      - :topic:`/ariac/sensors/{sensor_name}/scan`
-     - :gray:`sensor_msgs/Range`
-     - `Range.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Range.html>`_
+     - :term:`sensor_msgs/msg/Range`
    * - laser_profiler
      - :topic:`/ariac/sensors/{sensor_name}/scan`
-     - :gray:`sensor_msgs/LaserScan` 
-     - `LaserScan.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/LaserScan.html>`_
+     - :term:`sensor_msgs/msg/LaserScan`
    * - lidar
      - :topic:`/ariac/sensors/{sensor_name}/scan`	
-     - :gray:`sensor_msgs/PointCloud`
-     - `PointCloud.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/PointCloud.html>`_
+     - :term:`sensor_msgs/msg/PointCloud`
    * - rgb_camera
      - :topic:`/ariac/sensors/{sensor_name}/rgb_image`
-     - :gray:`sensor_msgs/Image`
-     - `Image.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Image.html>`_
+     - :term:`sensor_msgs/msg/Image`
    * - rgbd_camera
      - :topic:`/ariac/sensors/{sensor_name}/rgb_image`
-     - :gray:`sensor_msgs/Image`
-     - `Image.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Image.html>`_
+     - :term:`sensor_msgs/msg/Image`
    * - 
      - :topic:`/ariac/sensors/{sensor_name}/depth_image`
-     - :gray:`sensor_msgs/Image`
-     - `Image.msg <https://docs.ros2.org/galactic/api/sensor_msgs/msg/Image.html>`_
+     - :term:`sensor_msgs/msg/Image`
    * - basic_logical_camera
      - :topic:`/ariac/sensors/{sensor_name}/image`
-     - :gray:`ariac_msgs/BasicLogicalCameraImage`
-     - `BasicLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BasicLogicalCameraImage.msg>`_
+     - :term:`ariac_msgs/msg/BasicLogicalCameraImage`
    * - advanced_logical_camera
      - :topic:`/ariac/sensors/{sensor_name}/image`
-     - :gray:`ariac_msgs/AdvancedLogicalCameraImage`
-     - `AdvancedLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`_
+     - :term:`ariac_msgs/msg/AdvancedLogicalCameraImage`
 
 
 
@@ -297,14 +152,15 @@ Services
      - Change the type of {robot}'s gripper to the request type
 
 
-Message and Service Definitions
--------------------------------
+
+Message Definitions
+-------------------
 
 
 .. glossary::
     :sorted:
 
-    Order.msg
+    ariac_msgs/msg/Order
       .. code-block:: text
 
         uint8 KITTING=0
@@ -318,7 +174,7 @@ Message and Service Definitions
         ariac_msgs/AssemblyTask assembly_task
         ariac_msgs/CombinedTask combined_task
 
-    CompetitionState.msg
+    ariac_msgs/msg/CompetitionState
       .. code-block:: text
         
         uint8 IDLE=0   
@@ -329,18 +185,18 @@ Message and Service Definitions
 
         uint8 competition_state
 
-    BinParts.msg
+    ariac_msgs/msg/BinParts
       .. code-block:: text
         
         ariac_msgs/BinInfo[] bins
 
 
-    ConveyorParts.msg
+    ariac_msgs/msg/ConveyorParts
       .. code-block:: text
         
         ariac_msgs/PartLot[] parts
 
-    AGVStatus.msg
+    ariac_msgs/msg/AGVStatus
       .. code-block:: text
 
         uint8 KITTING=0
@@ -353,26 +209,26 @@ Message and Service Definitions
         float64 position
         float64 velocity
 
-    VacuumGripperState.msg
+    ariac_msgs/msg/VacuumGripperState
       .. code-block:: text
 
         bool enabled # is the suction enabled?
         bool attached # is an object attached to the gripper?
         string type # type of the gripper
 
-    ConveyorBeltState.msg
+    ariac_msgs/msg/ConveyorBeltState
       .. code-block:: text
 
         float64 power
         bool enabled  
 
-    Robots.msg
+    ariac_msgs/msg/Robots
       .. code-block:: text
 
         bool floor_robot
         bool ceiling_robot
 
-    Sensors.msg
+    ariac_msgs/msg/Sensors
       .. code-block:: text
 
         bool break_beam
@@ -382,7 +238,7 @@ Message and Service Definitions
         bool camera
         bool logical_camera
 
-    HumanState.msg
+    ariac_msgs/msg/HumanState
       .. code-block:: text
 
         geometry_msgs/Point human_position
@@ -390,76 +246,91 @@ Message and Service Definitions
         geometry_msgs/Vector3 human_velocity
         geometry_msgs/Vector3 robot_velocity
 
-    AGVStatus.msg
+    ariac_msgs/msg/Part
       .. code-block:: text
+        
+        # part color
+        uint8 RED=0
+        uint8 GREEN=1
+        uint8 BLUE=2
+        uint8 ORANGE=3
+        uint8 PURPLE=4
 
-        uint8 KITTING=0
-        uint8 ASSEMBLY_FRONT=1
-        uint8 ASSEMBLY_BACK=2
-        uint8 WAREHOUSE=3
-        uint8 UNKNOWN=99
+        # part type
+        uint8 BATTERY=10
+        uint8 PUMP=11
+        uint8 SENSOR=12
+        uint8 REGULATOR=13
 
-        int8 location
-        float64 position
-        float64 velocity
+        uint8 color
+        uint8 type
 
-    AGVStatus.msg
+    ariac_msgs/msg/PartPose
       .. code-block:: text
+        
+        ariac_msgs/Part part
+        geometry_msgs/Pose pose
 
-        uint8 KITTING=0
-        uint8 ASSEMBLY_FRONT=1
-        uint8 ASSEMBLY_BACK=2
-        uint8 WAREHOUSE=3
-        uint8 UNKNOWN=99
-
-        int8 location
-        float64 position
-        float64 velocity
-
-    AGVStatus.msg
+    ariac_msgs/msg/AdvancedLogicalCameraImage
       .. code-block:: text
+        
+        ariac_msgs/PartPose[] part_poses
+        ariac_msgs/KitTrayPose[] tray_poses
+        geometry_msgs/Pose sensor_pose
 
-        uint8 KITTING=0
-        uint8 ASSEMBLY_FRONT=1
-        uint8 ASSEMBLY_BACK=2
-        uint8 WAREHOUSE=3
-        uint8 UNKNOWN=99
+    ariac_msgs/msg/BreakBeamStatus
+      .. code-block:: text
+        
+        std_msgs/Header header
+        bool object_detected
 
-        int8 location
-        float64 position
-        float64 velocity
+    sensor_msgs/msg/Range
+      .. code-block:: text
+        
+        uint8 ULTRASOUND=0
+        uint8 INFRARED=1
+        std_msgs/msg/Header header
+        uint8 radiation_type
+        float field_of_view
+        float min_range
+        float max_range
+        float range
 
+    sensor_msgs/msg/LaserScan
+      .. code-block:: text
+        
+        std_msgs/msg/Header header
+        float angle_min
+        float angle_max
+        float angle_increment
+        float time_increment
+        float scan_time
+        float range_min
+        float range_max
+        float[] ranges
+        float[] intensities
 
-    
+    sensor_msgs/msg/PointCloud
+      .. code-block:: text
+        
+        std_msgs/msg/Header header
+        geometry_msgs/msg/Point32[] points
+        sensor_msgs/msg/ChannelFloat32[] channels
 
+    sensor_msgs/msg/Image
+      .. code-block:: text
+        
+        std_msgs/msg/Header header
+        uint32 height
+        uint32 width
+        string encoding
+        uint8 is_bigendian
+        uint32 step
+        uint8[] data
 
-..
-    List of service with the service type and a brief description.
-
-    | Service Name                    | SRV type                              | Description                                                        |
-    | ---                             | ---                                   | ---                                                                | 
-    | `/ariac/start_competition`      | `std_srvs/srv/Trigger`                | Start the competition                                              |
-    | `/ariac/end_competition`        | `std_srvs/srv/Trigger`                | End the competition                                                | 
-    | `/ariac/submit_order`           | `ariac_msgs/srv/SubmitOrder`          | Submit an order with the requested `order_id`                      |
-    | `/ariac/perform_quality_check`  | `ariac_msgs/srv/PerformQualityCheck`  | Check the quality of a kitting order with the requested `order_id` |
-    | `/ariac/move_agv{n}`            | `ariac_msgs/srv/MoveAGV`              | Move the AGV {n} to the requested location                         |
-    | `/ariac/agv{n}_lock_tray`       | `std_srvs/srv/Trigger`                | Lock a kit tray to AGV {n}                                         |
-    | `/ariac/agv{n}_unlock_tray`     | `std_srvs/srv/Trigger`                | Unlock a kit tray to AGV {n}                                       |
-    | `/ariac/{robot}_enable_gripper` | `ariac_msgs/srv/VacuumGripperControl` | Set the state of {robot}'s gripper to the request state            |
-    | `/ariac/{robot}_change_gripper` | `ariac_msgs/srv/ChangeGripper`        | Change the type of {robot}'s gripper to the request type           |
-
-
-
-..
-    List of sensor topics and their msg types:
-
-    | Sensor Type               | Topic name(s)                                                                       |	MSG type                                              |
-    | ---                       | ---                                                                                 | ---                                                   |
-    | `break_beam`              | `/ariac/sensors/{sensor_name}/status` `/ariac/sensors/{sensor_name}/status`         | ariac_msgs/BreakBeamStatus ariac_msgs/BreakBeamStatus |
-    | `proximity`               | `/ariac/sensors/{sensor_name}/scan`                                                 |	sensor_msgs/Range                                     |
-    | `laser_profiler`          | `/ariac/sensors/{sensor_name}/scan`                                                 |	sensor_msgs/LaserScan                                 |
-    | `lidar`	                  | `/ariac/sensors/{sensor_name}/scan`	                                                | sensor_msgs/PointCloud                                |
-    | `rgb_camera`              | `/ariac/sensors/{sensor_name}/rgb_image`                                            |	sensor_msgs/Image sensor_msgs/Image                   |
-    | `rgbd_camera`             | `/ariac/sensors/{sensor_name}/rgb_image` `/ariac/sensors/{sensor_name}/depth_image` | sensor_msgs/Image                                     |
-    | `basic_logical_camera`    | `/ariac/sensors/{sensor_name}/image`                                                | ariac_msgs/BasicLogicalCameraImage                    |
-    | `advanced_logical_camera` | `/ariac/sensors/{sensor_name}/image`                                                | ariac_msgs/AdvancedLogicalCameraImage                 |
+    ariac_msgs/msg/BasicLogicalCameraImage
+      .. code-block:: text
+        
+        geometry_msgs/Pose[] part_poses
+        geometry_msgs/Pose[] tray_poses
+        geometry_msgs/Pose sensor_pose

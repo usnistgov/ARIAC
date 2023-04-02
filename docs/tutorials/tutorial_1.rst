@@ -41,7 +41,7 @@ Package Structure
 Updated/Created Files
 =====================
 
-The following sections will show the modified files in the package with highlighted sections for additions since the previous tutorial. For tutorial_1 all the files are new so there are no highlights. 
+The following sections show the modified files in the package with highlighted sections for additions since the previous tutorial. For :tuto:`Tutorial 1`, all the files are new so there are no highlights. 
 
 Competition Interface
 ---------------------

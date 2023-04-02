@@ -1,23 +1,11 @@
 
 .. _TUTORIAL2:
 
-.. only:: builder_html or readthedocs
-
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
-.. role:: inline-bash(code)
-    :language: bash
-
 **********************************************
-Tutorial 2: Read Data from a Break Beam Sensor
+:tuto:`Tutorial 2`: Read Data from a Break Beam Sensor
 **********************************************
 
-.. admonition:: Tutorial 2
+.. admonition:: :tuto:`Tutorial 2`
   :class: attention
   :name: tutorial_2
 
@@ -40,7 +28,7 @@ This tutorial covers the following:
 Package Structure
 =================
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 2`  are highlighted in the tree below.
+Updates and additions that are specific to :tuto:`Tutorial 2`  are highlighted in the tree below.
 
 .. code-block:: text
     :emphasize-lines: 4,5,8, 11
@@ -85,7 +73,7 @@ A break beam sensor was added to ``sensors.yaml`` as seen in :numref:`sensors-ya
 Competition Interface
 ---------------------
 
-The competition interface for :inline-tutorial:`tutorial 2` is shown in :numref:`competitioninterface-tutorial2`.
+The competition interface for :tuto:`Tutorial 2` is shown in :numref:`competitioninterface-tutorial2`.
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -229,7 +217,7 @@ Code Explanation
 - Imports
 
     - :inline-python:`from rclpy.qos import qos_profile_sensor_data` is the ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - :inline-python:`BreakBeamStatus`: Message class that stores the status of the break beam (:term:`BreakBeamStatus.msg`)
+    - :inline-python:`BreakBeamStatus`: Message class that stores the status of the break beam (:term:`ariac_msgs/msg/BreakBeamStatus`)
 
 
 - Instance Variables
@@ -250,7 +238,7 @@ Executable
 ----------
 
 .. code-block:: python
-    :caption: tutorial_2.py
+    :caption: :file:`tutorial_2.py`
     
     #!/usr/bin/env python3
     '''
@@ -297,7 +285,7 @@ This executable does the following:
 Build Instructions
 ------------------
 
-To allow for the competition software to be able to find the sensor configuration, it must be installed to the share directory of the package. The tutorial_2 executable also needs to be installed.
+To allow for the competition software to be able to find the sensor configuration, it must be installed to the share directory of the package. The :tuto:`Tutorial 2` executable also needs to be installed.
 
 .. code-block:: cmake
     :emphasize-lines: 15-18, 26

@@ -161,7 +161,7 @@ Code Explanation
 
     - :python:`ariac_msgs.msg`: The ROS2 message API for the ARIAC messages.
 
-        - :python:`CompetitionState`: The competition state message (:term:`CompetitionState.msg`).
+        - :python:`CompetitionState`: The competition state message (:term:`ariac_msgs/msg/CompetitionState`).
     - :python:`std_srvs.srv`: The ROS2 service API for the standard services.
 
 - Class Variables

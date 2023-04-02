@@ -8,7 +8,6 @@ Installing ARIAC
   :class: attention
 
     ARIAC 2023 is built for ROS2 Galactic running on Ubuntu 20.04 (Focal Fossa). 
-    It is not compatible with ROS2 Foxy or Ubuntu 18.04.
 
     - See the `ROS2 Galactic installation instructions <https://docs.ros.org/en/galactic/Installation.html>`_ for more information.
 

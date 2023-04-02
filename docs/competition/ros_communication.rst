@@ -476,7 +476,7 @@ Message Definitions
       - ``part``: The part
       - ``pose``: The pose of the part
 
-      .. seealso:: :term:`ariac_msgs/msg/Part`, `geometry_msgs/Pose<https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
+      .. seealso:: :term:`ariac_msgs/msg/Part`, `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`
 
     ariac_msgs/msg/AdvancedLogicalCameraImage
       .. code-block:: text

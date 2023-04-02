@@ -21,7 +21,7 @@ Topics
      - Description 
    * - :topic:`/ariac/orders` 
      - :gray:`ariac_msgs/msg/Order`
-     - `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_
+     - :term:`Order.msg`
      - Orders that the CCS should submit
    * - :topic:`/ariac/competition_state`
      - :gray:`ariac_msgs/msg/CompetitionState` 
@@ -189,14 +189,11 @@ Services
 Message and Service Definitions
 -------------------------------
 
-.. http:get:: /api/v3/embed/
-
-   Returns the exact HTML content for a specific identifier (``id``).
-   If no anchor identifier is specified the content of the first one returned.
-
 
 .. glossary::
     :sorted:
+    :name: communications-msgs
+    :class: msgdef
 
     Order.msg
       .. code-block:: text
@@ -211,6 +208,24 @@ Message and Service Definitions
         ariac_msgs/KittingTask kitting_task 
         ariac_msgs/AssemblyTask assembly_task
         ariac_msgs/CombinedTask combined_task
+
+    CompetitionState.msg
+      .. code-block:: text
+
+        uint8 IDLE=0   # Competition cannot be started yet by the competitor
+        uint8 READY=1  # Competition can be started by the competitor
+        uint8 STARTED=2 # Competition has been started
+        uint8 ORDER_ANNOUNCEMENTS_DONE=3 # All order announcements have been made
+        uint8 ENDED=4 # Competition has ended
+
+        uint8 competition_state
+
+    BinParts.msg
+      .. code-block:: text
+
+        ariac_msgs/BinInfo[] bins
+
+
 ..
     List of service with the service type and a brief description.
 

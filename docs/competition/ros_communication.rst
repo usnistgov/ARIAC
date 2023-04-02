@@ -4,7 +4,7 @@
 ROS Communication Overview
 ==========================
 
-This section shows the ROS topics and services that are used to communicate between the CCS and the ARIAC system. The definition of each message and service type is also provided.
+This section shows the ROS topics and services that are used to communicate between the :term:`Competitor Control System (CCS)` and the ARIAC system. The definition of each message and service type is also provided.
 
 Topics
 ------
@@ -16,7 +16,7 @@ Topics
    :name: communications-topics
 
    * - Topic Name
-     - Message Type
+     - Message Definition
      - Description 
    * - :topic:`/ariac/orders` 
      - :term:`ariac_msgs/msg/Order`
@@ -63,7 +63,7 @@ Sensor Topics
 
    * - Sensor Type
      - Topic Name
-     - Message Type 
+     - Message Definition 
    * - break_beam
      - :topic:`/ariac/sensors/{sensor_name}/change`
      - :term:`ariac_msgs/msg/BreakBeamStatus`

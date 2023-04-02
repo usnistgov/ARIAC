@@ -2,7 +2,7 @@ Updates
 ========
 
 
-Release 2023_v1.1 April 03
+Release 2023_v1.1 April 3
 --------------------------------------------
 
 - Modified tutorials :ref:`1 <TUTORIAL1>` and :ref:`2 <TUTORIAL2>`.
@@ -11,7 +11,7 @@ Release 2023_v1.1 April 03
 - Added :ref:`human <HUMANS>` challenge.
 - Fixed assembly bug with battery.
 
-Release 2023, March 1 -- Competition Version
+Release 2023_v1.0, March 1 -- Competition Version
 --------------------------------------------
 
 - The competition version of the software is now available. This release contains most of the features that were highlighted during the launch telecon. A list of the features that have been implemented since the previous release is provided below:

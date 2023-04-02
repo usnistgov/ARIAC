@@ -125,16 +125,16 @@ Services
      - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with **order_id**
    * - :rosservice:`/ariac/move_agv{n}` 
      - :term:`ariac_msgs/srv/MoveAGV`
-     - Move the AGV {n} to the requested location  
+     - Move the AGV ``{n}`` to the requested location  
    * - :rosservice:`/ariac/agv{n}_lock_tray` 
      - :term:`std_srvs/srv/Trigger`
-     - Lock a kit tray to AGV {n} 
+     - Lock a kit tray to AGV ``{n}`` 
    * - :rosservice:`/ariac/agv{n}_unlock_tray`
      - :term:`std_srvs/srv/Trigger`
-     - Unlock a kit tray to AGV {n} 
+     - Unlock a kit tray to AGV ``{n}`` 
    * - :rosservice:`/ariac/{robot}_enable_gripper`
      - :term:`ariac_msgs/srv/VacuumGripperControl`
-     - Set the state of {robot}'s gripper to the request state
+     - Set the state of ``{robot}``'s gripper to the request state
    * - :rosservice:`/ariac/{robot}_change_gripper`
      - :term:`ariac_msgs/srv/ChangeGripper`
      - Change the type of ``{robot}``'s gripper to the request type
@@ -476,7 +476,7 @@ Message Definitions
       - ``part``: The part
       - ``pose``: The pose of the part
 
-      .. seealso:: :term:`ariac_msgs/msg/Part`, `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`
+      .. seealso:: :term:`ariac_msgs/msg/Part`, `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
 
     ariac_msgs/msg/AdvancedLogicalCameraImage
       .. code-block:: text
@@ -510,7 +510,7 @@ Message Definitions
         float max_range
         float range
 
-      .. seealso:: `sensor_msgs/Range<https://docs.ros2.org/latest/api/sensor_msgs/msg/Range.html>`_
+      .. seealso:: `sensor_msgs/Range <https://docs.ros2.org/latest/api/sensor_msgs/msg/Range.html>`_
 
     sensor_msgs/msg/LaserScan
       .. code-block:: text
@@ -526,7 +526,7 @@ Message Definitions
         float[] ranges
         float[] intensities
 
-      .. seealso:: `sensor_msgs/LaserScan<https://docs.ros2.org/latest/api/sensor_msgs/msg/LaserScan.html>`_
+      .. seealso:: `sensor_msgs/LaserScan <https://docs.ros2.org/latest/api/sensor_msgs/msg/LaserScan.html>`_
 
     sensor_msgs/msg/PointCloud
       .. code-block:: text
@@ -535,7 +535,7 @@ Message Definitions
         geometry_msgs/msg/Point32[] points
         sensor_msgs/msg/ChannelFloat32[] channels
 
-      .. seealso:: `sensor_msgs/PointCloud<https://docs.ros2.org/latest/api/sensor_msgs/msg/PointCloud.html>`_
+      .. seealso:: `sensor_msgs/PointCloud <https://docs.ros2.org/latest/api/sensor_msgs/msg/PointCloud.html>`_
 
     sensor_msgs/msg/Image
       .. code-block:: text
@@ -548,7 +548,7 @@ Message Definitions
         uint32 step
         uint8[] data
 
-      .. seealso:: `sensor_msgs/Image<https://docs.ros2.org/latest/api/sensor_msgs/msg/Image.html>`_
+      .. seealso:: `sensor_msgs/Image <https://docs.ros2.org/latest/api/sensor_msgs/msg/Image.html>`_
 
     ariac_msgs/msg/BasicLogicalCameraImage
       .. code-block:: text

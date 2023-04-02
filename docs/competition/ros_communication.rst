@@ -189,7 +189,11 @@ Services
 Message and Service Definitions
 -------------------------------
 
+.. http:get:: /api/v3/embed/
 
+   Returns the exact HTML content for a specific identifier (``id``).
+   If no anchor identifier is specified the content of the first one returned.
+   
 ..
     List of service with the service type and a brief description.
 

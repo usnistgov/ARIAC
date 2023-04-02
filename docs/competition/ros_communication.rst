@@ -32,10 +32,10 @@ Topics
      - Parts that will come on the conveyor belt 
    * - :topic:`/ariac/agv{n}_status`
      - :term:`ariac_msgs/msg/AGVStatus`
-     - State of the AGV {n} (location, position, velocity)
+     - State of the AGV ``{n}`` (location, position, velocity)
    * - :topic:`/ariac/{robot}_gripper_state`
      - :term:`ariac_msgs/msg/VacuumGripperState`
-     - State of {robot}'s gripper (enabled, attached, type)
+     - State of ``{robot}``'s gripper (enabled, attached, type)
    * - :topic:`/ariac/conveyor_state`
      - :term:`ariac_msgs/msg/ConveyorBeltState`
      - State of the conveyor (enabled, power)
@@ -435,6 +435,8 @@ Message Definitions
       - ``human_velocity``: The velocity of the human in the workcell
       - ``robot_velocity``: The velocity of the ceiling robot in the workcell
 
+      .. seealso:: `geometry_msgs/msg/Point <https://docs.ros2.org/latest/api/geometry_msgs/msg/Point.html>`_, `geometry_msgs/msg/Vector3 <https://docs.ros2.org/latest/api/geometry_msgs/msg/Vector3.html>`_
+
     ariac_msgs/msg/Part
       .. code-block:: text
         
@@ -488,6 +490,19 @@ Message Definitions
       - ``part_poses``: The parts in the camera's field of view
       - ``tray_poses``: The kit trays in the camera's field of view
       - ``sensor_pose``: The pose of the camera in the world frame
+
+      .. seealso:: :term:`ariac_msgs/msg/PartPose`, :term:`ariac_msgs/msg/KitTrayPose`, `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
+
+    ariac_msgs/msg/KitTrayPose
+      .. code-block:: text
+        
+        int8 id
+        geometry_msgs/Pose pose
+
+      - ``id``: The ID of the kit tray
+      - ``pose``: The pose of the kit tray
+
+      .. seealso:: `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
 
     ariac_msgs/msg/BreakBeamStatus
       .. code-block:: text

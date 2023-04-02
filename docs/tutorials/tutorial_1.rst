@@ -227,7 +227,7 @@ Build Instructions
 :file:`CMakeLists.txt` defines the build instructions that are used for this package when :bash:`colcon build` is run for the workspace. The necessary ROS dependencies are located, the :file:`ariac_tutorials` python module is installed, and the :file:`tutorial_1.py` executable is installed. 
 
 .. code-block:: cmake
-    :caption: CMakeLists.txt
+    :caption: :file:`CMakeLists.txt`
     
     cmake_minimum_required(VERSION 3.8)
     project(ariac_tutorials)
@@ -259,7 +259,7 @@ Package Manifest
 The manifest is used for metadata about the ROS package. It is also used by rosdep to ensure all necessary packages are installed. 
 
 .. code-block:: xml
-    :caption: :file:`package.xml``
+    :caption: :file:`package.xml`
     
     <?xml version="1.0"?>
     <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>

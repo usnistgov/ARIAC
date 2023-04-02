@@ -109,15 +109,15 @@ Services
      - Service Definition
      - Description  
    * - :rosservice:`/ariac/start_competition`
-     - :gray:`std_srvs/srv/Trigger`
+     - :term:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Start the competition   
    * - :rosservice:`/ariac/end_competition`
-     - :gray:`std_srvs/srv/Trigger`
+     - :term:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - End the competition
    * - :rosservice:`/ariac/submit_order`
-     - :gray:`ariac_msgs/srv/SubmitOrder`
+     - :term:`ariac_msgs/srv/SubmitOrder`
      - `SubmitOrder.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/SubmitOrder.srv>`_
      - Submit an order with the requested **order_id**
    * - :rosservice:`/ariac/perform_quality_check`
@@ -334,3 +334,33 @@ Message Definitions
         geometry_msgs/Pose[] part_poses
         geometry_msgs/Pose[] tray_poses
         geometry_msgs/Pose sensor_pose
+
+
+Service Definitions
+-------------------
+
+
+.. glossary::
+    :sorted:
+
+    std_srvs/srv/Trigger
+      .. code-block:: text
+
+        ---
+        boolean success
+        string message
+
+      - ``success``: True if the service call was successful, False otherwise
+      - ``message``: A message describing the result of the service call
+
+    ariac_msgs/srv/SubmitOrder
+      .. code-block:: text
+
+        string order_id
+        ---
+        bool success
+        string message
+
+      - ``order_id``: The ID of the order to be submitted
+      - ``success``: True if the order was submitted successfully, False otherwise
+      - ``message``: A message describing the result of the service call

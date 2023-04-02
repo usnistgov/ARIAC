@@ -46,7 +46,7 @@ The following sections show the modified files in the package with highlighted s
 Competition Interface
 ---------------------
 
-The competition interface for :tuto:`Tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the CompetitionInterface class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (:file:`ariac_tutorials`).   
+The competition interface for :tuto:`Tutorial 1` is shown in :numref:`competitioninterface-tutorial1`. The majority of the code for the tutorials will be located inside of the :python:`CompetitionInterface` class which is inherited from the rclpy Node class. This class is part of a python module with the same name as the ROS package (:file:`ariac_tutorials`).   
 
 .. code-block:: python
     :caption: :file:`competition_interface.py`

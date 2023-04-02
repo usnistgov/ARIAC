@@ -39,8 +39,8 @@ A brief description of each tutorial is provided below.
 
 .. todo::
 
-  - **Prerequisites:** :doc:`Installing ARIAC <../getting_started/installation>`
-  - Clone the package ``ariac_tutorials`` in the workspace ``~/ariac_ws`` by running the following command in the terminal:
+  - **Prerequisites:** :ref:`Installing ARIAC <INSTALLATION>`.
+  - Clone the package :file:`ariac_tutorials` in the workspace :file:`~/ariac_ws` by running the following commands in the terminal:
 
     .. code-block:: bash
     

@@ -121,11 +121,11 @@ Services
      - `SubmitOrder.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/SubmitOrder.srv>`_
      - Submit an order with the requested **order_id**
    * - :rosservice:`/ariac/perform_quality_check`
-     - :gray:`ariac_msgs/srv/PerformQualityCheck`
+     - :term:`ariac_msgs/srv/PerformQualityCheck`
      - `PerformQualityCheck.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/PerformQualityCheck.srv>`_
      - Check the quality of a kitting order with the requested **order_id**
    * - :rosservice:`/ariac/get_pre_assembly_poses`
-     - :gray:`ariac_msgs/srv/GetPreAssemblyPoses`
+     - :term:`ariac_msgs/srv/GetPreAssemblyPoses`
      - `GetPreAssemblyPoses.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/GetPreAssemblyPoses.srv>`_
      - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with **order_id**
    
@@ -135,11 +135,11 @@ Services
      - `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_
      - Move the AGV {n} to the requested location  
    * - :rosservice:`/ariac/agv{n}_lock_tray` 
-     - :gray:`std_srvs/srv/Trigger`
+     - :term:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Lock a kit tray to AGV {n} 
    * - :rosservice:`/ariac/agv{n}_unlock_tray`
-     - :gray:`std_srvs/srv/Trigger`
+     - :term:`std_srvs/srv/Trigger`
      - `Trigger.srv <https://docs.ros2.org/galactic/api/std_srvs/srv/Trigger.html>`_
      - Unlock a kit tray to AGV {n} 
    * - :rosservice:`/ariac/{robot}_enable_gripper`
@@ -335,6 +335,16 @@ Message Definitions
         geometry_msgs/Pose[] tray_poses
         geometry_msgs/Pose sensor_pose
 
+    ariac_msgs/msg/QualityIssue
+      .. code-block:: text
+        
+        bool all_passed
+        bool missing_part
+        bool flipped_part
+        bool faulty_part
+        bool incorrect_part_type
+        bool incorrect_part_color
+
 
 Service Definitions
 -------------------
@@ -364,3 +374,42 @@ Service Definitions
       - ``order_id``: The ID of the order to be submitted
       - ``success``: True if the order was submitted successfully, False otherwise
       - ``message``: A message describing the result of the service call
+
+    ariac_msgs/srv/PerformQualityCheck
+      .. code-block:: text
+
+        string order_id
+        ---
+        bool valid_id
+        bool all_passed
+        bool incorrect_tray
+        ariac_msgs/QualityIssue quadrant1
+        ariac_msgs/QualityIssue quadrant2
+        ariac_msgs/QualityIssue quadrant3
+        ariac_msgs/QualityIssue quadrant4
+
+      - ``order_id``: The ID of the order to be submitted
+      - ``valid_id``: True if the order ID is valid, False otherwise
+      - ``all_passed``: True if all parts in the order passed the quality check, False otherwise
+      - ``incorrect_tray``: True if the detected tray does not have the correct ID for the order, False otherwise
+      - ``quadrant1``: The quality issue for the first quadrant
+      - ``quadrant2``: The quality issue for the second quadrant
+      - ``quadrant3``: The quality issue for the third quadrant
+      - ``quadrant4``: The quality issue for the fourth quadrant
+
+      .. seealso:: :term:`ariac_msgs/msg/QualityIssue`
+
+    ariac_msgs/srv/GetPreAssemblyPoses
+      .. code-block:: text
+
+        string order_id
+        ---
+        bool valid_id
+        bool agv_at_station
+        ariac_msgs/PartPose[] parts
+
+      - ``order_id``: The ID of the order to be submitted
+      - ``valid_id``: True if the order ID is valid, False otherwise
+      - ``agv_at_station``: True if the AGV is at the station, False otherwise
+      - ``parts``: The list of parts to be assembled
+

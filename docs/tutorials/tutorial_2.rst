@@ -2,10 +2,10 @@
 .. _TUTORIAL2:
 
 **********************************************
-:tuto:`Tutorial 2`: Read Data from a Break Beam Sensor
+Tutorial 2: Read Data from a Break Beam Sensor
 **********************************************
 
-.. admonition:: :tuto:`Tutorial 2`
+.. admonition:: Tutorial 2
   :class: attention
   :name: tutorial_2
 
@@ -52,10 +52,10 @@ Updated/Created Files
 Sensor Configuration File
 -------------------------
 
-A sensor configuration file for a given package must be created in the folder ``config`` in the package. The file must be added to the ``CMakeLists.txt`` file in the package to allow the competition software to find the file.
-To learn more about sensor configuration files, see the Sensor configuration file `section  <https://ariac.readthedocs.io/en/latest/competition/trials.html#sensor-configuration-file>`_.
+A sensor configuration file for a given package must be created in the folder :file:`config` in the package. The file must be added to the :file:`CMakeLists.txt` file in the package to allow the competition software to find the file.
+To learn more about sensor configuration files, see the Sensor configuration file :ref:`section  <sensor_configuration_file>`.
 
-A break beam sensor was added to ``sensors.yaml`` as seen in :numref:`sensors-yaml-break-beam`. 
+A break beam sensor was added to :file:`sensors.yaml` as seen in :numref:`sensors-yaml-break-beam`. 
 
 .. code-block:: yaml
     :caption: sensors.yaml
@@ -216,21 +216,21 @@ Code Explanation
 
 - Imports
 
-    - :inline-python:`from rclpy.qos import qos_profile_sensor_data` is the ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - :inline-python:`BreakBeamStatus`: Message class that stores the status of the break beam (:term:`ariac_msgs/msg/BreakBeamStatus`)
+    - :python:`from rclpy.qos import qos_profile_sensor_data` is the ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
+    - :python:`BreakBeamStatus`: Message class that stores the status of the break beam (:term:`ariac_msgs/msg/BreakBeamStatus`)
 
 
 - Instance Variables
 
-    - :inline-python:`_break_beam0_sub`: Subscriber to the break beam status topic.
-    - :inline-python:`_conveyor_part_count`: Store the number of parts that crossed the beam.
-    - :inline-python:`_object_detected`: Store whether the beam is broken.
+    - :python:`_break_beam0_sub`: Subscriber to the break beam status topic.
+    - :python:`_conveyor_part_count`: Store the number of parts that crossed the beam.
+    - :python:`_object_detected`: Store whether the beam is broken.
 
 - Instance Methods
 
-    - :inline-python:`conveyor_part_count(self)` is  a getter to the :inline-python:`_conveyor_part_count` attribute.
+    - :python:`conveyor_part_count(self)` is  a getter to the :python:`_conveyor_part_count` attribute.
 
-    - :inline-python:`_breakbeam0_cb(self, msg)` is the callback function for the sensor topic. The callback increments the variable :inline-python:`_conveyor_part_count` when the beam is broken and the variable :inline-python:`_object_detected` is false. The variable :inline-python:`_object_detected` is set to true when the beam is broken.
+    - :python:`_breakbeam0_cb(self, msg)` is the callback function for the sensor topic. The callback increments the variable :python:`_conveyor_part_count` when the beam is broken and the variable :python:`_object_detected` is false. The variable :python:`_object_detected` is set to true when the beam is broken.
 
 
 
@@ -278,7 +278,7 @@ Code Explanation
 This executable does the following:
 
     - Initialize the ROS client library.
-    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Create an instance of the class :python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - Log the number of parts that crossed the beam every 2 seconds.
 
@@ -334,11 +334,6 @@ To test the sensor was correctly added to the environment, run the following com
   . install/setup.bash
   ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorial competitor_pkg:=ariac_tutorials
 
-
-.. .. admonition:: Attention
-..   :class: warning
-  
-..   By default, the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials` uses the sensor configuration file ``ariac_tutorials/config/sensors.yaml``. If you want to use a different sensor configuration file, you need to use the argument :inline-bash:`sensor_config:={name_of_sensor_config}`. For example, to use the sensor configuration file ``sensors_test.yaml``, you would use the command :inline-bash:`ros2 launch ariac_gazebo ariac.launch.py trial_name:=tutorials competitor_pkg:=ariac_tutorials sensor_config:=sensors_test`.
 
 
 You should see a break beam sensor on the right side of the conveyor belt, as shown in the figure.

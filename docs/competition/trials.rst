@@ -5,6 +5,8 @@ Configuration files are described in the YAML format. YAML is a human-readable d
 
 ARIAC consists of two main configuration files, which are described below in the following subsections.
 
+.. _sensor_configuration_file:
+
 Sensor Configuration File
 --------------------------------
 

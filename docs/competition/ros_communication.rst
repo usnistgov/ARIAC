@@ -685,6 +685,8 @@ Service Definitions
       - ``agv_at_station``: True if the AGV is at the station, False otherwise
       - ``parts``: The list of parts to be assembled
 
+      .. seealso:: :term:`ariac_msgs/msg/PartPose`
+
     ariac_msgs/srv/MoveAGV
       .. code-block:: text
 

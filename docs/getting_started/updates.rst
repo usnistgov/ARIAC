@@ -5,8 +5,8 @@ Updates
 Release 2023_v1.1 April 3
 --------------------------------------------
 
-- Modified tutorials :ref:`1 <TUTORIAL1>` and :ref:`2 <TUTORIAL2>`.
-- Added tutorials :ref:`3 <TUTORIAL3>`, :ref:`4 <TUTORIAL4>`, :ref:`5 <TUTORIAL5>`, :ref:`6 <TUTORIAL6>`, and :ref:`7 <TUTORIAL7>`. 
+- Modified :tuto:`Tutorials` :ref:`1 <TUTORIAL1>` and :ref:`2 <TUTORIAL2>`.
+- Added :tuto:`Tutorials` :ref:`3 <TUTORIAL3>`, :ref:`4 <TUTORIAL4>`, :ref:`5 <TUTORIAL5>`, :ref:`6 <TUTORIAL6>`, and :ref:`7 <TUTORIAL7>`. 
 - Documentation improvements.
 - Added :ref:`human <HUMANS>` challenge.
 - Fixed assembly bug with battery.

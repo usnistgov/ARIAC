@@ -1,21 +1,6 @@
 
 .. _TUTORIAL7:
 
-.. only:: builder_html or readthedocs
-
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-cpp(code)
-    :language: cpp
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
-.. role:: inline-bash(code)
-    :language: bash
-
 ***********************************
 Tutorial 7: Move Robots with MoveIt
 ***********************************
@@ -36,17 +21,17 @@ Tutorial 7: Move Robots with MoveIt
 
 This tutorial shows how to move the robots through service calls using the following steps:
 
-  - Create a C++ class for interfacing with MoveIt (``src/robot_commander.cpp``).
+  - Create a C++ class for interfacing with MoveIt (:file:`src/robot_commander.cpp`).
 
     - Initialize a MoveGroupInterface object for each robot.
     - Create a service server for each robot. Service requests sent to these service servers will be used to move the robots to their home position.
   - Create a Python method that will be used to move the robot to its home position using a service client.
-  - Call the Python method from the script ``tutorial_7.py`` to move the robots to their home positions.
+  - Call the Python method from the script :file:`tutorial_7.py` to move the robots to their home positions.
 
 Package Structure
 =================
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are highlighted in the tree below.
+Updates and additions that are specific to :tuto:`Tutorial 7`  are highlighted in the tree below.
 
 .. code-block:: text
     :emphasize-lines: 2, 6-7, 12-13, 21
@@ -84,7 +69,7 @@ The competition interface used in this tutorial is shown in :numref:`competition
 
 
 .. code-block:: python
-    :caption: competition_interface.py
+    :caption: :file:`competition_interface.py`
     :name: competitioninterface-tutorial7
     :linenos:
     :emphasize-lines: 181-187, 606-636
@@ -734,12 +719,12 @@ The competition interface from :ref:`Tutorial 6 <TUTORIAL6>` was augmented with 
 
 - Instance Variables
 
-    - :inline-python:`_move_floor_robot_home`: Service client for moving the floor robot to the home position.
-    - :inline-python:`_move_ceiling_robot_home`: Service client for moving the ceiling robot to the home position.
+    - :python:`_move_floor_robot_home`: Service client for moving the floor robot to the home position.
+    - :python:`_move_ceiling_robot_home`: Service client for moving the ceiling robot to the home position.
 
 - Instance Methods
 
-    - :inline-python:`move_robot_home(self, robot_name)`: public method is used in the main function to move each robot to its home position. The method takes the name of the robot to move as an argument. The method then calls the appropriate service client to move the robot to its home position.
+    - :python:`move_robot_home(self, robot_name)`: public method is used in the main function to move each robot to its home position. The method takes the name of the robot to move as an argument. The method then calls the appropriate service client to move the robot to its home position.
 
 
 
@@ -750,7 +735,7 @@ The RobotCommander class used in this tutorial is shown in :numref:`robot_comman
 
 
 .. code-block:: C++
-    :caption: robot_commander.cpp
+    :caption: :file:`robot_commander.cpp`
     :name: robot_commander
     :linenos:
 
@@ -872,24 +857,24 @@ The RobotCommander class used in this tutorial is shown in :numref:`robot_comman
         rclcpp::shutdown();
     }
 
-The robot commander node is a C++ node which initializes the :inline-cpp:`MoveGroupInterface` for the floor and ceiling robots. 
+The robot commander node is a C++ node which initializes the :cpp:`MoveGroupInterface` for the floor and ceiling robots. 
 
     - The move group ``floor_robot`` is used for the floor robot. This group allows control of the arm and its displacement on the linear rail.
     - The move group ``ceiling_robot`` is used for the ceiling robot. This group allows control of the arm and the torso of the robot on the rails.
 
 The node also hosts two services:
 
-    - ``/competitor/move_floor_robot_home`` calls the method :inline-cpp:`FloorRobotMoveHome()` which moves the floor robot to its home position.
-    - ``/competitor/move_ceiling_robot_home`` calls the method :inline-cpp:`CeilingRobotMoveHome()` which moves the ceiling robot to its home position.
+    - :rosservice:`/competitor/move_floor_robot_home` calls the method :cpp:`FloorRobotMoveHome()` which moves the floor robot to its home position.
+    - :rosservice:`/competitor/move_ceiling_robot_home` calls the method :cpp:`CeilingRobotMoveHome()` which moves the ceiling robot to its home position.
 
 
 Launch File
 -----------
 
-The RobotCommander node and the MoveIt node is started using the launch file shown in  :numref:`robot_commander_launch_file`. Nodes that use the MoveGroupInterface need to be launched with specific ROS parameters. A python function in the ariac_moveit_config module :inline-python:`generate_parameters` has been added to easily create those parameters. The launch file :inline-file:`ariac_robots_moveit.launch.py` is also called to start the move group node. 
+The RobotCommander node and the MoveIt node is started using the launch file shown in  :numref:`robot_commander_launch_file`. Nodes that use the MoveGroupInterface need to be launched with specific ROS parameters. A python function in the ariac_moveit_config module :python:`generate_parameters` has been added to easily create those parameters. The launch file :file:`ariac_robots_moveit.launch.py` is also called to start the move group node. 
 
 .. code-block:: python
-    :caption: robot_commander.launch.py
+    :caption: :file:`robot_commander.launch.py`
     :name: robot_commander_launch_file
     :linenos:
 
@@ -926,7 +911,7 @@ Executable
 ----------
 
 .. code-block:: python
-    :caption: tutorial_7.py
+    :caption: :file:`tutorial_7.py`
     
     #!/usr/bin/env python3
     '''
@@ -963,19 +948,19 @@ Code Explanation
 This executable does the following:
 
     - Initialize the ROS client library.
-    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Create an instance of the class :python:`CompetitionInterface` as a ROS node.
     - Start the competition.
-    - The call to :inline-python:`move_robot_home("floor_robot")` sends a service request to ``/competitor/move_floor_robot_home``
-    - The call to :inline-python:`move_robot_home("ceiling_robot")` sends a service request to ``/competitor/move_ceiling_robot_home``
+    - The call to :python:`move_robot_home("floor_robot")` sends a service request to :rosservice:`/competitor/move_floor_robot_home`.
+    - The call to :python:`move_robot_home("ceiling_robot")` sends a service request to :rosservice:`/competitor/move_ceiling_robot_home`
 
 
 Build Instructions
 ------------------
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 7`  are highlighted in the ``CMakeLists.txt`` below.
+Updates and additions that are specific to :tuto:`Tutorial 7`  are highlighted in the :file:`CMakeLists.txt` below.
 
 .. code-block:: cmake
-    :caption: CMakeLists.txt
+    :caption: :file:`CMakeLists.txt`
     :emphasize-lines: 14, 33, 40, 45-46, 48-51, 53-55
     :linenos:
 

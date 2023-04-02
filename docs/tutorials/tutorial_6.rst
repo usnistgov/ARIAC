@@ -1,18 +1,6 @@
 
 .. _TUTORIAL6:
 
-.. only:: builder_html or readthedocs
-
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
-.. role:: inline-bash(code)
-    :language: bash
-
 ************************************
 Tutorial 6: Enable/Disable a Gripper
 ************************************
@@ -37,7 +25,7 @@ This tutorial shows how to use service calls to enable and disable the gripper o
 Package Structure
 =================
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 6`  are highlighted in the tree below.
+Updates and additions that are specific to :tuto:`Tutorial 6`  are highlighted in the tree below.
 
 
 .. code-block:: text
@@ -68,7 +56,7 @@ Updated/Created Files
 Competition Interface
 ---------------------
 
-The competition interface for :inline-tutorial:`tutorial 6` is shown in :numref:`competitioninterface-tutorial6`.
+The competition interface for :tuto:`Tutorial 6` is shown in :numref:`competitioninterface-tutorial6`.
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -682,33 +670,33 @@ The competition interface from :ref:`Tutorial 5 <TUTORIAL5>` was augmented with 
 
 - Imports
 
-    - :inline-python:`Duration`: A :inline-python:`wait(self, duration)` method is implemented using the :inline-python:`Duration` class. The :inline-python:`wait(self, duration)` method is used to wait for a specified duration while the gripper state is being changed.
+    - :python:`Duration`: A :python:`wait(self, duration)` method is implemented using the :python:`Duration` class. The :python:`wait(self, duration)` method is used to wait for a specified duration while the gripper state is being changed.
 
-    - :inline-python:`VacuumGripperState`: Message class for the vacuum gripper state (see `VacuumGripperState.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/VacuumGripperState.msg>`_). This message is used to determine if the gripper is enabled or disabled, if an object is attached, and the type of the gripper.
+    - :python:`VacuumGripperState`: Message class for the vacuum gripper state (:term:`ariac_msgs/msg/VacuumGripperState`). This message is used to determine if the gripper is enabled or disabled, if an object is attached, and the type of the gripper.
 
 
-    - :inline-python:`VacuumGripperControl`: Service type for controlling the vacuum gripper (see `VacuumGripperControl.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/VacuumGripperControl.srv>`_).
+    - :python:`VacuumGripperControl`: Service type for controlling the vacuum gripper (:term:`ariac_msgs/srv/VacuumGripperControl`).
 
 - Class Variables
 
-    - :inline-python:`_gripper_states`: A dictionary for converting the :inline-python:`VacuumGripperState` constants to strings. This is used for logging the gripper state.
+    - :python:`_gripper_states`: A dictionary for converting the :python:`VacuumGripperState` constants to strings. This is used for logging the gripper state.
 
 - Instance Variables
 
-    - :inline-python:`_floor_robot_gripper_state_sub`: Subscriber to the floor robot gripper state topic.
+    - :python:`_floor_robot_gripper_state_sub`: Subscriber to the floor robot gripper state topic.
 
-    - :inline-python:`_floor_gripper_enable`: Service client for turning on/off the vacuum gripper on the floor robot.
+    - :python:`_floor_gripper_enable`: Service client for turning on/off the vacuum gripper on the floor robot.
 
-    - :inline-python:`_floor_robot_gripper_state`: Attribute to store the current state of the floor robot gripper.
+    - :python:`_floor_robot_gripper_state`: Attribute to store the current state of the floor robot gripper.
 
 
 - Instance Methods
 
-    - :inline-python:`_floor_robot_gripper_state_cb(self, msg: VacuumGripperState)`: Callback for the topic ``/ariac/floor_robot_gripper_state``. This is used to store the current state of the floor robot gripper.
+    - :python:`_floor_robot_gripper_state_cb(self, msg: VacuumGripperState)`: Callback for the topic :topic:`/ariac/floor_robot_gripper_state`. This is used to store the current state of the floor robot gripper.
 
-    - :inline-python:`set_floor_robot_gripper_state(self, state)`: Function to set the gripper state of the floor robot. This function calls the ROS service to change the gripper state.
+    - :python:`set_floor_robot_gripper_state(self, state)`: Function to set the gripper state of the floor robot. This function calls the ROS service to change the gripper state.
 
-    - :inline-python:`wait(self, duration)`: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
+    - :python:`wait(self, duration)`: Function to wait for a specified duration. This function is used to wait for the gripper state to change.
 
 
 
@@ -718,7 +706,7 @@ Executable
 ----------
 
 .. code-block:: python
-    :caption: tutorial_6.py
+    :caption: :file:`tutorial_6.py`
     
     #!/usr/bin/env python3
     '''
@@ -759,7 +747,7 @@ Code Explanation
 This executable does the following:
 
     - Initialize the ROS client library.
-    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Create an instance of the class :python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - In a while loop:
         
@@ -772,7 +760,7 @@ Build Instructions
 ------------------
 
 .. code-block:: cmake
-    :caption: CMakeLists.txt
+    :caption: :file:`CMakeLists.txt`
     :emphasize-lines: 31
 
     cmake_minimum_required(VERSION 3.8)

@@ -129,6 +129,9 @@ rst_prolog = """
     :language: bash
     :class: highlight
 
+ .. role:: cpp(code)
+    :language: cpp
+    :class: highlight
 
  .. role:: python(code)
     :language: python

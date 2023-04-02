@@ -154,46 +154,37 @@ Message Definitions
         geometry_msgs/Vector3 human_velocity
         geometry_msgs/Vector3 robot_velocity
 
-    AGVStatus.msg
+    Part.msg
       .. code-block:: text
+        
+        # part color
+        uint8 RED=0
+        uint8 GREEN=1
+        uint8 BLUE=2
+        uint8 ORANGE=3
+        uint8 PURPLE=4
 
-        uint8 KITTING=0
-        uint8 ASSEMBLY_FRONT=1
-        uint8 ASSEMBLY_BACK=2
-        uint8 WAREHOUSE=3
-        uint8 UNKNOWN=99
+        # part type
+        uint8 BATTERY=10
+        uint8 PUMP=11
+        uint8 SENSOR=12
+        uint8 REGULATOR=13
 
-        int8 location
-        float64 position
-        float64 velocity
+        uint8 color
+        uint8 type
 
-    AGVStatus.msg
+    PartPose.msg
       .. code-block:: text
+        
+        ariac_msgs/Part part
+        geometry_msgs/Pose pose
 
-        uint8 KITTING=0
-        uint8 ASSEMBLY_FRONT=1
-        uint8 ASSEMBLY_BACK=2
-        uint8 WAREHOUSE=3
-        uint8 UNKNOWN=99
-
-        int8 location
-        float64 position
-        float64 velocity
-
-    AGVStatus.msg
+    AdvancedLogicalCameraImage.msg
       .. code-block:: text
-
-        uint8 KITTING=0
-        uint8 ASSEMBLY_FRONT=1
-        uint8 ASSEMBLY_BACK=2
-        uint8 WAREHOUSE=3
-        uint8 UNKNOWN=99
-
-        int8 location
-        float64 position
-        float64 velocity
-
-
+        
+        ariac_msgs/PartPose[] part_poses
+        ariac_msgs/KitTrayPose[] tray_poses
+        geometry_msgs/Pose sensor_pose
 
 Sensor Topics
 -------------

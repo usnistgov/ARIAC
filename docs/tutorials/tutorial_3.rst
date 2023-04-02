@@ -349,9 +349,9 @@ The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with 
 
 - Imports
 
-    - :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (see `AdvancedLogicalCameraImage.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AdvancedLogicalCameraImage.msg>`_ )
-    - :inline-python:`Part`: Message class that stores the part type and color (see `Part.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Part.msg>`_ )
-    - :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (see `PartPose.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/PartPose.msg>`_)
+    - :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (:term:`AdvancedLogicalCameraImage.msg`)
+    - :inline-python:`Part`: Message class that stores the part type and color (:term:`Part.msg`).
+    - :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (:term:`PartPose.msg`)
         
         - **Note**: These message classes are imported as aliases since the package consists of Python classes with the same name.
 

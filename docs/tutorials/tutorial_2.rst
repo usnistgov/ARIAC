@@ -229,7 +229,7 @@ Code Explanation
 - Imports
 
     - :inline-python:`from rclpy.qos import qos_profile_sensor_data` is the ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - :inline-python:`BreakBeamStatus`: Message class that stores the status of the break beam (see `BreakBeamStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/BreakBeamStatus.msg>`_ )
+    - :inline-python:`BreakBeamStatus`: Message class that stores the status of the break beam (:term:`BreakBeamStatus.msg`)
 
 
 - Instance Variables

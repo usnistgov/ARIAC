@@ -12,7 +12,7 @@ python:
 sphinx:
   fail_on_warning: false
 
-formats: 
-  - htmlzip
-  - epub
-  - pdf
+# formats: 
+#   - htmlzip
+#   - epub
+#   - pdf

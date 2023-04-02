@@ -212,7 +212,7 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the CCS needs a subscriber to the topic :topic:`/ariac/{robot}_gripper_state` (:term:`ariac_msgs/msgVacuumGripperState`). Checking the :yamlname:`attached` field of the message will inform whether or not the gripper is holding a part. If the gripper is not holding a part, the CCS can assume that the gripper has dropped the part.
+To detect a faulty gripper the CCS needs a subscriber to the topic :topic:`/ariac/{robot}_gripper_state` (:term:`ariac_msgs/msg/VacuumGripperState`). Checking the :yamlname:`attached` field of the message will inform whether or not the gripper is holding a part. If the gripper is not holding a part, the CCS can assume that the gripper has dropped the part.
 
 
 .. _target to robot malfunction:

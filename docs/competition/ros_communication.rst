@@ -163,7 +163,11 @@ Message Definitions
         ariac_msgs/CombinedTask combined_task
 
       - ``id``: The unique identifier for the order
-      - ``type``: The type of order (KITTING, ASSEMBLY, or COMBINED)
+      - ``type``: The type of order. One of the following:
+      
+        - ``KITTING``: A kitting order
+        - ``ASSEMBLY``: An assembly order
+        - ``COMBINED``: A combined order
       - ``priority``: Whether the order is a priority order
       - ``kitting_task``: The kitting task for the order
       - ``assembly_task``: The assembly task for the order

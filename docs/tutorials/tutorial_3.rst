@@ -30,7 +30,7 @@ This tutorial covers the following topics:
 Package Structure
 =================
 
-Updates and additions that are specific to :tuto:`tutorial 3`  are highlighted in the tree below.
+Updates and additions that are specific to :tuto:`Tutorial 3`  are highlighted in the tree below.
 
 
 .. code-block:: text
@@ -57,10 +57,10 @@ Updated/Created Files
 Sensor Configuration File
 -------------------------
 
-An advanced logical camera is added to ``sensors.yaml`` above the right bins (see lines 8-13 in :numref:`sensors-camera-yaml`). 
+An advanced logical camera is added to :file:`sensors.yaml` above the right bins (see lines 8-13 in :numref:`sensors-camera-yaml`). 
 
 .. code-block:: yaml
-    :caption: sensors.yaml
+    :caption: :file:`sensors.yaml`
     :name: sensors-camera-yaml
     :emphasize-lines: 8-13
     :linenos:
@@ -82,10 +82,10 @@ An advanced logical camera is added to ``sensors.yaml`` above the right bins (se
 Competition Interface
 --------------------------------
 
-The competition interface for :tuto:`tutorial 3` is shown in :numref:`competitioninterface-tutorial3`.
+The competition interface for :tuto:`Tutorial 3` is shown in :numref:`competitioninterface-tutorial3`.
 
 .. code-block:: python
-    :caption: competition_interface.py
+    :caption: :file:`competition_interface.py`
     :name: competitioninterface-tutorial3
     :emphasize-lines: 9-11, 16-21, 43-67, 106-114, 116-118, 124-132, 190-239
     :linenos:
@@ -338,9 +338,9 @@ The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with 
 
 - Imports
 
-    - :python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (:term:`AdvancedLogicalCameraImage.msg`)
-    - :python:`Part`: Message class that stores the part type and color (:term:`Part.msg`).
-    - :python:`PartPose`: Message class that stores a :python:`Part` and its :python:`Pose`  (:term:`PartPose.msg`)
+    - :python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (:term:`ariac_msgs/msg/AdvancedLogicalCameraImage`).
+    - :python:`Part`: Message class that stores the part type and color (:term:`ariac_msgs/msg/Part`).
+    - :python:`PartPose`: Message class that stores a :python:`Part` and its :python:`Pose`  (:term:`ariac_msgs/msg/PartPose`).
         
         - **Note**: These message classes are imported as aliases since the package consists of Python classes with the same name.
 
@@ -382,7 +382,7 @@ Create the Executable
 --------------------------------
 
 .. code-block:: python
-    :caption: tutorial_3.py
+    :caption: :file:`tutorial_3.py`
     
     #!/usr/bin/env python3
     '''
@@ -432,7 +432,7 @@ Build Instructions
 
 .. code-block:: cmake
     :emphasize-lines: 13, 28
-    :caption: CMakeLists.txt
+    :caption: :file:`CMakeLists.txt`
 
     cmake_minimum_required(VERSION 3.8)
     project(ariac_tutorials)
@@ -474,7 +474,7 @@ This tutorial adds a dependency to the PyKDL module. This is added to the packag
 
 .. code-block:: xml
     :emphasize-lines: 16-17
-    :caption: package.xml
+    :caption: :file:`package.xml`
 
     <?xml version="1.0"?>
     <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>

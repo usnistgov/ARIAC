@@ -125,7 +125,6 @@ Services
      - Get the pose of parts on the AGVs prior to assembly for an assembly or combined order with **order_id**
    * - :rosservice:`/ariac/move_agv{n}` 
      - :term:`ariac_msgs/srv/MoveAGV`
-     - `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_
      - Move the AGV {n} to the requested location  
    * - :rosservice:`/ariac/agv{n}_lock_tray` 
      - :term:`std_srvs/srv/Trigger`
@@ -138,7 +137,7 @@ Services
      - Set the state of {robot}'s gripper to the request state
    * - :rosservice:`/ariac/{robot}_change_gripper`
      - :term:`ariac_msgs/srv/ChangeGripper`
-     - Change the type of {robot}'s gripper to the request type
+     - Change the type of ``{robot}``'s gripper to the request type
 
 
 

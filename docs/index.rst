@@ -13,7 +13,7 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
 .. Hidden TOCs
 
 .. toctree::
-   :caption: 🌐 Getting Started
+   :caption: ⏩ Getting Started
    :maxdepth: 3
    :hidden:
 
@@ -23,7 +23,7 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    getting_started/events
 
 .. toctree::
-   :caption: 📔 Competition Specifications
+   :caption: ⏩ Competition Specifications
    :maxdepth: 3
    :hidden:
 
@@ -39,7 +39,7 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    competition/scoring
 
 .. toctree::
-   :caption: 🚀 Tutorials
+   :caption: ⏩ Tutorials
    :maxdepth: 3
    :hidden:
 

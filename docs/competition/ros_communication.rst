@@ -164,7 +164,7 @@ Message Definitions
 
       - ``id``: The unique identifier for the order
       - ``type``: The type of order. One of the following:
-      
+
         - ``KITTING``: A kitting order
         - ``ASSEMBLY``: An assembly order
         - ``COMBINED``: A combined order
@@ -173,7 +173,11 @@ Message Definitions
       - ``assembly_task``: The assembly task for the order
       - ``combined_task``: The combined task for the order
 
-      .. seealso:: :term:`ariac_msgs/msg/KittingTask`, :term:`ariac_msgs/msg/AssemblyTask`, :term:`ariac_msgs/msg/CombinedTask`
+      .. seealso:: 
+        
+        - :term:`ariac_msgs/msg/KittingTask`
+        - :term:`ariac_msgs/msg/AssemblyTask`
+        - :term:`ariac_msgs/msg/CombinedTask`
 
     ariac_msgs/msg/KittingTask
       .. code-block:: text
@@ -211,7 +215,7 @@ Message Definitions
         uint8 AS4=4
 
         uint8[] agv_numbers
-        uint8 station # AS1, AS2, AS3, AS4
+        uint8 station
         ariac_msgs/AssemblyPart[] parts
 
       - ``agv_numbers``: The AGVs which contain parts for assembly
@@ -257,7 +261,11 @@ Message Definitions
       - ``assembled_pose``: The pose of the part in the assembly station
       - ``install_direction``: The direction the part should be installed in the assembly station
 
-      .. seealso:: :term:`ariac_msgs/msg/Part`, `geometry_msgs/msg/PoseStamped <https://docs.ros2.org/latest/api/geometry_msgs/msg/PoseStamped.html>`_, `geometry_msgs/msg/Vector3 <https://docs.ros2.org/latest/api/geometry_msgs/msg/Vector3.html>`_
+      .. seealso:: 
+        
+        - :term:`ariac_msgs/msg/Part`
+        - `geometry_msgs/msg/PoseStamped <https://docs.ros2.org/latest/api/geometry_msgs/msg/PoseStamped.html>`_
+        - `geometry_msgs/msg/Vector3 <https://docs.ros2.org/latest/api/geometry_msgs/msg/Vector3.html>`_
 
     ariac_msgs/msg/KittingPart
       .. code-block:: text
@@ -439,7 +447,10 @@ Message Definitions
       - ``human_velocity``: The velocity of the human in the workcell
       - ``robot_velocity``: The velocity of the ceiling robot in the workcell
 
-      .. seealso:: `geometry_msgs/msg/Point <https://docs.ros2.org/latest/api/geometry_msgs/msg/Point.html>`_, `geometry_msgs/msg/Vector3 <https://docs.ros2.org/latest/api/geometry_msgs/msg/Vector3.html>`_
+      .. seealso:: 
+        
+        - `geometry_msgs/msg/Point <https://docs.ros2.org/latest/api/geometry_msgs/msg/Point.html>`_
+        - `geometry_msgs/msg/Vector3 <https://docs.ros2.org/latest/api/geometry_msgs/msg/Vector3.html>`_
 
     ariac_msgs/msg/Part
       .. code-block:: text
@@ -482,7 +493,10 @@ Message Definitions
       - ``part``: The part
       - ``pose``: The pose of the part
 
-      .. seealso:: :term:`ariac_msgs/msg/Part`, `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
+      .. seealso:: 
+        
+        - :term:`ariac_msgs/msg/Part`
+        - `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
 
     ariac_msgs/msg/AdvancedLogicalCameraImage
       .. code-block:: text
@@ -495,7 +509,11 @@ Message Definitions
       - ``tray_poses``: The kit trays in the camera's field of view
       - ``sensor_pose``: The pose of the camera in the world frame
 
-      .. seealso:: :term:`ariac_msgs/msg/PartPose`, :term:`ariac_msgs/msg/KitTrayPose`, `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
+      .. seealso:: 
+        
+        - :term:`ariac_msgs/msg/PartPose`
+        - :term:`ariac_msgs/msg/KitTrayPose`
+        - `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
 
     ariac_msgs/msg/KitTrayPose
       .. code-block:: text
@@ -579,6 +597,8 @@ Message Definitions
       - ``part_poses``: The poses of the parts in the camera's field of view
       - ``tray_poses``: The poses of the kit trays in the camera's field of view
       - ``sensor_pose``: The pose of the camera in the world frame
+
+      .. seealso:: `geometry_msgs/Pose <https://docs.ros2.org/latest/api/geometry_msgs/msg/Pose.html>`_
 
     ariac_msgs/msg/QualityIssue
       .. code-block:: text

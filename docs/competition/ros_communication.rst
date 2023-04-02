@@ -193,7 +193,24 @@ Message and Service Definitions
 
    Returns the exact HTML content for a specific identifier (``id``).
    If no anchor identifier is specified the content of the first one returned.
-   
+
+
+.. glossary::
+    :sorted:
+
+    Order.msg
+      .. code-block:: text
+
+        uint8 KITTING=0
+        uint8 ASSEMBLY=1
+        uint8 COMBINED=2
+
+        string id
+        uint8 type # KITTING, ASSEMBLY, or COMBINED
+        bool priority
+        ariac_msgs/KittingTask kitting_task 
+        ariac_msgs/AssemblyTask assembly_task
+        ariac_msgs/CombinedTask combined_task
 ..
     List of service with the service type and a brief description.
 

@@ -58,7 +58,7 @@ To learn more about sensor configuration files, see the Sensor configuration fil
 A break beam sensor was added to :file:`sensors.yaml` as seen in :numref:`sensors-yaml-break-beam`. 
 
 .. code-block:: yaml
-    :caption: sensors.yaml
+    :caption: :file:`sensors.yaml`
     :name: sensors-yaml-break-beam
 
     sensors:
@@ -76,7 +76,7 @@ Competition Interface
 The competition interface for :tuto:`Tutorial 2` is shown in :numref:`competitioninterface-tutorial2`.
 
 .. code-block:: python
-    :caption: competition_interface.py
+    :caption: :file:`competition_interface.py`
     :name: competitioninterface-tutorial2
     :emphasize-lines: 3, 8, 57-68, 70-72, 74-83
     :linenos:
@@ -217,7 +217,7 @@ Code Explanation
 - Imports
 
     - :python:`from rclpy.qos import qos_profile_sensor_data` is the ROS 2 Quality of Service API. This is used to set the QoS profile for the floor robot gripper state subscriber.
-    - :python:`BreakBeamStatus`: Message class that stores the status of the break beam (:term:`ariac_msgs/msg/BreakBeamStatus`)
+    - :python:`BreakBeamStatus`: Message class that stores the status of the break beam (:term:`ariac_msgs/msg/BreakBeamStatus`).
 
 
 - Instance Variables

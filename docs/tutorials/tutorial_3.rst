@@ -1,17 +1,6 @@
 
 .. _TUTORIAL3:
 
-.. only:: builder_html or readthedocs
-
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
-.. role:: inline-bash(code)
-    :language: bash
 
 *****************************************************
 Tutorial 3: Read Data from an Advanced Logical Camera
@@ -41,7 +30,7 @@ This tutorial covers the following topics:
 Package Structure
 =================
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 3`  are highlighted in the tree below.
+Updates and additions that are specific to :tuto:`tutorial 3`  are highlighted in the tree below.
 
 
 .. code-block:: text
@@ -93,7 +82,7 @@ An advanced logical camera is added to ``sensors.yaml`` above the right bins (se
 Competition Interface
 --------------------------------
 
-The competition interface for :inline-tutorial:`tutorial 3` is shown in :numref:`competitioninterface-tutorial3`.
+The competition interface for :tuto:`tutorial 3` is shown in :numref:`competitioninterface-tutorial3`.
 
 .. code-block:: python
     :caption: competition_interface.py
@@ -349,44 +338,44 @@ The competition interface from :ref:`Tutorial 2 <TUTORIAL2>` was augmented with 
 
 - Imports
 
-    - :inline-python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (:term:`AdvancedLogicalCameraImage.msg`)
-    - :inline-python:`Part`: Message class that stores the part type and color (:term:`Part.msg`).
-    - :inline-python:`PartPose`: Message class that stores a :inline-python:`Part` and its :inline-python:`Pose`  (:term:`PartPose.msg`)
+    - :python:`AdvancedLogicalCameraImage`: Message class that stores the part poses and sensor pose of the advanced logical camera (:term:`AdvancedLogicalCameraImage.msg`)
+    - :python:`Part`: Message class that stores the part type and color (:term:`Part.msg`).
+    - :python:`PartPose`: Message class that stores a :python:`Part` and its :python:`Pose`  (:term:`PartPose.msg`)
         
         - **Note**: These message classes are imported as aliases since the package consists of Python classes with the same name.
 
-    - The module :inline-python:`utils` contains reusable functions and classes.
-    - The function :inline-python:`multiply_pose()` is used to compute the pose of the parts detected by the camera in the world frame.
-    - The function :inline-python:`rpy_from_quaternion()` is used to convert a quaternion to euler angles roll, pitch, yaw.
-    - The function :inline-python:`rad_to_deg_str()` is used to convert a value in radians to a string in degrees.
-    - The class :inline-python:`AdvancedLogicalCameraImage` is a Python class which is used to store the message published on the camera topic. Although a class is not strictly necessary, it makes the code more readable and easier to maintain.
+    - The module :python:`utils` contains reusable functions and classes.
+    - The function :python:`multiply_pose()` is used to compute the pose of the parts detected by the camera in the world frame.
+    - The function :python:`rpy_from_quaternion()` is used to convert a quaternion to euler angles roll, pitch, yaw.
+    - The function :python:`rad_to_deg_str()` is used to convert a value in radians to a string in degrees.
+    - The class :python:`AdvancedLogicalCameraImage` is a Python class which is used to store the message published on the camera topic. Although a class is not strictly necessary, it makes the code more readable and easier to maintain.
 
 - Class Variables
 
-    - :inline-python:`_part_colors` is a dictionary that maps the integer values of the part color to their string representations. 
-    - :inline-python:`_part_types` is a dictionary that maps the integer values of the part type to their string representations. 
-    - :inline-python:`_part_colors_emoji` is a dictionary that maps the integer values of the part color to their emoji representations. 
+    - :python:`_part_colors` is a dictionary that maps the integer values of the part color to their string representations. 
+    - :python:`_part_types` is a dictionary that maps the integer values of the part type to their string representations. 
+    - :python:`_part_colors_emoji` is a dictionary that maps the integer values of the part color to their emoji representations. 
         
         - **Note**: These dictionaries are mainly used to display the part color and type in a human-readable format.
 
 - Instance Variables
 
-    - :inline-python:`_advanced_camera0_sub` is a subscriber to the camera topic. The callback function :inline-python:`advanced_camera0_cb()` is called when a message is published on the camera topic. 
-    - :inline-python:`_camera_image` is an object of the class :inline-python:`AdvancedLogicalCameraImage` that stores the latest message published on the camera topic.
+    - :python:`_advanced_camera0_sub` is a subscriber to the camera topic. The callback function :python:`advanced_camera0_cb()` is called when a message is published on the camera topic. 
+    - :python:`_camera_image` is an object of the class :python:`AdvancedLogicalCameraImage` that stores the latest message published on the camera topic.
 
 - Instance Methods
 
-    - :inline-python:`camera_image(self)` is a getter to the :inline-python:`_camera_image` attribute and is provided to access the latest message published on the camera topic.
+    - :python:`camera_image(self)` is a getter to the :python:`_camera_image` attribute and is provided to access the latest message published on the camera topic.
 
-    - :inline-python:`_advanced_camera0_cb(self, msg)` is the callback function for the camera topic. It stores the message in the :inline-python:`_camera_image` attribute.
+    - :python:`_advanced_camera0_cb(self, msg)` is the callback function for the camera topic. It stores the message in the :python:`_camera_image` attribute.
 
-    - :inline-python:`parse_advanced_camera_image(self)` parses the message stored in :inline-python:`_camera_image` and returns a string representation of the message. This method is used to display the part color, type, and pose in a human-readable format. The output is printed in the following format:
+    - :python:`parse_advanced_camera_image(self)` parses the message stored in :python:`_camera_image` and returns a string representation of the message. This method is used to display the part color, type, and pose in a human-readable format. The output is printed in the following format:
         
-        - Emoji for the part color using the class attribute :inline-python:`part_colors_emoji_`.
-        - Part color using the class attribute :inline-python:`part_colors_`.
-        - Part type using the class attribute :inline-python:`part_types_`.
+        - Emoji for the part color using the class attribute :python:`part_colors_emoji_`.
+        - Part color using the class attribute :python:`part_colors_`.
+        - Part type using the class attribute :python:`part_types_`.
         - Part pose in the camera frame: This is the pose returned by the camera.
-        - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method :inline-python:`multiply_pose()`.
+        - Part pose in the world frame: This is calculated by multiplying the camera pose with the part pose in the camera frame. This multiplication is done using the method :python:`multiply_pose()`.
 
 
 Create the Executable
@@ -434,9 +423,9 @@ Code Explanation
 This executable does the following:
 
     - Initialize the ROS client library.
-    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Create an instance of the class :python:`CompetitionInterface` as a ROS node.
     - Start the competition.
-    - Log the content of :inline-python:`interface.camera_image` every 5 seconds.
+    - Log the content of :python:`interface.camera_image` every 5 seconds.
 
 Build Instructions
 ------------------

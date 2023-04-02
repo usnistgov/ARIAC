@@ -2,7 +2,7 @@ Updates
 ========
 
 
-Release 2023_v1.1 April 3
+Release 2023_v1.1, April 3
 --------------------------------------------
 
 - Modified :tuto:`Tutorials` :ref:`1 <TUTORIAL1>` and :ref:`2 <TUTORIAL2>`.

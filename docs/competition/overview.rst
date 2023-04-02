@@ -15,7 +15,7 @@ Overview of the Competition
 
 
 :numref:`flowchart` provides an overview of the competition. 
-The competition consists of two main actors, the :abbr:`CCS (Competitor Control System)` and the :abbr:`AM (ARIAC Manager)`. 
+The competition consists of two main actors, the CCS and the AM. 
 The competition is set to different states while it is running and the CCS needs to subscribe to the topic :topic:`/ariac/competition_state` to properly implement the programming logic. 
 
 Start Commands
@@ -43,7 +43,7 @@ To compete in ARIAC, competitors have to issue two commands in two different ter
 
     .. warning:: 
         
-        To submit a kitting order, the CCS first has to move the AGV to the warehouse with the service :rosservice:`/ariac/move_agv{n}` (see :ref:`/ariac/move_agv{n} <moveAGV>`).
+        To submit a kitting order, the CCS first has to move the AGV to the warehouse with the service :rosservice:`/ariac/move_agv{n}`.
         Once the AGV is at the warehouse, then the submission service should be called. 
         To know the location of an AGV in the workcell, the CCS has to subscribe to the topic :topic:`/ariac/agv{n}_status`.
 

@@ -1,17 +1,5 @@
 .. _TUTORIAL5:
 
-.. only:: builder_html or readthedocs
-
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
-.. role:: inline-bash(code)
-    :language: bash
-
 *********************************
 Tutorial 5: Move AGVs to Stations
 *********************************
@@ -41,7 +29,7 @@ This tutorial shows how to move AGVs to assembly stations.
 Package Structure
 =================
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 5`  are highlighted in the tree below.
+Updates and additions that are specific to :tuto:`Tutorial 5`  are highlighted in the tree below.
 
 .. code-block:: text
     :emphasize-lines: 2, 9, 15
@@ -69,10 +57,10 @@ Updated/Created Files
 Competition Interface
 ---------------------
 
-The competition interface for :inline-tutorial:`tutorial 5` is shown in :numref:`competitioninterface-tutorial5`.
+The competition interface for :tuto:`Tutorial 5` is shown in :numref:`competitioninterface-tutorial5`.
 
 .. code-block:: python
-    :caption: competition_interface.py
+    :caption: :file:`competition_interface.py`
     :name: competitioninterface-tutorial5
     :emphasize-lines: 18-19, 453-485, 487-526
     :linenos:
@@ -612,19 +600,19 @@ The competition interface from :ref:`Tutorial 4 <TUTORIAL4>` was augmented with 
 
 - Imports
 
-    - :inline-python:`MoveAGV`: Service class which is used to move an AGV to a preset location  (see `MoveAGV.srv <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/srv/MoveAGV.srv>`_ )
+    - :python:`MoveAGV`: Service class which is used to move an AGV to a preset location  (:term:`ariac_msgs/srv/MoveAGV`).
 
 - Instance Methods
 
-    - :inline-python:`lock_agv_tray(self, num)`: Method to lock the tray of an AGV. This method creates a client to the ``/ariac/agv{num}_lock_tray`` service and calls it. The AGV number is passed as an argument to the method.
+    - :python:`lock_agv_tray(self, num)`: Method to lock the tray of an AGV. This method creates a client to the :rosservice:`/ariac/agv{num}_lock_tray` service and calls it. The AGV number is passed as an argument to the method.
 
-    - :inline-python:`move_agv_to_station(self, num, station)`: Method to move an AGV to a station. This method creates a client to the ``/ariac/move_agv{num}`` service and calls it. The AGV number and station are passed as arguments to the method.
+    - :python:`move_agv_to_station(self, num, station)`: Method to move an AGV to a station. This method creates a client to the :rosservice:`/ariac/move_agv{num}` service and calls it. The AGV number and station are passed as arguments to the method.
 
 Executable
 ----------
 
 .. code-block:: python
-    :caption: tutorial_5.py
+    :caption: :file:`tutorial_5.py`
     
     #!/usr/bin/env python3
     '''
@@ -670,7 +658,7 @@ Code Explanation
 This executable does the following:
 
     - Initialize the ROS client library.
-    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Create an instance of the class :python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - Iterate through the list of orders and retrieve orders with assembly tasks.
 
@@ -686,7 +674,7 @@ Build Instructions
 ------------------
 
 .. code-block:: cmake
-    :caption: CMakeLists.txt
+    :caption: :file:`CMakeLists.txt`
     :emphasize-lines: 30
 
     cmake_minimum_required(VERSION 3.8)

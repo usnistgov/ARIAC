@@ -38,10 +38,10 @@ Terminology
     Kitting Task
       Kitting is the process which groups separate but related :term:`parts<Part>` as one unit. For a kitting task, :term:`competitors<Competitor>` are expected to: 
       
-      #. Place a kit tray onto one of the four AGVs.
-      #. Place parts onto that kit tray in a specific quadrant.
-      #. Direct the AGV to the warehouse.
-      #. Evaluate the submitted kit for scoring.
+        #. Place a kit tray onto one of the four AGVs.
+        #. Place parts onto that kit tray in a specific quadrant.
+        #. Direct the AGV to the warehouse.
+        #. Evaluate the submitted kit for scoring.
 
     Assembly Task
       Assembly is a manufacturing process in which interchangeable :term:`parts<Part>` are added to a product in a sequential manner to create an end product. In ARIAC, assembly is simplified by not "forcing" :term:`competitors<Competitor>` to use a sequence during assembly. :term:`Competitors<Competitor>` can place :term:`parts<Part>` in an insert in any order. For an assembly task, :term:`competitors<Competitor>` are expected to use :term:`parts<Part>` located on an AGV and assemble those parts at one of the four assembly stations.

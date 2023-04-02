@@ -1,17 +1,5 @@
 .. _TUTORIAL4:
 
-.. only:: builder_html or readthedocs
-
-.. role:: inline-python(code)
-    :language: python
-
-.. role:: inline-file(file)
-
-.. role:: inline-tutorial(file)
-
-.. role:: inline-bash(code)
-    :language: bash
-
 *************************
 Tutorial 4: Read an Order
 *************************
@@ -39,7 +27,7 @@ This tutorial shows how to read each order published by the ARIAC manager. The f
 Package Structure
 =================
 
-Updates and additions that are specific to :inline-tutorial:`tutorial 4`  are highlighted in the tree below.
+Updates and additions that are specific to :tuto:`Tutorial 4`  are highlighted in the tree below.
 
 
 .. code-block:: text
@@ -68,10 +56,10 @@ Updated/Created Files
 Competition Interface
 ---------------------
 
-The competition interface for :inline-tutorial:`tutorial 4` is shown in :numref:`competitioninterface-tutorial4`.
+The competition interface for :tuto:`Tutorial 4` is shown in :numref:`competitioninterface-tutorial4`.
 
 .. code-block:: python
-    :caption: competition_interface.py
+    :caption: :file:`competition_interface.py`
     :name: competitioninterface-tutorial4
     :emphasize-lines: 12-15, 25-29, 78-92, 141-152, 154-156, 166-168, 170-172, 174-182, 301-337, 339-383, 385-426, 428-449
     :linenos:
@@ -535,48 +523,48 @@ The competition interface from :ref:`Tutorial 3 <TUTORIAL3>` was augmented with 
 
 - Imports
 
-    - :inline-python:`Order`: Message class that contains the order information (see `Order.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/Order.msg>`_ )
-    - :inline-python:`AssemblyPart`: Message class that contains the assembly part information (see `AssemblyPart.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AssemblyPart.msg>`_ )
-    - :inline-python:`AssemblyTask`: Message class that contains the assembly task information (see `AssemblyTask.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AssemblyTask.msg>`_ )
-    - :inline-python:`AGVStatus`: Message class that contains the AGV status information (see `AGVStatus.msg <https://github.com/usnistgov/ARIAC/blob/ariac2023/ariac_msgs/msg/AGVStatus.msg>`_ )
+    - :python:`Order`: Message class that contains the order information (:term:`ariac_msgs/msg/Order`).
+    - :python:`AssemblyPart`: Message class that contains the assembly part information (:term:`ariac_msgs/msg/AssemblyPart`).
+    - :python:`AssemblyTask`: Message class that contains the assembly task information (:term:`ariac_msgs/msg/AssemblyTask`).
+    - :python:`AGVStatus`: Message class that contains the AGV status information ( :term:`ariac_msgs/msg/AGVStatus`).
 
 - Class Variables
 
-    - :inline-python:`_destinations` is a dictionary that maps the integer values of the AGV destination to their string representations.
-    - :inline-python:`_stations` is a dictionary that maps the integer values of the assembly stations to their string representations.
+    - :python:`_destinations` is a dictionary that maps the integer values of the AGV destination to their string representations.
+    - :python:`_stations` is a dictionary that maps the integer values of the assembly stations to their string representations.
 
 - Instance Variables
 
-    - :inline-python:`_orders_sub`: ROS subscriber to the topic ``/ariac/orders``
+    - :python:`_orders_sub`: ROS subscriber to the topic :topic:`/ariac/orders`.
 
-    - :inline-python:`self._parse_incoming_order`: Flag for logging an order in the terminal. If the flag is set to :inline-python:`True`, the order is logged in the terminal. If the flag is set to :inline-python:`False`, the order is not logged in the terminal.
+    - :python:`self._parse_incoming_order`: Flag for logging an order in the terminal. If the flag is set to :python:`True`, the order is logged in the terminal. If the flag is set to :python:`False`, the order is not logged in the terminal.
 
-    - :inline-python:`self._orders`: List of orders. Each order announced by the competition interface is stored in this list.
+    - :python:`self._orders`: List of orders. Each order announced by the competition interface is stored in this list.
 
 - Instance Methods
 
-    - :inline-python:`orders(self)`: Getter for the list of orders :inline-python:`self._orders`
+    - :python:`orders(self)`: Getter for the list of orders :python:`self._orders`
 
-    - :inline-python:`parse_incoming_order(self)` Getter for the flag :inline-python:`self._parse_incoming_order`
+    - :python:`parse_incoming_order(self)` Getter for the flag :python:`self._parse_incoming_order`
 
-    - :inline-python:`parse_incoming_order(self, value)` Setter for the flag :inline-python:`self._parse_incoming_order`
+    - :python:`parse_incoming_order(self, value)` Setter for the flag :python:`self._parse_incoming_order`
 
-    - :inline-python:`_orders_cb(self, msg: OrderMsg)`: Callback method for the subscriber to the topic ``/ariac/orders``. It parses the order and stores it in the list of orders :inline-python:`self._orders`
+    - :python:`_orders_cb(self, msg: OrderMsg)`: Callback method for the subscriber to the topic :topic:`/ariac/orders`. It parses the order and stores it in the list of orders :python:`self._orders`
 
-    - :inline-python:`_parse_order(self, order: Order)`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
+    - :python:`_parse_order(self, order: Order)`: Parses an order message and returns a string representation. This method calls the appropriate parsing method  based on the type of the order.
 
-    - :inline-python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a :inline-python:`KittingTask` object and returns a string representation.
+    - :python:`_parse_kitting_task(self, kitting_task: KittingTask)`: Parses a :python:`KittingTask` object and returns a string representation.
 
-    - :inline-python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an :inline-python:`AssemblyTask` object and returns a string representation.
+    - :python:`_parse_assembly_task(self, assembly_task: AssemblyTask)`: Parses an :python:`AssemblyTask` object and returns a string representation.
 
-    - :inline-python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a :inline-python:`CombinedTask` object and returns a string representation.
+    - :python:`_parse_combined_task(self, combined_task: CombinedTask)`: Parses a :python:`CombinedTask` object and returns a string representation.
 
     
 Executable
 ----------
 
 .. code-block:: python
-    :caption: tutorial_4.py
+    :caption: :file:`tutorial_4.py`
     
     #!/usr/bin/env python3
     '''
@@ -616,7 +604,7 @@ Code Explanation
 This executable does the following:
 
     - Initialize the ROS client library.
-    - Create an instance of the class :inline-python:`CompetitionInterface` as a ROS node.
+    - Create an instance of the class :python:`CompetitionInterface` as a ROS node.
     - Start the competition.
     - Log each published message to the terminal.
 
@@ -625,7 +613,7 @@ Build Instructions
 
 .. code-block:: cmake
     :emphasize-lines: 29
-    :caption: CMakeLists.txt
+    :caption: :file:`CMakeLists.txt`
 
     cmake_minimum_required(VERSION 3.8)
     project(ariac_tutorials)

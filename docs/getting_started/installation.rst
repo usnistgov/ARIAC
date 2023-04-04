@@ -86,7 +86,7 @@ The following command starts ARIAC with the default configuration:
     .. code-block:: console
         :class: highlight
 
-        ros2 launch ariac ariac.launch.py
+        ros2 launch ariac_gazebo ariac.launch.py
 
     - The default trial file is :file:`kitting.yaml`, located in `ariac_gazebo/config/trials/ <https://github.com/usnistgov/ARIAC/tree/ariac2023/ariac_gazebo/config/trials>`_
 
@@ -101,7 +101,7 @@ Custom Configuration
     .. code-block:: console
         :class: highlight
 
-        ros2 launch ariac ariac.launch.py trial_name:=<trial_file>
+        ros2 launch ariac_gazebo ariac.launch.py trial_name:=<trial_file>
 
     Replace :samp:`{<trial_file>}` with the name of a trial file (without the ``.yaml`` extension). **Reminder:** This trial file **MUST** be placed in :file:`ariac_gazebo/config/trials/`.
     
@@ -110,7 +110,7 @@ Custom Configuration
         .. code-block:: console
             :class: highlight
 
-            ros2 launch ariac ariac.launch.py trial_name:=assembly
+            ros2 launch ariac_gazebo ariac.launch.py trial_name:=assembly
 
 - Competitors will need to create their own competitor package and use their own sensor configuration file.
 
@@ -141,14 +141,14 @@ Custom Configuration
             .. code-block:: console
                 :class: highlight
 
-                ros2 launch ariac ariac.launch.py competitor_pkg:=<package> sensor_config:=<sensor_file> trial_name:=<trial_file>
+                ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=<package> sensor_config:=<sensor_file> trial_name:=<trial_file>
 
             **Example:** To start ARIAC with :file:`assembly.yaml` using :file:`my_sensors.yaml` sensor configuration file (located in :file:`my_competitor_pkg/config`), run the following command:
 
                 .. code-block:: console
                     :class: highlight
 
-                    ros2 launch ariac ariac.launch.py competitor_pkg:=my_competitor_pkg sensor_config:=my_sensors trial_name:=assembly
+                    ros2 launch ariac_gazebo ariac.launch.py competitor_pkg:=my_competitor_pkg sensor_config:=my_sensors trial_name:=assembly
 
 
 Moving the Robots

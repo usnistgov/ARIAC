@@ -146,14 +146,14 @@ Parts can be found in 3 different location types: Bins, conveyor belt, and AGVs.
 bins: # bin params - 8 total bins each bin has nine total slots (1-9)
     bin1: 
       - type: 'pump'
-      color: 'red'
-      slots: [1, 5, 9]
-      rotation: 'pi/6'
-      flipped: true
+        color: 'red'
+        slots: [1, 5, 9]
+        rotation: 'pi/6'
+        flipped: true
       - type: 'battery'
-      color: 'blue'
-      slots: [4, 2]
-      rotation: 'pi/2'
+        color: 'blue'
+        slots: [4, 2]
+        rotation: 'pi/2'
     bin3:
       - type: 'regulator'
         color: 'purple'

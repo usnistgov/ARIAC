@@ -67,9 +67,9 @@ namespace ariac_plugins
         /*!< Pointer to the current state. */
         unsigned int current_state_{ariac_msgs::msg::CompetitionState::IDLE};
         /*!< Score for the whole trial. */
-        double trial_score_{0};
+        double trial_score_;
         /*!< Time limit for the current trial. */
-        double time_limit_{-1};
+        double time_limit_;
         /*!< Name of the trial file. */
         std::string trial_name_;
         /*< Health status for the break beam*/
@@ -112,18 +112,13 @@ namespace ariac_plugins
         unsigned int agv3_location_;
         unsigned int agv4_location_;
 
-        // std::vector<ariac_common::Part> agv1_parts_;
-        // std::vector<ariac_common::Part> agv2_parts_;
-        // std::vector<ariac_common::Part> agv3_parts_;
-        // std::vector<ariac_common::Part> agv4_parts_;
-
         std::map<int, std::vector<ariac_common::Part>> agv_parts_;
         std::map<int, std::vector<ariac_common::Part>> insert_parts_;
 
         //============== ROS =================
-        /*!< Time when this plugin is loaded. */
+        /*!< Time since when this plugin is loaded. */
         rclcpp::Time current_sim_time_;
-        /*!< Elapsed time since the competition started. */
+        /*!< Time since the competition started. */
         double elapsed_time_;
 
         //============== SUBSCRIBERS =================
@@ -174,8 +169,6 @@ namespace ariac_plugins
         /*!< Publisher to the topic /ariac/start_human */
         rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr start_human_pub_;
 
-        //============== LISTS FOR ORDERS AND CHALLENGES =================
-
         //============== Orders =================
         /*!< List of orders. that have already been submitted*/
         std::vector<std::string> submitted_orders_;
@@ -193,19 +186,25 @@ namespace ariac_plugins
         /*!< List of all orders in the trial. */
         std::vector<std::shared_ptr<ariac_common::Order>> all_orders_;
 
-        //============== Human =================
+        //============== Human Challenge =================
         /*!< human challenge announced based on time. */
         std::shared_ptr<ariac_common::HumanChallengeTemporal> time_based_human_challenge_;
         /*!< human challenge announced based on part placement. */
         std::shared_ptr<ariac_common::HumanChallengeOnPartPlacement> on_part_placement_human_challenge_;
         /*!< human challenge announced based on submission. */
-        std::shared_ptr<ariac_common::HumanChallengeOnSubmission> on_submission_human_challenge_;
-        /*!<start time for the safe zone penalty */
+        std::shared_ptr<ariac_common::HumanChallengeOnSubmission> on_order_submission_human_challenge_;
+        /*!<Time at which the safe zone penalty started */
         double safe_zone_penalty_start_time_;
-        bool safe_zone_penalty_started_ = false;
-        double safe_zone_penalty_duration_ = 15.0;
+        /*!<Time at which the safe zone penalty ended */
+        double safe_zone_penalty_end_time_;
+        /*!<Flag for whether or not the safe zone penalty has started */
+        bool safe_zone_penalty_started_;
+        /*!<Duration for disabling the ceiling robot */
+        double safe_zone_penalty_duration_;
+        /*!<Ceiling robot grace period */
+        double ceiling_robot_grace_period_;
 
-        //============== Sensor Blackout =================
+        //============== Sensor Blackout Challenge =================
         /*!< List of sensor blackout challenges that are announced based on time. */
         std::vector<std::shared_ptr<ariac_common::SensorBlackoutTemporal>>
             time_based_sensor_blackouts_;
@@ -216,7 +215,7 @@ namespace ariac_plugins
         /*!< List of sensor blackout challenges that have been started. */
         std::vector<std::shared_ptr<ariac_common::SensorBlackout>> in_progress_sensor_blackouts_;
 
-        //============== Robot Malfunction =================
+        //============== Robot Malfunction Challenge =================
         /*!< List of robot malfunction challenges that are announced based on time. */
         std::vector<std::shared_ptr<ariac_common::RobotMalfunctionTemporal>>
             time_based_robot_malfunctions_;
@@ -227,12 +226,22 @@ namespace ariac_plugins
         /*!< List of robot malfunction challenges that have been started. */
         std::vector<std::shared_ptr<ariac_common::RobotMalfunction>> in_progress_robot_malfunctions_;
 
+        //============== Faulty Part Challenge =================
         /*!< List of faulty part challenges. */
         std::vector<std::shared_ptr<ariac_common::FaultyPartChallenge>> faulty_part_challenges_;
+        /*!< Array for faulty part information for each quadrant. */
+        std::array<bool, 4> HandleFaultyParts(
+            std::shared_ptr<ariac_common::FaultyPartChallenge> _challenge,
+            ariac_common::KittingTask _task,
+            ariac_common::KittingShipment _shipment);
+
+        //============== Tray and AGV Sensors =================
         /*!< Map of AGV trays. The key is the AGV ID and the value is information about the tray*/
         std::map<int, gazebo::msgs::LogicalCameraImage> agv_tray_images_;
         /*!< Map of Assembly Station images. The key is the AGV ID and the value is the camera image.*/
         std::map<int, gazebo::msgs::LogicalCameraImage> assembly_station_images_;
+
+        //============== Callbacks for Tray and AGVs Cameras =================
         /*!< Callback to parse the tray located on AGV1. */
         void AGV1TraySensorCallback(ConstLogicalCameraImagePtr &_msg);
         /*!< Callback to parse the tray located on AGV2. */
@@ -250,13 +259,18 @@ namespace ariac_plugins
         /*!< Callback to logical camera above assembly station 4. */
         void Station4SensorCallback(ConstLogicalCameraImagePtr &_msg);
 
+        //============== Score Displays =================
+        /*!< Print details of the score for an assembly task. */
         void PrintAssemblyScore(std::shared_ptr<ariac_common::AssemblyScore> assembly_score);
+        /*!< Print details of the score for a combined task. */
         void PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score);
+        /*!< Print details of the score for a kitting task. */
         void PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score);
+        /*!< Print details of the score for the trial. */
         void PrintTrialScore(
-            std::shared_ptr<ariac_common::Order> kitting_order, std::shared_ptr<ariac_common::Order> assembly_order, std::shared_ptr<ariac_common::Order> combined_order);
-
-        // Kitting Methods
+            std::shared_ptr<ariac_common::Order> kitting_order,
+            std::shared_ptr<ariac_common::Order> assembly_order,
+            std::shared_ptr<ariac_common::Order> combined_order);
 
         /**
          * @brief Retrieve the tray information from the message and store it in the agv_parts_ map.
@@ -269,8 +283,6 @@ namespace ariac_plugins
          * @param _msg The message containing the insert information.
          */
         void StoreStationParts(int station, gazebo::msgs::LogicalCameraImage &_msg);
-
-        std::array<bool, 4> HandleFaultyParts(std::shared_ptr<ariac_common::FaultyPartChallenge> _challenge, ariac_common::KittingTask _task, ariac_common::KittingShipment _shipment);
 
         int ScoreQuadrant(bool is_correct_part_type, bool is_correct_part_color, bool is_flipped_part, bool is_faulty_part);
 
@@ -329,9 +341,6 @@ namespace ariac_plugins
         impl_->gznode_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
         impl_->gznode_->Init(impl_->world_->Name());
 
-        // Init trial score
-        impl_->trial_score_ = 0;
-
         std::string tray1_topic = "/gazebo/world/agv_tray_sensor_1/sensor_base/agv_tray_sensor/models";
         std::string tray2_topic = "/gazebo/world/agv_tray_sensor_2/sensor_base/agv_tray_sensor/models";
         std::string tray3_topic = "/gazebo/world/agv_tray_sensor_3/sensor_base/agv_tray_sensor/models";
@@ -362,7 +371,7 @@ namespace ariac_plugins
         impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
             std::bind(&TaskManagerPlugin::OnUpdate, this));
 
-        //============== SUBSCRIBERS =================
+        // Init subscribers
         impl_->trial_config_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Trial>(
             "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", rclcpp::QoS(1)),
             std::bind(&TaskManagerPlugin::OnTrialCallback, this, std::placeholders::_1));
@@ -383,24 +392,35 @@ namespace ariac_plugins
             "/ariac/agv4_status", qos.get_subscription_qos("/ariac/agv4_status", rclcpp::QoS(1)),
             std::bind(&TaskManagerPlugin::OnAGV4StatusCallback, this, std::placeholders::_1));
 
-        //============== PUBLISHERS =================
+        // Init publishers
+        impl_->start_human_pub_ = impl_->ros_node_->create_publisher<std_msgs::msg::Bool>("/ariac/start_human", 10);
         impl_->sensor_health_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::Sensors>("/ariac/sensor_health", 10);
         impl_->robot_health_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::Robots>("/ariac/robot_health", 10);
         impl_->competition_state_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::CompetitionState>("/ariac/competition_state", 10);
         impl_->order_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::Order>("/ariac/orders", 1);
-
-        // Sensor health
+        // Init sensor health
         impl_->break_beam_sensor_health_ = true;
         impl_->proximity_sensor_health_ = true;
         impl_->laser_profiler_sensor_health_ = true;
         impl_->lidar_sensor_health_ = true;
         impl_->camera_sensor_health_ = true;
         impl_->logical_camera_sensor_health_ = true;
-
-        // Robot health
+        // Init robot health
         impl_->ceiling_robot_health_ = true;
         impl_->floor_robot_health_ = true;
-
+        // Init time limit
+        impl_->time_limit_ = -1;
+        // Init trial score
+        impl_->trial_score_ = 0;
+        // Init flag for safe zone penalty
+        impl_->safe_zone_penalty_started_ = false;
+        // Init safe zone penalty end time
+        impl_->safe_zone_penalty_end_time_ = -1;
+        // Init safe zone penalty duration
+        impl_->safe_zone_penalty_duration_ = 15.0;
+        // Init safe zone penalty grace period
+        impl_->ceiling_robot_grace_period_ = 10.0;
+        // Init elapsed time
         impl_->elapsed_time_ = 0.0;
     }
 
@@ -707,19 +727,6 @@ namespace ariac_plugins
     }
 
     //==============================================================================
-    void TaskManagerPlugin::ProcessSafeZonePenalty()
-    {
-        if (impl_->safe_zone_penalty_started_)
-        {
-            if (impl_->elapsed_time_ >= impl_->safe_zone_penalty_start_time_ + impl_->safe_zone_penalty_duration_)
-            {
-                impl_->safe_zone_penalty_started_ = false;
-                impl_->ceiling_robot_health_ = true;
-            }
-        }
-    }
-
-    //==============================================================================
     void TaskManagerPlugin::ProcessInProgressSensorBlackouts()
     {
         for (const auto &sensor_blackout : impl_->in_progress_sensor_blackouts_)
@@ -884,7 +891,7 @@ namespace ariac_plugins
         if (impl_->elapsed_time_ >= impl_->time_based_human_challenge_->GetTriggerTime())
         {
             RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Starting human challenge");
-            auto msg = std_msgs::msg::Bool();
+            std_msgs::msg::Bool msg;
             msg.data = true;
             impl_->start_human_pub_->publish(msg);
             impl_->time_based_human_challenge_->SetStartTime(impl_->elapsed_time_);
@@ -895,11 +902,28 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPlugin::ProcessChallengesToAnnounce()
     {
+        // time based human challenge
         if (impl_->time_based_human_challenge_)
         {
             if (!impl_->time_based_human_challenge_->HasStarted())
             {
                 ProcessTemporalHumanChallenge();
+            }
+        }
+        // on part placement human challenge
+        if (impl_->on_part_placement_human_challenge_)
+        {
+            if (!impl_->on_part_placement_human_challenge_->HasStarted())
+            {
+                ProcessOnPartPlacementHumanChallenge();
+            }
+        }
+        // on order submission human challenge
+        if (impl_->on_order_submission_human_challenge_)
+        {
+            if (!impl_->on_order_submission_human_challenge_->HasStarted())
+            {
+                ProcessOnOrderSubmissionHumanChallenge();
             }
         }
 
@@ -915,6 +939,53 @@ namespace ariac_plugins
             ProcessOnPartPlacementRobotMalfunctions();
         if (!impl_->on_submission_robot_malfunctions_.empty())
             ProcessOnSubmissionRobotMalfunctions();
+    }
+
+    //==============================================================================
+    void
+    TaskManagerPlugin::ProcessOnOrderSubmissionHumanChallenge()
+    {
+
+        // Get the id of the order which will trigger the start of this challenge
+        auto trigger_order = impl_->on_order_submission_human_challenge_->GetTriggerOrderId();
+
+        // parse the list of submitted orders to see if the trigger order has been submitted
+        if (std::find(impl_->submitted_orders_.begin(), impl_->submitted_orders_.end(), trigger_order) != impl_->submitted_orders_.end())
+        {
+            RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Starting human challenge");
+            std_msgs::msg::Bool msg;
+            msg.data = true;
+            impl_->start_human_pub_->publish(msg);
+            impl_->on_order_submission_human_challenge_->SetStartTime(impl_->elapsed_time_);
+            impl_->on_order_submission_human_challenge_->SetStarted();
+        }
+    }
+
+    //==============================================================================
+    void TaskManagerPlugin::ProcessOnPartPlacementHumanChallenge()
+    {
+        auto agv_condition = impl_->on_part_placement_human_challenge_->GetAgv();
+        auto part_condition = impl_->on_part_placement_human_challenge_->GetPart();
+
+        // Get the list of parts on the agv
+        auto agv_parts = impl_->agv_parts_.find(agv_condition)->second;
+
+        // if the agv is empty, skip it
+        if (agv_parts.empty())
+            return;
+
+        for (const auto &agv_part : agv_parts)
+        {
+            if (agv_part.GetType() == part_condition->GetType() && agv_part.GetColor() == part_condition->GetColor())
+            {
+                RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Starting human challenge");
+                std_msgs::msg::Bool msg;
+                msg.data = true;
+                impl_->start_human_pub_->publish(msg);
+                impl_->on_part_placement_human_challenge_->SetStartTime(impl_->elapsed_time_);
+                impl_->on_part_placement_human_challenge_->SetStarted();
+            }
+        }
     }
 
     //==============================================================================
@@ -1031,9 +1102,15 @@ namespace ariac_plugins
 
             // Create the end competition service
             // Now competitors can call this service to end the competition
-            impl_->end_competition_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>("/ariac/end_competition", std::bind(&TaskManagerPlugin::EndCompetitionServiceCallback, this, std::placeholders::_1, std::placeholders::_2));
+            impl_->end_competition_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>(
+                "/ariac/end_competition",
+                std::bind(&TaskManagerPlugin::EndCompetitionServiceCallback,
+                          this, std::placeholders::_1, std::placeholders::_2));
 
-            impl_->human_safe_zone_penalty_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>("/ariac/set_human_safe_zone_penalty", std::bind(&TaskManagerPlugin::SetHumanSafeZonePenaltyServiceCallback, this, std::placeholders::_1, std::placeholders::_2));
+            impl_->human_safe_zone_penalty_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>(
+                "/ariac/set_human_safe_zone_penalty",
+                std::bind(&TaskManagerPlugin::SafeZonePenaltyServiceCallback,
+                          this, std::placeholders::_1, std::placeholders::_2));
         }
 
         if ((current_sim_time - impl_->last_sim_time_).Double() >= 1.0)
@@ -1060,19 +1137,24 @@ namespace ariac_plugins
             impl_->start_competition_time_ = current_sim_time;
             impl_->competition_time_set_ = true;
 
-            impl_->submit_order_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::SubmitOrder>("/ariac/submit_order", std::bind(&TaskManagerPlugin::SubmitOrderServiceCallback, this, std::placeholders::_1, std::placeholders::_2));
+            impl_->submit_order_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::SubmitOrder>(
+                "/ariac/submit_order",
+                std::bind(&TaskManagerPlugin::SubmitOrderServiceCallback,
+                          this, std::placeholders::_1, std::placeholders::_2));
 
-            impl_->quality_check_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::PerformQualityCheck>("/ariac/perform_quality_check",
-                                                                                                                   std::bind(&TaskManagerPluginPrivate::PerformQualityCheck,
-                                                                                                                             this->impl_.get(),
-                                                                                                                             std::placeholders::_1,
-                                                                                                                             std::placeholders::_2));
+            impl_->quality_check_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::PerformQualityCheck>(
+                "/ariac/perform_quality_check",
+                std::bind(&TaskManagerPluginPrivate::PerformQualityCheck,
+                          this->impl_.get(),
+                          std::placeholders::_1,
+                          std::placeholders::_2));
 
-            impl_->pre_assembly_poses_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::GetPreAssemblyPoses>("/ariac/get_pre_assembly_poses",
-                                                                                                                        std::bind(&TaskManagerPluginPrivate::GetPreAssemblyPoses,
-                                                                                                                                  this->impl_.get(),
-                                                                                                                                  std::placeholders::_1,
-                                                                                                                                  std::placeholders::_2));
+            impl_->pre_assembly_poses_service_ = impl_->ros_node_->create_service<ariac_msgs::srv::GetPreAssemblyPoses>(
+                "/ariac/get_pre_assembly_poses",
+                std::bind(&TaskManagerPluginPrivate::GetPreAssemblyPoses,
+                          this->impl_.get(),
+                          std::placeholders::_1,
+                          std::placeholders::_2));
         }
 
         // If the competition has started, do the main work
@@ -1094,7 +1176,7 @@ namespace ariac_plugins
             impl_->StoreStationParts(3, impl_->assembly_station_images_[3]);
             impl_->StoreStationParts(4, impl_->assembly_station_images_[4]);
 
-            ProcessSafeZonePenalty();
+            ProcessEndSafeZonePenalty();
             ProcessOrdersToAnnounce();
             ProcessChallengesToAnnounce();
             ProcessInProgressSensorBlackouts();
@@ -1497,7 +1579,7 @@ namespace ariac_plugins
         {
             auto submitted_order_id = condition.submission_condition.order_id;
             auto human_challenge = std::make_shared<ariac_common::HumanChallengeOnSubmission>(behavior, submitted_order_id);
-            impl_->on_submission_human_challenge_ = human_challenge;
+            impl_->on_order_submission_human_challenge_ = human_challenge;
         }
     }
 
@@ -2570,15 +2652,43 @@ namespace ariac_plugins
     }
 
     //==============================================================================
-    void TaskManagerPlugin::HandleSafeZonePenalty()
+    void TaskManagerPlugin::ProcessEndSafeZonePenalty()
     {
+        if (impl_->safe_zone_penalty_started_)
+        {
+            // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Elapsed time: " << impl_->elapsed_time_);
+            // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Penalty time: " << impl_->safe_zone_penalty_start_time_ + impl_->safe_zone_penalty_duration_);
+            if (impl_->elapsed_time_ >= impl_->safe_zone_penalty_start_time_ + impl_->safe_zone_penalty_duration_)
+            {
+                impl_->safe_zone_penalty_started_ = false;
+                impl_->ceiling_robot_health_ = true;
+                // Track the end time of the safe zone penalty
+                impl_->safe_zone_penalty_end_time_ = impl_->elapsed_time_;
+            }
+        }
+    }
+
+    //==============================================================================
+    void TaskManagerPlugin::StartSafeZonePenalty()
+    {
+        // check if the ceiling robot is not just coming out of the penalty
+        // give it a 10 second grace period
+
+        if (impl_->safe_zone_penalty_end_time_ > 0.0) // penalty was previously ended
+        {
+            if (impl_->elapsed_time_ < impl_->safe_zone_penalty_end_time_ + impl_->ceiling_robot_grace_period_)
+            {
+                return;
+            }
+        }
+
         impl_->ceiling_robot_health_ = false;
         impl_->safe_zone_penalty_start_time_ = impl_->elapsed_time_;
         impl_->safe_zone_penalty_started_ = true;
     }
 
     //==============================================================================
-    bool TaskManagerPlugin::SetHumanSafeZonePenaltyServiceCallback(
+    bool TaskManagerPlugin::SafeZonePenaltyServiceCallback(
         const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
         std::shared_ptr<std_srvs::srv::Trigger::Response> response)
     {
@@ -2587,10 +2697,10 @@ namespace ariac_plugins
         (void)request;
 
         response->success = true;
-        response->message = "Safe zone penalty called";
+        response->message = "Safe zone penalty service called";
 
         // Function which handles the safe zone penalty
-        HandleSafeZonePenalty();
+        StartSafeZonePenalty();
 
         return true;
     }

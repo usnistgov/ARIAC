@@ -82,13 +82,13 @@
         </surface>
       </collision>
 
-      <collision name="pins_collision">
+<!--       <collision name="pins_collision">
         <geometry>
           <mesh>
             <uri>model://battery/meshes/battery_pins.stl</uri>
           </mesh>
         </geometry>
-      </collision>
+      </collision> -->
     </link>
   </model>
 </sdf>

@@ -17,9 +17,14 @@ Terminology
     Competitor
       Person competing in ARIAC. Sometimes competitor is referred as "team" or "participant".
 
+    Automated Guided Vehicle (AGV)
+      An automated guided vehicle (AGV) is a mobile robot that follows markers or wires in the floor, or uses vision, magnets, or lasers for navigation. AGVs are used to transport :term:`parts<Part>` from one location to another.
+
+
+
     Trial
       Each run of the competition is called a trial. The configuration for that trial is defined by a configuration file (YAML). :term:`Competitors<Competitor>` do not and must not directly read trial files but needs to use topics and services provided by the competition environment. More information on how to use the competition environment can be found in the 
-      :doc:`Communication Overview</competition/ros_communication>`.
+      :doc:`ros_communication`.
 
     Part
       Parts are used during pick-and-place operations. There are four available parts (battery, pump, regulator, and sensor) and each part can be one of five possible colors (red, green, blue, orange, and purple).
@@ -31,12 +36,12 @@ Terminology
       :term:`part<Part>` of a specific color and type.
 
     Kitting Task
-      Kitting is the process which groups separate but related :term:`parts<Part>` as one unit. For a kitting task, :term:`competitors<Competitor>` are expected to - 
+      Kitting is the process which groups separate but related :term:`parts<Part>` as one unit. For a kitting task, :term:`competitors<Competitor>` are expected to: 
       
-      1. Place a kit tray onto one of the four AGVs.
-      2. Place parts onto that kit tray in a specific quadrant.
-      3. Direct the AGV to the warehouse.
-      4. Evaluate the submitted kit for scoring.
+        #. Place a kit tray onto one of the four AGVs.
+        #. Place parts onto that kit tray in a specific quadrant.
+        #. Direct the AGV to the warehouse.
+        #. Evaluate the submitted kit for scoring.
 
     Assembly Task
       Assembly is a manufacturing process in which interchangeable :term:`parts<Part>` are added to a product in a sequential manner to create an end product. In ARIAC, assembly is simplified by not "forcing" :term:`competitors<Competitor>` to use a sequence during assembly. :term:`Competitors<Competitor>` can place :term:`parts<Part>` in an insert in any order. For an assembly task, :term:`competitors<Competitor>` are expected to use :term:`parts<Part>` located on an AGV and assemble those parts at one of the four assembly stations.

@@ -1,65 +1,76 @@
 
+
 .. _AGILITY_CHALLENGES:
 
-========
+==================
 Agility Challenges
-========
+==================
 
 
 
-There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. A description of each challenge is provided below. Besides the :ref:`HUMANS` challenge, all other challenges can occur multiple times in a trial. 
+There are 8 possible :term:`agility challenges<Agility Challenge>` in ARIAC 2023. 
+A description of each challenge is provided below. Besides the :ref:`HUMANS` challenge, 
+all other challenges can occur multiple times in a trial. 
 
 .. note::
-  A trial may consist of some of the challenges described in this page, may consist of no  challenge at all, or may consist of all the challenges.
+  A trial may consist of some of the challenges described in this page, may consist of no 
+  challenge at all, or may consist of all the challenges.
 
 .. _FAULTY_PARTS:
 
 Faulty Parts
 ================
 
-Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. If an order is submitted with faulty parts, these parts are not considered for scoring. Faulty parts are identified by quality control sensors, which are attached to AGVs.
+Faulty parts are parts that are not in good condition. They are not suitable for use in the competition. 
+If an order is submitted with faulty parts, these parts are not considered for scoring. 
+Faulty parts are identified by quality control sensors, which are attached 
+to AGVs.
 
-  The goal of this challenge is to test the ability of the :term:`CCS<Competitor Control System (CCS)>` to 1) correctly use the quality check sensor to detect faulty parts and 2) replace them with new parts.
+  The goal of this challenge is to test the ability of the CCS  to:
+
+  #. Correctly use the quality check sensor to detect faulty parts. 
+  #. Replace them with new parts.
 
 
 Setup
 ----------------------------
 
-The faulty parts challenge is set with the field ``faulty_part`` under the ``challenges`` field  in the trial configuration file. Only the first part placed in a quadrant is faulty. In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by order ``MMB30H56`` is faulty. If these parts are removed and replaced with new parts, the new parts will be non-faulty.
+The faulty parts challenge is set with the field :yamlname:`faulty_part` under the :yamlname:`challenges` field 
+in the trial configuration file. 
+Only the first part placed in a quadrant is faulty. 
+In the example below, any first part placed in  quadrants 1 and 2 in the kitting tray required by 
+order :yaml:`'MMB30H56'` is faulty. 
+If these parts are removed and replaced with new parts, the new parts will be non-faulty.
 
 .. code-block:: yaml
 
   challenges:
     - faulty_part:
-      order_id: 'MMB30H56'
-      quadrant1: true
-      quadrant2: true
+        order_id: 'MMB30H56'
+        quadrant1: true
+        quadrant2: true
 
 
 Detection
 ----------------------------
 
 
-The quality control sensor located above an AGV is capable of detecting faulty parts. A quality check can be performed by calling the service ``/ariac/perform_quality_check``. The argument passed to this service call is an order ID (see :numref:`perform-quality-check-srv`). When a faulty part is detected, the CCS has to discard the part and replace it with a new part. The new part will automatically be set to non-faulty by the :term:`AM<ARIAC Manager (AM)>`.
+The quality control sensor located above an AGV is capable of 
+detecting faulty parts. 
+A quality check can be performed by calling the service :rosservice:`/ariac/perform_quality_check` (:term:`ariac_msgs/srv/PerformQualityCheck`). 
+The argument passed to this service call is an order ID. 
+When a faulty part is detected, the CCS has to discard the 
+part and replace it with a new part. 
+The new part will automatically be set to non-faulty by the AM.
 
-.. code-block:: bash
-  :caption: PerformQualityCheck.srv
-  :name: perform-quality-check-srv
 
-  string order_id
-  ---
-  bool valid_id
-  bool all_passed
-  bool incorrect_tray
-  ariac_msgs/QualityIssue quadrant1
-  ariac_msgs/QualityIssue quadrant2
-  ariac_msgs/QualityIssue quadrant3
-  ariac_msgs/QualityIssue quadrant4
 
 More information on the fields of the service message is provided as follows:
-  * The service returns a Boolean value for the field ``valid_id`` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called for this order ID.
 
-  * The field ``all_passed`` is set to ``true`` only if:
+  * The service returns a Boolean value for the field :yamlname:`valid_id` indicating whether or not the order ID is valid. An order ID is not valid if the order ID does not exist or if the quality check was already called 
+  for this order ID.
+
+  * The field :yamlname:`all_passed` is set to :yaml:`true` only if:
 
     * All parts in the kitting tray are NOT faulty.
     * All parts are present in the kitting tray (no empty quadrant).
@@ -67,20 +78,8 @@ More information on the fields of the service message is provided as follows:
     * All parts are of the correct type.
     * All parts are of the correct color.
 
-  * The field ``incorrect_tray`` informs on whether or not the kitting task was performed in the correct kitting tray.
-  * Information for each quadrant is reported as a **QualityIssue.msg** (see :numref:`quality-issue-msg`).
-
-
-  .. code-block:: bash
-    :caption: QualityIssue.msg
-    :name: quality-issue-msg
-
-    bool all_passed           # True if everything is correct in the quadrant
-    bool missing_part         # True if a part is missing in the quadrant
-    bool flipped_part         # True if a part is flipped in the quadrant
-    bool faulty_part          # True if a part is faulty in the quadrant
-    bool incorrect_part_type  # True if a part has the wrong type in the quadrant
-    bool incorrect_part_color # True if a part has the wrong color in the quadrant
+  * The field :yamlname:`incorrect_tray` informs on whether or not the kitting task was performed in the correct kitting tray.
+  * Information for each quadrant is reported as a :term:`ariac_msgs/msg/QualityIssue`.
 
 
 
@@ -94,18 +93,20 @@ The environment can be started with parts that are flipped. Flipped parts are pa
   The goal of this challenge is to evaluate the approach used by the CCS to flip a part. 
 
 .. attention::
-  Competitors should keep in mind that one of the two robots can malfunction at any point during the trial. This means that the CCS should be able to handle the case where one of the robots is not available to flip a part.
-
-
-
-
+  Competitors should keep in mind that one of the two robots can malfunction at any point during the trial.
+  This means that the CCS should be able to handle the case where 
+  one of the robots is not available to flip a part.
 
 
 
 Setup
 ----------------------------
 
-Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. To set parts as flipped, the ``flipped`` field in the trial configuration file must be set as ``true`` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple regulators as flipped in ``bin3``. :numref:`flipped-parts-on-conveyor-belt` describes all orange batteries as flipped on the conveyor belt.
+Flipped parts apply to a specific part type and color in a specific bin or on the conveyor belt. 
+To set parts as flipped, the :yamlname:`flipped` field in the trial configuration file must be set 
+as :yaml:`true` for the corresponding parts. :numref:`flipped-parts-in-bin` describes all purple 
+regulators as flipped in :yamlname:`bin3`. :numref:`flipped-parts-on-conveyor-belt` describes all 
+orange batteries as flipped on the conveyor belt.
 
 .. code-block:: yaml
   :caption: Setting flipped parts in a bin.
@@ -141,7 +142,8 @@ Detection
 ----------------------------
 
 
-Flipped parts detection is performed similarly to faulty parts detection. A quality check informs whether or not a part is flipped. See the :ref:`FAULTY_PARTS` section for more information on how to perform a quality check.
+Flipped parts detection is performed similarly to faulty parts detection. 
+A quality check informs whether or not a part is flipped. See the :ref:`FAULTY_PARTS` section for more information on how to perform a quality check.
 
 
 
@@ -153,12 +155,15 @@ Faulty Gripper
 
 The faulty gripper challenge simulates a faulty gripper which can drop a part after the part has been picked up. The gripper can drop a part at any time during the trial. The gripper can drop a part that is in the gripper's grasp even if the gripper or robot is not moving. 
 
-  The goal of this challenge is to test the ability of the CCS to 1) recognize that the part has dropped from the gripper, and 2) pick a part of the same type and color.
+  The goal of this challenge is to test the ability of the CCS to: 
+  
+  #. Recognize that the part has dropped from the gripper. 
+  #. Pick a part of the same type and color.
 
 Setup
 ----------------------------
 
-The faulty gripper challenge can be set up in the trial configuration file with the field `dropped_part` under the `challenges` field. :numref:`faulty-gripper-setup` describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump (specified with the `drop_after` field). Multiple occurrences of this challenge may be set up in the trial configuration file as seen in :numref:`multiple-faulty-gripper-setup`.
+The faulty gripper challenge can be set up in the trial configuration file with the field :yamlname:`dropped_part` under the :yamlname:`challenges` field. :numref:`faulty-gripper-setup` describes a faulty gripper occuring 5 seconds after the ceiling robot has picked up a second red pump (specified with the :yamlname:`drop_after` field). Multiple occurrences of this challenge may be set up in the trial configuration file as seen in :numref:`multiple-faulty-gripper-setup`.
 
 
 .. code-block:: yaml
@@ -167,11 +172,11 @@ The faulty gripper challenge can be set up in the trial configuration file with 
 
     challenges:
       - dropped_part:
-        robot: 'ceiling_robot'
-        type: 'pump'
-        color: 'red'
-        drop_after: 1
-        delay: 5
+          robot: 'ceiling_robot'
+          type: 'pump'
+          color: 'red'
+          drop_after: 1
+          delay: 5
 
 
 
@@ -181,23 +186,23 @@ The faulty gripper challenge can be set up in the trial configuration file with 
 
     challenges:
       - dropped_part:
-        robot: 'ceiling_robot'
-        type: 'pump'
-        color: 'red'
-        drop_after: 1
-        delay: 5
+          robot: 'ceiling_robot'
+          type: 'pump'
+          color: 'red'
+          drop_after: 1
+          delay: 5
       - dropped_part:
-        robot: 'floor_robot'
-        type: 'battery'
-        color: 'green'
-        drop_after: 1
-        delay: 3
+          robot: 'floor_robot'
+          type: 'battery'
+          color: 'green'
+          drop_after: 1
+          delay: 3
       - dropped_part:
-        robot: 'floor_robot'
-        type: 'regulator'
-        color: 'orange'
-        drop_after: 2
-        delay: 15
+          robot: 'floor_robot'
+          type: 'regulator'
+          color: 'orange'
+          drop_after: 2
+          delay: 15
 
 .. note::
     The gripper can drop a part even if the robot is not moving.
@@ -207,18 +212,7 @@ Detection
 ----------------------------
 
 
-To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{robot}_gripper_state``. This topic publishes messages of type **VacuumGripperState.msg**, which has the structure depicted in :numref:`vacuum-gripper-state-yaml`. The field ``attached`` is set to ``true`` when a part is attached to the gripper. A ``false`` value indicates that the gripper is empty. 
-
-  
-.. code-block:: bash
-  :caption: VacuumGripperState.msg
-  :name: vacuum-gripper-state-yaml
-  
-  bool enabled  # is the succion enabled?
-  bool attached # is an object attached to the gripper?
-  string type   # type of the gripper attached to the arm
-
-
+To detect a faulty gripper the CCS needs a subscriber to the topic :topic:`/ariac/{robot}_gripper_state` (:term:`ariac_msgs/msg/VacuumGripperState`). Checking the :yamlname:`attached` field of the message will inform whether or not the gripper is holding a part. If the gripper is not holding a part, the CCS can assume that the gripper has dropped the part.
 
 
 .. _target to robot malfunction:
@@ -226,23 +220,24 @@ To detect a faulty gripper the CCS needs a subscriber to the topic ``/ariac/{rob
 Robot Malfunction
 ==================
 
-The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`CONDITIONS` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
+The robot malfunction challenge simulates a robot malfunction. The robot can malfunction under some :ref:`conditions <CONDITIONS>` during the trial. The robot can malfunction even if it is not moving. When a robot malfunctions, it stops moving and cannot be controlled by the CCS. The robot will remain in the same position until the malfunction is resolved. To specify how long a robot malfunctions, a time duration of the malfunction is specified in the trial configuration file.
 
   The goal of this challenge is to test the ability of the CCS to use the other robot to complete the tasks that was being performed by the robot which is malfunctioning. 
 
 .. note::
-  It can happen that both robots malfunction at the same time. In this case, the CSS must wait until the malfunction is resolved before continuing with the trial.
-
+  It can happen that both robots malfunction at the same time. 
+  In this case, the CCS must wait until the malfunction is resolved before continuing with the trial.
 
 
 
 Setup
 ----------------------------
 
-The robot malfunction challenge is specified with the field ``robot_malfunction`` as a subfield of ``challenges`` in the trial configuration file. The relevant fields for this agility challenge are listed below.
-  * ``duration``: The duration of the robot malfunction in seconds.
-  * ``robots_to_disable``: A list of robots that malfunction. It can be either ``'floor_robot'`` or ``'ceiling_robot'`` or both.
-  * :ref:`CONDITIONS` that can trigger the robot malfunction.
+The robot malfunction challenge is specified with the field :yamlname:`robot_malfunction` as a subfield of :yamlname:`challenges` in the trial configuration file. The relevant fields for this agility challenge are listed below.
+  
+  * :yamlname:`duration`: The duration of the robot malfunction in seconds.
+  * :yamlname:`robots_to_disable`: A list of robots that malfunction. It can be either :yaml:`'floor_robot'` or :yaml:`'ceiling_robot'` or both.
+  * :ref:`One condition <CONDITIONS>` that can trigger the robot malfunction.
 
 Robot malfunctions can occur multiple times in the same trial. :numref:`robot-malfunction-yaml` shows a robot malfunction challenge occurring 4 times under different conditions in the same trial.
 
@@ -277,14 +272,8 @@ Detection
 -----------------------------
 
 
-To detect a robot malfunction, the CCS needs a subscriber to the topic ``/ariac/robot_health``. The message type for this topic is **Robots.msg** (see :numref:`robots-health`). The message contains Boolean-type fields which provide information on the health of the robots. A value of ``true`` indicates that the robot is healthy and can be controlled by the CCS. A value of ``false`` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
+To detect a robot malfunction, the CCS needs a subscriber to the topic :topic:`/ariac/robot_health` (:term:`ariac_msgs/msg/Robots`). The message contains Boolean-type fields which provide information on the health of the robots. A value of :yaml:`true` indicates that the robot is healthy and can be controlled by the CCS. A value of :yaml:`false` indicates that the robot is malfunctioning and cannot be controlled by the CCS.
 
-.. code-block:: bash
-  :caption: Robots.msg
-  :name: robots-health
-  
-  bool floor_robot
-  bool ceiling_robot
 
 
 .. _target to sensor blackout:
@@ -296,7 +285,7 @@ The sensor blackout challenge simulates a situation where some sensors stop repo
 
   The goal of this challenge is to test the ability of the CCS to use an internal world model to continue the tasks that were being performed before the blackout.
 
-The sensor blackout challenge is triggered based on :ref:`CONDITIONS`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
+The sensor blackout challenge is triggered based on :ref:`conditions <CONDITIONS>`. When a *sensor type* is disabled, all sensors of this type stop publishing data on their respective topics. Once the challenge is resolved (after a duration), these sensors will start publishing  again. 
 
 
 
@@ -304,19 +293,26 @@ Setup
 ---------------------------
 
 
-The subfield ``sensor_blackout`` of ``challenges`` is used to describe a sensor blackout challenge. The relevant fields for this agility challenge are listed below.
-  * `duration`: The duration of the sensor blackout in seconds.
-  * `sensors_to_disable`: A list of sensor types to disable:
-    * ``'break_beam'``
-    * ``'proximity'``
-    * ``'laser_profiler'``
-    * ``'lidar'``
-    * ``'camera'``
-    * ``'logical_camera'``
-  * :ref:`CONDITIONS` to trigger the challenge.
+The subfield :yamlname:`sensor_blackout` of :yamlname:`challenges` is used to describe a sensor blackout challenge.
+The relevant fields for this agility challenge are listed below.
+  
+  * :yamlname:`duration`: The duration of the sensor blackout in seconds.
+  * :yamlname:`sensors_to_disable`: A list of sensor types to disable:
+
+    * :yaml:`'break_beam'`
+    * :yaml:`'proximity'`
+    * :yaml:`'laser_profiler'`
+    * :yaml:`'lidar'`
+    * :yaml:`'camera'`
+    * :yaml:`'logical_camera'`
+  * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 
-The sensor blackout challenge can occur multiple times in the same trial.  :numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar and logical camera sensor types for 15 seconds when an order is submitted. 
+The sensor blackout challenge can occur multiple times in the same trial.
+:numref:`sensor-blackout-yaml` shows the challenge occurring twice in the same trial. 
+One  occurrence of the challenge disables the break beam sensor type for 25 seconds when the 
+competition time reaches 20 seconds. The other occurrence of the challenge disables the lidar 
+and logical camera sensor types for 15 seconds when an order is submitted. 
 
 
 
@@ -341,19 +337,13 @@ Detection
 -----------------------------
 
 
-To detect a sensor blackout the CCS needs a subscriber to the topic ``/ariac/sensor_health``. The message type for this topic is **Sensors.msg** (see :numref:`sensors-health`). The message contains Boolean-type fields which provide information on the health of each sensor type. A ``true`` value indicates that all sensors of a type are healthy (they are publishing to topics) and a ``false`` value indicates that all sensors of a type are malfunctioning (they are not publishing to topics).
+To detect a sensor blackout the CCS needs a subscriber to 
+the topic :topic:`/ariac/sensor_health` (:term:`ariac_msgs/msg/Sensors`). 
+The message contains Boolean-type fields which provide information on the health of each sensor type. 
+A :yaml:`true` value indicates that all sensors of a type are healthy (they are publishing to topics) 
+and a :yaml:`false` value indicates that all sensors of a type are malfunctioning 
+(they are not publishing to topics).
 
-.. code-block:: bash
-  :caption: Sensors.msg
-  :name: sensors-health
-  
-  # Sensors.msg
-  bool break_beam
-  bool proximity
-  bool laser_profiler
-  bool lidar
-  bool camera
-  bool logical_camera
 
 
 High-priority Orders
@@ -365,7 +355,7 @@ The high-priority orders challenge simulates an order that must be completed bef
 
 
 .. warning::
-  A high-priority order can be announced in one of the two following :ref:`CONDITIONS` time and part placement. The submission condition is not used to announce a high-priority order.
+  A high-priority order can be announced in one of the two following :ref:`conditions <CONDITIONS>`: Time or part placement. The submission condition is not used to announce a high-priority order.
 
 .. note::
   A high-priority order will only be announced when only regular-priority orders have been announced. A high-priority order will not be announced if there is already a high-priority order in the queue.
@@ -374,11 +364,11 @@ The high-priority orders challenge simulates an order that must be completed bef
 Setup
 -----------------------------
 
-To specify a high-priority order, the ``priority`` field is set to ``true`` in the order description. :numref:`high-priority-order-yaml` shows a high-priority order for order ``MMB30H57`` and a regular-priority order for order ``MMB30H58``.
+To specify a high-priority order, the :yamlname:`priority` field is set to :yaml:`true` in the order description. :numref:`high-priority-order-yaml` shows a high-priority order for order :yaml:`'MMB30H57'` and a regular-priority order for order :yaml:`'MMB30H58'`.
 
 
 .. code-block:: yaml
-  :caption: Example of a high-priority order for order MMB30H57.
+  :caption: Example of a high-priority order for order :yaml:`'MMB30H58'`.
   :name: high-priority-order-yaml
 
   orders:
@@ -414,22 +404,8 @@ Detection
 -------------------------------
 
 
-To find out out the priority of an order, the CCS is required to parse messages published to the topic ``/ariac/orders``. The message type for this topic is **Order.msg** (see :numref:`order-msg`). For a high-priority order, the value for the field ``priority`` is set to ``true``. For a regular-priority order, the value for the field ``priority`` is set to ``false``.
+To find out out the priority of an order, the CCS is required to parse messages published to the topic :topic:`/ariac/orders` (:term:`ariac_msgs/msg/Order`). For a high-priority order, the value for the field :yamlname:`priority` is set to :yaml:`true`. For a regular-priority order, the value for the field :yamlname:`priority` is set to :yaml:`false`.
 
-.. code-block:: bash
-  :caption: Order.msg
-  :name: order-msg
-  
-  uint8 KITTING=0
-  uint8 ASSEMBLY=1
-  uint8 COMBINED=2
-
-  string id
-  uint8 type
-  bool priority
-  ariac_msgs/KittingTask kitting_task 
-  ariac_msgs/AssemblyTask assembly_task
-  ariac_msgs/CombinedTask combined_task
 
 
 Insufficient Parts
@@ -442,7 +418,7 @@ The insufficient parts challenge simulates a situation where the workcell does n
 Setup
 -----------------------------
 
-There is no specific field in the trial configuration file to specify this challenge.  :numref:`insufficient-parts-yaml` shows a trial configuration file where the workcell does not have enough parts to complete order ``MMB30H58``. The order requires 4 blue batteries but the whole workcell has only 2 blue batteries (located in bin1).
+There is no specific field in the trial configuration file to specify this challenge.  :numref:`insufficient-parts-yaml` shows a trial configuration file where the workcell does not have enough parts to complete order :yaml:`'MMB30H58'`. The order requires 4 blue batteries but the whole workcell has only 2 blue batteries (located in bin1).
 
 .. code-block:: yaml
   :caption: Example of insufficient parts challenge.
@@ -497,10 +473,11 @@ To figure out if the insufficient parts challenge is part of a trial, the CCS ca
 Bins
 ^^^^^
 
-The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type, the color, and the quantity of parts. An  output from ``ros2 topic echo /ariac/bin_parts`` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
+The topic :topic:`/ariac/bin_parts` (:term:`ariac_msgs/msg/BinParts`) outputs for each bin: The type, the color, and the quantity of parts. An  output from :console:`ros2 topic echo /ariac/bin_parts` is provided in  :numref:`bin-parts-outputs`. The output shows that bin1 contains 3 red pumps and 2 blue batteries.
 
-  .. code-block:: bash
-    :caption: Message published on the topic ``/ariac/bin_parts``.
+  .. code-block:: console
+    :class: no-copybutton
+    :caption: Message published on the topic :topic:`/ariac/bin_parts`.
     :name: bin-parts-outputs
 
     ---
@@ -522,11 +499,12 @@ The topic ``/ariac/bin_parts`` (**BinParts.msg**) outputs for each bin: The type
 
 Conveyor Belt
 ^^^^^^^^^^^^^^^
-The topic ``/ariac/conveyor_parts`` (**ConveyorParts.msg**) outputs information on parts that are expected to spawn on the conveyor belt. An output from ``ros2 topic echo /ariac/conveyor_parts`` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
+The topic :topic:`/ariac/conveyor_parts` (:term:`ariac_msgs/msg/ConveyorParts`) outputs information on parts that are expected to spawn on the conveyor belt. An output from :console:`ros2 topic echo /ariac/conveyor_parts` is provided in  :numref:`conveyor-parts-outputs`. The message shows that 2 red batteries,  2 green sensors, 3 blue regulators, and 1 orange pump will spawn on the conveyor belt.
 
 
-  .. code-block:: bash
-    :caption: Message published on the topic ``/ariac/conveyor_parts``.
+  .. code-block:: console
+    :class: no-copybutton
+    :caption: Message published on the topic :topic:`/ariac/conveyor_parts`.
     :name: conveyor-parts-outputs
 
     ---
@@ -557,17 +535,31 @@ Human
 
 The human challenge consists of a simulated human navigating the workcell. 
 
-  The goal of this challenge is to test whether or not the CCS is capable of ensuring the safety of humans on the shop floor. The ceiling robot has to keep a safe distance from the human at any time. If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 1) The human is teleported to a safe location and 2) The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS.
+  The goal of this challenge is to test whether or not the CCS is capable of ensuring the safety of humans on the shop floor. 
+  The ceiling robot has to keep a safe distance from the human at any time. 
+  If the ceiling robot gets too close to the human, the human will be considered to be in danger and two events happen: 
+  
+  #. The human is teleported to a safe location.
+  #. The ceiling robot's controllers are deactivated for 15 seconds, which is a penalty given to the CCS. 
 
 
 When the human challenge is used in a trial, the simulated human is assigned one of the following behaviors: 
 
- **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
-  * **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
-  * **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
+- **Indifferent**: The human operator follows a scripted path, regardless of the location of the robots in the environment.
+- **Antagonistic**: During an arbitrary period of time, the human operator purposefully moves towards the ceiling robot to interfere with the robot's current task.
+- **Helpful**: The human operator will stop moving once the ceiling robot is at a certain distance away from him.
 
 .. note::
-  The behavior does not change within a trial, it stays the same for the whole trial.
+  The behavior of a human does not change within a trial, e.g., if the human is assigned the behavior :yaml:`'helpful'`, the human will always be helpful throughout the trial. 
+
+  The human in the environment will go to each assembly station in the following order:
+
+  #. Assembly station 4
+  #. Assembly station 2
+  #. Assembly station 1
+  #. Assembly station 3
+
+  When the human reaches assembly station 3, he will repeat the process from the beginning.
 
 
 
@@ -575,13 +567,14 @@ Setup
 ---------------------------
 
 
-The subfield ``human`` of ``challenges`` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
-  * ``behavior``: The behavior of the human operator. The possible values are:
+The subfield :yamlname:`human` of :yamlname:`challenges` is used to describe a human challenge. The relevant fields for this agility challenge are listed below.
+  
+  * :yamlname:`behavior`: The behavior of the human operator. The possible values are:
 
-    - ``'indifferent'``
-    - ``'antagonistic'``
-    - ``'helpful'``
-  * :ref:`CONDITIONS` to trigger the challenge.
+    - :yaml:`'indifferent'`
+    - :yaml:`'antagonistic'`
+    - :yaml:`'helpful'`
+  * :ref:`One condition <CONDITIONS>` to trigger the challenge.
 
 
 .. code-block:: yaml
@@ -597,10 +590,12 @@ The subfield ``human`` of ``challenges`` is used to describe a human challenge. 
 Detection
 -----------------------------
 
-The pose of the human is published to the topic ``/ariac_human/state`` (:ref:`Humanstate.msg <HumanStateMsg>`). An output from ``ros2 topic echo /ariac_human/state`` is provided in  :numref:`human-state-outputs`.
+The pose of the human is published to the topic :topic:`/ariac_human/state` (:term:`ariac_msgs/msg/HumanState`).
+An output from :console:`ros2 topic echo /ariac_human/state` is provided in  :numref:`human-state-outputs`.
 
-  .. code-block:: bash
-    :caption: Message published on the topic ``/ariac_human/state``.
+  .. code-block:: console
+    :class: no-copybutton
+    :caption: Message published on the topic :topic:`/ariac_human/state`.
     :name: human-state-outputs
 
     ---

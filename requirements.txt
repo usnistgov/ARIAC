@@ -1,2 +1,7 @@
 myst_parser
-docutils<0.17
+sphinx_copybutton
+sphinxcontrib_inlinesyntaxhighlight
+sphinxemoji
+sphinx-hoverxref
+
+# docutils<0.17

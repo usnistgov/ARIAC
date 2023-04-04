@@ -13,17 +13,17 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
 .. Hidden TOCs
 
 .. toctree::
-   :caption: Getting Started
+   :caption: ⏩ Getting Started
    :maxdepth: 3
    :hidden:
 
-   getting_started/updates
-   getting_started/installation
+   getting_started/updates.rst
+   getting_started/installation.rst
    getting_started/registering
    getting_started/events
 
 .. toctree::
-   :caption: Competition Specifications
+   :caption: ⏩ Competition Specifications
    :maxdepth: 3
    :hidden:
 
@@ -32,20 +32,30 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    competition/environment
    competition/orders
    competition/sensors
-   competition/trials
+   competition/trials.rst
    competition/ros_communication
    competition/challenges
    competition/tf_frames
    competition/scoring
 
 .. toctree::
-   :caption: Tutorials
+   :caption: ⏩ Tutorials
    :maxdepth: 3
    :hidden:
 
-   tutorials/tutorial_1.md
-   tutorials/tutorial_2.md
-   tutorials/tutorial_3.md
-   tutorials/tutorial_4.md
-   tutorials/tutorial_5.md
+   tutorials/tutorials.rst
+   tutorials/tutorial_1.rst
+   tutorials/tutorial_2.rst
+   tutorials/tutorial_3.rst
+   tutorials/tutorial_4.rst
+   tutorials/tutorial_5.rst
+   tutorials/tutorial_6.rst
+   tutorials/tutorial_7.rst
+
+.. toctree::
+   :caption: 🚧 Automated Evaluation
+   :maxdepth: 3
+   :hidden:
+
+   automated_evaluation/docker_setup.md
  

@@ -47,7 +47,6 @@ orders:
       time_condition: 0
     priority: false
     assembly_task:
-    assembly_task:
       agv_number: [1, 2]
       station: 'as1'
       products:

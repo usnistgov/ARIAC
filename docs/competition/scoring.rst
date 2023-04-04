@@ -112,13 +112,13 @@ Kitting Task Score
         0, &\text{otherwise} \\
         \end{cases}
 
-.. admonition:: Task Score
+.. admonition:: Kitting Task Score
   :class: tip
   :name: task-score
 
    .. math::
 
-        S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{eq} , 0]}) \times (\texttt{destination})
+        S_{k} = (\max{[\texttt{pt}_{tray} + \sum_{q}^{n}{\texttt{pt}_q} + \texttt{pt}_b - \texttt{pn}_{ep} , 0]}) \times (\texttt{destination})
 
 
 Assembly Task Score
@@ -164,7 +164,7 @@ Assembly Task Score
         0, &\text{otherwise} \\
         \end{cases}
 
-.. admonition:: Task Score
+.. admonition:: Assembly Task Score
   :class: tip
   :name: task-score-assembly
 
@@ -218,7 +218,7 @@ Combined Task Score
         0, &\text{otherwise} \\
         \end{cases}
 
-.. admonition:: Task Score
+.. admonition:: Combined Task Score
   :class: tip
   :name: task-score-combined
 
@@ -235,7 +235,7 @@ The final completion score :math:`CompletionScore` combines the kitting, assembl
 
 
 .. admonition:: Completion Score
-  :class: caution
+  :class: tip
   :name: completion-score
 
    .. math::

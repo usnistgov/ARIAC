@@ -51,6 +51,7 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    tutorials/tutorial_5.rst
    tutorials/tutorial_6.rst
    tutorials/tutorial_7.rst
+   tutorials/tutorial_8.rst
 
 .. toctree::
    :caption: 🚧 Automated Evaluation

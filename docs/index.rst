@@ -58,5 +58,5 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    :maxdepth: 3
    :hidden:
 
-   automated_evaluation/docker_setup.md
+   automated_evaluation/docker_setup.rst
  

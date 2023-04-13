@@ -561,7 +561,7 @@ When the human challenge is used in a trial, the simulated human is assigned one
 
   When the human reaches assembly station 3, he will repeat the process from the beginning.
 
-.. tip::
+.. note::
   The penalty given to the CCS for the human challenge is based on the distance between the human and the ceiling robot. The formula for the distance is:
 
   .. math::

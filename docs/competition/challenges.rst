@@ -561,6 +561,14 @@ When the human challenge is used in a trial, the simulated human is assigned one
 
   When the human reaches assembly station 3, he will repeat the process from the beginning.
 
+.. tip::
+  The penalty given to the CCS for the human challenge is based on the distance between the human and the ceiling robot. The formula for the distance is:
+
+  .. math::
+
+    d_{min} = k_H(t_1 + t_2)+ k_{R}t_{1} + B + \delta
+
+  where :math:`t_1=1` is the maximum time between the actuation of the sensing function and the output signal switching devices to the off state, :math:`t_2=1.5` is the maximum response time of the machine (i.e., the time required to stop the machine), :math:`\delta=1` is an additional distance, based on the expected intrusion toward the critical zone prior to actuation of the protective equipment, :math:`k_H` is the speed of the intruding human, :math:`k_R` is the speed of the robot, and :math:`B=0` is the Euclidean distance required to bring the robot to a safe, controlled stop.
 
 
 Setup

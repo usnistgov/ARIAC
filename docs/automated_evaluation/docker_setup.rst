@@ -34,4 +34,4 @@ The YAML structure is described below:
 Submission Procedure
 ==============================
 
-Competitors must upload their submission configuration file on Google Drive. Please contact Anthony Downs (`<anthony.downs@nist.gov>`_) to create a folder for your team. The submission configuration file must be named :file:`qualifiers.yaml`. 
+Competitors must upload their submission configuration file on Google Drive. Please contact Anthony Downs (anthony.downs@nist.gov) to create a folder for your team. The submission configuration file must be named :file:`qualifiers.yaml`. 

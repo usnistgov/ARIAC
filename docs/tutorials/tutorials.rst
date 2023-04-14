@@ -32,7 +32,9 @@ A brief description of each tutorial is provided below.
 - :tuto:`Tutorial 7:` :doc:`Move Robots with MoveIt <tutorial_7>`
     
     - Demonstrates how to use custom services to move the floor and the ceiling robots to their respective home positions. MoveIt is used in this tutorial. The service clients are implemented in Python while the service servers are hosted in C++.
+- :tuto:`Tutorial 8:` :doc:`Move Robots with ROS2 Actions <tutorial_8>`
 
+    - Demonstrates how to control both robots using ROS2 Actions.
 .. important::
 
   Tutorials are meant to be followed in order as each tutorial uses the code from the previous tutorial to which new functionalities and files are added. This allows code from previous tutorials to be used in later tutorials. 

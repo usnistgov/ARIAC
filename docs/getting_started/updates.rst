@@ -1,15 +1,15 @@
 Updates
 ========
 
-Release 2023_v1.2, April X
+Release 2023_v1.2, April 14
 --------------------------------------------
 
 - Added information on the :ref:`automated evaluation <EVALUATION>`.
 - Added more information on the :ref:`Human Challenge <HUMANS>`.
-- Fixed issue with not getting the bonus points for kitting.
-- Fixed an issue with the Human Challenge where the human teleports when getting to close to a non-moving AGV.
-- Fixed issue with Gazebo crashing when a part is dropped on the floor.
-- Added logic to the test competitor to submit a kitting order only when the AGV has reached the warehouse.
+.. - Fixed issue with not getting the bonus points for kitting.
+.. - Fixed an issue with the Human Challenge where the human teleports when getting to close to a non-moving AGV.
+.. - Fixed issue with Gazebo crashing when a part is dropped on the floor.
+.. - Added logic to the test competitor to submit a kitting order only when the AGV has reached the warehouse.
 
 Release 2023_v1.1, April 3
 --------------------------------------------

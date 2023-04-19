@@ -1,10 +1,17 @@
 Updates
 ========
 
+
+Release 2023_v1.2, April 19
+--------------------------------------------
+
+- Added a field for packages to be installed with the ``pip`` command for the :ref:`Automated Evaluation <EVALUATION>`.
+
+
 Release 2023_v1.2, April 14
 --------------------------------------------
 
-- Added information on the :ref:`automated evaluation <EVALUATION>`.
+- Added information on the :ref:`Automated Evaluation <EVALUATION>`.
 - Added more information on the :ref:`Human Challenge <HUMANS>`.
 .. - Fixed issue with not getting the bonus points for kitting.
 .. - Fixed an issue with the Human Challenge where the human teleports when getting to close to a non-moving AGV.

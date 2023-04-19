@@ -28,7 +28,7 @@ The YAML structure is described below:
 * :yamlname:`competition`: 
 
     - :yamlname:`package_name` is the name of your package. 
-    - :yamlname:`sensor_file` is the name of the sensor configuration file (see :ref:`Sensor Configuration File <sensor_configuration_file>`) which contains information about your sensors and cameras. A reminder that the sensor file must be placed in the :file:`config`` folder in your package.
+    - :yamlname:`sensor_file` is the name of the sensor configuration file (see :ref:`Sensor Configuration File <sensor_configuration_file>`) which contains information about your sensors and cameras. A reminder that the sensor file must be placed in the :file:`config` folder in your package.
     - :yamlname:`launch_file` contains commands to start MoveIt (if you are using MoveIt) and your Nodes. 
     - :yamlname:`debian_packages` is a list of Debian packages which need to be installed for your package. Debian packages will be installed in the Docker container before running the evaluation. The Debian packages are optional.
     - :yamlname:`pip_packages` is a list of packages to be installed with the ``pip`` command. The packages will be installed in the Docker container before running the evaluation. The pip packages are optional.

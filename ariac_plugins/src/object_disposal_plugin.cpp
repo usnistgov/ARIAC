@@ -32,119 +32,153 @@ Distributions of NIST software should also include copyright and licensing state
 
 namespace ariac_plugins
 {
-/// Class to hold private data members (PIMPL pattern)
-class ObjectDisposalPluginPrivate
-{
-public:
-  /// Connection to world update event. Callback is called while this is alive.
-  gazebo::event::ConnectionPtr update_connection_;
+  /// Class to hold private data members (PIMPL pattern)
+  class ObjectDisposalPluginPrivate
+  {
+  public:
+    /// Connection to world update event. Callback is called while this is alive.
+    gazebo::event::ConnectionPtr update_connection_;
 
-  /// Node for ROS communication.
-  gazebo_ros::Node::SharedPtr ros_node_;
+    /// Node for ROS communication.
+    gazebo_ros::Node::SharedPtr ros_node_;
 
-  gazebo::transport::SubscriberPtr contact_sub_;
-  gazebo::transport::NodePtr gznode_;
+    gazebo::transport::SubscriberPtr contact_sub_;
+    gazebo::transport::NodePtr gznode_;
 
-  std::vector<std::string> part_types_;
+    std::vector<std::string> part_types_;
 
-  gazebo::physics::ModelPtr model_;
+    gazebo::physics::ModelPtr model_;
 
-  std::vector<std::string> deleted_models_;
+    std::vector<std::string> deleted_models_;
 
-  /// Penalty publisher
-  bool publish_penalty_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr penalty_pub_;
+    /// Penalty publisher
+    bool publish_penalty_;
+    // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr penalty_pub_;
 
-  /// Service to delete model
-  rclcpp::Client<gazebo_msgs::srv::DeleteEntity>::SharedPtr delete_model_client_;
-};
+    /// Service to delete model
+    rclcpp::Client<gazebo_msgs::srv::DeleteEntity>::SharedPtr delete_model_client_;
+  };
 
-ObjectDisposalPlugin::ObjectDisposalPlugin()
-: impl_(std::make_unique<ObjectDisposalPluginPrivate>())
-{
-}
+  ObjectDisposalPlugin::ObjectDisposalPlugin()
+      : impl_(std::make_unique<ObjectDisposalPluginPrivate>())
+  {
+  }
 
-ObjectDisposalPlugin::~ObjectDisposalPlugin()
-{
-}
+  ObjectDisposalPlugin::~ObjectDisposalPlugin()
+  {
+  }
 
-void ObjectDisposalPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
-{
-  // Create a GazeboRos node instead of a common ROS node.
-  // Pass it SDF parameters so common options like namespace and remapping
-  // can be handled.
-  impl_->model_ = model;
+  void ObjectDisposalPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
+  {
+    // Create a GazeboRos node instead of a common ROS node.
+    // Pass it SDF parameters so common options like namespace and remapping
+    // can be handled.
+    impl_->model_ = model;
 
-  // Put ros node into namespace based on model name to avoid collisions
-  std::string model_name = model->GetName();
-  sdf::ElementPtr ns(new sdf::Element);
-  sdf->SetParent(sdf->FindElement("ros"));
-  ns->SetName("namespace");
-  ns->AddValue("string", model_name, "1");
-  sdf->FindElement("ros")->InsertElement(ns);
+    // Put ros node into namespace based on model name to avoid collisions
+    std::string model_name = model->GetName();
+    sdf::ElementPtr ns(new sdf::Element);
+    sdf->SetParent(sdf->FindElement("ros"));
+    ns->SetName("namespace");
+    ns->AddValue("string", model_name, "1");
+    sdf->FindElement("ros")->InsertElement(ns);
 
-  impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
+    impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
 
-  impl_->part_types_ = {"battery", "regulator", "pump", "sensor"};
+    impl_->part_types_ = {"battery", "regulator", "pump", "sensor"};
 
-  // Initialize a gazebo node and subscribe to the contacts for the vacuum gripper
-  impl_->gznode_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
-  impl_->gznode_->Init(impl_->model_->GetWorld()->Name());
+    impl_->deleted_models_ = {};
 
-  // Get contact topic
-  std::string link_name = sdf->GetElement("link_name")->Get<std::string>();
-  impl_->publish_penalty_ = sdf->GetElement("publish_penalty")->Get<bool>();
+    // Initialize a gazebo node and subscribe to the contacts for the vacuum gripper
+    impl_->gznode_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
+    impl_->gznode_->Init(impl_->model_->GetWorld()->Name());
 
-  std::string topic = "/gazebo/world/"+ model_name + "/" + link_name + "/bumper/contacts";
+    // Get contact topic
+    std::string link_name = sdf->GetElement("link_name")->Get<std::string>();
+    impl_->publish_penalty_ = sdf->GetElement("publish_penalty")->Get<bool>();
 
-  // Register client
-  impl_->delete_model_client_ = impl_->ros_node_->create_client<gazebo_msgs::srv::DeleteEntity>(
-      "/delete_entity");
+    std::string topic = "/gazebo/world/" + model_name + "/" + link_name + "/bumper/contacts";
 
-  // Create penatly publisher
-  impl_->penalty_pub_ = impl_->ros_node_->create_publisher<std_msgs::msg::String>("/ariac/penalty", 10);
+    // Register client
+    impl_->delete_model_client_ = impl_->ros_node_->create_client<gazebo_msgs::srv::DeleteEntity>(
+        "/delete_entity");
 
-  impl_->contact_sub_ = impl_->gznode_->Subscribe(topic, &ObjectDisposalPlugin::OnContact, this);
-}
+    // Create penalty publisher
+    // impl_->penalty_pub_ = impl_->ros_node_->create_publisher<std_msgs::msg::String>("/ariac/penalty", 10);
 
-void ObjectDisposalPlugin::OnContact(ConstContactsPtr& _msg){
-  std::string model_in_contact;
+    impl_->contact_sub_ = impl_->gznode_->Subscribe(topic, &ObjectDisposalPlugin::OnContact, this);
+  }
 
-  for (int i = 0; i < _msg->contact_size(); ++i) {
-    // Find out which contact is the agv
-    if (_msg->contact(i).collision1().find(impl_->model_->GetName()) != std::string::npos) {
-      model_in_contact = _msg->contact(i).collision2();
-    }
-    else if (_msg->contact(i).collision2().find(impl_->model_->GetName()) != std::string::npos){
-      model_in_contact = _msg->contact(i).collision1();
-    }
-    else {
-      continue;
-    }
+  void ObjectDisposalPlugin::OnContact(ConstContactsPtr &_msg)
+  {
+    using namespace std::chrono_literals;
+    std::string model_in_contact;
 
-    // Check if model is a part
-    for (std::string &type : impl_->part_types_){
-      if (model_in_contact.find(type) != std::string::npos){
-        auto request = std::make_shared<gazebo_msgs::srv::DeleteEntity::Request>();
-        request->name = model_in_contact.substr(0, model_in_contact.find("::"));
+    for (int i = 0; i < _msg->contact_size(); ++i)
+    {
+      // Find out which contact is the agv
+      if (_msg->contact(i).collision1().find(impl_->model_->GetName()) != std::string::npos)
+      {
+        model_in_contact = _msg->contact(i).collision2();
+      }
+      else if (_msg->contact(i).collision2().find(impl_->model_->GetName()) != std::string::npos)
+      {
+        model_in_contact = _msg->contact(i).collision1();
+      }
+      else
+      {
+        continue;
+      }
 
-        if (std::find(impl_->deleted_models_.begin(), impl_->deleted_models_.end(), request->name) == impl_->deleted_models_.end()) {
-          impl_->deleted_models_.push_back(request->name);
+      // Check if model is a part
+      for (std::string &type : impl_->part_types_)
+      {
+        std::cout << "model_in_contact: " << model_in_contact << std::endl;
+        if (model_in_contact.find(type) != std::string::npos)
+        {
+          auto part_name = model_in_contact.substr(0, model_in_contact.find("::"));
 
-          if (impl_->publish_penalty_) {
-            std_msgs::msg::String msg;
-            msg.data = request->name;
-            impl_->penalty_pub_->publish(msg);
-          }
-          
-          impl_->delete_model_client_->async_send_request(request);
-          break;
+          if (std::find(impl_->deleted_models_.begin(), impl_->deleted_models_.end(), part_name) == impl_->deleted_models_.end())
+          {
+            impl_->deleted_models_.push_back(part_name);
+            gazebo_msgs::srv::DeleteEntity::Request::SharedPtr request = std::make_shared<gazebo_msgs::srv::DeleteEntity::Request>();
+            request->name = part_name;
+            std::cout << "Request name: " << request->name << std::endl;
+
+            // if (impl_->publish_penalty_) {
+            //   std_msgs::msg::String msg;
+            //   msg.data = request->name;
+            //   impl_->penalty_pub_->publish(msg);
+            // }
+            if (impl_->delete_model_client_->wait_for_service(2s))
+            {
+
+              using ResponseFutT = decltype(impl_->delete_model_client_)::element_type::SharedFuture;
+              std::cout << "Before service call" << std::endl;
+              impl_->delete_model_client_->async_send_request(request, [this](ResponseFutT fut){
+              if (fut.valid() && fut.get()->success){
+                std::cout << "------- Deleted model"<< std::endl;
+              }
+              else{
+                std::cout << "Deletion request in gazebo failed" << std::endl;
+                } });
+              std::cout << "After service call" << std::endl;
+            }
+            else
+            {
+              std::cout << "----- Did not find service" << impl_->delete_model_client_->get_service_name() << ", skipping" << std::endl;
+            }
+
+              // std::cout << "Before deleting model: " << request->name << std::endl;
+              // impl_->delete_model_client_->async_send_request(request);
+              // std::cout << "After deleting model: " << request->name << std::endl;
+              break;
+            }
         }
       }
     }
   }
-}
 
-// Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(ObjectDisposalPlugin)
-}  // namespace ariac_plugins
+  // Register this plugin with the simulator
+  GZ_REGISTER_MODEL_PLUGIN(ObjectDisposalPlugin)
+} // namespace ariac_plugins

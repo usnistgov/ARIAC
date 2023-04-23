@@ -11,7 +11,7 @@ kitting_trays: # Which kitting trays will be spawn
 parts:
   bins:
     bin5:
-      - type: 'sensor'
+      - type: 'pump'
         color: 'purple'
         slots: [2, 3, 4]
         rotation: 'pi/6'
@@ -21,10 +21,10 @@ parts:
 challenges:
   - dropped_part:
       robot: 'floor_robot'
-      type: 'sensor'
+      type: 'pump'
       color: 'purple'
       drop_after: 0 # drops the 2nd purple sensor
-      delay: 6 # drops after 5 seconds
+      delay: 6.0 # drops after 5 seconds
       
 
 # ORDER SETUP
@@ -39,9 +39,9 @@ orders:
       tray_id: 1
       destination: 'warehouse'
       products:
-        - type: 'sensor'
+        - type: 'pump'
           color: 'purple'
           quadrant: 1
-        - type: 'sensor'
+        - type: 'pump'
           color: 'purple'
           quadrant: 2

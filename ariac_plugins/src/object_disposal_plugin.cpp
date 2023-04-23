@@ -16,11 +16,12 @@ Distributions of NIST software should also include copyright and licensing state
 #include <gazebo/transport/Node.hh>
 
 #include <gazebo_msgs/srv/delete_entity.hpp>
-
+#include <gazebo_msgs/srv/delete_model.hpp>
 #include <ariac_plugins/object_disposal_plugin.hpp>
 
 #include <gazebo_ros/node.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/executor.hpp>
 
 #include <std_srvs/srv/trigger.hpp>
 #include <std_msgs/msg/string.hpp>
@@ -52,11 +53,12 @@ namespace ariac_plugins
     std::vector<std::string> deleted_models_;
 
     /// Penalty publisher
-    bool publish_penalty_;
+    // bool publish_penalty_;
     // rclcpp::Publisher<std_msgs::msg::String>::SharedPtr penalty_pub_;
 
     /// Service to delete model
-    rclcpp::Client<gazebo_msgs::srv::DeleteEntity>::SharedPtr delete_model_client_;
+    rclcpp::Client<gazebo_msgs::srv::DeleteEntity>::SharedPtr delete_entity_client_;
+    rclcpp::Client<gazebo_msgs::srv::DeleteModel>::SharedPtr delete_model_client_;
   };
 
   ObjectDisposalPlugin::ObjectDisposalPlugin()
@@ -95,13 +97,13 @@ namespace ariac_plugins
 
     // Get contact topic
     std::string link_name = sdf->GetElement("link_name")->Get<std::string>();
-    impl_->publish_penalty_ = sdf->GetElement("publish_penalty")->Get<bool>();
+    // impl_->publish_penalty_ = sdf->GetElement("publish_penalty")->Get<bool>();
 
     std::string topic = "/gazebo/world/" + model_name + "/" + link_name + "/bumper/contacts";
 
     // Register client
-    impl_->delete_model_client_ = impl_->ros_node_->create_client<gazebo_msgs::srv::DeleteEntity>(
-        "/delete_entity");
+    impl_->delete_entity_client_ = impl_->ros_node_->create_client<gazebo_msgs::srv::DeleteEntity>("/delete_entity");
+    impl_->delete_model_client_ = impl_->ros_node_->create_client<gazebo_msgs::srv::DeleteModel>("/delete_model");
 
     // Create penalty publisher
     // impl_->penalty_pub_ = impl_->ros_node_->create_publisher<std_msgs::msg::String>("/ariac/penalty", 10);
@@ -116,7 +118,7 @@ namespace ariac_plugins
 
     for (int i = 0; i < _msg->contact_size(); ++i)
     {
-      // Find out which contact is the agv
+      // Find out which model is in contact with the floor
       if (_msg->contact(i).collision1().find(impl_->model_->GetName()) != std::string::npos)
       {
         model_in_contact = _msg->contact(i).collision2();
@@ -129,54 +131,95 @@ namespace ariac_plugins
       {
         continue;
       }
-
-      // Check if model is a part
-      for (std::string &type : impl_->part_types_)
-      {
-        std::cout << "model_in_contact: " << model_in_contact << std::endl;
-        if (model_in_contact.find(type) != std::string::npos)
-        {
-          auto part_name = model_in_contact.substr(0, model_in_contact.find("::"));
-
-          if (std::find(impl_->deleted_models_.begin(), impl_->deleted_models_.end(), part_name) == impl_->deleted_models_.end())
-          {
-            impl_->deleted_models_.push_back(part_name);
-            gazebo_msgs::srv::DeleteEntity::Request::SharedPtr request = std::make_shared<gazebo_msgs::srv::DeleteEntity::Request>();
-            request->name = part_name;
-            std::cout << "Request name: " << request->name << std::endl;
-
-            // if (impl_->publish_penalty_) {
-            //   std_msgs::msg::String msg;
-            //   msg.data = request->name;
-            //   impl_->penalty_pub_->publish(msg);
-            // }
-            if (impl_->delete_model_client_->wait_for_service(2s))
-            {
-
-              using ResponseFutT = decltype(impl_->delete_model_client_)::element_type::SharedFuture;
-              std::cout << "Before service call" << std::endl;
-              impl_->delete_model_client_->async_send_request(request, [this](ResponseFutT fut){
-              if (fut.valid() && fut.get()->success){
-                std::cout << "------- Deleted model"<< std::endl;
-              }
-              else{
-                std::cout << "Deletion request in gazebo failed" << std::endl;
-                } });
-              std::cout << "After service call" << std::endl;
-            }
-            else
-            {
-              std::cout << "----- Did not find service" << impl_->delete_model_client_->get_service_name() << ", skipping" << std::endl;
-            }
-
-              // std::cout << "Before deleting model: " << request->name << std::endl;
-              // impl_->delete_model_client_->async_send_request(request);
-              // std::cout << "After deleting model: " << request->name << std::endl;
-              break;
-            }
-        }
-      }
     }
+
+    if (model_in_contact.empty())
+      return;
+
+    auto model_name = model_in_contact.substr(0, model_in_contact.find("::"));
+    // Check model was not already deleted
+    if (std::find(impl_->deleted_models_.begin(), impl_->deleted_models_.end(), model_name) == impl_->deleted_models_.end())
+    {
+      if (!model_name.empty())
+        // std::cout << "model: " << model_name << std::endl;
+        // check model is a part
+        for (std::string &type : impl_->part_types_)
+        {
+          if (model_name.find(type) != std::string::npos)
+          {
+            RCLCPP_WARN(impl_->ros_node_->get_logger(), "Part %s in contact with floor, teleporting", model_name.c_str());
+           
+            // if (!impl_->delete_entity_client_->wait_for_service(5s))
+            // {
+            //   RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Unable to find localize_part service. Start vision_node first.");
+            //   return;
+            // }
+
+            // impl_->model_->SetWorldPose({-20, 13, 0.5, 0, 0, 0}, true, true);
+            impl_->model_->SetAutoDisable(true);
+            impl_->model_->SetCollideMode("none");
+            impl_->deleted_models_.push_back(model_name);
+
+            // auto request = std::make_shared<gazebo_msgs::srv::DeleteEntity::Request>();
+            // request->name = model_name;
+            // auto future = impl_->delete_entity_client_->async_send_request(request);
+
+            // if (rclcpp::spin_until_future_complete(impl_->ros_node_->get_node_base_interface(), future) != rclcpp::FutureReturnCode::SUCCESS)
+            // {
+            //   RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Failed to receive LocalizePart service response");
+            //   return;
+            // }
+
+            // auto response = future.get();
+            // if (!response->success)
+            // {
+            //   RCLCPP_ERROR(impl_->ros_node_->get_logger(), "Part deletion failed");
+            //   return;
+            // }
+
+            // impl_->deleted_models_.push_back(model_name);
+
+            // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Response: "<< response->success);
+            break;
+          }
+        }
+    }
+
+    // Get model name
+    // auto model_name = model_in_contact.substr(0, model_in_contact.find("::"));
+    // // Check model was not already deleted
+    // if (std::find(impl_->deleted_models_.begin(), impl_->deleted_models_.end(), model_name) == impl_->deleted_models_.end())
+    // {
+    //   if (!model_name.empty())
+    //     std::cout << "part_name: " << model_name << std::endl;
+    //   // check model is a part
+    //   for (std::string &type : impl_->part_types_)
+    //   {
+    //     if (model_name.find(type) != std::string::npos)
+    //     {
+
+    //       auto request = std::make_shared<gazebo_msgs::srv::DeleteEntity::Request>();
+    //       request->name = model_name;
+    //       auto future = impl_->client_->async_send_request(request);
+    //       // auto status = future.wait_for(2s);
+    //       auto response = future.get();
+    //       std::cout << "Response: " << response->success << std::endl;
+    //       impl_->deleted_models_.push_back(model_name);
+
+    //       // if (std::future_status::ready)
+    //       // {
+    //       //   auto response = future.get();
+    //       //   std::cout << "Response: " << response->success << std::endl;
+    //       //   impl_->deleted_models_.push_back(model_name);
+    //       // }
+    //       // else
+    //       // {
+    //       //   std::cout << "Service call timed out" << std::endl;
+    //       // }
+    //       break;
+    //     }
+    //   }
+    // }
   }
 
   // Register this plugin with the simulator

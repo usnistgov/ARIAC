@@ -35,8 +35,9 @@ def load_yaml(package_name, file_path):
     except EnvironmentError:  # parent of IOError, OSError *and* WindowsError where available
         return None
 
-
 def launch_setup(context, *args, **kwargs):
+    rviz_config_file = LaunchConfiguration("rviz_conf")
+        
     # Generate Robot Description parameter from xacro
     robot_description_content = Command(
         [
@@ -99,12 +100,7 @@ def launch_setup(context, *args, **kwargs):
             {"use_sim_time": True},
         ],
     )
-
-    # rviz with moveit configuration
-    rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare("ariac_moveit_config"), "rviz", "moveit.rviz"]
-    )
-
+  
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
@@ -121,13 +117,19 @@ def launch_setup(context, *args, **kwargs):
     
     nodes_to_start = [
         move_group_node,
-        # rviz_node    
+        rviz_node
     ]
 
     return nodes_to_start
 
 
 def generate_launch_description():
-    declared_arguments = []
+    # rviz with moveit configuration
+    _launcharg_rviz_config = DeclareLaunchArgument(
+        'rviz_conf',
+        default_value= PathJoinSubstitution(
+            [FindPackageShare("ariac_moveit_config"), "rviz", "moveit.rviz"]))
+    
+    declared_arguments = [_launcharg_rviz_config]
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

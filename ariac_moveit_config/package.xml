@@ -13,6 +13,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
 
+  <depend>ariac_description</depend>
   <depend>backward_ros</depend>
 
   <exec_depend>launch</exec_depend>

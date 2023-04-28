@@ -31,5 +31,5 @@ if __name__=="__main__":
     subprocess.run(rosdep_command, shell=True)
     colcon_build_command=f"colcon build"
     subprocess.run(colcon_build_command, shell=True)
-    run_launch=f"~/autoEval/./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
+    run_launch=f"~/ariac_ws/src/ariac/automated_evaluation/./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
     subprocess.run(run_launch, shell=True)

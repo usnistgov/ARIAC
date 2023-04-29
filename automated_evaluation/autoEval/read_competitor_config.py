@@ -21,7 +21,7 @@ if __name__=="__main__":
                 allYamlFiles.append(file.replace(".yaml",""))
     clone_command=f"git clone https://{PAT}@{repo_link} ~/ariac_ws/src/{team_name}"
     subprocess.run(clone_command, shell=True)
-    move_launch=f"mv ~/ariac_ws/src/{team_name}/launch/{launch_file_name} /home/ubuntu/ariac_ws/install/ariac_gazebo/share/ariac_gazebo/{launch_file_name}"
+    move_launch=f"cp ~/ariac_ws/src/{team_name}/launch/{launch_file_name} /home/ubuntu/ariac_ws/install/ariac_gazebo/share/ariac_gazebo/{launch_file_name}"
     subprocess.run(move_launch, shell=True)
     os.chdir('/home/ubuntu/ariac_ws') #go into the workspace
     for package in data["competition"]["pip_packages"]:

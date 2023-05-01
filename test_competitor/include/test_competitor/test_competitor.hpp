@@ -104,6 +104,10 @@ private:
   void AddModelToPlanningScene(std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose);
   void AddModelsToPlanningScene();
 
+  // AGV location
+  std::map<int, int> agv_locations_ = {{1, -1}, {2, -1}, {3, -1}, {4, -1}};
+  
+
   // Callback Groups
   rclcpp::CallbackGroup::SharedPtr client_cb_group_;
   rclcpp::CallbackGroup::SharedPtr topic_cb_group_;
@@ -122,6 +126,10 @@ private:
 
   // Subscriptions
   rclcpp::Subscription<ariac_msgs::msg::Order>::SharedPtr orders_sub_;
+  rclcpp::Subscription<ariac_msgs::msg::AGVStatus>::SharedPtr agv1_status_sub_;
+  rclcpp::Subscription<ariac_msgs::msg::AGVStatus>::SharedPtr agv2_status_sub_;
+  rclcpp::Subscription<ariac_msgs::msg::AGVStatus>::SharedPtr agv3_status_sub_;
+  rclcpp::Subscription<ariac_msgs::msg::AGVStatus>::SharedPtr agv4_status_sub_;
   rclcpp::Subscription<ariac_msgs::msg::CompetitionState>::SharedPtr competition_state_sub_;
   rclcpp::Subscription<ariac_msgs::msg::AdvancedLogicalCameraImage>::SharedPtr kts1_camera_sub_;
   rclcpp::Subscription<ariac_msgs::msg::AdvancedLogicalCameraImage>::SharedPtr kts2_camera_sub_;
@@ -184,6 +192,12 @@ private:
   void as2_state_cb(const ariac_msgs::msg::AssemblyState::ConstSharedPtr msg);
   void as3_state_cb(const ariac_msgs::msg::AssemblyState::ConstSharedPtr msg);
   void as4_state_cb(const ariac_msgs::msg::AssemblyState::ConstSharedPtr msg);
+
+  // AGV Status Callback
+  void agv1_status_cb(const ariac_msgs::msg::AGVStatus::ConstSharedPtr msg);
+  void agv2_status_cb(const ariac_msgs::msg::AGVStatus::ConstSharedPtr msg);
+  void agv3_status_cb(const ariac_msgs::msg::AGVStatus::ConstSharedPtr msg);
+  void agv4_status_cb(const ariac_msgs::msg::AGVStatus::ConstSharedPtr msg);
 
   // Orders Callback
   void orders_cb(const ariac_msgs::msg::Order::ConstSharedPtr msg);

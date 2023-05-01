@@ -1806,7 +1806,14 @@ namespace ariac_plugins
             tray_score = 3;
 
         // Sum quadrant scores
-        total_quadrants_score = quadrant_scores[0] + quadrant_scores[1] + quadrant_scores[2] + quadrant_scores[3];
+        total_quadrants_score = quadrant_scores[1] + quadrant_scores[2] + quadrant_scores[3] + quadrant_scores[4];
+
+        std::cout << "Quadrant 1 score: " << quadrant_scores[1] << std::endl;
+        std::cout << "Quadrant 2 score: " << quadrant_scores[2] << std::endl;
+        std::cout << "Quadrant 3 score: " << quadrant_scores[3] << std::endl;
+        std::cout << "Quadrant 4 score: " << quadrant_scores[4] << std::endl;
+        std::cout << "Expected number of parts: " << expected_number_of_parts << std::endl;
+        std::cout << "Total quadrant score: " << total_quadrants_score << std::endl;
 
         // Compute bonus
         if (total_quadrants_score == 3 * expected_number_of_parts)

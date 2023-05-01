@@ -13,6 +13,7 @@
   <depend>nav2_bringup</depend>
   <depend>nav2_controller</depend>
   <depend>rosbridge_server</depend>
+  <depend>nav2_simple_commander</depend>
 
   <exec_depend> ariac_msgs </exec_depend>
   <export>

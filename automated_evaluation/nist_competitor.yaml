@@ -1,0 +1,12 @@
+# team configuration for automated evaluation
+
+team_name: ""
+
+github:
+  repo_link: "" # remove https
+  public_access_token: ""
+
+competition:
+  package_name: ""
+  sensor_file: ""
+  launch_file: ""

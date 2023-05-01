@@ -220,12 +220,14 @@ class HumanControl(Node):
         # t_2 = 1.5
         # beta = 0
         # delta = 0.25
+        maxD = 2.1
+        maxS = 0.01
 
         # speed_h  = math.sqrt(self.state.human_velocity.x**2 + self.state.human_velocity.y**2)
-        # speed_a1 = math.sqrt(self.state_agv1_velocity.x**2 + self.state_agv1_velocity.y**2)
-        # speed_a2 = math.sqrt(self.state_agv2_velocity.x**2 + self.state_agv2_velocity.y**2)
-        # speed_a3 = math.sqrt(self.state_agv3_velocity.x**2 + self.state_agv3_velocity.y**2)
-        # speed_a4 = math.sqrt(self.state_agv4_velocity.x**2 + self.state_agv4_velocity.y**2)
+        speed_a1 = math.sqrt(self.state_agv1_velocity.x**2 + self.state_agv1_velocity.y**2)
+        speed_a2 = math.sqrt(self.state_agv2_velocity.x**2 + self.state_agv2_velocity.y**2)
+        speed_a3 = math.sqrt(self.state_agv3_velocity.x**2 + self.state_agv3_velocity.y**2)
+        speed_a4 = math.sqrt(self.state_agv4_velocity.x**2 + self.state_agv4_velocity.y**2)
 
         # safe_distance_a1 = (speed_h * (t_1 + t_2)) + (speed_a1 * (t_1)) + beta + delta
         # safe_distance_a2 = (speed_h * (t_1 + t_2)) + (speed_a2 * (t_1)) + beta + delta
@@ -241,10 +243,10 @@ class HumanControl(Node):
         actual_distance_a4 = math.sqrt((self.state.human_position.x - self.state_agv4_position.x)**2 + 
                                        (self.state.human_position.y - self.state_agv4_position.y)**2)
 
-        if ((actual_distance_a1 < 2.1) or 
-            (actual_distance_a2 < 2.1) or 
-            (actual_distance_a3 < 2.1) or 
-            (actual_distance_a4 < 2.1)):
+        if ((actual_distance_a1 < maxD and speed_a1 > maxS) or 
+            (actual_distance_a2 < maxD and speed_a2 > maxS) or 
+            (actual_distance_a3 < maxD and speed_a3 > maxS) or 
+            (actual_distance_a4 < maxD and speed_a4 > maxS)):
             return False
         else:
             return True

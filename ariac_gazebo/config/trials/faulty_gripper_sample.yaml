@@ -1,0 +1,47 @@
+# Trial Name: faulty_gripper_sample.yaml
+# ENPM663
+
+time_limit: 400 # options: -1 (no time limit) or number of seconds (max 500)
+
+kitting_trays: # Which kitting trays will be spawn
+  tray_ids: [1, 1] 
+  slots: [2, 3]
+
+# PART SETUP
+parts:
+  bins:
+    bin5:
+      - type: 'pump'
+        color: 'purple'
+        slots: [2, 3, 4]
+        rotation: 'pi/6'
+  
+        
+# CHALLENGE SETUP
+challenges:
+  - dropped_part:
+      robot: 'floor_robot'
+      type: 'pump'
+      color: 'purple'
+      drop_after: 0 # drops the 2nd purple sensor
+      delay: 6.0 # drops after 5 seconds
+      
+
+# ORDER SETUP
+orders:
+  - id: 'MMB30H00'
+    type: 'kitting'
+    announcement:
+      time_condition: 0
+    priority: false
+    kitting_task:
+      agv_number: 2
+      tray_id: 1
+      destination: 'warehouse'
+      products:
+        - type: 'pump'
+          color: 'purple'
+          quadrant: 1
+        - type: 'pump'
+          color: 'purple'
+          quadrant: 2

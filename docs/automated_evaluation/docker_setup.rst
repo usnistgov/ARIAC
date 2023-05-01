@@ -37,3 +37,8 @@ Submission Procedure
 ==============================
 
 Competitors must upload their submission configuration file on Google Drive. Please contact Anthony Downs (anthony.downs@nist.gov) to create a folder for your team. The submission configuration file must be named :file:`qualifiers.yaml`. 
+
+Automated Evaluation Procedure
+==============================
+
+Documentation on the automated evaluation procedure will be provided on 05/01/2023.

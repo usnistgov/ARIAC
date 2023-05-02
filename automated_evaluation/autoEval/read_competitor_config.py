@@ -3,7 +3,8 @@ import yaml
 import subprocess
 import os
 if __name__=="__main__":
-    with open("nist_competitor.yaml", "r") as stream:
+    subprocess.run("echo $PWD", shell=True)
+    with open("../nist_competitor.yaml", "r") as stream:
         try:
             data = yaml.safe_load(stream)
         except yaml.YAMLError:
@@ -31,5 +32,7 @@ if __name__=="__main__":
     subprocess.run(rosdep_command, shell=True)
     colcon_build_command=f"colcon build"
     subprocess.run(colcon_build_command, shell=True)
-    run_launch=f"~/ariac_ws/src/ariac/automated_evaluation/./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
+    os.chdir('/home/ubuntu/autoEval/autoEval')
+    subprocess.run("ls", shell=True)
+    run_launch=f"./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
     subprocess.run(run_launch, shell=True)

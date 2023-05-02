@@ -8,7 +8,7 @@ To pull the docker image, run `docker image pull jfernandez37/ariac`
 To run the evaluation,
 1. Navigate to the automated_evaluation directory in the ARIAC repository
 2. Put a nist_competitor.yaml file in the autoEval directory. An example is below
-3. Copy the yaml configuration file that you would like to test into the automated_evaluation directory
+3. Copy the yaml configuration file that you would like to test into the automated_evaluation/autoEval directory
 4. In the automated evaluation directory, run `chmod 777 *`
 5. When in the automatic_evaluation directory, run `./runDockerTest.sh` in the command line
 

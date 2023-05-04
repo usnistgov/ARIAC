@@ -25,9 +25,20 @@ if __name__=="__main__":
     move_launch=f"cp ~/ariac_ws/src/{team_name}/launch/{launch_file_name} /home/ubuntu/ariac_ws/install/ariac_gazebo/share/ariac_gazebo/{launch_file_name}"
     subprocess.run(move_launch, shell=True)
     os.chdir('/home/ubuntu/ariac_ws') #go into the workspace
+    for package in data["competition"]["debian_packages"]:
+        apt_command=f"apt install -y {package}"
+        subprocess.run(apt_command,shell=True)
     for package in data["competition"]["pip_packages"]:
         pip_command=f"pip install {package}"
         subprocess.run(pip_command,shell=True)
+    if "prebuild_script" in data["competition"]:
+        script_path = data["competition"]["prebuild_script"]
+        if script_path != "":
+            os.chdir(f'/home/ubuntu/ariac_ws/src/{team_name}')
+            subprocess.run(f"chmod 777 {script_path}", shell=True)
+            script_launch=f"./{script_path}"
+            subprocess.run(script_launch, shell=True)
+            os.chdir('/home/ubuntu/ariac_ws') #go back into the workspace
     rosdep_command=f"rosdep install --from-paths src -y --ignore-src"
     subprocess.run(rosdep_command, shell=True)
     colcon_build_command=f"colcon build"

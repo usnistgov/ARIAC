@@ -18,13 +18,18 @@ if __name__=="__main__":
     for file in all_files_current:
         if".yaml" in file:
             if file!=team_name+".yaml" and file!="nist_competitor.yaml":
-                os.system(f"mv {file} ~/ariac_ws/src/ariac/ariac_gazebo/config/trials/")
+                os.system(f"cp {file} ~/ariac_ws/src/ariac/ariac_gazebo/config/trials/")
                 allYamlFiles.append(file.replace(".yaml",""))
     clone_command=f"git clone https://{PAT}@{repo_link} ~/ariac_ws/src/{team_name}"
     subprocess.run(clone_command, shell=True)
     move_launch=f"cp ~/ariac_ws/src/{team_name}/launch/{launch_file_name} /home/ubuntu/ariac_ws/install/ariac_gazebo/share/ariac_gazebo/{launch_file_name}"
     subprocess.run(move_launch, shell=True)
     os.chdir('/home/ubuntu/ariac_ws') #go into the workspace
+    for package in data["competition"]["debian_packages"]:
+        dowload_deb_command=f"apt-get dowload {package}"
+        subprocess.run(download_deb_command,shell=True)
+        install_deb_command=f"apt install {package}"
+        subprocess.run(install_deb_command,shell=True)
     for package in data["competition"]["pip_packages"]:
         pip_command=f"pip install {package}"
         subprocess.run(pip_command,shell=True)

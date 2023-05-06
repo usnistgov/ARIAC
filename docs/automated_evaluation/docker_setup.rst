@@ -41,4 +41,13 @@ Competitors must upload their submission configuration file on Google Drive. Ple
 Automated Evaluation Procedure
 ==============================
 
-Documentation on the automated evaluation procedure will be provided on 05/01/2023.
+* Installing Docker: Follow these `instructions <https://docs.docker.com/engine/install/>`_
+* To pull the docker image, run ``docker image pull jfernandez37/ariac:ariac_latest``
+
+* To run the evaluation:
+
+    * Navigate to the :file:`automated_evaluation`
+    * Place a :file:`nist_competitor.yaml` file in the :file:`autoEval` directory
+    * Copy the yaml configuration file that you would like to test into the :file:`automated_evaluation` directory
+    * In the :file:`automated_evaluation` directory, run ``chmod 777 *``
+    * When in the :file:`automated_evaluation` directory, run ``./runDockerTest.sh``

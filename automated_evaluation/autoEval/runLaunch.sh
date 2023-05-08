@@ -1,4 +1,5 @@
 #!/bin/bash
+cd ~/ariac_ws
 source install/setup.bash
 #ros2 launch ariac_gazebo $1
 argv=("$@")

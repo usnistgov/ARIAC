@@ -3,7 +3,8 @@ import yaml
 import subprocess
 import os
 if __name__=="__main__":
-    with open("nist_competitor.yaml", "r") as stream:
+    subprocess.run("echo $PWD", shell=True)
+    with open("../nist_competitor.yaml", "r") as stream:
         try:
             data = yaml.safe_load(stream)
         except yaml.YAMLError:
@@ -17,13 +18,18 @@ if __name__=="__main__":
     for file in all_files_current:
         if".yaml" in file:
             if file!=team_name+".yaml" and file!="nist_competitor.yaml":
-                os.system(f"mv {file} ~/ariac_ws/src/ariac/ariac_gazebo/config/trials/")
+                os.system(f"cp {file} ~/ariac_ws/src/ariac/ariac_gazebo/config/trials/")
                 allYamlFiles.append(file.replace(".yaml",""))
     clone_command=f"git clone https://{PAT}@{repo_link} ~/ariac_ws/src/{team_name}"
     subprocess.run(clone_command, shell=True)
     move_launch=f"cp ~/ariac_ws/src/{team_name}/launch/{launch_file_name} /home/ubuntu/ariac_ws/install/ariac_gazebo/share/ariac_gazebo/{launch_file_name}"
     subprocess.run(move_launch, shell=True)
     os.chdir('/home/ubuntu/ariac_ws') #go into the workspace
+    for package in data["competition"]["debian_packages"]:
+        dowload_deb_command=f"apt-get dowload {package}"
+        subprocess.run(download_deb_command,shell=True)
+        install_deb_command=f"apt install {package}"
+        subprocess.run(install_deb_command,shell=True)
     for package in data["competition"]["pip_packages"]:
         pip_command=f"pip install {package}"
         subprocess.run(pip_command,shell=True)
@@ -31,5 +37,7 @@ if __name__=="__main__":
     subprocess.run(rosdep_command, shell=True)
     colcon_build_command=f"colcon build"
     subprocess.run(colcon_build_command, shell=True)
-    run_launch=f"~/ariac_ws/src/ariac/automated_evaluation/./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
+    os.chdir('/home/ubuntu/autoEval/autoEval')
+    subprocess.run("ls", shell=True)
+    run_launch=f"./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
     subprocess.run(run_launch, shell=True)

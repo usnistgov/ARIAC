@@ -2,8 +2,10 @@
 import yaml
 import subprocess
 import os
+import sys
 if __name__=="__main__":
-    subprocess.run("echo $PWD", shell=True)
+    print("Python",sys.argv[1])
+    targetFile=sys.argv[1]+".yaml"
     with open("../nist_competitor.yaml", "r") as stream:
         try:
             data = yaml.safe_load(stream)
@@ -17,7 +19,8 @@ if __name__=="__main__":
     allYamlFiles=[]
     for file in all_files_current:
         if".yaml" in file:
-            if file!=team_name+".yaml" and file!="nist_competitor.yaml":
+            if targetFile==file:
+                print("File moved to trials")
                 os.system(f"cp {file} ~/ariac_ws/src/ariac/ariac_gazebo/config/trials/")
                 allYamlFiles.append(file.replace(".yaml",""))
     clone_command=f"git clone https://{PAT}@{repo_link} ~/ariac_ws/src/{team_name}"
@@ -39,5 +42,6 @@ if __name__=="__main__":
     subprocess.run(colcon_build_command, shell=True)
     os.chdir('/home/ubuntu/autoEval/autoEval')
     subprocess.run("ls", shell=True)
-    run_launch=f"./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
+    #run_launch=f"./runLaunch.sh {launch_file_name}"+((" "+" ".join(allYamlFiles)) if len(allYamlFiles)!=0 else "")
+    run_launch=f"./runLaunch.sh {launch_file_name} {targetFile}"
     subprocess.run(run_launch, shell=True)

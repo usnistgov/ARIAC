@@ -54,9 +54,11 @@ Github repository: `https://www.github.com/usnistgov/ARIAC/ <https://www.github.
    tutorials/tutorial_8.rst
 
 .. toctree::
-   :caption: Automated Evaluation
+   :caption: ⏩ Automated Evaluation
    :maxdepth: 3
    :hidden:
 
-   automated_evaluation/docker_setup.rst
+   automated_evaluation/automated_evaluation_overview
+   automated_evaluation/competition_launch
+   automated_evaluation/creating_a_personal_access_token
  

@@ -1,12 +1,17 @@
 # team configuration for automated evaluation
 
-team_name: ""
+team_name: "nist_competitor"
 
 github:
-  repo_link: "" # remove https
-  public_access_token: ""
+  repository: "github.com/jaybrecht/nist_competitor.git"
+  personal_access_token: "****"
+
+build:
+  debian_packages: []
+  pip_packages: []
+  extra_build_scripts: []
 
 competition:
-  package_name: ""
-  sensor_file: ""
-  launch_file: ""
+  package_name: "nist_competitor"
+  launch_file: "competitor.launch.py"
+

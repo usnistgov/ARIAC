@@ -1,8 +1,14 @@
 Updates
 ========
 
+Release 2023_v1.4, May 11
+-------------------------
+
+- Reworked automated evaluation scripts and updated documentation
+
+
 Release 2023_v1.3, May 6
---------------------------------------------
+------------------------
 
 - Added information on the :ref:`Automated Evaluation <EVALUATION>` explaining how to evaluate your own package. If your package requires complex installations, modify the appropriate files and place them in your google drive folder.
 - Fixed issue with not getting the bonus points for kitting.
@@ -11,14 +17,8 @@ Release 2023_v1.3, May 6
 - Added logic to the test competitor to submit a kitting order only when the AGV has reached the warehouse.
 
 
-Release 2023_v1.2, April 19
---------------------------------------------
-
-- Added a field for packages to be installed with the ``pip`` command for the :ref:`Automated Evaluation <EVALUATION>`.
-
-
 Release 2023_v1.2, April 14
---------------------------------------------
+---------------------------
 
 - Added information on the :ref:`Automated Evaluation <EVALUATION>`.
 - Added more information on the :ref:`Human Challenge <HUMANS>`.

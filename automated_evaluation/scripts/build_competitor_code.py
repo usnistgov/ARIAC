@@ -58,19 +58,20 @@ def main():
 
     # Install extra packages
     for package in data["build"]["debian_packages"]:
-        install_cmd = f"apt-get install {package}"
+        install_cmd = f"apt-get install {package} -y"
         subprocess.run(install_cmd, shell=True)
         
     if data["build"]["pip_packages"]:
-        subprocess.run('apt install python3-pip' ,shell=True)
+        subprocess.run('apt install python3-pip -y' ,shell=True)
     
     for package in data["build"]["pip_packages"]:
-        pip_command=f"pip3 install {package}"
+        pip_command=f"yes | pip3 install {package}"
         subprocess.run(pip_command,shell=True)
 
     # Run custom build scripts
     os.chdir('/home/ubuntu/competitor_build_scripts') 
     for script in data["build"]["extra_build_scripts"]:
+        subprocess.run(f"chmod +x {script}", shell=True)
         subprocess.run(f"./{script}", shell=True)
 
     # Install rosdep packages

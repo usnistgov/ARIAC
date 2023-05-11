@@ -4,11 +4,12 @@ team_name: "nist_competitor"
 
 github:
   repository: "github.com/jaybrecht/nist_competitor.git"
-  personal_access_token: "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"
+  personal_access_token: "****"
 
 build:
   debian_packages: []
   pip_packages: []
+  extra_build_scripts: []
 
 competition:
   package_name: "nist_competitor"

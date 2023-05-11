@@ -46,13 +46,13 @@ competition:
 
 3. Next ensure that the most up-to-date version of ARIAC2023 (at least version 1.2) is on your machine. You can ensure this by running `git pull` from `~/ariac_ws/src/ARIAC`
 
-4. Navigate to the automated_evalation folder
+4. Navigate to the `automated_evaluation` folder
 
     `cd ~/ariac_ws/src/ARIAC/automated_evaluation`
 
 5. Add your team configuration file to this folder. It can be named however you like.
 
-6. Ensure that the build_container and run_trial scripts can be run as executables:
+6. Ensure that the `build_container` and `run_trial` scripts can be run as executables:
 
     `chmod +x build_container.sh run_trial.sh`
 
@@ -64,15 +64,15 @@ competition:
 
     `./build_container.sh nist_competitor`
 
-    - To run the nist_competitor example the personal_access_token should be replaced with the following: `github(UNDERSCORE)pat(UNDERSCORE)11AMERXRA0kVDnLF6MjHg2_PbvzsNpX4jJWeadcFQHiroV2JaDl4MRhQVJA2hepPdAWMK4VMJNJhXuPtHs`
+    - To run the nist_competitor example the personal_access_token should be replaced with the following: `github(UNDERSCORE)pat_11AMERXRA0kVDnLF6MjHg2_PbvzsNpX4jJWeadcFQHiroV2JaDl4MRhQVJA2hepPdAWMK4VMJNJhXuPtHs`
 
-        - replace '(UNDERSCORE)' with '_' this is required so that github does not revoke the key
+        - replace `(UNDERSCORE)` with `_`
 
-    - This will create a container from the ARIAC image and attempt to clone and build the competitor package. You should see output in the terminal. If the build is successful continute onto the next step. If not delete the created container, fix the error and run the build_contiainer script again. If the build script is successful it only needs to be run once. All trials can be run using this container. 
+    - This will create a container from the ARIAC image and attempt to clone and build the competitor package. You should see output in the terminal. If the build is successful continute onto the next step. If not, delete the created container (e.g., `docker rm nist_competitor --force`), fix the error and run the `build_container` script again. If the build script is successful it only needs to be run once. All trials can be run using this container.
 
-10. After the contianer is built and running, open a web browser and navigate to `http://localhost:6080/`. This should show a VNC display for the container. 
+10. After the container is built and running, open a web browser and navigate to `http://localhost:6080/`. This should show a VNC display for the container. 
 
-11. To run a trial use the `run_trial.sh` script. The first argument is the team name which should also be the name of the container. The second argument is the name of the trial to be run. For example to run the nist_competitor with the kitting trial you would run:
+11. To run a trial use the `run_trial.sh` script. The first argument is the team name which should also be the name of the container. The second argument is the name of the trial to be run. For example to run the nist_competitor with  `kitting.yaml` trial you would run:
 
     `./run_trial nist_competitor kitting`
 

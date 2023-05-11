@@ -29,7 +29,7 @@ competition:
 
 - For the repository link ensure that it is structured exactly like the example above with the `https://` excluded. 
 
-- For the docker container to clone the environment teams will need to create a personal_access_token for the repository, [the intructions for which are shown here](creating_a_personal_access_token.md).
+- For the docker container to clone the environment teams will need to create a personal_access_token for the repository, [the intructions for which are shown here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token). We suggest creating a fine-grain token and only giving read access permissions for the competition repository. 
 
 - The build scripts for the docker container will run rosdep automatically to ensure that any ROS packages you have included in your package manifest (`package.xml`) will be installed. However if you need to install packages that are not included in rosdep you can add them to the build section. Currently debian packages (installed using apt) and pip packages (installed using pip3) are supported. 
 

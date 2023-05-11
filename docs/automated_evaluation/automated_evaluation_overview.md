@@ -25,7 +25,7 @@ competition:
 ```
 
 ## Instructions
-- Competitors must upload their ROS package to a private github repository. Please ensure that only the ROS package you created is uploaded to this repository. If you include the entire ROS workspace it will not work properly. If you have multiple ROS packages they can all by included in a single folder and colcon will take care of it for you. The ARIAC repository is an example of this setup. 
+- Competitors must upload their ROS package to a private github repository. Please ensure that only the ROS package you created is uploaded to this repository. If you include the entire ROS workspace it will not work properly. If you have multiple ROS packages they can all be included in a single folder. The ARIAC repository is an example of this setup. 
 
 - For the repository link ensure that it is structured exactly like the example above with the `https://` excluded. 
 

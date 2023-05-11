@@ -18,6 +18,7 @@ github:
 build:
   debian_packages: []
   pip_packages: []
+  extra_build_scripts: []
 
 competition:
   package_name: "nist_competitor"

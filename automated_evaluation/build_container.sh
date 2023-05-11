@@ -17,6 +17,7 @@ docker run -d --name $teamName -p 6080:80 --shm-size=512m jfernandez37/ariac:ari
 
 # Copy scripts directory and yaml file
 docker cp ./scripts/ $teamName:/home/ubuntu
+docker cp ./competitor_build_scripts/ $teamName:/home/ubuntu
 docker cp ./trials/ $teamName:/home/ubuntu
 docker cp ./$1.yaml $teamName:/home/ubuntu/scripts
 

@@ -15,6 +15,9 @@ from launch_ros.substitutions import FindPackageShare
 
 from ament_index_python.packages import get_package_share_directory
 
+_LAUNCHARG_KEY_DEBUGVIZ = "debug_visual"
+_LAUNCHARG_KEY_RVIZCONF = "rviz_conf"
+
 def load_file(package_name, file_path):
     package_path = get_package_share_directory(package_name)
     absolute_file_path = os.path.join(package_path, file_path)
@@ -36,8 +39,9 @@ def load_yaml(package_name, file_path):
         return None
 
 def launch_setup(context, *args, **kwargs):
-    rviz_config_file = LaunchConfiguration("rviz_conf")
-        
+    debug_visual = LaunchConfiguration(_LAUNCHARG_KEY_DEBUGVIZ)
+    rviz_config_file = LaunchConfiguration(_LAUNCHARG_KEY_RVIZCONF)
+
     # Generate Robot Description parameter from xacro
     robot_description_content = Command(
         [
@@ -113,12 +117,13 @@ def launch_setup(context, *args, **kwargs):
             robot_description_kinematics,
             {"use_sim_time": True}
         ],
+        condition=IfCondition(debug_visual)
     )
     
     nodes_to_start = [
         move_group_node,
-        rviz_node
     ]
+    if rviz_node: nodes_to_start.append(rviz_node)
 
     return nodes_to_start
 
@@ -126,10 +131,14 @@ def launch_setup(context, *args, **kwargs):
 def generate_launch_description():
     # rviz with moveit configuration
     _launcharg_rviz_config = DeclareLaunchArgument(
-        'rviz_conf',
+        _LAUNCHARG_KEY_RVIZCONF,
         default_value= PathJoinSubstitution(
             [FindPackageShare("ariac_moveit_config"), "rviz", "moveit.rviz"]))
+    _launcharg_mode_debugviz = DeclareLaunchArgument(
+        _LAUNCHARG_KEY_DEBUGVIZ,
+        default_value="false"
+        )
     
-    declared_arguments = [_launcharg_rviz_config]
+    declared_arguments = [_launcharg_rviz_config, _launcharg_mode_debugviz]
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

@@ -43,13 +43,13 @@ competition:
 
 2. After docker is installed pull the ARIAC image from docker hub using the terminal command:
 
-    `docker image pull jfernandez37/ariac:ariac_latest`
+    `docker image pull nistariac/ariac2023:latest`
 
-3. Next ensure that the most up-to-date version of ARIAC2023 (at least version 1.2) is on your machine. You can ensure this by running `git pull` from `~/ariac_ws/src/ARIAC`
+3. Next ensure that the most up-to-date version of ARIAC2023 (at least version 1.2) is on your machine. You can ensure this by running `git pull` from `~/ariac_ws/src/ariac`
 
 4. Navigate to the `automated_evaluation` folder
 
-    `cd ~/ariac_ws/src/ARIAC/automated_evaluation`
+    `cd ~/ariac_ws/src/ariac/automated_evaluation`
 
 5. Add your team configuration file to this folder. It can be named however you like.
 
@@ -59,11 +59,11 @@ competition:
 
 7. Make sure the docker engine is running.
 
-8. Add any trials you want to test to the `~/ariac_ws/src/ARIAC/automated_evaluation/trials` folder. These will be copied to the container during the build process.
+8. Add any trials you want to test to the `~/ariac_ws/src/ariac/automated_evaluation/trials` folder. These will be copied to the container during the build process.
 
-9. Run the build script with the name of your configuration file (without .yaml) as an argument. For example to build the nist_competitor container you would run:
+9. Run the build script with the name of your configuration file (without .yaml) as the first argument and the port number for VNC as the second. For example to build the nist_competitor container on port 6080 you would run:
 
-    `./build_container.sh nist_competitor`
+    `./build_container.sh nist_competitor 6080`
 
     - To run the nist_competitor example the personal_access_token should be replaced with the following: `github(UNDERSCORE)pat(UNDERSCORE)11AMERXRA0GKwm4hYMZd5o_t37FvUZw9MJ6wMJFxLzjjwZzgeLEzktHRNqeYOxmykBSEDMA2QEFp0Ysclt`
 
@@ -73,7 +73,7 @@ competition:
 
 10. After the container is built and running, open a web browser and navigate to `http://localhost:6080/`. This should show a VNC display for the container. 
 
-11. To run a trial use the `run_trial.sh` script. The first argument is the team name which should also be the name of the container. The second argument is the name of the trial to be run. For example to run the nist_competitor with  `kitting.yaml` trial you would run:
+11. To run a trial use the `run_trial.sh` script. The first argument is the team name which should also be the name of the container. The second argument is the name of the trial to be run. If no second argument is passed all trials in the folder will be run sequentially. For example to run the nist_competitor with  `kitting.yaml` trial you would run:
 
     `./run_trial.sh nist_competitor kitting`
 

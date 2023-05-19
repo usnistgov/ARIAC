@@ -50,6 +50,8 @@ Distributions of NIST software should also include copyright and licensing state
 #include <tf2/LinearMath/Matrix3x3.h>
 // C++
 #include <memory>
+#include <iostream>
+#include <cstdlib>
 // ARIAC
 #include <ariac_plugins/ariac_common.hpp>
 
@@ -168,6 +170,11 @@ namespace ariac_plugins
         rclcpp::Publisher<ariac_msgs::msg::Robots>::SharedPtr robot_health_pub_;
         /*!< Publisher to the topic /ariac/start_human */
         rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr start_human_pub_;
+
+        // Reduce the rate of publishing to some topics
+        rclcpp::Time last_publish_time_;
+        int update_ns_;
+        bool first_publish_;
 
         //============== Orders =================
         /*!< List of orders. that have already been submitted*/
@@ -309,6 +316,9 @@ namespace ariac_plugins
                                                    {"blue", ariac_msgs::msg::Part::BLUE},
                                                    {"orange", ariac_msgs::msg::Part::ORANGE},
                                                    {"purple", ariac_msgs::msg::Part::PURPLE}};
+
+        void WriteToLog();
+        std::string log_message_ = "";
     };
     //==============================================================================
     TaskManagerPlugin::TaskManagerPlugin()
@@ -319,6 +329,42 @@ namespace ariac_plugins
     TaskManagerPlugin::~TaskManagerPlugin()
     {
         impl_->ros_node_.reset();
+    }
+
+    void TaskManagerPluginPrivate::WriteToLog()
+    {
+        // Get the environment variable INSIDE_DOCKER
+        auto inside_docker = std::getenv("INSIDE_DOCKER");
+
+        // compare inside_docker to "ok"
+        if (inside_docker == NULL)
+        {
+            // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "INSIDE_DOCKER environment variable not set");
+            return;
+        }
+
+        // Create a folder
+        std::string folder_path = "/home/ubuntu/logs/";
+        std::string command = "mkdir -p " + folder_path;
+        system(command.c_str());
+
+        // remove .yaml from trial name
+        if (trial_name_.length() > 5)
+        {
+            trial_name_.erase(trial_name_.length() - 5);
+        }
+
+        // Create a file name with the trial name
+        std::string file_name = trial_name_ + ".txt";
+        auto log_file_path = folder_path + file_name;
+
+        // Open the log file
+        RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
+        auto log_file = std::ofstream(log_file_path);
+        // Write to log file
+        log_file << log_message_;
+        // Close the log file
+        log_file.close();
     }
 
     //==============================================================================
@@ -422,6 +468,9 @@ namespace ariac_plugins
         impl_->ceiling_robot_grace_period_ = 10.0;
         // Init elapsed time
         impl_->elapsed_time_ = 0.0;
+        double publish_rate = 10;
+        impl_->update_ns_ = int((1 / publish_rate) * 1e9);
+        impl_->first_publish_ = true;
     }
 
     //==============================================================================
@@ -1087,7 +1136,15 @@ namespace ariac_plugins
         }
 
         // publish the competition state
-        PublishCompetitionState(impl_->current_state_);
+        rclcpp::Time now = impl_->ros_node_->get_clock()->now();
+        if (impl_->first_publish_)
+        {
+            PublishCompetitionState(impl_->current_state_);
+        }
+        else if (now - impl_->last_publish_time_ >= rclcpp::Duration(0, impl_->update_ns_))
+        {
+            PublishCompetitionState(impl_->current_state_);
+        }
 
         // Delay advertising the competition start service to avoid a crash.
         // Sometimes if the competition is started before the world is fully loaded, it causes a crash.
@@ -1181,8 +1238,27 @@ namespace ariac_plugins
             ProcessChallengesToAnnounce();
             ProcessInProgressSensorBlackouts();
             ProcessInProgressRobotMalfunctions();
-            UpdateSensorsHealth();
-            UpdateRobotsHealth();
+
+            if (impl_->first_publish_)
+            {
+                UpdateSensorsHealth();
+                UpdateRobotsHealth();
+            }
+            else if (now - impl_->last_publish_time_ >= rclcpp::Duration(0, impl_->update_ns_))
+            {
+                UpdateSensorsHealth();
+                UpdateRobotsHealth();
+            }
+        }
+
+        if (impl_->first_publish_)
+        {
+            impl_->last_publish_time_ = now;
+            impl_->first_publish_ = false;
+        }
+        else if (now - impl_->last_publish_time_ >= rclcpp::Duration(0, impl_->update_ns_))
+        {
+            impl_->last_publish_time_ = now;
         }
 
         impl_->last_on_update_time_ = current_sim_time;
@@ -1246,7 +1322,8 @@ namespace ariac_plugins
         impl_->trial_name_ = _msg->trial_name;
 
         // Store orders to be processed later
-        std::vector<std::shared_ptr<ariac_msgs::msg::OrderCondition>> order_conditions;
+        std::vector<std::shared_ptr<ariac_msgs::msg::OrderCondition>>
+            order_conditions;
         for (auto order_condition : _msg->order_conditions)
         {
             order_conditions.push_back(std::make_shared<ariac_msgs::msg::OrderCondition>(order_condition));
@@ -1917,6 +1994,7 @@ namespace ariac_plugins
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        log_message_ += output;
     }
 
     //==============================================================================
@@ -2173,6 +2251,7 @@ namespace ariac_plugins
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        log_message_ += output;
     }
 
     //==============================================================================
@@ -2253,6 +2332,7 @@ namespace ariac_plugins
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        log_message_ += output;
     }
 
     //==============================================================================
@@ -2656,6 +2736,8 @@ namespace ariac_plugins
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        log_message_ += output;
+        WriteToLog();
     }
 
     //==============================================================================

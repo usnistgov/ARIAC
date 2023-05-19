@@ -52,3 +52,6 @@ log/
 /ariac_human/agent/bin
 /ariac_human/agent/build
 /ariac_human/agent/java_rosbridge.msgs
+
+/automated_evaluation/nist_team.yaml
+

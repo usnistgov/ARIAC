@@ -65,9 +65,9 @@ competition:
 
     `./build_container.sh nist_competitor`
 
-    - To run the nist_competitor example the personal_access_token should be replaced with the following: `github(UNDERSCORE)pat_11AMERXRA0kVDnLF6MjHg2_PbvzsNpX4jJWeadcFQHiroV2JaDl4MRhQVJA2hepPdAWMK4VMJNJhXuPtHs`
+    - To run the nist_competitor example the personal_access_token should be replaced with the following: `github(UNDERSCORE)pat(UNDERSCORE)11AMERXRA0GKwm4hYMZd5o_t37FvUZw9MJ6wMJFxLzjjwZzgeLEzktHRNqeYOxmykBSEDMA2QEFp0Ysclt`
 
-        - replace `(UNDERSCORE)` with `_`
+        - replace `(UNDERSCORE)`s with `_`
 
     - This will create a container from the ARIAC image and attempt to clone and build the competitor package. You should see output in the terminal. If the build is successful continute onto the next step. If not, delete the created container (e.g., `docker rm nist_competitor --force`), fix the error and run the `build_container` script again. If the build script is successful it only needs to be run once. All trials can be run using this container.
 
@@ -75,5 +75,5 @@ competition:
 
 11. To run a trial use the `run_trial.sh` script. The first argument is the team name which should also be the name of the container. The second argument is the name of the trial to be run. For example to run the nist_competitor with  `kitting.yaml` trial you would run:
 
-    `./run_trial nist_competitor kitting`
+    `./run_trial.sh nist_competitor kitting`
 

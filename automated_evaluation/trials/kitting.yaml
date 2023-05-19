@@ -3,7 +3,7 @@
 
 # ENVIRONMENT SETUP
 
-time_limit: -1 # options: -1 (no time limit) or number of seconds (max 500)
+time_limit: 200 # options: -1 (no time limit) or number of seconds (max 500)
 
 kitting_trays: # Which kitting trays will be spawn
   tray_ids: [3, 8] 
@@ -11,14 +11,10 @@ kitting_trays: # Which kitting trays will be spawn
 
 parts:
   bins: # bin params - 8 total bins each bin has nine total slots (1-9)
-    bin2:
-      - type: 'pump'
-        color: 'purple'
-        slots: [1, 3, 7, 9]
     bin6:
       - type: 'battery'
         color: 'blue'
-        slots: [1, 3, 7, 9]
+        slots: [4, 5]
 
 orders:
   - id: 'MMB30H56'
@@ -34,6 +30,3 @@ orders:
         - type: 'battery'
           color: 'blue'
           quadrant: 3
-        - type: 'pump'
-          color: 'purple'
-          quadrant: 1

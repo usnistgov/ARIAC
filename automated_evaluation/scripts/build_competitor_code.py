@@ -25,32 +25,32 @@ def main():
             data = yaml.safe_load(stream)
         except yaml.YAMLError:
             print("Unable to parse yaml file")
-            exit()
+            sys.exit()
 
     # Store data from yaml filyaml_path
     try:
         repository = data["github"]["repository"]
     except KeyError:
         print("Unable to find repository link")
-        exit()
+        sys.exit()
     
     try:
         token = data["github"]["personal_access_token"]
     except KeyError:
         print("Unable to find personal_access_token")
-        exit()
+        sys.exit()
 
     try:
         package_name = data["competition"]["package_name"]
     except KeyError:
         print("Unable to find package_name")
-        exit()
+        sys.exit()
 
     try:
         launch_file = data["competition"]["launch_file"]
     except KeyError:
         print("Unable to find launch_file")
-        exit()
+        sys.exit()
     
     # Clone the repository
     clone_cmd = f"git clone https://{token}@{repository} ~/ariac_ws/src/{package_name}"
@@ -80,7 +80,7 @@ def main():
     subprocess.run(rosdep_cmd, shell=True)
 
     # Build the workspace
-    subprocess.run("colcon build", shell=True)
+    subprocess.run("colcon build --parallel-workers 1", shell=True)
 
 
 if __name__=="__main__":

@@ -8,6 +8,7 @@ Release 2023_v1.5, May 19
 - Reduced publish rate for certain topics
 - Added ability to run multiple trials sequentially in docker
 - Updated automated evaluation documentation
+- Fixed humans not moving in docker
 
 
 Release 2023_v1.4, May 11

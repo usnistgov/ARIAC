@@ -124,12 +124,17 @@
       </visual>
 
       <collision name="collision">
-        <pose>0 0 0.06 0 0 0</pose>
+        <!-- <pose>0 0 0.06 0 0 0</pose> -->
+
         <geometry>
-          <box>
+          <!-- <box>
             <size>0.12 0.12 0.12</size>
-          </box>
+          </box> -->
+          <mesh>
+            <uri>model://pump/meshes/pump_collision.stl</uri>
+          </mesh>
         </geometry>
+        <max_contacts>10</max_contacts>
 
         <surface>
           <contact>

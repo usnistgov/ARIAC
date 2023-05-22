@@ -2,22 +2,18 @@
 
 import os
 import sys
-import subprocess
+from subprocess import Popen, call
+from signal import SIGINT
 import yaml
 
 
 def main():
-    # Get yaml file name
-    if len(sys.argv) <= 1:
-        print("Please include an argument for the yaml file to run")
-        exit()
-
+    # Get team file name
     yaml_file = sys.argv[1] + '.yaml'
-    print(f'Running {yaml_file}')
 
     if not os.path.isfile(yaml_file):
         print(f'{yaml_file} not found')
-        exit()
+        sys.exit()
 
     # Parse yaml file
     with open(yaml_file, "r") as stream:
@@ -25,25 +21,43 @@ def main():
             data = yaml.safe_load(stream)
         except yaml.YAMLError:
             print("Unable to parse yaml file")
-            exit()
+            sys.exit()
 
     # Store data from yaml filyaml_path
     try:
         package_name = data["competition"]["package_name"]
     except KeyError:
         print("Unable to find package_name")
-        exit()
+        sys.exit()
 
     try:
         launch_file = data["competition"]["launch_file"]
     except KeyError:
         print("Unable to find launch_file")
-        exit()
+        sys.exit()
 
-    # Run 
-    launch_cmd = f"ros2 launch {package_name} {launch_file} trial_name:={sys.argv[2]}"
-    subprocess.run(launch_cmd, shell=True, env=dict(os.environ, DISPLAY=":1.0"))
+    trial_name = sys.argv[2]
+
+    my_env = os.environ.copy()
+    my_env["DISPLAY"] = ":1.0"
+    process = Popen(["ros2", "launch", package_name, launch_file, f"competitor_pkg:={package_name}",
+                    f"trial_name:={trial_name}", '--noninteractive'], env=my_env)
+
+    # Continue execution of trial until log file is generated
+    while True:
+        if os.path.exists(f'/home/ubuntu/logs/{trial_name}.txt'):
+            break
+
+    print(f"==== Trial {trial_name} completed")
+
+    process.send_signal(SIGINT)
+    
+    # Might raise a TimeoutExpired if it takes too long
+    return_code = process.wait(timeout=10)
+    print(f"return_code: {return_code}")
+    
+    
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()

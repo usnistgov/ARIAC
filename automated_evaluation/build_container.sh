@@ -5,6 +5,12 @@ if [[ ! $1 ]] ; then
     exit 1
 fi
 
+if [[ ! $2 ]] ; then
+    echo "Port number argument not passed" 
+    exit 1
+fi
+
+
 teamName=$(python3 get_team_name.py $1)
 
 if [[ ! $teamName ]] ; then
@@ -13,7 +19,7 @@ if [[ ! $teamName ]] ; then
 fi
 
 # Start the container
-docker run -d --name $teamName -p 6080:80 --shm-size=512m jfernandez37/ariac:ariac_latest
+docker run -d --name $teamName -p $2:80 --shm-size=4gb nistariac/ariac2023:latest
 
 # Copy scripts directory and yaml file
 docker cp ./scripts/ $teamName:/home/ubuntu

@@ -12,7 +12,8 @@
 | 28 April 2023   | Qualifiers Submission Due |
 | 01 May 2023     | Qualifiers Evaluation Week Starts |
 | 05 May 2023     | Qualifiers Evaluation Week Ends |
-| 15 May 2023     | Finals Smoke Test |
-| 22 May 2023     | Finals Begin |
-| 26 May 2023     | Finals End |
-| 30 May 2023     | Finals Evaluation |
+| 26 May 2023     | Finals Smoke Test |
+| ~22 May 2023~   | ~Finals Begin~ |
+| ~26 May 2023~   | ~Finals End~ |
+| 02 June 2023    | Finals Submissions Due COB Eastern Time |
+| June 2023       | Finals Evaluation |

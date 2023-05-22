@@ -2855,6 +2855,44 @@ namespace ariac_plugins
         response->quadrant3 = CheckQuadrantQuality(3, *task, shipment, request->order_id);
         response->quadrant4 = CheckQuadrantQuality(4, *task, shipment, request->order_id);
 
+        // Handle faulty parts challenge
+        std::array<bool, 4> faulty_parts = {false, false, false, false};
+        if (faulty_part_challenges_.size() > 0)
+        {
+            for (auto &challenge : faulty_part_challenges_)
+            {
+                if (challenge->GetOrderId() == request->order_id) // order has a faulty part challenge
+                {
+                    faulty_parts = HandleFaultyParts(challenge, *task, shipment);
+                }
+            }
+        }
+
+        for (int i = 0; i < faulty_parts.size(); i++)
+        {
+            if (faulty_parts[i]) {
+                switch (i)  {
+                    case 0:
+                        response->quadrant1.faulty_part = true;
+                        response->quadrant1.all_passed = false;
+                        break;
+                    case 1:
+                        response->quadrant2.faulty_part = true;
+                        response->quadrant2.all_passed = false;
+                        break;
+                    case 2:
+                        response->quadrant3.faulty_part = true;
+                        response->quadrant3.all_passed = false;
+                        break;
+                    case 3:
+                        response->quadrant4.faulty_part = true;
+                        response->quadrant4.all_passed = false;
+                        break;
+                }
+            }
+        }
+
+
         if (response->quadrant1.all_passed &&
             response->quadrant2.all_passed &&
             response->quadrant3.all_passed &&
@@ -3352,19 +3390,6 @@ namespace ariac_plugins
 
         bool task_has_part_in_quadrant = false;
 
-        // // Check if the order has a faulty part challenge
-        std::array<bool, 4> faulty_parts = {false, false, false, false};
-        if (faulty_part_challenges_.size() > 0)
-        {
-            for (auto &challenge : faulty_part_challenges_)
-            {
-                if (challenge->GetOrderId() == order_id) // order has a faulty part challenge
-                {
-                    faulty_parts = HandleFaultyParts(challenge, task, shipment);
-                }
-            }
-        }
-
         for (auto product : task.GetProducts())
         {
             if (product.GetQuadrant() == quadrant)
@@ -3379,7 +3404,6 @@ namespace ariac_plugins
 
                         issue.incorrect_part_type = !tray_part.isCorrectType(product.GetPart().GetType());
                         issue.incorrect_part_color = !tray_part.isCorrectColor(product.GetPart().GetColor());
-                        issue.faulty_part = faulty_parts[quadrant - 1];
                         issue.flipped_part = tray_part.isFlipped();
                     }
                 }

@@ -9,6 +9,8 @@ Release 2023_v1.5, May 19
 - Added ability to run multiple trials sequentially in docker
 - Updated automated evaluation documentation
 - Fixed humans not moving in docker
+- Fixes issue with pump collision
+- Fixes issue with perform quality check service 
 
 
 Release 2023_v1.4, May 11

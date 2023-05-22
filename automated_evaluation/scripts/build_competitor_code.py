@@ -41,19 +41,13 @@ def main():
         sys.exit()
 
     try:
-        package_name = data["competition"]["package_name"]
+        team_name = data["team_name"]
     except KeyError:
         print("Unable to find package_name")
         sys.exit()
-
-    try:
-        launch_file = data["competition"]["launch_file"]
-    except KeyError:
-        print("Unable to find launch_file")
-        sys.exit()
     
     # Clone the repository
-    clone_cmd = f"git clone https://{token}@{repository} ~/ariac_ws/src/{package_name}"
+    clone_cmd = f"git clone https://{token}@{repository} ~/ariac_ws/src/{team_name}"
     subprocess.run(clone_cmd, shell=True)
 
     # Install extra packages

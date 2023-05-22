@@ -65,9 +65,9 @@ competition:
 
     `./build_container.sh nist_competitor 6080`
 
-    - To run the nist_competitor example the personal_access_token should be replaced with the following: `github(UNDERSCORE)pat(UNDERSCORE)11AMERXRA0GKwm4hYMZd5o_t37FvUZw9MJ6wMJFxLzjjwZzgeLEzktHRNqeYOxmykBSEDMA2QEFp0Ysclt`
+    - To run the nist_competitor example the personal_access_token should be replaced with the following: `github(UNDERSCORE)pat(UNDERSCORE)11AMERXRA0077fKXamvIKb_3YPuZm5p653Jerzr0BB0PfaFjv2OC5aPs1ujpYTeqm6JX6DNC3GXsCg1xYu`
 
-        - replace `(UNDERSCORE)`s with `_`
+        - replace `(UNDERSCORE)`'s with `_`
 
     - This will create a container from the ARIAC image and attempt to clone and build the competitor package. You should see output in the terminal. If the build is successful continute onto the next step. If not, delete the created container (e.g., `docker rm nist_competitor --force`), fix the error and run the `build_container` script again. If the build script is successful it only needs to be run once. All trials can be run using this container.
 

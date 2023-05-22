@@ -15,5 +15,5 @@
 | 26 May 2023     | Finals Smoke Test |
 | ~22 May 2023~   | ~Finals Begin~ |
 | ~26 May 2023~   | ~Finals End~ |
-| 02 June 2023    | Finals Submissions Due COB Eastern Time |
+| 05 June 2023    | Finals Submissions Due 8 am Eastern Time |
 | June 2023       | Finals Evaluation |

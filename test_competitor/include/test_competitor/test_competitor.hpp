@@ -77,7 +77,6 @@ public:
   bool CompleteAssemblyTask(ariac_msgs::msg::AssemblyTask task);
   bool CompleteCombinedTask(ariac_msgs::msg::CombinedTask task);
 
-private:
   // Robot Move Functions
   bool FloorRobotMovetoTarget();
   bool FloorRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf);
@@ -104,9 +103,9 @@ private:
   void AddModelToPlanningScene(std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose);
   void AddModelsToPlanningScene();
 
+private:
   // AGV location
   std::map<int, int> agv_locations_ = {{1, -1}, {2, -1}, {3, -1}, {4, -1}};
-  
 
   // Callback Groups
   rclcpp::CallbackGroup::SharedPtr client_cb_group_;

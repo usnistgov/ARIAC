@@ -37,30 +37,30 @@ class RobotControllerSwitcher(Node):
                 break
 
             if self.recieved_msg:
-                self.request.start_controllers.clear()
-                self.request.stop_controllers.clear()
+                self.request.activate_controllers.clear()
+                self.request.deactivate_controllers.clear()
 
                 if self.floor_robot_health and not self.floor_robot_state:
                     for controller in self.floor_robot_controllers:
-                        self.request.start_controllers.append(controller)
+                        self.request.activate_controllers.append(controller)
                         self.floor_robot_state = True
                 
                 if self.ceiling_robot_health and not self.ceiling_robot_state:
                     for controller in self.ceiling_robot_controllers:
-                        self.request.start_controllers.append(controller)
+                        self.request.activate_controllers.append(controller)
                         self.ceiling_robot_state = True
                 
                 if not self.floor_robot_health and self.floor_robot_state:
                     for controller in self.floor_robot_controllers:
-                        self.request.stop_controllers.append(controller)
+                        self.request.deactivate_controllers.append(controller)
                         self.floor_robot_state = False
 
                 if not self.ceiling_robot_health and self.ceiling_robot_state:
                     for controller in self.ceiling_robot_controllers:
-                        self.request.stop_controllers.append(controller)
+                        self.request.deactivate_controllers.append(controller)
                         self.ceiling_robot_state = False
 
-                if self.request.start_controllers or self.request.stop_controllers:
+                if self.request.activate_controllers or self.request.deactivate_controllers:
                     future = self.controller_switcher.call_async(self.request)
 
                     rclpy.spin_until_future_complete(self, future)

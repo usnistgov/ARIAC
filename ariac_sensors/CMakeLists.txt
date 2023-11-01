@@ -24,6 +24,7 @@ find_package(tf2_ros REQUIRED)
 find_package(orocos_kdl REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(ariac_msgs REQUIRED)
+find_package(tf2_kdl REQUIRED)
 
 link_directories(${gazebo_dev_LIBRARY_DIRS})
 
@@ -73,6 +74,7 @@ ament_target_dependencies(AGVTraySensorPlugin
   "orocos_kdl"
   "gazebo_ros"
   "ariac_msgs"
+  "tf2_kdl"
 )
 ament_export_libraries(AGVTraySensorPlugin)
 

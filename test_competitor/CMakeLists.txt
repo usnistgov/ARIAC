@@ -15,6 +15,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   moveit_ros_planning_interface
   ariac_msgs
   shape_msgs
+  tf2_kdl 
 )
 
 find_package(ament_cmake REQUIRED)

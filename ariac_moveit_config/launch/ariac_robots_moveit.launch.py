@@ -63,6 +63,8 @@ def launch_setup(context, *args, **kwargs):
     ompl_planning_yaml = load_yaml("ariac_moveit_config", "config/ompl_planning.yaml")
 
     ompl_planning_pipeline_config["move_group"].update(ompl_planning_yaml)
+
+    robot_description_planning = {'robot_description_planning': load_yaml("ariac_moveit_config", "config/joint_limits.yaml")}
     
     moveit_controllers = {
         "moveit_simple_controller_manager": load_yaml("ariac_moveit_config", "config/controllers.yaml"),
@@ -92,6 +94,7 @@ def launch_setup(context, *args, **kwargs):
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
+            robot_description_planning,
             ompl_planning_pipeline_config,
             trajectory_execution,
             moveit_controllers,

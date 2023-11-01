@@ -25,21 +25,21 @@
       rail_height="2.9"
       rail_thickness="0.1"
       torso_height="-2.3"
-      initial_positions="${load_yaml(initial_positions_file)}"
+      initial_positions="${xacro.load_yaml(initial_positions_file)}"
       >
     </xacro:gantry>
 
     <!-- Run ur macro -->
     <xacro:ur_robot
       name="ceiling_arm"
-      prefix="ceiling_"
+      tf_prefix="ceiling_"
       parent="torso_main"
       joint_limits_parameters_file="$(find ur_description)/config/ur10e/joint_limits.yaml"
       kinematics_parameters_file="$(find ur_description)/config/ur10e/default_kinematics.yaml"
       physical_parameters_file="$(find ur_description)/config/ur10e/physical_parameters.yaml"
       visual_parameters_file="$(find ur_description)/config/ur10e/visual_parameters.yaml"
       sim_gazebo="true"
-      initial_positions="${load_yaml(initial_positions_file)}">
+      initial_positions="${xacro.load_yaml(initial_positions_file)}">
       <origin xyz="0.51 0.0 1.3" rpy="0 1.57 0" />
     </xacro:ur_robot>
 

@@ -13,11 +13,13 @@ find_package(rclcpp REQUIRED)
 find_package(ariac_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(controller_manager_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_kdl REQUIRED)
 find_package(orocos_kdl REQUIRED)
 
 link_directories(${gazebo_dev_LIBRARY_DIRS})
@@ -30,6 +32,8 @@ target_include_directories(VacuumGripperPlugin PUBLIC include)
 ament_target_dependencies(VacuumGripperPlugin
   "gazebo_ros"
   "ariac_msgs"
+  "tf2_kdl"
+  "std_srvs"
 )
 ament_export_libraries(VacuumGripperPlugin)
 
@@ -41,6 +45,7 @@ target_include_directories(conveyor_belt_plugin PUBLIC include)
 ament_target_dependencies(conveyor_belt_plugin
   "gazebo_ros"
   "ariac_msgs"
+  "tf2_kdl"
 )
 ament_export_libraries(conveyor_belt_plugin)
 
@@ -52,6 +57,8 @@ target_include_directories(agv_plugin PUBLIC include)
 ament_target_dependencies(agv_plugin
   "gazebo_ros"
   "ariac_msgs"
+  "sensor_msgs"
+  "tf2_kdl"
 )
 ament_export_libraries(agv_plugin)
 
@@ -62,6 +69,7 @@ add_library(assembly_lock_plugin SHARED
 target_include_directories(assembly_lock_plugin PUBLIC include)
 ament_target_dependencies(assembly_lock_plugin
   "gazebo_ros"
+  "tf2_kdl"
 )
 ament_export_libraries(assembly_lock_plugin)
 
@@ -73,6 +81,7 @@ target_include_directories(assembly_state_publisher PUBLIC include)
 ament_target_dependencies(assembly_state_publisher
   "gazebo_ros"
   "ariac_msgs"
+  "tf2_kdl"
 )
 ament_export_libraries(assembly_state_publisher)
 
@@ -84,6 +93,7 @@ target_include_directories(GripperColorPlugin PUBLIC include)
 ament_target_dependencies(GripperColorPlugin
   "gazebo_ros"
   "ariac_msgs"
+  "tf2_kdl"
 )
 ament_export_libraries(GripperColorPlugin)
 
@@ -94,6 +104,7 @@ add_library(disable_shadows_plugin SHARED
 target_include_directories(disable_shadows_plugin PUBLIC include)
 ament_target_dependencies(disable_shadows_plugin
   "gazebo_ros"
+  "tf2_kdl"
 )
 ament_export_libraries(disable_shadows_plugin)
 
@@ -104,6 +115,9 @@ add_library(ObjectDisposalPlugin SHARED
 target_include_directories(ObjectDisposalPlugin PUBLIC include)
 ament_target_dependencies(ObjectDisposalPlugin
   "gazebo_ros"
+  "gazebo_msgs"
+  "std_srvs"
+  "tf2_kdl"
 )
 ament_export_libraries(ObjectDisposalPlugin)
 
@@ -115,6 +129,8 @@ target_include_directories(AGVTrayPlugin PUBLIC include)
 ament_target_dependencies(AGVTrayPlugin
   "gazebo_ros"
   "ariac_msgs"
+  "std_srvs"
+  "tf2_kdl"
 )
 ament_export_libraries(AGVTrayPlugin)
 
@@ -125,6 +141,8 @@ add_library(HumanTeleportPlugin SHARED
 target_include_directories(HumanTeleportPlugin PUBLIC include)
 ament_target_dependencies(HumanTeleportPlugin
   "gazebo_ros"
+  "std_srvs"
+  "tf2_kdl"
 )
 ament_export_libraries(HumanTeleportPlugin)
 
@@ -140,6 +158,8 @@ ament_target_dependencies(TaskManagerPlugin
   "controller_manager_msgs"
   "geometry_msgs"
   "std_msgs"
+  "std_srvs"
+  "tf2_kdl"
 )
 ament_export_libraries(TaskManagerPlugin)
 

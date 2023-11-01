@@ -135,7 +135,7 @@ def launch_setup(context, *args, **kwargs):
         if controller == 'joint_state_broadcaster' or controller.count('agv') > 0:
             args = [controller]
         else:
-            args = [controller, '--stopped']
+            args = [controller, '--inactive']
 
         controller_spawner_nodes.append(
             Node(

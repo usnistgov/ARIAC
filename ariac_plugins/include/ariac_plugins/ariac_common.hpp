@@ -22,7 +22,7 @@ Distributions of NIST software should also include copyright and licensing state
 #include <ignition/math/Pose3.hh>
 #include <ignition/math/Vector3.hh>
 // KDL and TF2
-#include <tf2_kdl/tf2_kdl.h>
+#include <tf2_kdl/tf2_kdl.hpp>
 #include <tf2/convert.h>
 #include <kdl/frames.hpp>
 // Messages

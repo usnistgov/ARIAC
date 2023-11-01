@@ -54,6 +54,8 @@ def launch_setup(context, *args, **kwargs):
 
     robot_description_kinematics = {"robot_description_kinematics": load_yaml("ariac_moveit_config", "config/kinematics.yaml")}
 
+    robot_description_planning = {'robot_description_planning': load_yaml("ariac_moveit_config", "config/joint_limits.yaml")}
+
     test_competitor = Node(
         package="test_competitor",
         executable="competitor",
@@ -82,6 +84,7 @@ def launch_setup(context, *args, **kwargs):
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
+            robot_description_planning,
             {"use_sim_time": True}
         ],
         condition=IfCondition(start_rviz)

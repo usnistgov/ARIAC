@@ -543,10 +543,10 @@ bool TestCompetitor::FloorRobotSetGripperState(bool enable)
   auto request = std::make_shared<ariac_msgs::srv::VacuumGripperControl::Request>();
   request->enable = enable;
 
-  auto result = floor_robot_gripper_enable_->async_send_request(request);
-  result.wait();
+  auto future = floor_robot_gripper_enable_->async_send_request(request);
+  future.wait();
 
-  if (!result.get()->success)
+  if (!future.get()->success)
   {
     RCLCPP_ERROR(get_logger(), "Error calling gripper enable service");
     return false;
@@ -582,9 +582,9 @@ bool TestCompetitor::FloorRobotChangeGripper(std::string station, std::string gr
     request->gripper_type = ariac_msgs::srv::ChangeGripper::Request::PART_GRIPPER;
   }
 
-  auto result = floor_robot_tool_changer_->async_send_request(request);
-  result.wait();
-  if (!result.get()->success)
+  auto future = floor_robot_tool_changer_->async_send_request(request);
+  future.wait();
+  if (!future.get()->success)
   {
     RCLCPP_ERROR(get_logger(), "Error calling gripper change service");
     return false;
@@ -884,10 +884,10 @@ bool TestCompetitor::CeilingRobotSetGripperState(bool enable)
   auto request = std::make_shared<ariac_msgs::srv::VacuumGripperControl::Request>();
   request->enable = enable;
 
-  auto result = ceiling_robot_gripper_enable_->async_send_request(request);
-  result.wait();
+  auto future = ceiling_robot_gripper_enable_->async_send_request(request);
+  future.wait();
 
-  if (!result.get()->success)
+  if (!future.get()->success)
   {
     RCLCPP_ERROR(get_logger(), "Error calling gripper enable service");
     return false;
@@ -1044,6 +1044,7 @@ bool TestCompetitor::CeilingRobotMoveToAssemblyStation(int station)
 
 bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
 {
+  RCLCPP_INFO_STREAM(get_logger(), "Determining waypoints to pick " << part_types_[part.part.type]);
   double part_rotation = GetYaw(part.pose);
   std::vector<geometry_msgs::msg::Pose> waypoints;
 
@@ -1062,6 +1063,7 @@ bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
   waypoints.push_back(BuildPose(part.pose.position.x + dx, part.pose.position.y + dy,
                                 part.pose.position.z + part_heights_[part.part.type] + pick_offset_, SetRobotOrientation(part_rotation)));
 
+  RCLCPP_INFO_STREAM(get_logger(), "Moving ceiling robot to pick " << part_types_[part.part.type]);
   CeilingRobotMoveCartesian(waypoints, 0.7, 0.7, true);
 
   CeilingRobotSetGripperState(true);
@@ -1222,12 +1224,12 @@ bool TestCompetitor::CompleteOrders()
 
     current_order_ = orders_.front();
     orders_.erase(orders_.begin());
-    int kitting_agv_num = -1;
+    // int kitting_agv_num = -1;
 
     if (current_order_.type == ariac_msgs::msg::Order::KITTING)
     {
       TestCompetitor::CompleteKittingTask(current_order_.kitting_task);
-      kitting_agv_num = current_order_.kitting_task.agv_number;
+      // kitting_agv_num = current_order_.kitting_task.agv_number;
     }
     else if (current_order_.type == ariac_msgs::msg::Order::ASSEMBLY)
     {
@@ -1240,18 +1242,18 @@ bool TestCompetitor::CompleteOrders()
     }
 
     // loop until the AGV is at the warehouse
-    auto agv_location = -1;
-    while (agv_location != ariac_msgs::msg::AGVStatus::WAREHOUSE)
-    {
-      if (kitting_agv_num == 1)
-        agv_location = agv_locations_[1];
-      else if (kitting_agv_num == 2)
-        agv_location = agv_locations_[2];
-      else if (kitting_agv_num == 3)
-        agv_location = agv_locations_[3];
-      else if (kitting_agv_num == 4)
-        agv_location = agv_locations_[4];
-    }
+    // auto agv_location = -1;
+    // while (agv_location != ariac_msgs::msg::AGVStatus::WAREHOUSE)
+    // {
+    //   if (kitting_agv_num == 1)
+    //     agv_location = agv_locations_[1];
+    //   else if (kitting_agv_num == 2)
+    //     agv_location = agv_locations_[2];
+    //   else if (kitting_agv_num == 3)
+    //     agv_location = agv_locations_[3];
+    //   else if (kitting_agv_num == 4)
+    //     agv_location = agv_locations_[4];
+    // }
 
     TestCompetitor::SubmitOrder(current_order_.id);
   }
@@ -1274,10 +1276,10 @@ bool TestCompetitor::CompleteKittingTask(ariac_msgs::msg::KittingTask task)
   // Check quality
   auto request = std::make_shared<ariac_msgs::srv::PerformQualityCheck::Request>();
   request->order_id = current_order_.id;
-  auto result = quality_checker_->async_send_request(request);
-  result.wait();
+  auto future = quality_checker_->async_send_request(request);
+  future.wait();
 
-  if (!result.get()->all_passed)
+  if (!future.get()->all_passed)
   {
     RCLCPP_ERROR(get_logger(), "Issue with shipment");
   }
@@ -1311,14 +1313,31 @@ bool TestCompetitor::CompleteAssemblyTask(ariac_msgs::msg::AssemblyTask task)
   // Get Assembly Poses
   auto request = std::make_shared<ariac_msgs::srv::GetPreAssemblyPoses::Request>();
   request->order_id = current_order_.id;
-  auto result = pre_assembly_poses_getter_->async_send_request(request);
+  auto future = pre_assembly_poses_getter_->async_send_request(request);
 
-  result.wait();
+  RCLCPP_INFO(get_logger(), "Waiting for pre assembly poses");
+
+  future.wait();
+
+  RCLCPP_INFO(get_logger(), "Recieved pre assembly poses");
 
   std::vector<ariac_msgs::msg::PartPose> agv_part_poses;
-  if (result.get()->valid_id)
+
+  auto result = future.get();
+  
+  if (result->valid_id)
   {
-    agv_part_poses = result.get()->parts;
+    RCLCPP_INFO(get_logger(), "Valid id");
+
+    try {
+      int len = result->parts.size();
+      RCLCPP_INFO_STREAM(get_logger(), "There are " << std::to_string(len) << " parts");
+    }
+    catch (...) {
+      RCLCPP_INFO(get_logger(), "Unable to access future result");
+    }
+
+    agv_part_poses = result->parts;
 
     if (agv_part_poses.size() == 0)
     {
@@ -1426,14 +1445,16 @@ bool TestCompetitor::CompleteCombinedTask(ariac_msgs::msg::CombinedTask task)
   // Get Assembly Poses
   auto request = std::make_shared<ariac_msgs::srv::GetPreAssemblyPoses::Request>();
   request->order_id = current_order_.id;
-  auto result = pre_assembly_poses_getter_->async_send_request(request);
+  auto future = pre_assembly_poses_getter_->async_send_request(request);
 
-  result.wait();
+  future.wait();
+
+  auto result = future.get();
 
   std::vector<ariac_msgs::msg::PartPose> agv_part_poses;
-  if (result.get()->valid_id)
+  if (result->valid_id)
   {
-    agv_part_poses = result.get()->parts;
+    agv_part_poses = result->parts;
 
     if (agv_part_poses.size() == 0)
     {
@@ -1498,10 +1519,10 @@ bool TestCompetitor::StartCompetition()
 
   auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
 
-  auto result = client->async_send_request(request);
-  result.wait();
+  auto future = client->async_send_request(request);
+  future.wait();
 
-  return result.get()->success;
+  return future.get()->success;
 }
 
 bool TestCompetitor::EndCompetition()
@@ -1514,10 +1535,12 @@ bool TestCompetitor::EndCompetition()
 
   auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
 
-  auto result = client->async_send_request(request);
-  result.wait();
+  RCLCPP_INFO(get_logger(), "Ending competition.");
 
-  return result.get()->success;
+  auto future = client->async_send_request(request);
+  future.wait();
+
+  return future.get()->success;
 }
 
 bool TestCompetitor::SubmitOrder(std::string order_id)
@@ -1528,10 +1551,10 @@ bool TestCompetitor::SubmitOrder(std::string order_id)
   auto request = std::make_shared<ariac_msgs::srv::SubmitOrder::Request>();
   request->order_id = order_id;
 
-  auto result = client->async_send_request(request);
-  result.wait();
+  auto future = client->async_send_request(request);
+  future.wait();
 
-  return result.get()->success;
+  return future.get()->success;
 }
 
 bool TestCompetitor::LockAGVTray(int agv_num)
@@ -1544,10 +1567,10 @@ bool TestCompetitor::LockAGVTray(int agv_num)
 
   auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
 
-  auto result = client->async_send_request(request);
-  result.wait();
+  auto future = client->async_send_request(request);
+  future.wait();
 
-  return result.get()->success;
+  return future.get()->success;
 }
 
 bool TestCompetitor::MoveAGV(int agv_num, int destination)
@@ -1561,8 +1584,8 @@ bool TestCompetitor::MoveAGV(int agv_num, int destination)
   auto request = std::make_shared<ariac_msgs::srv::MoveAGV::Request>();
   request->location = destination;
 
-  auto result = client->async_send_request(request);
-  result.wait();
+  auto future = client->async_send_request(request);
+  future.wait();
 
-  return result.get()->success;
+  return future.get()->success;
 }

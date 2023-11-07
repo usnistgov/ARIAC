@@ -97,10 +97,9 @@
     <disable_collisions link1="agv1_tray" link2="ceiling_wrist_2_link" reason="Never"/>
     <disable_collisions link1="agv1_tray" link2="ceiling_wrist_3_link" reason="Never"/>
     <disable_collisions link1="agv1_tray" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="agv1_tray" link2="floor_forearm_link" reason="Never"/>
     <disable_collisions link1="agv1_tray" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="agv1_tray" link2="floor_shoulder_link" reason="Never"/>
-    <disable_collisions link1="agv1_tray" link2="floor_wrist_1_link" reason="Never"/>
+    <disable_collisions link1="agv1_tray" link2="floor_upper_arm_link" reason="Never"/>
     <disable_collisions link1="agv1_tray" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="agv1_tray" link2="floor_wrist_3_link" reason="Never"/>
     <disable_collisions link1="agv1_tray" link2="long_rail_1" reason="Never"/>
@@ -177,12 +176,8 @@
     <disable_collisions link1="agv3_base" link2="ceiling_wrist_2_link" reason="Never"/>
     <disable_collisions link1="agv3_base" link2="ceiling_wrist_3_link" reason="Never"/>
     <disable_collisions link1="agv3_base" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="agv3_base" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="agv3_base" link2="floor_shoulder_link" reason="Never"/>
     <disable_collisions link1="agv3_base" link2="floor_upper_arm_link" reason="Never"/>
-    <disable_collisions link1="agv3_base" link2="floor_wrist_1_link" reason="Never"/>
-    <disable_collisions link1="agv3_base" link2="floor_wrist_2_link" reason="Never"/>
-    <disable_collisions link1="agv3_base" link2="floor_wrist_3_link" reason="Never"/>
     <disable_collisions link1="agv3_base" link2="long_rail_1" reason="Adjacent"/>
     <disable_collisions link1="agv3_base" link2="long_rail_2" reason="Never"/>
     <disable_collisions link1="agv3_base" link2="slide_bar" reason="Adjacent"/>
@@ -201,11 +196,8 @@
     <disable_collisions link1="agv3_tray" link2="ceiling_wrist_2_link" reason="Never"/>
     <disable_collisions link1="agv3_tray" link2="ceiling_wrist_3_link" reason="Never"/>
     <disable_collisions link1="agv3_tray" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="agv3_tray" link2="floor_forearm_link" reason="Never"/>
     <disable_collisions link1="agv3_tray" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="agv3_tray" link2="floor_shoulder_link" reason="Never"/>
-    <disable_collisions link1="agv3_tray" link2="floor_upper_arm_link" reason="Never"/>
-    <disable_collisions link1="agv3_tray" link2="floor_wrist_1_link" reason="Never"/>
     <disable_collisions link1="agv3_tray" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="agv3_tray" link2="floor_wrist_3_link" reason="Never"/>
     <disable_collisions link1="agv3_tray" link2="long_rail_1" reason="Never"/>
@@ -266,7 +258,6 @@
     <disable_collisions link1="ceiling_base_link_inertia" link2="ceiling_upper_arm_link" reason="Never"/>
     <disable_collisions link1="ceiling_base_link_inertia" link2="ceiling_wrist_1_link" reason="Never"/>
     <disable_collisions link1="ceiling_base_link_inertia" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="ceiling_base_link_inertia" link2="floor_forearm_link" reason="Never"/>
     <disable_collisions link1="ceiling_base_link_inertia" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="ceiling_base_link_inertia" link2="floor_shoulder_link" reason="Never"/>
     <disable_collisions link1="ceiling_base_link_inertia" link2="floor_upper_arm_link" reason="Never"/>
@@ -285,8 +276,6 @@
     <disable_collisions link1="ceiling_forearm_link" link2="floor_base_link_inertia" reason="Never"/>
     <disable_collisions link1="ceiling_forearm_link" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="ceiling_forearm_link" link2="floor_shoulder_link" reason="Never"/>
-    <disable_collisions link1="ceiling_forearm_link" link2="floor_wrist_1_link" reason="Never"/>
-    <disable_collisions link1="ceiling_forearm_link" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="ceiling_forearm_link" link2="floor_wrist_3_link" reason="Never"/>
     <disable_collisions link1="ceiling_gripper" link2="ceiling_wrist_1_link" reason="Never"/>
     <disable_collisions link1="ceiling_gripper" link2="ceiling_wrist_2_link" reason="Never"/>
@@ -302,11 +291,9 @@
     <disable_collisions link1="ceiling_shoulder_link" link2="ceiling_upper_arm_link" reason="Adjacent"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="ceiling_wrist_1_link" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="ceiling_shoulder_link" link2="floor_forearm_link" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="floor_shoulder_link" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="floor_upper_arm_link" reason="Never"/>
-    <disable_collisions link1="ceiling_shoulder_link" link2="floor_wrist_1_link" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="floor_wrist_3_link" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="long_rail_1" reason="Never"/>
@@ -317,11 +304,8 @@
     <disable_collisions link1="ceiling_shoulder_link" link2="torso_main" reason="Never"/>
     <disable_collisions link1="ceiling_shoulder_link" link2="torso_tray" reason="Never"/>
     <disable_collisions link1="ceiling_upper_arm_link" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="ceiling_upper_arm_link" link2="floor_shoulder_link" reason="Never"/>
-    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_wrist_1_link" reason="Never"/>
-    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_wrist_2_link" reason="Never"/>
-    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_upper_arm_link" link2="floor_upper_arm_link" reason="Never"/>
     <disable_collisions link1="ceiling_upper_arm_link" link2="long_rail_1" reason="Never"/>
     <disable_collisions link1="ceiling_upper_arm_link" link2="long_rail_2" reason="Never"/>
     <disable_collisions link1="ceiling_upper_arm_link" link2="slide_bar" reason="Never"/>
@@ -331,22 +315,19 @@
     <disable_collisions link1="ceiling_wrist_1_link" link2="ceiling_wrist_2_link" reason="Adjacent"/>
     <disable_collisions link1="ceiling_wrist_1_link" link2="ceiling_wrist_3_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_1_link" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_forearm_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_1_link" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_1_link" link2="floor_shoulder_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_1_link" link2="floor_upper_arm_link" reason="Never"/>
-    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_wrist_1_link" reason="Never"/>
-    <disable_collisions link1="ceiling_wrist_1_link" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_1_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_1_link" link2="long_rail_1" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="ceiling_wrist_3_link" reason="Adjacent"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="floor_base_link_inertia" reason="Never"/>
-    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_forearm_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="floor_gripper" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="floor_shoulder_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="floor_upper_arm_link" reason="Never"/>
-    <disable_collisions link1="ceiling_wrist_2_link" link2="floor_wrist_1_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_2_link" link2="long_rail_1" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_2_link" link2="long_rail_2" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_3_link" link2="floor_base_link_inertia" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_3_link" link2="floor_forearm_link" reason="Never"/>
@@ -356,10 +337,10 @@
     <disable_collisions link1="ceiling_wrist_3_link" link2="floor_wrist_1_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_3_link" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="ceiling_wrist_3_link" link2="floor_wrist_3_link" reason="Never"/>
+    <disable_collisions link1="ceiling_wrist_3_link" link2="long_rail_2" reason="Never"/>
     <disable_collisions link1="floor_base_link_inertia" link2="floor_shoulder_link" reason="Adjacent"/>
     <disable_collisions link1="floor_base_link_inertia" link2="floor_upper_arm_link" reason="Never"/>
     <disable_collisions link1="floor_base_link_inertia" link2="floor_wrist_1_link" reason="Never"/>
-    <disable_collisions link1="floor_base_link_inertia" link2="floor_wrist_2_link" reason="Never"/>
     <disable_collisions link1="floor_base_link_inertia" link2="long_rail_1" reason="Never"/>
     <disable_collisions link1="floor_base_link_inertia" link2="long_rail_2" reason="Never"/>
     <disable_collisions link1="floor_base_link_inertia" link2="slide_bar" reason="Adjacent"/>

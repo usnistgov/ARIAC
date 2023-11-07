@@ -1,5 +1,6 @@
 import os
 import yaml
+import xacro
 
 from launch import LaunchDescription
 from launch.actions import (
@@ -14,6 +15,7 @@ from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 from ament_index_python.packages import get_package_share_directory
+from moveit_configs_utils import MoveItConfigsBuilder
 
 
 def load_file(package_name, file_path):
@@ -38,33 +40,26 @@ def load_yaml(package_name, file_path):
 
 
 def launch_setup(context, *args, **kwargs):
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution([FindPackageShare("ariac_description"), "urdf/ariac_robots", "ariac_robots.urdf.xacro"]), 
-            " "
-        ]
+    urdf = os.path.join(get_package_share_directory("ariac_description"), "urdf/ariac_robots/ariac_robots.urdf.xacro")
+
+    moveit_config = (
+        MoveItConfigsBuilder("ariac_robots", package_name="ariac_moveit_config")
+        .robot_description(urdf)
+        .robot_description_semantic(file_path="config/ariac_robots.srdf")
+        .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .planning_pipelines(pipelines=["ompl"])
+        .to_moveit_configs()
     )
-
-    robot_description = {"robot_description": robot_description_content}
-    
-    ## Moveit Parameters
-    robot_description_semantic = {"robot_description_semantic": load_file("ariac_moveit_config", "srdf/ariac_robots.srdf")}
-
-    robot_description_kinematics = {"robot_description_kinematics": load_yaml("ariac_moveit_config", "config/kinematics.yaml")}
-
-    robot_description_planning = {'robot_description_planning': load_yaml("ariac_moveit_config", "config/joint_limits.yaml")}
 
     test_competitor = Node(
         package="test_competitor",
         executable="competitor",
         output="screen",
         parameters=[
-            robot_description,
-            robot_description_semantic,
-            robot_description_kinematics,
-            robot_description_planning,
+            moveit_config.robot_description,
+            moveit_config.robot_description_semantic,
+            moveit_config.robot_description_kinematics,
+            moveit_config.joint_limits,
             {"use_sim_time": True},
         ],
         arguments=['--ros-args', '--log-level', 'move_group_interface:=warn', '--log-level', 'moveit_trajectory_processing.time_optimal_trajectory_generation:=error']
@@ -83,10 +78,10 @@ def launch_setup(context, *args, **kwargs):
         output="log",
         arguments=["-d", rviz_config_file],
         parameters=[
-            robot_description,
-            robot_description_semantic,
-            robot_description_kinematics,
-            robot_description_planning,
+            moveit_config.robot_description,
+            moveit_config.robot_description_semantic,
+            moveit_config.robot_description_kinematics,
+            moveit_config.joint_limits,
             {"use_sim_time": True}
         ],
         condition=IfCondition(start_rviz)

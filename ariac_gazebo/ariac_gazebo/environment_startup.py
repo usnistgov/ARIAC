@@ -817,7 +817,7 @@ class EnvironmentStartup(Node):
         try:
             user_sensors = self.user_config['sensors']
         except (TypeError, KeyError):
-            self.get_logger().warn(bcolors.WARNING + "No sensors found in config" + + bcolors.ENDC)
+            self.get_logger().warn(bcolors.WARNING + "No sensors found in config" + bcolors.ENDC)
             user_sensors = []
 
         if not user_sensors:

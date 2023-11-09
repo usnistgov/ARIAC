@@ -36,6 +36,8 @@ def launch_setup(context, *args, **kwargs):
     trial_name = LaunchConfiguration("trial_name").perform(context)
     trial_config_path = os.path.join(pkg_share, 'config', 'trials', trial_name + ".yaml")
 
+    dev_mode = LaunchConfiguration("dev_mode")
+    
     if not os.path.exists(trial_config_path):
         rclpy.logging.get_logger('Launch File').fatal(
             f"Trial configuration '{trial_name}' not found in {pkg_share}/config/trials/")
@@ -95,6 +97,7 @@ def launch_setup(context, *args, **kwargs):
             {'robot_description': robot_description_content},
             {'trial_config_path': trial_config_path},
             {'user_config_path': user_config_path},
+            {'development_mode': dev_mode},
             {"use_sim_time": True},
         ],
     )
@@ -210,6 +213,10 @@ def generate_launch_description():
 
     declared_arguments.append(
         DeclareLaunchArgument("sensor_config", default_value="sensors", description="name of user configuration file")
+    )
+
+    declared_arguments.append(
+        DeclareLaunchArgument("dev_mode", default_value="false", description="run simulation in dev mode")
     )
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

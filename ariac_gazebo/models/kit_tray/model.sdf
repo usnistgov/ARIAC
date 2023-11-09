@@ -9,13 +9,15 @@
         <pose>0 0 -0.005 0 0 0</pose>
         
         <mass>2.25</mass>
-        
-        <ixx>0.05078</ixx>
-        <ixy>0</ixy>
-        <ixz>0</ixz>
-        <iyy>0.02713</iyy>
-        <iyz>0</iyz>
-        <izz>0.07787</izz>
+      
+        <inertia>
+          <ixx>0.05078</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.02713</iyy>
+          <iyz>0</iyz>
+          <izz>0.07787</izz>
+        </inertia>
       </inertial>
 
       <visual name="base">

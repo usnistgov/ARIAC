@@ -8,23 +8,23 @@
       <inertial>
         <pose>0 0 0.06 0 0 0</pose>
         
-        <!-- <mass>4.67</mass>
-        
-        <ixx>0.01120</ixx>
-        <ixy>0</ixy>
-        <ixz>0</ixz>
-        <iyy>0.01120</iyy>
-        <iyz>0</iyz>
-        <izz>0.01120</izz> -->
-
-        <mass>0.70</mass>
+        <mass>1.97</mass>
+        <inertia>
+          <ixx>0.00473</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00473</iyy>
+          <iyz>0</iyz>
+          <izz>0.00473</izz>
+        </inertia>
+        <!-- <mass>0.70</mass>
         
         <ixx>0.00108</ixx>
         <ixy>0</ixy>
         <ixz>0</ixz>
         <iyy>0.00024</iyy>
         <iyz>0</iyz>
-        <izz>0.00113</izz>
+        <izz>0.00113</izz> -->
       </inertial>
       
       <visual name="base">

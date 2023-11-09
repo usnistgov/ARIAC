@@ -6,17 +6,28 @@
 
     <link name="battery_link">
       <inertial>
-        <pose>0 0 0.02 0 0 0</pose>
+        <pose>0 0 0.02 0 0 1.57</pose>
         
-        <mass>0.70</mass>
-        <!-- <mass>3</mass> -->
-        
-        <ixx>0.00108</ixx>
-        <ixy>0</ixy>
-        <ixz>0</ixz>
-        <iyy>0.00024</iyy>
-        <iyz>0</iyz>
-        <izz>0.00113</izz>
+        <!-- <mass>0.70</mass>
+        <inertia>
+          <ixx>0.00108</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00024</iyy>
+          <iyz>0</iyz>
+          <izz>0.00113</izz>
+        </inertia> -->
+
+        <mass>0.30</mass>
+
+        <inertia>
+          <ixx>0.00046</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00010</iyy>
+          <iyz>0</iyz>
+          <izz>0.00048</izz>
+        </inertia>
       </inertial>
       
       <visual name="base">

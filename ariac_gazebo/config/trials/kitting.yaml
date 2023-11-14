@@ -37,9 +37,3 @@ orders:
         - type: 'pump'
           color: 'purple'
           quadrant: 1
-
-challenges:
-- robot_malfunction:
-    duration: 10.0
-    robots_to_disable: ['floor_robot']
-    time_condition: 5.0

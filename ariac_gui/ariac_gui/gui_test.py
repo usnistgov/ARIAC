@@ -1,10 +1,9 @@
-import tkinter as tk
 from os import chdir
 from functools import partial
 from PIL import Image, ImageTk  # needed for images in gui
 from datetime import datetime
 from ament_index_python.packages import get_package_share_directory
-
+import customtkinter as ctk
 from ariac_gui.fileFunc import *
 from ariac_gui.timeFunctions import *
 from ariac_gui.gui_class import ARIAC_GUI
@@ -20,7 +19,7 @@ LEFTCOLUMN=1
 def runGUI(): # runs the entire gui
     nameLabels = []  # holds temporary flags to be deleted
 
-    getFileName = tk.Tk() #window to create and get the file
+    getFileName = ctk.CTk() #window to create and get the file
     getFileName.geometry(WINDOWMEASURE)
     getFileName.title("NIST ARIAC CONFIG GUI")
     
@@ -39,21 +38,21 @@ def runGUI(): # runs the entire gui
     #getFileName.geometry("850x600")
     frame.pack()
     pkg_share = get_package_share_directory('ariac_gui')
-    nistLogo = ImageTk.PhotoImage(Image.open(pkg_share + "/resource/NIST_logo.png"))
-    logoImgLabel = tk.Label(frame, image=nistLogo)
+    nistLogo = ctk.CTkImage(Image.open(pkg_share + "/resource/NIST_logo.png"),size=(500,89))
+    logoImgLabel = ctk.CTkLabel(frame, text="", image=nistLogo)
     logoImgLabel.pack(pady=40)
     
-    fileNameVar = tk.StringVar()
+    fileNameVar = ctk.StringVar()
     fileNameCorrectFunc = partial(correct_file_name, fileName)
     saveAndExit = partial(make_file, getFileName, fileNameVar)
-    openFileExp = tk.Button(getFileName, text="Create file", command=saveAndExit)
+    openFileExp = ctk.CTkButton(getFileName, text="Create file", command=saveAndExit)
     openFileExp.pack()
     cancel_file = partial(cancel_wind, getFileName, cancelFlag)
-    cancelFile = tk.Button(getFileName, text="Cancel and Exit", command=cancel_file)
-    cancelFile.pack(side=tk.BOTTOM, pady=20)
+    cancelFile = ctk.CTkButton(getFileName, text="Cancel and Exit", command=cancel_file)
+    cancelFile.pack(side=ctk.BOTTOM, pady=20)
     fileFunc=partial(get_file_name_next, fileName, invalidFlag, nameLabels, getFileName, reqFlag, existFlag)
-    fileExit = tk.Button(getFileName, text="Next", command=fileFunc)
-    fileExit.pack(side=tk.BOTTOM, pady=20)
+    fileExit = ctk.CTkButton(getFileName, text="Next", command=fileFunc)
+    fileExit.pack(side=ctk.BOTTOM, pady=20)
     fileName.trace('w', fileNameCorrectFunc)
     getFileName.mainloop()
     

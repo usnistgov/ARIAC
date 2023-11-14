@@ -274,8 +274,15 @@ def kittingTrayWidgets(setupFrame, kittingTrayCounter, availableSlots, available
     slotVals.append(slot5.get())
     slotVals.append(slot6.get())
 
-def timeEntry(timeFrame, timeVar, timeVal):
-    timeVar.set(timeVal)
+def setup_widgets(timeFrame, timeVar, trialName,authorName):
+    authorLabel = tk.Label(timeFrame,text="Enter the name of the author")
+    authorLabel.grid(column=MIDDLECOLUMN)
+    authorEntry = tk.Entry(timeFrame,textvariable=authorName)
+    authorEntry.grid(column=MIDDLECOLUMN)
+    trialLabel = tk.Label(timeFrame,text="Enter the name of the trial")
+    trialLabel.grid(column=MIDDLECOLUMN)
+    trialEntry = tk.Entry(timeFrame,textvariable=trialName)
+    trialEntry.grid(column=MIDDLECOLUMN)
     timeLabel=tk.Label(timeFrame, text="Enter the time limit (-1 for no limit)")
     timeLabel.grid(column=MIDDLECOLUMN)
     timeEntry=tk.Entry(timeFrame, textvariable=timeVar)

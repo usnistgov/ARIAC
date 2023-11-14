@@ -3,7 +3,7 @@ from datetime import datetime
 from os import chdir
 from tkinter import ttk
 from functools import partial
-from ariac_gui.notebookSetup import timeEntry, kittingTrayWidgets
+from ariac_gui.notebookSetup import setup_widgets, kittingTrayWidgets
 from ariac_gui.notebookParts import partsWidgets, agvTrayWidgets, writePartsToFile
 from ariac_gui.notebookBins import binWidgets, writeBinsToFile
 from ariac_gui.notebookConveyor import convWidgets
@@ -107,11 +107,6 @@ class ARIAC_GUI(tk.Tk):
         self.assemblyParts=[]
         self.convSettingsVals=[]
 
-        # window outputs
-        self.timeVal="0"
-        self.noTimeVal="0"
-        self.timeList=[self.timeVal, self.noTimeVal]
-
         self.trayVals=["" for i in range(6)]
         self.slotVals=["" for i in range(6)]
         
@@ -146,7 +141,9 @@ class ARIAC_GUI(tk.Tk):
         setupFrame.pack(fill='both', expand=True)
         notebook.add(setupFrame, text='Setup')
         self.timeVar=tk.StringVar()
-        timeEntry(setupFrame, self.timeVar, self.timeVal[0])
+        self.trialName = tk.StringVar()
+        self.authorName = tk.StringVar()
+        setup_widgets(setupFrame, self.timeVar,self.trialName, self.authorName)
         # add frames to notebook
 
         #kitting trays

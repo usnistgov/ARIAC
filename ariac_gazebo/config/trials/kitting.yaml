@@ -37,4 +37,3 @@ orders:
         - type: 'pump'
           color: 'purple'
           quadrant: 1
-

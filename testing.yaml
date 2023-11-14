@@ -1,0 +1,13 @@
+parts:
+  agvs:
+    agv4:
+      tray_id: 0
+      parts:
+      - type: pump
+        color: green
+        quadrant: '1'
+        rotation: '0'
+      - type: sensor
+        color: green
+        quadrant: '3'
+        rotation: pi

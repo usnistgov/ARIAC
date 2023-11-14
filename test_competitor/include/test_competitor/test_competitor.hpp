@@ -22,7 +22,7 @@
 #include "tf2_ros/buffer.h"
 
 #include <kdl/frames.hpp>
-#include <tf2_kdl/tf2_kdl.h>
+#include <tf2_kdl/tf2_kdl.hpp>
 
 #include <std_srvs/srv/trigger.hpp>
 

@@ -30,7 +30,5 @@ class StaticController : public controller_interface::ControllerInterface {
  private:
   std::vector<std::string> joint_names_;
   std::vector<double> joint_states_;
-
-  void updateJointStates();
 };
 }  // namespace ariac_controllers

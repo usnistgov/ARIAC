@@ -17,14 +17,6 @@
           <iyz>0</iyz>
           <izz>0.00473</izz>
         </inertia>
-        <!-- <mass>0.70</mass>
-        
-        <ixx>0.00108</ixx>
-        <ixy>0</ixy>
-        <ixz>0</ixz>
-        <iyy>0.00024</iyy>
-        <iyz>0</iyz>
-        <izz>0.00113</izz> -->
       </inertial>
       
       <visual name="base">

@@ -9,7 +9,6 @@
         <pose>0 0 0.035 0 0 0</pose>
         
         <mass>0.8</mass>
-        <!-- <mass>5</mass> -->
         <inertia>
           <ixx>0.00099</ixx>
           <ixy>0</ixy>

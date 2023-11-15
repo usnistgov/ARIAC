@@ -2,7 +2,7 @@ import customtkinter as ctk
 from customtkinter import *
 from tkinter import *
 from functools import partial
-from PIL import Image, ImageTk  # needed for images in gui
+from PIL import Image  # needed for images in gui
 from math import pi
 
 PART_TYPES=["sensor", "pump", "regulator", "battery"]

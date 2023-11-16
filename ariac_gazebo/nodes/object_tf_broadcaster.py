@@ -118,9 +118,7 @@ def main():
     try:
         rclpy.spin(objects_tf_broadcaster)
     except KeyboardInterrupt:
-        pass
-
-    rclpy.shutdown()
+        objects_tf_broadcaster.destroy_node()
 
 if __name__ == '__main__':
     main()

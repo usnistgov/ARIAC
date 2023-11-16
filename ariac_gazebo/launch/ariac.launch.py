@@ -131,11 +131,13 @@ def launch_setup(context, *args, **kwargs):
         'agv2_controller',
         'agv3_controller',
         'agv4_controller',
+        'floor_robot_static_controller',
+        'ceiling_robot_static_controller',
     ]
 
     controller_spawner_nodes = []
     for controller in controller_names:
-        if controller == 'joint_state_broadcaster' or controller.count('agv') > 0:
+        if controller == 'joint_state_broadcaster' or controller.count('agv') > 0 or controller.count('static') > 0:
             args = [controller]
         else:
             args = [controller, '--inactive']

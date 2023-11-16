@@ -46,9 +46,7 @@ def main():
     try:
         rclpy.spin(sensor_tf_broadcaster)
     except KeyboardInterrupt:
-        pass
-
-    rclpy.shutdown()
+        sensor_tf_broadcaster.destroy_node()
 
 
 if __name__ == '__main__':

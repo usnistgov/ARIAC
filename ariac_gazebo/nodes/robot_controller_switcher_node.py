@@ -44,21 +44,25 @@ class RobotControllerSwitcher(Node):
                     for controller in self.floor_robot_controllers:
                         self.request.activate_controllers.append(controller)
                         self.floor_robot_state = True
+                    self.request.deactivate_controllers.append("floor_robot_static_controller")
                 
                 if self.ceiling_robot_health and not self.ceiling_robot_state:
                     for controller in self.ceiling_robot_controllers:
                         self.request.activate_controllers.append(controller)
                         self.ceiling_robot_state = True
+                    self.request.deactivate_controllers.append("ceiling_robot_static_controller")
                 
                 if not self.floor_robot_health and self.floor_robot_state:
                     for controller in self.floor_robot_controllers:
                         self.request.deactivate_controllers.append(controller)
                         self.floor_robot_state = False
+                    self.request.activate_controllers.append("floor_robot_static_controller")
 
                 if not self.ceiling_robot_health and self.ceiling_robot_state:
                     for controller in self.ceiling_robot_controllers:
                         self.request.deactivate_controllers.append(controller)
                         self.ceiling_robot_state = False
+                    self.request.activate_controllers.append("ceiling_robot_static_controller")
 
                 if self.request.activate_controllers or self.request.deactivate_controllers:
                     future = self.controller_switcher.call_async(self.request)
@@ -85,6 +89,6 @@ if __name__ == "__main__":
 
     robot_controller_switcher.run()
 
-    rclpy.shutdown()
+    robot_controller_switcher.destroy_node()
 
     

@@ -89,6 +89,6 @@ if __name__ == "__main__":
 
     robot_controller_switcher.run()
 
-    rclpy.shutdown()
+    robot_controller_switcher.destroy_node()
 
     

@@ -1,5 +1,9 @@
-import customtkinter as ctk
-from customtkinter import *
+try:
+    import customtkinter as ctk
+    from customtkinter import *
+except:
+    print("ERROR: customtkinter not installed")
+    quit()    
 from tkinter import *
 import tkinter as tk
 from functools import partial
@@ -46,7 +50,7 @@ def main():
     conveyor_active_cb = ctk.CTkCheckBox(main_wind,text="Conveyor active",variable=conveyor_setup_vals["active"], onvalue="1", offvalue="0", height=1, width=20, state=tk.DISABLED)
     conveyor_active_cb.pack(pady=5)
     present_widgets.append(conveyor_active_cb)
-    spawn_rate_label = ctk.CTkLabel(main_wind,text=f"Current spawn rate: {conveyor_setup_vals['spawn_rate'].get()}")
+    spawn_rate_label = ctk.CTkLabel(main_wind,text=f"current spawn rate (seconds): {conveyor_setup_vals['spawn_rate'].get()}")
     spawn_rate_label.pack()
     spawn_rate_slider = ctk.CTkSlider(main_wind, state=tk.DISABLED,variable=conveyor_setup_vals["spawn_rate"],from_=1, to=10, number_of_steps=9, orientation="horizontal")
     spawn_rate_slider.pack()
@@ -87,7 +91,7 @@ def show_current_parts(canvas : tk.Canvas, main_wind : ctk.CTk,_,__,___):
         current_canvas_elements.append(canvas.create_window(num_parts_coordinates[i], window = num_parts_labels[i]))
 
 def update_spawn_rate_slider(value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
-    label.configure(text=f"Current spawn rate: {value.get()}")
+    label.configure(text=f"current spawn rate (seconds): {value.get()}")
 
 def activate_deactivate_menu(has_parts:ctk.StringVar,widgets:list,conveyor_setup_vals,_,__,___):
     if has_parts.get()=="1":
@@ -114,7 +118,7 @@ def add_parts(total_part_counter):
     conveyor_part_vals["offset"] = ctk.DoubleVar()
     conveyor_part_vals["offset"].set(0.0)
     conveyor_part_vals["rotation"] = ctk.DoubleVar()
-    conveyor_part_vals["rotation"].set(min(SLIDER_VALUES))
+    conveyor_part_vals["rotation"].set(0.0)
     color_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["color"],values=PART_COLORS)
     color_menu.pack()
     type_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["pType"],values=PART_TYPES)

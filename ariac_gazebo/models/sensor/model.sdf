@@ -7,15 +7,14 @@
     <link name="sensor_link">
       <inertial>
         <pose>0 0 0.035 0 0 0</pose>
-        
-        <mass>0.8</mass>
+        <mass>1.89</mass>
         <inertia>
-          <ixx>0.00099</ixx>
+          <ixx>0.00235</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.00099</iyy>
+          <iyy>0.00235</iyy>
           <iyz>0</iyz>
-          <izz>0.00133</izz>
+          <izz>0.00315</izz>
         </inertia>
       </inertial>
       

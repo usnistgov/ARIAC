@@ -7,15 +7,14 @@
     <link name="pump_link">
       <inertial>
         <pose>0 0 0.06 0 0 0</pose>
-        
-        <mass>1.97</mass>
+        <mass>4.67</mass>
         <inertia>
-          <ixx>0.00473</ixx>
+          <ixx>0.01120</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.00473</iyy>
+          <iyy>0.01120</iyy>
           <iyz>0</iyz>
-          <izz>0.00473</izz>
+          <izz>0.01120</izz>
         </inertia>
       </inertial>
       
@@ -116,18 +115,12 @@
       </visual>
 
       <collision name="collision">
-        <!-- <pose>0 0 0.06 0 0 0</pose> -->
-
         <geometry>
-          <!-- <box>
-            <size>0.12 0.12 0.12</size>
-          </box> -->
           <mesh>
             <uri>model://pump/meshes/pump_collision.stl</uri>
           </mesh>
         </geometry>
         <max_contacts>10</max_contacts>
-
         <surface>
           <contact>
             <ode>

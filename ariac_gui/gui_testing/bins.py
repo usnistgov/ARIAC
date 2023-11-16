@@ -1,3 +1,4 @@
+from calendar import c
 import customtkinter as ctk
 from customtkinter import *
 from tkinter import *
@@ -5,11 +6,19 @@ from functools import partial
 from PIL import Image  # needed for images in gui
 from math import pi
 
+class BinPart():
+    def __init__(self,color = "", pType = "", rotation = "", flipped = ""):
+        self.color = color
+        self.pType = pType
+        self.rotation = rotation
+        self.flipped = flipped
+
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']
 ALL_BINS=['bin'+str(i) for i in range(1,9)]
 checkBoxes=[]
 current_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
+bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
 current_canvas_elements = []
 COLOR_TYPE=["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]
 MENU_IMAGES = {part_label:ctk.CTkImage(Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png"),size=(75,75)) for part_label in COLOR_TYPE}
@@ -60,7 +69,7 @@ def show_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk, 
     for i in range(len(button_coordinates)):
         if current_parts[bin_selection.get()][i]=="":
             current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),image=MENU_IMAGES["plus"],
-                                                          fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
+                                                          fg_color="transparent",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
         else:
             current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),image=MENU_IMAGES[current_parts[bin_selection.get()][i]],
                                                           fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
@@ -79,13 +88,22 @@ def add_part(bin, index,total_part_counter:ctk.StringVar):
     add_part_bin_window = ctk.CTkToplevel()
     add_part_bin_window.geometry("400x400 + 700 + 300")
     bin_vals["color"] = ctk.StringVar()
-    bin_vals["color"].set(PART_COLORS[0])
+    
     bin_vals["pType"] = ctk.StringVar()
-    bin_vals["pType"].set(PART_TYPES[0])
+    
     bin_vals["rotation"] = ctk.DoubleVar()
-    bin_vals["rotation"].set(min(SLIDER_VALUES))
+    
     bin_vals["flipped"] = ctk.StringVar()
-    bin_vals["flipped"].set("0")
+    if current_parts[bin][index] == "":
+        bin_vals["color"].set(PART_COLORS[0])
+        bin_vals["pType"].set(PART_TYPES[0])
+        bin_vals["rotation"].set(0.0)
+        bin_vals["flipped"].set("0")
+    else:
+        bin_vals["color"].set(bin_parts[bin][index].color)
+        bin_vals["pType"].set(bin_parts[bin][index].pType)
+        bin_vals["rotation"].set(bin_parts[bin][index].rotation)
+        bin_vals["flipped"].set(bin_parts[bin][index].flipped)
     color_menu = ctk.CTkOptionMenu(add_part_bin_window, variable=bin_vals["color"],values=PART_COLORS)
     color_menu.pack()
     type_menu = ctk.CTkOptionMenu(add_part_bin_window, variable=bin_vals["pType"],values=PART_TYPES)
@@ -106,6 +124,10 @@ def save_part(bin, index, total_part_counter:ctk.StringVar, window:ctk.CTkToplev
     color = bin_vals["color"].get()
     pType = bin_vals["pType"].get()
     current_parts[bin][index]=color+pType
+    bin_parts[bin][index].color = color
+    bin_parts[bin][index].pType = pType
+    bin_parts[bin][index].rotation = bin_vals["rotation"].get() 
+    bin_parts[bin][index].flipped = bin_vals["flipped"].get()
     total_part_counter.set(str(int(total_part_counter.get())+1))
     window.destroy()
 
@@ -125,7 +147,7 @@ def add_multiple_parts(bin,total_part_counter):
     bin_vals["pType"] = ctk.StringVar()
     bin_vals["pType"].set(PART_TYPES[0])
     bin_vals["rotation"] = ctk.DoubleVar()
-    bin_vals["rotation"].set(min(SLIDER_VALUES))
+    bin_vals["rotation"].set(0.0)
     bin_vals["flipped"] = ctk.StringVar()
     bin_vals["flipped"].set("0")
     color_menu = ctk.CTkOptionMenu(add_parts_bin_window, variable=bin_vals["color"],values=PART_COLORS)
@@ -147,10 +169,13 @@ def add_multiple_parts(bin,total_part_counter):
 def save_parts(bin, slot_values, total_part_counter:ctk.StringVar, window:ctk.CTkToplevel, bin_vals):
     color = bin_vals["color"].get()
     pType = bin_vals["pType"].get()
-    print(bin_vals["rotation"].get())
     slot_indices = [int(val.get()) for val in slot_values if val.get()!="-1"]
     for index in slot_indices:
         current_parts[bin][index]=color+pType
+        bin_parts[bin][index].color = color
+        bin_parts[bin][index].pType = pType
+        bin_parts[bin][index].rotation = bin_vals["rotation"].get() 
+        bin_parts[bin][index].flipped = bin_vals["flipped"].get()
     total_part_counter.set(str(int(total_part_counter.get())+len(slot_indices)))
     window.destroy()
 

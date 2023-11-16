@@ -16,7 +16,6 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 
 namespace ariac_controllers {
 
-/// The move to start example controller moves the robot into default pose.
 class StaticController : public controller_interface::ControllerInterface {
  public:
   controller_interface::InterfaceConfiguration command_interface_configuration() const override;

@@ -17,7 +17,6 @@ find_package(controller_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(hardware_interface REQUIRED)
-find_package(Eigen3 REQUIRED)
 
 add_library(
   ${PROJECT_NAME}
@@ -25,11 +24,10 @@ add_library(
   src/static_controller.cpp
 )
 
-  target_include_directories(
+target_include_directories(
   ${PROJECT_NAME}
   PUBLIC
   include
-  ${EIGEN3_INCLUDE_DIRS}
 )
 
 ament_target_dependencies(
@@ -60,9 +58,11 @@ install(
 ament_export_include_directories(
   include
 )
+
 ament_export_libraries(
   ${PROJECT_NAME}
 )
+
 ament_export_dependencies(
   controller_interface
   pluginlib
@@ -70,4 +70,5 @@ ament_export_dependencies(
   rclcpp_lifecycle
   hardware_interface
 )
+
 ament_package()

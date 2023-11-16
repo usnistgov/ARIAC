@@ -17,7 +17,6 @@ MENU_IMAGES = {part_label:ctk.CTkImage(Image.open(os.getcwd()+f"/ariac_gui/resou
 SLIDER_VALUES = [-pi,-3*pi/4,-pi/2,-pi/4,0,pi/4,pi/2,3*pi/4,pi]
 SLIDER_STR = ["-pi","-3pi/4","-pi/2","-pi/4","0","pi/4","pi/2","3pi/4","pi"]
 
-print(SLIDER_VALUES)
 def main():
     main_wind = ctk.CTk()
     total_part_counter = ctk.StringVar()
@@ -72,6 +71,7 @@ def show_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk, 
 def update_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk,total_part_counter,_,__,___):
     for i in current_canvas_elements:
         canvas.delete(i)
+    current_canvas_elements.clear()
     show_grid(bin_selection,canvas,main_wind,total_part_counter)
 
 def add_part(bin, index,total_part_counter:ctk.StringVar):

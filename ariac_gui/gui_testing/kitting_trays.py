@@ -37,24 +37,8 @@ def main():
     canvas.create_window((90,325),window=ctk.CTkLabel(main_wind,text="kts_1"))
     canvas.create_window((310,325),window=ctk.CTkLabel(main_wind,text="kts_2"))
     canvas.pack(fill = BOTH, expand = 1)
-    update_all_tray_menus=partial(updateKTrayMenus,tray_menus,tray_selections)
-    for tray in tray_selections:
-        tray.trace('w',update_all_tray_menus)
     main_wind.mainloop()
     print(",".join([i.get() for i in tray_selections if i.get()!=""]))
-
-def updateKTrayMenus(tray_menus,tray_selections,_,__,___):
-    '''Updates the available trays for kitting trays'''
-    tray_options_available = [[] for _ in range(6)]
-    currentTrayVals=[tray.get() for tray in tray_selections]
-    for tray in tray_options:
-        for i in range(6):
-            if (tray not in currentTrayVals or tray==tray_selections[i].get()):
-                tray_options_available[i].append(tray)
-    for i in range(len(tray_options_available)):
-        if "" not in tray_options_available[i]:
-            tray_options_available[i]=[""]+tray_options_available[i]
-        tray_menus[i].configure(values=tray_options_available[i])
 
     
 if __name__=="__main__":

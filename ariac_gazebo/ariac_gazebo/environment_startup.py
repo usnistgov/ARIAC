@@ -11,7 +11,7 @@ from rcl_interfaces.msg import ParameterDescriptor
 
 from rclpy.qos import QoSProfile, DurabilityPolicy
 
-from ariac_gazebo.tf2_geometry_msgs import do_transform_pose
+from tf2_geometry_msgs import do_transform_pose
 from ariac_gazebo.utilities import quaternion_from_euler, euler_from_quaternion, convert_pi_string_to_float
 
 from tf2_ros import TransformException

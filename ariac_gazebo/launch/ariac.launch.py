@@ -209,9 +209,7 @@ def generate_launch_description():
     )
 
     declared_arguments.append(
-        DeclareLaunchArgument(
-            "competitor_pkg", default_value="test_competitor",
-            description="name of competitor package"))
+        DeclareLaunchArgument("competitor_pkg", default_value="test_competitor", description="name of competitor package"))
 
     declared_arguments.append(
         DeclareLaunchArgument("sensor_config", default_value="sensors", description="name of user configuration file")

@@ -2,7 +2,7 @@
 
 from rclpy.node import Node
 
-from geometry_msgs.msg import TransformStamped
+from geometry_msgs.msg import TransformStamped, Pose
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
 class TFBroadcaster(Node):
@@ -11,7 +11,7 @@ class TFBroadcaster(Node):
         self.tf_static_broadcaster = StaticTransformBroadcaster(self)
         self.transforms = []
     
-    def generate_transform(self, parent_frame, child_frame, initial_pose):
+    def generate_transform(self, parent_frame, child_frame, initial_pose: Pose):
         t = TransformStamped()
 
         t.header.stamp = self.get_clock().now().to_msg()

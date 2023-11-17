@@ -839,7 +839,7 @@ bool TestCompetitor::FloorRobotPlacePartOnKitTray(int agv_num, int quadrant)
                                 part_drop_pose.position.z + 0.3, SetRobotOrientation(0)));
 
   waypoints.push_back(BuildPose(part_drop_pose.position.x, part_drop_pose.position.y,
-                                part_drop_pose.position.z + part_heights_[floor_robot_attached_part_.type] + drop_height_,
+                                part_drop_pose.position.z + part_heights_[floor_robot_attached_part_.type] + kit_tray_thickness_ + drop_height_,
                                 SetRobotOrientation(0)));
 
   FloorRobotMoveCartesian(waypoints, 0.3, 0.3);

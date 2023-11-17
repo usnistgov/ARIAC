@@ -191,8 +191,8 @@ void AGVPluginPrivate::MoveToGoal(double goal){
   }
   
   double velocity = 0;
-  double acceleration = 2;
-  double stop_distance = 0.9;
+  double acceleration = 1;
+  double stop_distance = 2;
   rclcpp::Time start = ros_node_->get_clock()->now();
   if (direction > 0){
     while(agv_joint_->Position(0) < goal - stop_distance){

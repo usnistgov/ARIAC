@@ -1083,7 +1083,7 @@ class EnvironmentStartup(Node):
 
                     params = PartSpawnParams(part_name, part.type, part.color, xyz=xyz, rpy=rpy)
 
-                    self.spawn_entity(params, wait=False)
+                    self.spawn_entity(params, wait=True)
 
                 bin_info.parts.append(
                     self.fill_part_lot_msg(part, num_parts_in_bin))

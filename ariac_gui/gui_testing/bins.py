@@ -1,4 +1,3 @@
-from calendar import c
 import customtkinter as ctk
 from customtkinter import *
 from tkinter import *
@@ -21,8 +20,8 @@ current_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
 bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
 current_canvas_elements = []
 COLOR_TYPE=["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]
-MENU_IMAGES = {part_label:ctk.CTkImage(Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png"),size=(75,75)) for part_label in COLOR_TYPE}
-
+# MENU_IMAGES = {part_label:ctk.CTkImage(Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png"),size=(75,75)) for part_label in COLOR_TYPE}
+MENU_IMAGES = {part_label:Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png") for part_label in COLOR_TYPE}
 SLIDER_VALUES = [-pi,-3*pi/4,-pi/2,-pi/4,0,pi/4,pi/2,3*pi/4,pi]
 SLIDER_STR = ["-pi","-3pi/4","-pi/2","-pi/4","0","pi/4","pi/2","3pi/4","pi"]
 
@@ -68,10 +67,16 @@ def show_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk, 
     current_bin_slot_widgets = []
     for i in range(len(button_coordinates)):
         if current_parts[bin_selection.get()][i]=="":
-            current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),image=MENU_IMAGES["plus"],
+            current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
+                                                          image=ctk.CTkImage(MENU_IMAGES["plus"],size=(75,75)),
                                                           fg_color="transparent",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
+        elif bin_parts[bin_selection.get()][i].flipped == "0":
+            current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
+                                                          image=ctk.CTkImage(MENU_IMAGES[current_parts[bin_selection.get()][i]].rotate(bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
+                                                          fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
         else:
-            current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),image=MENU_IMAGES[current_parts[bin_selection.get()][i]],
+            current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
+                                                          image=ctk.CTkImage(MENU_IMAGES[current_parts[bin_selection.get()][i]].rotate(bin_parts[bin_selection.get()][i].rotation*180/pi).transpose(Image.FLIP_LEFT_RIGHT),size=(75,75)),
                                                           fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
 
     for i in range(len(current_bin_slot_widgets)):

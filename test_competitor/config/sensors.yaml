@@ -23,3 +23,14 @@ sensors:
       xyz: [-1.3, 5.8, 1.8]
       rpy: [pi, pi/2, -pi/2]
   
+  conveyor_breakbeam:
+    type: break_beam
+    pose:
+      xyz: [-0.352, 3.91, 0.88]
+      rpy: [0, 0, pi]
+  
+  conveyor_camera:
+    type: advanced_logical_camera
+    pose:
+      xyz: [-0.573, 3.915, 1.5]
+      rpy: [pi/2, pi/2, 0]

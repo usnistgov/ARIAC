@@ -1,0 +1,18 @@
+modify plugin to have nominal_brightness. 
+turn the greenboxes off for each light
+
+Check cameras shouldn't see the frustum of the lights
+
+more lights in the periphery which are out of challenge
+
+
+classification -> bins & conveyor
+
+standalone plugin w/ sevices -> 1 Dec
+task_manager integration -> Dec 8
+
+Don't add collision for lights
+
+
+
+Enable or disable shadows?

@@ -10,7 +10,6 @@ from functools import partial
 from PIL import Image  # needed for images in gui
 from math import pi
 
-from numpy import number
 
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']

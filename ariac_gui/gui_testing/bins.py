@@ -15,12 +15,11 @@ class BinPart():
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']
 ALL_BINS=['bin'+str(i) for i in range(1,9)]
-checkBoxes=[]
 current_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
 bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
 current_canvas_elements = []
 COLOR_TYPE=["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]
-MENU_IMAGES = {part_label:Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png") for part_label in COLOR_TYPE}
+MENU_IMAGES = {part_label:Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
 SLIDER_VALUES = [-pi,-3*pi/4,-pi/2,-pi/4,0,pi/4,pi/2,3*pi/4,pi]
 SLIDER_STR = ["-pi","-3pi/4","-pi/2","-pi/4","0","pi/4","pi/2","3pi/4","pi"]
 

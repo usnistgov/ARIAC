@@ -67,12 +67,6 @@ class SensorSpawnParams(SpawnParams):
             plugin.find('camera_name').text = self.name
             plugin.find('frame_name').text = self.name + "_frame"
 
-        # scoring_sensors = ['agv_tray_sensor', 'assembly_station_sensor']
-        # if self.sensor_type in scoring_sensors:
-        #     plugin = xml.find('model').find('link').find('sensor').find('plugin')
-        #     plugin.set('name', str(self.name + "_ros_plugin"))
-        #     plugin.find('sensor_num').text = self.name[-1]
-
         self.xml = ET.tostring(xml, encoding="unicode")
 
 

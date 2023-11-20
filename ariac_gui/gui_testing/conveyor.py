@@ -18,7 +18,7 @@ current_parts = []
 conveyor_parts = []
 current_canvas_elements = []
 COLOR_TYPE=[color+pType for color in PART_COLORS for pType in PART_TYPES]
-MENU_IMAGES = {part_label:ctk.CTkImage(Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png"),size=(50,50)) for part_label in COLOR_TYPE}
+MENU_IMAGES = {part_label:Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png") for part_label in COLOR_TYPE}
 CONVEYOR_ORDERS = ["random", "sequential"]
 SLIDER_VALUES = [-pi,-3*pi/4,-pi/2,-pi/4,0,pi/4,pi/2,3*pi/4,pi]
 SLIDER_STR = ["-pi","-3pi/4","-pi/2","-pi/4","0","pi/4","pi/2","3pi/4","pi"]
@@ -76,16 +76,15 @@ def show_current_parts(canvas : tk.Canvas, main_wind : ctk.CTk,_,__,___):
     for e in current_canvas_elements:
         canvas.delete(e)
     current_canvas_elements.clear()
-    image_coordinates = [(25,10+(50*i)) for i in range(10)]
-    num_parts_coordinates = [(65,10+(50*i)) for i in range(10)]
-    part_count = {color_type:0 for color_type in COLOR_TYPE}
+    image_coordinates = [(25,10+(75*i)) for i in range(10)]
+    num_parts_coordinates = [(65,10+(75*i)) for i in range(10)]
     image_labels = []
     num_parts_labels = []
-    for part in conveyor_parts:
-        part_count[part.color+part.pType]+=part.num_parts
-    for part in list(set(current_parts)):
-        image_labels.append(ctk.CTkLabel(main_wind,text="",image=MENU_IMAGES[part]))
-        num_parts_labels.append(ctk.CTkLabel(main_wind,text=f"X {part_count[part]}"))
+    for i in range(len(current_parts)):
+        part = conveyor_parts[i].color+conveyor_parts[i].pType
+        image_labels.append(ctk.CTkLabel(main_wind,text="",
+        image=ctk.CTkImage(MENU_IMAGES[part].rotate(conveyor_parts[i].rotation*180/pi),size=(75,75))))
+        num_parts_labels.append(ctk.CTkLabel(main_wind,text=f"X {conveyor_parts[i].num_parts}"))
     for i in range(len(image_labels)):
         current_canvas_elements.append(canvas.create_window(image_coordinates[i], window = image_labels[i]))
         current_canvas_elements.append(canvas.create_window(num_parts_coordinates[i], window = num_parts_labels[i]))

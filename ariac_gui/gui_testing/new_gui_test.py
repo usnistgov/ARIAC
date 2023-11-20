@@ -61,25 +61,38 @@ class GUI_CLASS(ctk.CTk):
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(pady=10,column=LEFTCOLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
 
+        # Setup info
+        self.time_limit = ctk.StringVar()
+        self.trial_name = ctk.StringVar()
+        self.author = ctk.StringVar()
+        self.time_limit.set('0')
+        self.trial_name.set('')
+        self.author.set('')
+
         # Kitting tray info
         self.kitting_tray_selections = [ctk.StringVar() for _ in range(6)]
 
         # Bin parts info
         self.current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
         self.bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
-        self.bin_parts_counter = tk.StringVar()
+        self.bin_parts_counter = ctk.StringVar()
         self.bin_parts_counter.set('0')
         self.current_bin_canvas_elements = []
 
         # Conveyor parts info
         self.current_conveyor_parts = []
         self.conveyor_parts = []
-        self.conveyor_parts_counter = tk.StringVar()
+        self.conveyor_parts_counter = ctk.StringVar()
         self.conveyor_parts_counter.set('0')
         self.present_conveyor_widgets = []
         self.current_conveyor_canvas_elements = []
 
         # Menu tabs
+        self.setup_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.setup_frame.pack(fill='both',expand=True)
+        self.notebook.add(self.setup_frame,text="Setup")
+        self.add_setup_widgets_to_frame()
+
         self.kitting_tray_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.kitting_tray_frame.pack(fill='both',expand=True)
         self.notebook.add(self.kitting_tray_frame,text="Kitting Trays")
@@ -95,6 +108,22 @@ class GUI_CLASS(ctk.CTk):
         self.notebook.add(self.conveyor_parts_frame, text="Conveyor Parts")
         self.add_conveyor_parts_widgets_to_frame()
 
+    # =======================================================
+    #            Configuration Setup Functions
+    # =======================================================
+    def add_setup_widgets_to_frame(self):
+        time_limit_label = ctk.CTkLabel(self.setup_frame, text="Enter the time limit (-1 for no time limit):")
+        time_limit_label.pack()
+        time_limit_entry = ctk.CTkEntry(self.setup_frame, textvariable=self.time_limit)
+        time_limit_entry.pack()
+        trial_name_label = ctk.CTkLabel(self.setup_frame, text="Enter the trial name:")
+        trial_name_label.pack()
+        trial_name_entry = ctk.CTkEntry(self.setup_frame, textvariable=self.trial_name)
+        trial_name_entry.pack()
+        author_label = ctk.CTkLabel(self.setup_frame, text="Enter the name of the author:")
+        author_label.pack()
+        author_entry = ctk.CTkEntry(self.setup_frame, textvariable=self.author)
+        author_entry.pack()
     # =======================================================
     #               Kitting Tray Functions
     # =======================================================

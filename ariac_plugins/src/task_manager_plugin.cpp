@@ -9,12 +9,14 @@ Distributions of NIST software should also include copyright and licensing state
 // Gazebo
 #include <gazebo/physics/Model.hh>
 #include <gazebo/physics/World.hh>
+#include <gazebo/physics/Joint.hh>
 #include <gazebo_ros/node.hpp>
 #include <gazebo/transport/Subscriber.hh>
 #include <gazebo/transport/Node.hh>
 #include <gazebo/sensors/LogicalCameraSensor.hh>
 #include <gazebo_ros/conversions/builtin_interfaces.hpp>
 #include <gazebo_ros/conversions/geometry_msgs.hpp>
+#include <gazebo_msgs/srv/delete_entity.hpp>
 
 // Messages
 #include <ariac_plugins/task_manager_plugin.hpp>
@@ -115,6 +117,7 @@ namespace ariac_plugins
         unsigned int agv4_location_;
 
         std::map<int, std::vector<ariac_common::Part>> agv_parts_;
+        std::map<int, std::vector<std::string>> models_on_agv_;
         std::map<int, std::vector<ariac_common::Part>> insert_parts_;
 
         //============== ROS =================
@@ -145,6 +148,8 @@ namespace ariac_plugins
         gazebo::transport::SubscriberPtr station3_sub_;
         gazebo::transport::SubscriberPtr station4_sub_;
 
+        gazebo::transport::PublisherPtr request_pub_;
+
         //============== SERVICES =================
         /*!< Service to start the competition. */
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr start_competition_service_{nullptr};
@@ -158,6 +163,8 @@ namespace ariac_plugins
         rclcpp::Service<ariac_msgs::srv::GetPreAssemblyPoses>::SharedPtr pre_assembly_poses_service_;
         /*!< Service to penalize the ceiling robot. */
         rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr human_safe_zone_penalty_service_;
+
+        rclcpp::Client<gazebo_msgs::srv::DeleteEntity>::SharedPtr delete_entity_client_;
 
         //============== PUBLISHERS =================
         /*!< Publisher to the topic /ariac/orders */
@@ -407,6 +414,8 @@ namespace ariac_plugins
         impl_->station3_sub_ = impl_->gznode_->Subscribe(station3_topic, &TaskManagerPluginPrivate::Station3SensorCallback, impl_.get());
         impl_->station4_sub_ = impl_->gznode_->Subscribe(station4_topic, &TaskManagerPluginPrivate::Station4SensorCallback, impl_.get());
 
+        impl_->request_pub_ = impl_->gznode_->Advertise<gazebo::msgs::Request>("~/request");
+
         RCLCPP_INFO(impl_->ros_node_->get_logger(), "Starting ARIAC 2023");
 
         // Get QoS profiles
@@ -437,6 +446,8 @@ namespace ariac_plugins
         impl_->agv4_status_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::AGVStatus>(
             "/ariac/agv4_status", qos.get_subscription_qos("/ariac/agv4_status", rclcpp::QoS(1)),
             std::bind(&TaskManagerPlugin::OnAGV4StatusCallback, this, std::placeholders::_1));
+
+        impl_->delete_entity_client_ = impl_->ros_node_->create_client<gazebo_msgs::srv::DeleteEntity>("/delete_entity");
 
         // Init publishers
         impl_->start_human_pub_ = impl_->ros_node_->create_publisher<std_msgs::msg::Bool>("/ariac/start_human", 10);
@@ -1926,6 +1937,29 @@ namespace ariac_plugins
 
         PrintKittingScore(kitting_score);
 
+        // Clear the AGV of parts and kit tray
+        for (std::string name: models_on_agv_[kitting_task->GetAgvNumber()]) {
+            gazebo::physics::ModelPtr model = world_->ModelByName(name);
+            if (!model) {
+                RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Unable to remove " << name.c_str());
+            } else {
+                model->SetAutoDisable(true);
+                model->SetCollideMode("none");
+
+                // gazebo::physics::Joint_V joints = model->GetJoints();
+                // for (unsigned int i=0; i< joints.size(); i++)
+                // {
+                //     joints[i]->Detach();
+                // }
+            }
+            // if (world_->EntityByName(name)) {
+
+            //     gazebo::msgs::Request *msg = gazebo::msgs::CreateRequest("entity_delete", name);
+            //     request_pub_->Publish(*msg, true);
+            //     RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Deleted " << name.c_str());
+            // }
+        }
+
         // Display the score on the screen
         // RCLCPP_INFO_STREAM(ros_node_->get_logger(), *kitting_score);
     }
@@ -3158,6 +3192,7 @@ namespace ariac_plugins
     void TaskManagerPluginPrivate::StoreAGVParts(int agv_id, gazebo::msgs::LogicalCameraImage &_msg)
     {
         agv_parts_.find(agv_id)->second.clear();
+        models_on_agv_.find(agv_id)->second.clear();
         std::vector<ariac_common::Part> kit_tray_parts;
 
         int kit_tray_id = -1;
@@ -3173,6 +3208,8 @@ namespace ariac_plugins
             {
                 std::string id_string = model_name.substr(9, 2);
                 kit_tray_id = std::stoi(id_string);
+                
+                models_on_agv_[agv_id].push_back(model_name);
             }
         }
 
@@ -3200,6 +3237,8 @@ namespace ariac_plugins
                             ariac_common::Part part(color.second, type.second);
                             kit_tray_parts.push_back(part);
 
+                            models_on_agv_[agv_id].push_back(model_name);
+
                             classified_part = true;
                             break;
                         }
@@ -3210,18 +3249,6 @@ namespace ariac_plugins
             }
         }
         agv_parts_[agv_id] = kit_tray_parts;
-
-        // if (agv_id == 4)
-        // {
-        //     if (agv_parts_[agv_id].size() > 0)
-        //     {
-        //         std::cout << "AGV4: " << std::endl;
-        //         for (auto part : agv_parts_[agv_id])
-        //         {
-        //             std::cout << part.GetType() << " " << part.GetColor() << std::endl;
-        //         }
-        //     }
-        // }
     }
 
     //==============================================================================

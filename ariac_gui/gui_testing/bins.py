@@ -68,13 +68,9 @@ def show_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk, 
             current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
                                                           image=ctk.CTkImage(MENU_IMAGES["plus"],size=(75,75)),
                                                           fg_color="transparent",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
-        elif bin_parts[bin_selection.get()][i].flipped == "0":
-            current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
-                                                          image=ctk.CTkImage(MENU_IMAGES[current_parts[bin_selection.get()][i]].rotate(bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
-                                                          fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
         else:
             current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
-                                                          image=ctk.CTkImage(MENU_IMAGES[current_parts[bin_selection.get()][i]].rotate(bin_parts[bin_selection.get()][i].rotation*180/pi).transpose(Image.FLIP_LEFT_RIGHT),size=(75,75)),
+                                                          image=ctk.CTkImage(MENU_IMAGES[current_parts[bin_selection.get()][i]].rotate(bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
                                                           fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
 
     for i in range(len(current_bin_slot_widgets)):

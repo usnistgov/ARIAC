@@ -3,7 +3,7 @@
 import math
 import yaml
 import xml.etree.ElementTree as ET
-from random import randint
+from random import sample
 
 import rclpy
 from rclpy.node import Node
@@ -113,6 +113,7 @@ class EnvironmentStartup(Node):
         self.conveyor_enabled = False
         self.conveyor_spawn_order_types = ['sequential', 'random']
         self.conveyor_width = 0.28
+        self.n = 0
 
         self.conveyor_status_sub = self.create_subscription(ConveyorBeltState,
                                                             '/ariac/conveyor_state', self.conveyor_status, 10)
@@ -1116,10 +1117,13 @@ class EnvironmentStartup(Node):
     def spawn_conveyor_part(self):
         if self.conveyor_enabled:
             if self.conveyor_spawn_order == 'sequential':
-                part_params = self.conveyor_parts_to_spawn.pop(0)
+                part_params = self.conveyor_parts_to_spawn[self.n%len(self.conveyor_parts_to_spawn)]
+                part_params.name = part_params.name[:-2] + str(self.n).zfill(2)
+                self.n += 1
             elif self.conveyor_spawn_order == 'random':
-                part_params = self.conveyor_parts_to_spawn.pop(
-                    randint(0, len(self.conveyor_parts_to_spawn) - 1))
+                part_params = self.shuffled_parts[self.n%len(self.shuffled_parts)]
+                part_params.name = part_params.name[:-2] + str(self.n).zfill(2)
+                self.n += 1
 
             self.spawn_entity(part_params, wait=False)
 
@@ -1314,6 +1318,8 @@ class EnvironmentStartup(Node):
 
                 self.conveyor_parts_to_spawn.append(PartSpawnParams(
                     part_name, part.type, part.color, xyz=xyz, rpy=rpy))
+                
+        self.shuffled_parts = sample(self.conveyor_parts_to_spawn, len(self.conveyor_parts_to_spawn))
 
         if len(self.conveyor_parts_to_spawn) > 0:
             # Create Spawn Timer

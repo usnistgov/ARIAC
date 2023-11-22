@@ -978,7 +978,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
 
   auto trajectory_time = trajectory.second.joint_trajectory.points.back().time_from_start;
 
-  while (rclcpp::Time(now()).nanoseconds() < (detection_time + elapsed_time + time_to_pick_msg - trajectory_time).nanoseconds())
+  while (rclcpp::Time(now()).nanoseconds() < (detection_time + elapsed_time + time_to_pick_msg - trajectory_time).nanoseconds() - 5e8)
   {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 10000, "Waiting for part to arrive at pick location");
   }

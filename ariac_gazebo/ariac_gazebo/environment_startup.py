@@ -3,7 +3,7 @@
 import math
 import yaml
 import xml.etree.ElementTree as ET
-from random import sample
+from random import shuffle
 
 import rclpy
 from rclpy.node import Node
@@ -1121,7 +1121,9 @@ class EnvironmentStartup(Node):
                 part_params.name = part_params.name[:-2] + str(self.n).zfill(2)
                 self.n += 1
             elif self.conveyor_spawn_order == 'random':
-                part_params = self.shuffled_parts[self.n%len(self.shuffled_parts)]
+                if self.n % len(self.conveyor_parts_to_spawn) == 0:
+                    shuffle(self.conveyor_parts_to_spawn)
+                part_params = self.conveyor_parts_to_spawn[self.n%len(self.conveyor_parts_to_spawn)]
                 part_params.name = part_params.name[:-2] + str(self.n).zfill(2)
                 self.n += 1
 
@@ -1319,8 +1321,6 @@ class EnvironmentStartup(Node):
                 self.conveyor_parts_to_spawn.append(PartSpawnParams(
                     part_name, part.type, part.color, xyz=xyz, rpy=rpy))
                 
-        self.shuffled_parts = sample(self.conveyor_parts_to_spawn, len(self.conveyor_parts_to_spawn))
-
         if len(self.conveyor_parts_to_spawn) > 0:
             # Create Spawn Timer
             self.conveyor_spawn_timer = self.create_timer(

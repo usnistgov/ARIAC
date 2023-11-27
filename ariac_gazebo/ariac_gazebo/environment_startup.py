@@ -3,7 +3,8 @@
 import math
 import yaml
 import xml.etree.ElementTree as ET
-from random import randint
+from random import randint, shuffle
+from itertools import cycle, count
 
 import rclpy
 from rclpy.node import Node
@@ -113,6 +114,7 @@ class EnvironmentStartup(Node):
         self.conveyor_enabled = False
         self.conveyor_spawn_order_types = ['sequential', 'random']
         self.conveyor_width = 0.28
+        self.conveyor_loop_iter = count()
 
         self.conveyor_status_sub = self.create_subscription(ConveyorBeltState,
                                                             '/ariac/conveyor_state', self.conveyor_status, 10)
@@ -1116,10 +1118,12 @@ class EnvironmentStartup(Node):
     def spawn_conveyor_part(self):
         if self.conveyor_enabled:
             if self.conveyor_spawn_order == 'sequential':
-                part_params = self.conveyor_parts_to_spawn.pop(0)
+                part_params = next(self.conveyor_parts_to_spawn_cycle)
             elif self.conveyor_spawn_order == 'random':
-                part_params = self.conveyor_parts_to_spawn.pop(
-                    randint(0, len(self.conveyor_parts_to_spawn) - 1))
+                part_params = next(self.conveyor_parts_to_spawn_random_cycle)
+
+            part_params.name = part_params.name.replace(
+                part_params.name[part_params.name.find("_"):], "_" + (str(next(self.conveyor_loop_iter) % 10000)).zfill(4))
 
             self.spawn_entity(part_params, wait=False)
 
@@ -1314,6 +1318,12 @@ class EnvironmentStartup(Node):
 
                 self.conveyor_parts_to_spawn.append(PartSpawnParams(
                     part_name, part.type, part.color, xyz=xyz, rpy=rpy))
+ 
+                self.conveyor_parts_to_spawn_cycle = cycle(self.conveyor_parts_to_spawn)
+
+                shuffle(self.conveyor_parts_to_spawn)
+                
+                self.conveyor_parts_to_spawn_random_cycle = cycle(self.conveyor_parts_to_spawn)
 
         if len(self.conveyor_parts_to_spawn) > 0:
             # Create Spawn Timer

@@ -215,6 +215,7 @@ void TestCompetitor::breakbeam_cb(
 
     if (breakbeam_status)
     {
+      // Lock conveyor_parts_ mutex
       std::lock_guard<std::mutex> lock(conveyor_parts_mutex);
 
       for (auto part : conveyor_part_detected_)
@@ -905,10 +906,10 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
   bool found_part = false;
   geometry_msgs::msg::Pose part_pose;
   rclcpp::Duration elapsed_time(0, 0);
-  rclcpp::Duration time_to_pick(0, 0);
+  builtin_interfaces::msg::Duration time_to_pick;
   rclcpp::Time detection_time;
 
-  // Change gripper at location closest to part
+  // Change gripper at Kitting Tray Station 2
   if (floor_gripper_state_.type != "part_gripper")
   {
     floor_robot_.setJointValueTarget(floor_kts2_js_);
@@ -916,12 +917,15 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     FloorRobotChangeGripper("kts2", "parts");
   }
 
+  // Move robot to predefined pick location
   floor_robot_.setJointValueTarget(floor_conveyor_js_);
   FloorRobotMovetoTarget();
 
+  // Find the requested part on the conveyor
   do {
-      {
-      std::lock_guard<std::mutex> lock(conveyor_parts_mutex); // Lock the mutex
+      { 
+      // Lock conveyor_parts_ mutex
+      std::lock_guard<std::mutex> lock(conveyor_parts_mutex);
       auto it = conveyor_parts_.begin();
       for (; it != conveyor_parts_.end(); ) {
           auto part = it->first.part;
@@ -932,11 +936,13 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
 
             elapsed_time = rclcpp::Time(now()) - detection_time;
             auto current_part_position_ = part_pose.position.y - (elapsed_time.seconds() * conveyor_speed_);
-
+            // Check if part hasn't passed the pick location
             if (current_part_position_ > 0)
             {
-              time_to_pick = rclcpp::Duration::from_seconds(current_part_position_ / conveyor_speed_);
-              if (time_to_pick.seconds() > 5.0)
+              time_to_pick.sec = current_part_position_ / conveyor_speed_;
+              // time_to_pick.nanosec = (current_part_position_ / conveyor_speed_ - time_to_pick.sec) * 1e9;
+              // Check if part has more than 5 seconds to arrive at pick location
+              if (time_to_pick.sec > 5.0)
               {
                 found_part = true;
                 conveyor_parts_.erase(it);
@@ -950,13 +956,10 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
           }
         }
         RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 20000, "Waiting for %s %s to arrive on the conveyor", part_colors_[part_to_pick.color].c_str(), part_types_[part_to_pick.type].c_str());
-      }
+      } // End lock_guard scope
     } while (!found_part);
 
-  builtin_interfaces::msg::Duration time_to_pick_msg;
-  time_to_pick_msg.sec = time_to_pick.seconds();
-
-  // Move robot to catchup position
+  // Correct robot position to account for part offset on conveyor
   double part_rotation = GetYaw(part_pose);
   geometry_msgs::msg::Pose robot_pose = floor_robot_.getCurrentPose().pose;
   part_pose.position.y = robot_pose.position.y;
@@ -966,6 +969,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
                                 part_pose.position.z + 0.15, SetRobotOrientation(part_rotation)));
   FloorRobotMoveCartesian(waypoints, 1, 1);
 
+  // Plan trajectory to pickup part
   waypoints.clear();
   waypoints.push_back(BuildPose(part_pose.position.x, part_pose.position.y,
                                 part_pose.position.z + part_heights_[part_to_pick.type],SetRobotOrientation(part_rotation)));
@@ -976,13 +980,14 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     return false;
   }
 
+  // Wait for part to arrive at pick location
   auto trajectory_time = trajectory.second.joint_trajectory.points.back().time_from_start;
-
-  while (rclcpp::Time(now()).nanoseconds() < (detection_time + elapsed_time + time_to_pick_msg - trajectory_time).nanoseconds() - 5e8)
+  while (rclcpp::Time(now()).nanoseconds() < (detection_time + elapsed_time + time_to_pick - trajectory_time).nanoseconds() - 5e8)
   {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 10000, "Waiting for part to arrive at pick location");
   }
 
+  // Execute trajectory to pickup part
   FloorRobotSetGripperState(true);
   floor_robot_.execute(trajectory.second);
 
@@ -1621,9 +1626,19 @@ bool TestCompetitor::CompleteCombinedTask(ariac_msgs::msg::CombinedTask task)
   FloorRobotPickandPlaceTray(id, agv_number);
 
   int count = 1;
+  bool found;
   for (auto assembly_part : task.parts)
   {
-    FloorRobotPickBinPart(assembly_part.part);
+    found = FloorRobotPickBinPart(assembly_part.part);
+    if (!found)
+    {
+      for (auto parts : conveyor_parts_expected_){
+        if (parts.part.type == assembly_part.part.type && parts.part.color == assembly_part.part.color){
+          FloorRobotPickConveyorPart(parts.part);
+          break;
+        }
+      }
+    }
     FloorRobotPlacePartOnKitTray(agv_number, count);
     count++;
   }

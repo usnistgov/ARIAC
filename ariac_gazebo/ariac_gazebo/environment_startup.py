@@ -1117,13 +1117,10 @@ class EnvironmentStartup(Node):
 
     def spawn_conveyor_part(self):
         if self.conveyor_enabled:
-            if self.conveyor_spawn_order == 'sequential':
-                part_params = next(self.conveyor_parts_to_spawn_cycle)
-            elif self.conveyor_spawn_order == 'random':
-                part_params = next(self.conveyor_parts_to_spawn_random_cycle)
+            part_params = next(self.conveyor_parts_to_spawn_cycle)
 
             part_params.name = part_params.name.replace(
-                part_params.name[part_params.name.find("_"):], "_" + (str(next(self.conveyor_loop_iter) % 10000)).zfill(4))
+                part_params.name[part_params.name.find("_"):], "_" + str(next(self.conveyor_loop_iter)))
 
             self.spawn_entity(part_params, wait=False)
 
@@ -1319,11 +1316,10 @@ class EnvironmentStartup(Node):
                 self.conveyor_parts_to_spawn.append(PartSpawnParams(
                     part_name, part.type, part.color, xyz=xyz, rpy=rpy))
  
-                self.conveyor_parts_to_spawn_cycle = cycle(self.conveyor_parts_to_spawn)
+                if self.conveyor_spawn_order == 'random':
+                    shuffle(self.conveyor_parts_to_spawn)
 
-                shuffle(self.conveyor_parts_to_spawn)
-                
-                self.conveyor_parts_to_spawn_random_cycle = cycle(self.conveyor_parts_to_spawn)
+                self.conveyor_parts_to_spawn_cycle = cycle(self.conveyor_parts_to_spawn)
 
         if len(self.conveyor_parts_to_spawn) > 0:
             # Create Spawn Timer

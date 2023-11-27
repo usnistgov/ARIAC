@@ -1124,7 +1124,7 @@ class EnvironmentStartup(Node):
                 if self.n % len(self.conveyor_parts_to_spawn) == 0:
                     shuffle(self.conveyor_parts_to_spawn)
                 part_params = self.conveyor_parts_to_spawn[self.n%len(self.conveyor_parts_to_spawn)]
-                part_params.name = part_params.name[:-2] + str(self.n).zfill(2)
+                part_params.name = part_params.name[:part_params.name.find("_c") + 2] + str(self.n).zfill(2)
                 self.n += 1
 
             self.spawn_entity(part_params, wait=False)

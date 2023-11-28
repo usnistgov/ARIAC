@@ -930,7 +930,6 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
   }
   while(!part_picked && num_tries < 3){
     // Move robot to predefined pick location
-    floor_robot_.stop();
     floor_robot_.setJointValueTarget(floor_conveyor_js_);
     FloorRobotMovetoTarget();
 
@@ -978,7 +977,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     std::vector<geometry_msgs::msg::Pose> waypoints;
     waypoints.push_back(BuildPose(part_pose.position.x, robot_pose.position.y,
                                   part_pose.position.z + 0.15, SetRobotOrientation(part_rotation)));
-    FloorRobotMoveCartesian(waypoints, 1, 1);
+    FloorRobotMoveCartesian(waypoints, 0.5, 0.5);
 
     auto elapsed_time_ = rclcpp::Time(now()) - detection_time;
     auto current_part_position_ = part_pose.position.y - (elapsed_time.seconds() * conveyor_speed_);
@@ -1018,7 +1017,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     // Move up slightly
     waypoints.clear();
     waypoints.push_back(BuildPose(part_pose.position.x, robot_pose.position.y,
-                                  part_pose.position.z + 0.3, SetRobotOrientation(0)));
+                                  part_pose.position.z + 0.1, SetRobotOrientation(0)));
     FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
 
     robot_pose = floor_robot_.getCurrentPose().pose;
@@ -1033,6 +1032,12 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
       floor_robot_attached_part_ = part_to_pick;
       part_picked = true;
     }
+
+    // Move up
+    waypoints.clear();
+    waypoints.push_back(BuildPose(robot_pose.position.x, robot_pose.position.y,
+                                  robot_pose.position.z + 0.3, SetRobotOrientation(0)));
+    FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
     
     num_tries++;
   }

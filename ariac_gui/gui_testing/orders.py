@@ -21,9 +21,9 @@ MENU_IMAGES = {part_label:Image.open(os.getcwd()+f"/ariac_gui/resource/{part_lab
 SLIDER_VALUES = [-pi,-3*pi/4,-pi/2,-pi/4,0,pi/4,pi/2,3*pi/4,pi]
 SLIDER_STR = ["-pi","-3pi/4","-pi/2","-pi/4","0","pi/4","pi/2","3pi/4","pi"]
 
-LEFT_COLUMN = 0
+LEFT_COLUMN = 1
 MIDDLE_COLUMN = 2
-RIGHT_COLUMN = 4
+RIGHT_COLUMN = 3
 
 class order_gui(ctk.CTk):
     def __init__(self):
@@ -32,10 +32,15 @@ class order_gui(ctk.CTk):
         ctk.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
         
         self.geometry("800x800 + 300 + 300")
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(100, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(4, weight=1)
 
         # Order info
         self.current_left_widgets = []
         self.current_right_widgets = []
+        self.current_main_widgets = []
 
         self.order_counter = ctk.StringVar()
         self.order_counter.set('0')
@@ -67,34 +72,47 @@ class order_gui(ctk.CTk):
         self.order_info["combined_task"]["station"] = ctk.StringVar()
         self.order_info["combined_task"]["parts"] = []
 
-        self.reset_order()
+        # Row indeces
+        self.left_row_index = 3
+        self.right_row_index = 3
         
         # Main menu
-        self.order_type_label = ctk.CTkLabel(self,text="Select the type of order:")
-        self.order_type_label.grid(column = LEFT_COLUMN , row = 0)
-        self.order_type_menu = ctk.CTkOptionMenu(self,variable=self.order_info["order_type"],values=ORDER_TYPES)
-        self.order_type_menu.grid(column = LEFT_COLUMN, row = 1)
-
-        self.priority_cb = ctk.CTkCheckBox(self,text="Priority",variable=self.order_info["priority"], onvalue="1", offvalue="0", height=1, width=20)
-        self.priority_cb.grid(column=MIDDLE_COLUMN, row=0)
-        self.save_order_button = ctk.CTkButton(self,text="Save_order", command=self.save_order)
-        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
-
-        self.announcement_type_label = ctk.CTkLabel(self, text = "Select the type of announcement:")
-        self.announcement_type_label.grid(column = RIGHT_COLUMN , row = 0)
-        self.announcement_type_menu = ctk.CTkOptionMenu(self, variable=self.order_info["announcement_type"],values=CONDITION_TYPE)
-        self.announcement_type_menu.grid(column = RIGHT_COLUMN, row = 1)
-
-        # Row indeces
-        self.left_row_index = 2
-        self.right_row_index = 2
-
-        # Save Button
-        self.save_order_button = ctk.CTkButton(self,text="Save_order", command=self.save_order)
-        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
+        self.add_order_button = ctk.CTkButton(self, text="add_order", command=self.add_order)
+        self.add_order_button.grid(column=MIDDLE_COLUMN, row=0)
 
         # Trace functions
         self.order_info["order_type"].trace('w',self.show_correct_menu)
+        self.order_info["announcement_type"].trace('w', self.show_correct_announcement_menu)
+
+    def add_order(self):
+        self.add_order_button.grid_forget()
+        self.clear_menu()
+        self.order_type_label = ctk.CTkLabel(self,text="Select the type of order:")
+        self.order_type_label.grid(column = LEFT_COLUMN , row = 1)
+        self.current_main_widgets.append(self.order_type_label)
+        self.order_type_menu = ctk.CTkOptionMenu(self,variable=self.order_info["order_type"],values=ORDER_TYPES)
+        self.order_type_menu.grid(column = LEFT_COLUMN, row = 2)
+        self.current_main_widgets.append(self.order_type_menu)
+
+        self.priority_cb = ctk.CTkCheckBox(self,text="Priority",variable=self.order_info["priority"], onvalue="1", offvalue="0", height=1, width=20)
+        self.priority_cb.grid(column=MIDDLE_COLUMN, row=1)
+        self.current_main_widgets.append(self.priority_cb)
+        self.save_order_button = ctk.CTkButton(self,text="Save_order", command=self.save_order)
+        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
+        self.current_main_widgets.append(self.save_order_button)
+        self.cancel_order_button = ctk.CTkButton(self,text="Cancel order", command=self.cancel_order)
+        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
+        self.current_main_widgets.append(self.cancel_order_button)
+
+        self.announcement_type_label = ctk.CTkLabel(self, text = "Select the type of announcement:")
+        self.announcement_type_label.grid(column = RIGHT_COLUMN , row = 1)
+        self.current_main_widgets.append(self.announcement_type_label)
+        self.announcement_type_menu = ctk.CTkOptionMenu(self, variable=self.order_info["announcement_type"],values=CONDITION_TYPE)
+        self.announcement_type_menu.grid(column = RIGHT_COLUMN, row = 2)
+        self.current_main_widgets.append(self.announcement_type_menu)
+
+        self.reset_order()
+
     
     def grid_left_column(self, widget):
         widget.grid(column = LEFT_COLUMN, row = self.left_row_index)
@@ -104,14 +122,12 @@ class order_gui(ctk.CTk):
         widget.grid(column = RIGHT_COLUMN, row = self.right_row_index)
         self.right_row_index+=1
 
-        
     def generateOrderId(self):
         '''Generates a unique id for each order'''
         newId=''.join(random.choices(string.ascii_uppercase+string.digits,k=8))
         if newId in self.used_ids:
             while newId in self.used_ids:
                 newId=''.join(random.choices(string.ascii_uppercase+string.digits,k=8))
-        self.used_ids.append(newId)
         return newId    
 
     def reset_order(self):
@@ -138,13 +154,17 @@ class order_gui(ctk.CTk):
         self.order_info["combined_task"]["parts"] = []
     
     def show_correct_announcement_menu(self,_,__,___):
-        self.right_row_index = 2
+        self.right_row_index = 3
         if self.order_info["announcement_type"].get()=="time":
             self.show_time_announcement_menu()
         elif self.order_info["announcement_type"].get()=="part_place":
             self.show_part_place_announcement_menu()
         else:
             self.show_submission_announcement_menu()
+        self.save_order_button.grid_forget()
+        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
+        self.cancel_order_button.grid_forget()
+        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
         
     def show_time_announcement_menu(self):
         for widget in self.current_right_widgets:
@@ -153,11 +173,11 @@ class order_gui(ctk.CTk):
 
         time_label = ctk.CTkLabel(self,text="Enter the time for the announcement:")
         self.grid_right_column(time_label)
-        self.current_right_widgets(time_label)
+        self.current_right_widgets.append(time_label)
 
         time_entry = ctk.CTkEntry(self, textvariable=self.order_info["announcement"]["time_condition"])
         self.grid_right_column(time_entry)
-        self.current_right_widgets(time_entry)
+        self.current_right_widgets.append(time_entry)
     
     def show_part_place_announcement_menu(self):
         for widget in self.current_right_widgets:
@@ -166,31 +186,35 @@ class order_gui(ctk.CTk):
         self.current_right_widgets.clear()
         color_menu = ctk.CTkOptionMenu(self, variable=self.order_info["announcement"]["color"],values=PART_COLORS)
         self.grid_right_column(color_menu)
-        self.current_right_widgets(color_menu)
+        self.current_right_widgets.append(color_menu)
         type_menu = ctk.CTkOptionMenu(self, variable=self.order_info["announcement"]["type"],values=PART_TYPES)
         self.grid_right_column(type_menu)
-        self.current_right_widgets(type_menu)
+        self.current_right_widgets.append(type_menu)
         quadrant_menu = ctk.CTkOptionMenu(self, variable=self.order_info["announcement"]["agv"], values=AGV_OPTIONS)
         self.grid_right_column(quadrant_menu)
-        self.current_right_widgets(quadrant_menu)
+        self.current_right_widgets.append(quadrant_menu)
     
-    def show_part_place_announcement_menu(self):
+    def show_submission_announcement_menu(self):
         for widget in self.current_right_widgets:
             widget.grid_forget()
             
         self.current_right_widgets.clear()
         id_menu = ctk.CTkOptionMenu(self, variable=self.order_info["announcement"]["submission_id"],values=self.used_ids)
         self.grid_right_column(id_menu)
-        self.current_right_widgets(id_menu)
+        self.current_right_widgets.append(id_menu)
 
     def show_correct_menu(self,_,__,___):
-        self.left_row_index = 2
+        self.left_row_index = 3
         if self.order_info["order_type"].get() == "kitting":
             self.show_kitting_menu()
         elif self.order_info["order_type"].get() == "assembly":
             self.show_assembly_menu()
         else:
             self.show_combined_menu()
+        self.save_order_button.grid_forget()
+        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
+        self.cancel_order_button.grid_forget()
+        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
     
     def show_kitting_menu(self):
         for widget in self.current_left_widgets:
@@ -340,11 +364,23 @@ class order_gui(ctk.CTk):
         self.order_info["combined_task"]["parts"].append(c_part_dict["color"].get()+c_part_dict["pType"].get())
         window.destroy()
 
+    def clear_menu(self):
+        for widget_list in [self.current_left_widgets,self.current_right_widgets, self.current_main_widgets]:
+            for widget in widget_list:
+                widget.grid_forget()
+            widget_list.clear()
 
     def save_order(self):
+        self.clear_menu()
+        self.add_order_button.grid(column=MIDDLE_COLUMN, row=0)
+        self.used_ids.append(self.generateOrderId())
+        self.order_counter.set(str(len(self.used_ids)))
         if 'submission' not in CONDITION_TYPE:
             CONDITION_TYPE.append('submission')
-
+    
+    def cancel_order(self):
+        self.clear_menu()
+        self.add_order_button.grid(column=MIDDLE_COLUMN, row=0)
 
 if __name__=="__main__":
     app = order_gui()

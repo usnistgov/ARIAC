@@ -1286,8 +1286,6 @@ bool TestCompetitor::CompleteKittingTask(ariac_msgs::msg::KittingTask task)
 
   MoveAGV(task.agv_number, task.destination);
 
-  UnlockAGVTray(task.agv_number);
-
   return true;
 }
 

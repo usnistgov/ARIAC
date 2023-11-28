@@ -1943,8 +1943,12 @@ namespace ariac_plugins
             if (!model) {
                 RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Unable to remove " << name.c_str());
             } else {
+                auto pose = model->WorldPose();
+                pose.SetZ(-1.0);
+                model->SetWorldPose(pose);
                 model->SetAutoDisable(true);
                 model->SetCollideMode("none");
+                // RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Removing: " << name.c_str());
 
                 // gazebo::physics::Joint_V joints = model->GetJoints();
                 // for (unsigned int i=0; i< joints.size(); i++)

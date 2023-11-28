@@ -162,6 +162,11 @@ void ConveyorBeltPluginPrivate::CompetitionStateCallback(const ariac_msgs::msg::
     power_ = 100;
     belt_velocity_ = max_velocity_;
   } 
+
+  if (competition_state_ == ariac_msgs::msg::CompetitionState::ORDER_ANNOUNCEMENTS_DONE){
+    power_ = 100;
+    belt_velocity_ = max_velocity_;
+  } 
   
   if (competition_state_ == ariac_msgs::msg::CompetitionState::ENDED){
     power_ = 0;

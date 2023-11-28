@@ -175,6 +175,7 @@ private:
   geometry_msgs::msg::Pose left_bins_camera_pose_;
   geometry_msgs::msg::Pose right_bins_camera_pose_;
   geometry_msgs::msg::Pose conveyor_camera_pose_;
+  geometry_msgs::msg::Pose breakbeam_pose_;
 
   // Trays
   std::vector<ariac_msgs::msg::KitTrayPose> kts1_trays_;

@@ -147,7 +147,7 @@ namespace ariac_plugins
         {
           if (model_name.find(type) != std::string::npos)
           {
-            RCLCPP_WARN(impl_->ros_node_->get_logger(), "Part %s in contact with floor, teleporting", model_name.c_str());
+            // RCLCPP_WARN(impl_->ros_node_->get_logger(), "Part %s in contact with floor, teleporting", model_name.c_str());
            
             // if (!impl_->delete_entity_client_->wait_for_service(5s))
             // {

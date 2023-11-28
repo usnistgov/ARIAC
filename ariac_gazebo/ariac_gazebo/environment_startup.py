@@ -3,7 +3,7 @@
 import math
 import yaml
 import xml.etree.ElementTree as ET
-from random import randint, shuffle
+from random import shuffle
 from itertools import cycle, count
 
 import rclpy
@@ -114,7 +114,7 @@ class EnvironmentStartup(Node):
         self.conveyor_enabled = False
         self.conveyor_spawn_order_types = ['sequential', 'random']
         self.conveyor_width = 0.28
-        self.conveyor_loop_iter = count()
+        self.conveyor_part_counter = count()
 
         self.conveyor_status_sub = self.create_subscription(ConveyorBeltState,
                                                             '/ariac/conveyor_state', self.conveyor_status, 10)
@@ -1118,9 +1118,7 @@ class EnvironmentStartup(Node):
     def spawn_conveyor_part(self):
         if self.conveyor_enabled:
             part_params = next(self.conveyor_parts_to_spawn_cycle)
-
-            part_params.name = part_params.name.replace(
-                part_params.name[part_params.name.find("_"):], "_" + str(next(self.conveyor_loop_iter)))
+            part_params.name += f"_{next(self.conveyor_part_counter)}"
 
             self.spawn_entity(part_params, wait=False)
 

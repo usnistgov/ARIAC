@@ -168,7 +168,7 @@ void AGVTrayPlugin::OnUpdate()
   }
 
   // Unlock tray if agv is at the warehouse
-  if (abs(impl_->agv_joint_->Position(0) - impl_->warehouse_location_) < 0.05 && impl_->tray_attached_) {
+  if (abs(impl_->agv_joint_->Position(0) - impl_->warehouse_location_) < 0.3 && impl_->tray_attached_) {
     // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "AGV in warehouse, unlocking tray");
     impl_->DetachJoint();
     impl_->locked_ = false;

@@ -15,6 +15,8 @@ int main(int argc, char *argv[])
   // Start Competition
   test_competitor->StartCompetition();
 
+  test_competitor->AddModelsToPlanningScene();
+
   sleep(2);
 
   // Move Robots to Home Poses

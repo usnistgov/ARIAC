@@ -101,8 +101,6 @@ TestCompetitor::TestCompetitor()
   floor_robot_gripper_enable_ = this->create_client<ariac_msgs::srv::VacuumGripperControl>("/ariac/floor_robot_enable_gripper");
   ceiling_robot_gripper_enable_ = this->create_client<ariac_msgs::srv::VacuumGripperControl>("/ariac/ceiling_robot_enable_gripper");
 
-  AddModelsToPlanningScene();
-
   RCLCPP_INFO(this->get_logger(), "Initialization successful.");
 }
 

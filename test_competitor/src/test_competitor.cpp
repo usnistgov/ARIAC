@@ -42,6 +42,18 @@ TestCompetitor::TestCompetitor()
       "/ariac/sensors/right_bins_camera/image", rclcpp::SensorDataQoS(),
       std::bind(&TestCompetitor::right_bins_camera_cb, this, std::placeholders::_1), options);
 
+  conveyor_camera_sub_ = this->create_subscription<ariac_msgs::msg::AdvancedLogicalCameraImage>(
+      "/ariac/sensors/conveyor_camera/image", rclcpp::SensorDataQoS(),
+      std::bind(&TestCompetitor::conveyor_camera_cb, this, std::placeholders::_1), options);
+
+  breakbeam_sub_ = this->create_subscription<ariac_msgs::msg::BreakBeamStatus>(
+      "/ariac/sensors/conveyor_breakbeam/change", rclcpp::SensorDataQoS(),
+      std::bind(&TestCompetitor::breakbeam_cb, this, std::placeholders::_1), options);
+
+  conveyor_parts_sub_ = this->create_subscription<ariac_msgs::msg::ConveyorParts>(
+      "/ariac/conveyor_parts", rclcpp::SensorDataQoS(),
+      std::bind(&TestCompetitor::conveyor_parts_cb, this, std::placeholders::_1), options);
+  
   floor_gripper_state_sub_ = this->create_subscription<ariac_msgs::msg::VacuumGripperState>(
       "/ariac/floor_robot_gripper_state", rclcpp::SensorDataQoS(),
       std::bind(&TestCompetitor::floor_gripper_state_cb, this, std::placeholders::_1), options);
@@ -117,7 +129,7 @@ void TestCompetitor::kts1_camera_cb(
 {
   if (!kts1_camera_recieved_data)
   {
-    RCLCPP_INFO(get_logger(), "Received data from kts1 camera");
+    RCLCPP_DEBUG(get_logger(), "Received data from kts1 camera");
     kts1_camera_recieved_data = true;
   }
 
@@ -130,7 +142,7 @@ void TestCompetitor::kts2_camera_cb(
 {
   if (!kts2_camera_recieved_data)
   {
-    RCLCPP_INFO(get_logger(), "Received data from kts2 camera");
+    RCLCPP_DEBUG(get_logger(), "Received data from kts2 camera");
     kts2_camera_recieved_data = true;
   }
 
@@ -143,7 +155,7 @@ void TestCompetitor::left_bins_camera_cb(
 {
   if (!left_bins_camera_recieved_data)
   {
-    RCLCPP_INFO(get_logger(), "Received data from left bins camera");
+    RCLCPP_DEBUG(get_logger(), "Received data from left bins camera");
     left_bins_camera_recieved_data = true;
   }
 
@@ -156,12 +168,84 @@ void TestCompetitor::right_bins_camera_cb(
 {
   if (!right_bins_camera_recieved_data)
   {
-    RCLCPP_INFO(get_logger(), "Received data from right bins camera");
+    RCLCPP_DEBUG(get_logger(), "Received data from right bins camera");
     right_bins_camera_recieved_data = true;
   }
 
   right_bins_parts_ = msg->part_poses;
   right_bins_camera_pose_ = msg->sensor_pose;
+}
+
+void TestCompetitor::conveyor_parts_cb(
+    const ariac_msgs::msg::ConveyorParts::ConstSharedPtr msg
+)
+{
+  if (!conveyor_parts_recieved_data)
+  {
+    RCLCPP_DEBUG(get_logger(), "Received data from conveyor parts");
+    conveyor_parts_recieved_data = true;
+  }
+
+  conveyor_parts_expected_ = msg->parts;
+}
+
+void TestCompetitor::conveyor_camera_cb(
+    const ariac_msgs::msg::AdvancedLogicalCameraImage::ConstSharedPtr msg)
+{
+  if (!conveyor_camera_recieved_data)
+  {
+    RCLCPP_DEBUG(get_logger(), "Received data from conveyor camera");
+    conveyor_camera_recieved_data = true;
+  }
+  
+  conveyor_part_detected_ = msg->part_poses;
+  conveyor_camera_pose_ = msg->sensor_pose;
+}
+
+void TestCompetitor::breakbeam_cb(
+    const ariac_msgs::msg::BreakBeamStatus::ConstSharedPtr msg)
+{
+    if (!breakbeam_received_data)
+    {
+      RCLCPP_DEBUG(get_logger(), "Received data from conveyor breakbeam");
+      breakbeam_received_data = true;
+      breakbeam_pose_ = FrameWorldPose(msg->header.frame_id);
+    }
+
+    breakbeam_status = msg->object_detected;
+    ariac_msgs::msg::PartPose part_to_add;
+    auto detection_time = now();
+    float prev_distance = 0;
+    int count = 0;
+
+    if (breakbeam_status)
+    {
+      // Lock conveyor_parts_ mutex
+      std::lock_guard<std::mutex> lock(conveyor_parts_mutex);
+
+      for (auto part : conveyor_part_detected_)
+      {
+        geometry_msgs::msg::Pose part_pose = MultiplyPose(conveyor_camera_pose_, part.pose);
+        float distance = abs(part_pose.position.y - breakbeam_pose_.position.y);
+        if (count == 0)
+        {
+          part_to_add = part;
+          detection_time = now();
+          prev_distance = distance;
+          count++;
+        }
+        else
+        {
+          if (distance < prev_distance)
+          {
+            part_to_add = part;
+            detection_time = now();
+            prev_distance = distance;
+          }
+        }
+      }
+      conveyor_parts_.emplace_back(part_to_add, detection_time);
+    }
 }
 
 void TestCompetitor::floor_gripper_state_cb(
@@ -493,6 +577,28 @@ bool TestCompetitor::FloorRobotMoveCartesian(
   return static_cast<bool>(floor_robot_.execute(trajectory));
 }
 
+std::pair<bool,moveit_msgs::msg::RobotTrajectory> TestCompetitor::FloorRobotPlanCartesian(
+    std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf)
+{
+  moveit_msgs::msg::RobotTrajectory trajectory;
+
+  double path_fraction = floor_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory);
+
+  if (path_fraction < 0.9)
+  {
+    RCLCPP_ERROR(get_logger(), "Unable to generate trajectory through waypoints");
+    return std::make_pair(false, trajectory);
+  }
+
+  // Retime trajectory
+  robot_trajectory::RobotTrajectory rt(floor_robot_.getCurrentState()->getRobotModel(), "floor_robot");
+  rt.setRobotTrajectoryMsg(*floor_robot_.getCurrentState(), trajectory);
+  totg_.computeTimeStamps(rt, vsf, asf);
+  rt.getRobotTrajectoryMsg(trajectory);
+
+  return std::make_pair(true, trajectory);
+}
+
 void TestCompetitor::FloorRobotWaitForAttach(double timeout)
 {
   // Wait for part to be attached
@@ -712,7 +818,7 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
 
 bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
 {
-  RCLCPP_INFO_STREAM(get_logger(), "Attempting to pick a " << part_colors_[part_to_pick.color] << " " << part_types_[part_to_pick.type]);
+  RCLCPP_INFO_STREAM(get_logger(), "Attempting to pick a " << part_colors_[part_to_pick.color] << " " << part_types_[part_to_pick.type] << " from the bins");
 
   // Check if part is in one of the bins
   geometry_msgs::msg::Pose part_pose;
@@ -746,7 +852,7 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
   }
   if (!found_part)
   {
-    RCLCPP_ERROR(get_logger(), "Unable to locate part");
+    RCLCPP_ERROR(get_logger(), "Unable to locate part in the bins");
     return false;
   }
 
@@ -808,6 +914,151 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
                                 part_pose.position.z + 0.3, SetRobotOrientation(0)));
 
   FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+
+  return true;
+}
+
+bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pick)
+{
+  for (auto parts : conveyor_parts_expected_){
+    if (parts.part.type == part_to_pick.type && parts.part.color == part_to_pick.color){
+      RCLCPP_INFO_STREAM(get_logger(), "Attempting to pick a " << part_colors_[part_to_pick.color] << " " << part_types_[part_to_pick.type] << " from the conveyor");
+      break;
+    }
+    else if (parts == conveyor_parts_expected_.back()){
+      RCLCPP_ERROR(get_logger(), "Unable to locate part on the conveyor");
+      return false;
+    }
+  }
+  
+  bool found_part = false;
+  bool part_picked = false;
+  int num_tries = 0;
+  geometry_msgs::msg::Pose part_pose;
+  rclcpp::Duration elapsed_time(0, 0);
+  builtin_interfaces::msg::Duration time_to_pick;
+  rclcpp::Time detection_time;
+
+  // Change gripper at Kitting Tray Station 2
+  if (floor_gripper_state_.type != "part_gripper")
+  {
+    floor_robot_.setJointValueTarget(floor_kts2_js_);
+    FloorRobotMovetoTarget();
+    FloorRobotChangeGripper("kts2", "parts");
+  }
+  while(!part_picked && num_tries < 3){
+    // Move robot to predefined pick location
+    floor_robot_.setJointValueTarget(floor_conveyor_js_);
+    FloorRobotMovetoTarget();
+
+    // Find the requested part on the conveyor
+    do {
+        { 
+        // Lock conveyor_parts_ mutex
+        std::lock_guard<std::mutex> lock(conveyor_parts_mutex);
+        auto it = conveyor_parts_.begin();
+        for (; it != conveyor_parts_.end(); ) {
+            auto part = it->first.part;
+            if (part.type == part_to_pick.type && part.color == part_to_pick.color)
+            {
+              part_pose = MultiplyPose(conveyor_camera_pose_, it->first.pose);
+              detection_time = it->second;
+
+              elapsed_time = rclcpp::Time(now()) - detection_time;
+              auto current_part_position_ = part_pose.position.y - (elapsed_time.seconds() * conveyor_speed_);
+              // Check if part hasn't passed the pick location
+              if (current_part_position_ > 0)
+              {
+                time_to_pick.sec = current_part_position_ / conveyor_speed_;
+                // Check if part has more than 5 seconds to arrive at pick location
+                if (time_to_pick.sec > 5.0)
+                {
+                  found_part = true;
+                  conveyor_parts_.erase(it);
+                  break;
+                }
+              }
+              it = conveyor_parts_.erase(it);
+            }
+            else{
+              ++it;
+            }
+          }
+          RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 20000, "Waiting for %s %s to arrive on the conveyor", part_colors_[part_to_pick.color].c_str(), part_types_[part_to_pick.type].c_str());
+        } // End lock_guard scope
+      } while (!found_part);
+
+    // Correct robot position to account for part offset on conveyor
+    double part_rotation = GetYaw(part_pose);
+    geometry_msgs::msg::Pose robot_pose = floor_robot_.getCurrentPose().pose;
+    
+    std::vector<geometry_msgs::msg::Pose> waypoints;
+    waypoints.push_back(BuildPose(part_pose.position.x, robot_pose.position.y,
+                                  part_pose.position.z + 0.15, SetRobotOrientation(part_rotation)));
+    FloorRobotMoveCartesian(waypoints, 0.5, 0.5);
+
+    auto elapsed_time_ = rclcpp::Time(now()) - detection_time;
+    auto current_part_position_ = part_pose.position.y - (elapsed_time.seconds() * conveyor_speed_);
+    // Check if part hasn't passed the pick location
+    if (current_part_position_ < 0)
+    {
+      RCLCPP_INFO(get_logger(), "Part has passed the pick location");
+      found_part = false;
+      num_tries++;
+      continue;
+    }
+
+    // Plan trajectory to pickup part
+    waypoints.clear();
+    waypoints.push_back(BuildPose(part_pose.position.x,  robot_pose.position.y,
+                                  part_pose.position.z + part_heights_[part_to_pick.type],SetRobotOrientation(part_rotation)));
+
+    auto trajectory = FloorRobotPlanCartesian(waypoints, 0.5, 0.5);
+    if (!trajectory.first)
+    {
+      found_part = false;
+      num_tries++;
+      continue;
+    }
+
+    // Wait for part to arrive at pick location
+    auto trajectory_time = trajectory.second.joint_trajectory.points.back().time_from_start;
+    while (rclcpp::Time(now()).nanoseconds() < (detection_time + elapsed_time + time_to_pick - trajectory_time).nanoseconds() - 2.75e8)
+    {
+      RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 20000, "Waiting for part to arrive at pick location");
+    }
+
+    // Execute trajectory to pickup part
+    FloorRobotSetGripperState(true);
+    floor_robot_.execute(trajectory.second);
+
+    // Move up slightly
+    waypoints.clear();
+    waypoints.push_back(BuildPose(part_pose.position.x, robot_pose.position.y,
+                                  part_pose.position.z + 0.1, SetRobotOrientation(0)));
+    FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+
+    robot_pose = floor_robot_.getCurrentPose().pose;
+
+    if(floor_gripper_state_.attached)
+    {
+      // Add part to planning scene
+      std::string part_name = part_colors_[part_to_pick.color] + "_" + part_types_[part_to_pick.type];
+      AddModelToPlanningScene(part_name, part_types_[part_to_pick.type] + ".stl", robot_pose);
+      RCLCPP_INFO_STREAM(get_logger(), "Attached " << part_name << " to robot");
+      floor_robot_.attachObject(part_name);
+      floor_robot_attached_part_ = part_to_pick;
+      part_picked = true;
+    }
+
+    // Move up
+    waypoints.clear();
+    waypoints.push_back(BuildPose(robot_pose.position.x, robot_pose.position.y,
+                                  robot_pose.position.z + 0.3, SetRobotOrientation(0)));
+    FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+    
+    num_tries++;
+  }
 
   return true;
 }
@@ -1267,9 +1518,14 @@ bool TestCompetitor::CompleteKittingTask(ariac_msgs::msg::KittingTask task)
 
   FloorRobotPickandPlaceTray(task.tray_id, task.agv_number);
 
+  bool found;
   for (auto kit_part : task.parts)
   {
-    FloorRobotPickBinPart(kit_part.part);
+    found = FloorRobotPickBinPart(kit_part.part);
+    if (!found)
+    {
+      FloorRobotPickConveyorPart(kit_part.part);
+    }
     FloorRobotPlacePartOnKitTray(task.agv_number, kit_part.quadrant);
   }
 
@@ -1421,9 +1677,14 @@ bool TestCompetitor::CompleteCombinedTask(ariac_msgs::msg::CombinedTask task)
   FloorRobotPickandPlaceTray(id, agv_number);
 
   int count = 1;
+  bool found;
   for (auto assembly_part : task.parts)
   {
-    FloorRobotPickBinPart(assembly_part.part);
+    found = FloorRobotPickBinPart(assembly_part.part);
+    if (!found)
+    {
+      FloorRobotPickConveyorPart(assembly_part.part);
+    }
     FloorRobotPlacePartOnKitTray(agv_number, count);
     count++;
   }

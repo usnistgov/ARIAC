@@ -245,7 +245,6 @@ void TestCompetitor::breakbeam_cb(
         }
       }
       conveyor_parts_.emplace_back(part_to_add, detection_time);
-      RCLCPP_INFO(get_logger(), "Added part to conveyor_parts_ color: %s, type: %s, distance: %f", part_colors_[part_to_add.part.color].c_str(), part_types_[part_to_add.part.type].c_str(), prev_distance);
     }
 }
 

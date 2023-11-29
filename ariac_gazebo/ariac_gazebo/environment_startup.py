@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import math
 import yaml
 import xml.etree.ElementTree as ET
@@ -11,6 +12,8 @@ from rclpy.node import Node
 from rcl_interfaces.msg import ParameterDescriptor
 
 from rclpy.qos import QoSProfile, DurabilityPolicy
+
+from ament_index_python.packages import get_package_share_directory
 
 from tf2_geometry_msgs import do_transform_pose
 from ariac_gazebo.utilities import quaternion_from_euler, euler_from_quaternion, convert_pi_string_to_float
@@ -898,6 +901,37 @@ class EnvironmentStartup(Node):
 
             self.spawn_entity(params)
 
+    def spawn_assembly_inserts(self):
+        rotations = {}
+        try:
+            insert_rotations = self.trial_config['assembly_inserts']
+            
+            for n in range(1,5):
+                rotations[f'as{n}'] = convert_pi_string_to_float(insert_rotations[f'as{n}'])
+        except (TypeError, KeyError):
+            self.get_logger().warn(bcolors.WARNING + "Unable to parse rotated assemble insert challenge" + bcolors.ENDC)
+            for n in range(1,5):
+                rotations[f'as{n}'] = 0.0
+
+        positions = {
+            'as1': [-7.7, 3.0, 1.011],
+            'as2': [-12.7, 3.0, 1.011],
+            'as3': [-7.7, -3.0, 1.011],
+            'as4': [-12.7, -3.0, 1.011],
+        }
+
+        sdf = os.path.join(get_package_share_directory('ariac_gazebo'), 'models', 'assembly_insert', 'model.sdf')
+        for n in range(1,5):
+            params = SpawnParams(
+                name=f'assembly_insert_{n}',
+                file_path=sdf,
+                xyz= positions[f'as{n}'],
+                rpy=[0, 0, rotations[f'as{n}']]
+            )
+
+            params.set_xml_from_file_path()
+
+            self.spawn_entity(params, wait=True)
 
     def spawn_kit_trays(self):
         possible_slots = [1, 2, 3, 4, 5, 6]

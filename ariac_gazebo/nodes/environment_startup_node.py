@@ -20,6 +20,9 @@ def main():
     # Spawn sensors
     startup_node.spawn_sensors()
 
+    # Spawn assembly inserts
+    startup_node.spawn_assembly_inserts()
+
     # Spawn parts in bins
     startup_node.spawn_bin_parts()
 

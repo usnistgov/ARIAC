@@ -1118,7 +1118,7 @@ class EnvironmentStartup(Node):
     def spawn_conveyor_part(self):
         if self.conveyor_enabled:
             part_params = next(self.conveyor_parts_to_spawn_cycle)
-            part_params.name += f"_{next(self.conveyor_part_counter)}"
+            part_params.name = part_params.name[:part_params.name.find("_c") + 2] + str(next(self.conveyor_part_counter))
 
             self.spawn_entity(part_params, wait=False)
 

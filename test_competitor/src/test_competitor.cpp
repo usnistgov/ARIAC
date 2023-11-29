@@ -213,6 +213,10 @@ void TestCompetitor::breakbeam_cb(
     }
 
     breakbeam_status = msg->object_detected;
+    ariac_msgs::msg::PartPose part_to_add;
+    auto detection_time = now();
+    float prev_distance = 0;
+    int count = 0;
 
     if (breakbeam_status)
     {
@@ -222,11 +226,26 @@ void TestCompetitor::breakbeam_cb(
       for (auto part : conveyor_part_detected_)
       {
         geometry_msgs::msg::Pose part_pose = MultiplyPose(conveyor_camera_pose_, part.pose);
-        if (part_pose.position.y - breakbeam_pose_.position.y >= 0)
+        float distance = abs(part_pose.position.y - breakbeam_pose_.position.y);
+        if (count == 0)
         {
-          conveyor_parts_.emplace_back(part,now());
+          part_to_add = part;
+          detection_time = now();
+          prev_distance = distance;
+          count++;
+        }
+        else
+        {
+          if (distance < prev_distance)
+          {
+            part_to_add = part;
+            detection_time = now();
+            prev_distance = distance;
+          }
         }
       }
+      conveyor_parts_.emplace_back(part_to_add, detection_time);
+      RCLCPP_INFO(get_logger(), "Added part to conveyor_parts_ color: %s, type: %s, distance: %f", part_colors_[part_to_add.part.color].c_str(), part_types_[part_to_add.part.type].c_str(), prev_distance);
     }
 }
 

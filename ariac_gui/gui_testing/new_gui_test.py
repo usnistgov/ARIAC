@@ -15,6 +15,8 @@ from math import pi
 FRAMEWIDTH=700
 FRAMEHEIGHT=900
 LEFTCOLUMN=1
+MIDDLE_COLUMN = 2
+RIGHT_COLUMN = 3
 
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']
@@ -32,8 +34,8 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 MENU_IMAGES = {part_label:Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
 
 # Values for the sliders
-SLIDER_VALUES = [-pi,-3*pi/4,-pi/2,-pi/4,0,pi/4,pi/2,3*pi/4,pi]
-SLIDER_STR = ["-pi","-3pi/4","-pi/2","-pi/4","0","pi/4","pi/2","3pi/4","pi"]
+SLIDER_VALUES = [-pi,-4*pi/5,-3*pi/4,-3*pi/5,-pi/2,-2*pi/5,-pi/4,-pi/5,0,pi/5,pi/4,2*pi/5,pi/2,3*pi/5,3*pi/4,4*pi/5,pi]
+SLIDER_STR = ["-pi","-4pi/5","-3pi/4","-3pi/5","-pi/2","-2pi/5","-pi/4","-pi/5","0","pi/5","pi/4","2pi/5","pi/2","3pi/5","3pi/4","4pi/5","pi"]
 
 class BinPart():
     def __init__(self,color = "", pType = "", rotation = "", flipped = ""):
@@ -58,8 +60,13 @@ class GUI_CLASS(ctk.CTk):
         
         self.title("NIST ARIAC CONFIGURATION GUI")
 
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_rowconfigure(100, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(4, weight=1)
+
         self.notebook = ttk.Notebook(self)
-        self.notebook.grid(pady=10,column=LEFTCOLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
+        self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
 
         # Setup info
         self.time_limit = ctk.StringVar()
@@ -134,11 +141,11 @@ class GUI_CLASS(ctk.CTk):
         kitting_tray_canvas.create_rectangle(10, 10, 170, 310, 
                                 outline = "black", fill = "#f6f6f6",
                                 width = 2)
-        kitting_tray_canvas.create_rectangle(230, 10, 390, 310, 
+        kitting_tray_canvas.create_rectangle(200, 10, 360, 310, 
                                 outline = "black", fill = "#f6f6f6",
                                 width = 2)
-        menu_coordinates = [(95,60),(95,160),(95,260),(315,60),(315,160),(315,260)]
-        label_coordinates = [(20,60),(20,160),(20,260),(240,60),(240,160),(240,260)]
+        menu_coordinates = [(95,60),(95,160),(95,260),(285,60),(285,160),(285,260)]
+        label_coordinates = [(20,60),(20,160),(20,260),(210,60),(210,160),(210,260)]
         
         for i in self.kitting_tray_selections:i.set(KITTING_TRAY_OPTIONS[0])
         tray_menus = [ctk.CTkOptionMenu(self.kitting_tray_frame,
@@ -184,6 +191,8 @@ class GUI_CLASS(ctk.CTk):
         bin_parts_canvas.pack(fill = BOTH, expand = 1)
         add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection.get()))
         add_multiple_parts_button.pack(pady=15)
+        flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part if flipped, an \"F\" will show up in the bottom right of the part image.")
+        flipped_meaning_label.pack(pady=10)
         bin_selection.trace('w',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
         self.bin_parts_counter.trace('w',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
 
@@ -191,24 +200,26 @@ class GUI_CLASS(ctk.CTk):
         button_coordinates = [(100,60),(200,60),(300,60),
                             (100,160),(200,160),(300,160),
                             (100,260),(200,260),(300,260)]
+        flipped_label_coordinates = [(coord[0]+30, coord[1]+30) for coord in button_coordinates]
         current_bin_slot_widgets = []
+        current_flipped_labels = ["" for _ in range(len(flipped_label_coordinates))]
         for i in range(len(button_coordinates)):
             if self.current_bin_parts[bin_selection.get()][i]=="":
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES["plus"],size=(75,75)),
                                                             fg_color="transparent",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
-            elif self.bin_parts[bin_selection.get()][i].flipped == "0":
+            else:
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[bin_selection.get()][i]].rotate(self.bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
                                                             fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
-            else:
-                current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
-                                                            image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[bin_selection.get()][i]].rotate(self.bin_parts[bin_selection.get()][i].rotation*180/pi).transpose(Image.FLIP_LEFT_RIGHT),size=(75,75)),
-                                                            fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
-
+            if self.bin_parts[bin_selection.get()][i].flipped == "1":
+                current_flipped_labels[i]=(ctk.CTkLabel(main_wind, text="F",bg_color="#60c6f1"))
         for i in range(len(current_bin_slot_widgets)):
             self.current_bin_canvas_elements.append(canvas.create_window(button_coordinates[i], window = current_bin_slot_widgets[i]))
-    
+            if current_flipped_labels[i]!="":
+                self.current_bin_canvas_elements.append(canvas.create_window(flipped_label_coordinates[i], window=current_flipped_labels[i]))
+            
+
     def update_bin_grid(self,bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk,_,__,___):
         for i in self.current_bin_canvas_elements:
             canvas.delete(i)

@@ -54,6 +54,8 @@ def main():
     canvas.pack(fill = BOTH, expand = 1)
     add_multiple_parts_button = ctk.CTkButton(main_wind,text="Add multiple parts",command=partial(add_multiple_parts,bin_selection.get(),total_part_counter))
     add_multiple_parts_button.pack()
+    flipped_meaning_label = ctk.CTkLabel(main_wind, text="When a part if flipped, an \"F\" will show up in the bottom right of the part image.")
+    flipped_meaning_label.pack()
     bin_selection.trace('w',partial(update_grid, bin_selection,canvas,main_wind,total_part_counter))
     total_part_counter.trace('w',partial(update_grid, bin_selection,canvas,main_wind,total_part_counter))
     main_wind.mainloop()
@@ -62,7 +64,9 @@ def show_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk, 
     button_coordinates = [(100,60),(200,60),(300,60),
                         (100,160),(200,160),(300,160),
                         (100,260),(200,260),(300,260)]
+    flipped_label_coordinates = [(coord[0]+30, coord[1]+30) for coord in button_coordinates]
     current_bin_slot_widgets = []
+    current_flipped_labels = ["" for _ in range(len(flipped_label_coordinates))]
     for i in range(len(button_coordinates)):
         if current_parts[bin_selection.get()][i]=="":
             current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
@@ -72,9 +76,12 @@ def show_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk, 
             current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(add_part, bin_selection.get(), i,total_part_counter),
                                                           image=ctk.CTkImage(MENU_IMAGES[current_parts[bin_selection.get()][i]].rotate(bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
                                                           fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
-
+        if bin_parts[bin_selection.get()][i].flipped == "1":
+            current_flipped_labels[i]=(ctk.CTkLabel(main_wind, text="F",bg_color="#60c6f1"))
     for i in range(len(current_bin_slot_widgets)):
         current_canvas_elements.append(canvas.create_window(button_coordinates[i], window = current_bin_slot_widgets[i]))
+        if current_flipped_labels[i]!="":
+            current_canvas_elements.append(canvas.create_window(flipped_label_coordinates[i], window=current_flipped_labels[i]))
 
 def update_grid(bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk,total_part_counter,_,__,___):
     for i in current_canvas_elements:

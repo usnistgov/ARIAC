@@ -10,6 +10,27 @@ from tkinter import ttk
 from functools import partial
 from PIL import Image  # needed for images in gui
 from math import pi
+from ariac_msgs.msg import (
+    Part as PartMsg,
+    Order as OrderMsg,
+    AssemblyPart as AssemblyPartMsg,
+    KittingPart as KittingPartMsg,
+    KittingTask as KittingTaskMsg,
+    AssemblyTask as AssemblyTaskMsg,
+    CombinedTask as CombinedTaskMsg,
+    BinParts as BinPartsMsg,
+    BinInfo as BinInfoMsg,
+    ConveyorParts as ConveyorPartsMsg,
+    Condition as ConditionMsg,
+    TimeCondition as TimeConditionMsg,
+    PartPlaceCondition as PartPlaceConditionMsg,
+    SubmissionCondition as SubmissionConditionMsg,
+    FaultyPartChallenge as FaultyPartChallengeMsg,
+    DroppedPartChallenge as DroppedPartChallengeMsg,
+    SensorBlackoutChallenge as SensorBlackoutChallengeMsg,
+    RobotMalfunctionChallenge as RobotMalfunctionChallengeMsg,
+    HumanChallenge as HumanChallengeMsg,
+)
 
 
 FRAMEWIDTH=700

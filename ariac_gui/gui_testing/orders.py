@@ -10,7 +10,6 @@ import string
 ORDER_TYPES=["kitting", "assembly", "combined"]
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
-KITTING_DESTINATIONS=["warehouse", "assembly_front","assembly_back","kitting"]
 ASSEMBLY_STATIONS=["as1","as2","as3","as4"]
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']
@@ -62,7 +61,6 @@ class order_gui(ctk.CTk):
         self.order_info["kitting_task"] = {}
         self.order_info["kitting_task"]["agv_number"] = ctk.StringVar()
         self.order_info["kitting_task"]["tray_id"] = ctk.StringVar()
-        self.order_info["kitting_task"]["destination"] = ctk.StringVar()
         self.order_info["kitting_task"]["parts"] = []
 
         self.order_info["assembly_task"] = {}
@@ -80,11 +78,11 @@ class order_gui(ctk.CTk):
         
         # Main menu
         self.add_kitting_order_button = ctk.CTkButton(self, text="Add kitting order", command=self.add_kitting_order)
-        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1)
+        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1, pady=10)
         self.add_assembly_order_button = ctk.CTkButton(self, text="Add assembly order", command=self.add_assembly_order)
-        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2)
+        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2, pady=10)
         self.add_combined_order_button = ctk.CTkButton(self, text="Add combined order", command=self.add_combined_order)
-        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3)
+        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3, pady=10)
 
         self.current_main_widgets.append(self.add_kitting_order_button)
         self.current_main_widgets.append(self.add_assembly_order_button)
@@ -139,12 +137,12 @@ class order_gui(ctk.CTk):
 
         self.reset_order()
     
-    def grid_left_column(self, widget):
-        widget.grid(column = LEFT_COLUMN, row = self.left_row_index)
+    def grid_left_column(self, widget, pady=7):
+        widget.grid(column = LEFT_COLUMN, row = self.left_row_index, pady=pady)
         self.left_row_index+=1
         
-    def grid_right_column(self, widget):
-        widget.grid(column = RIGHT_COLUMN, row = self.right_row_index)
+    def grid_right_column(self, widget, pady=7):
+        widget.grid(column = RIGHT_COLUMN, row = self.right_row_index, pady=pady)
         self.right_row_index+=1
 
     def generate_order_id(self):
@@ -168,7 +166,6 @@ class order_gui(ctk.CTk):
 
         self.order_info["kitting_task"]["agv_number"].set(AGV_OPTIONS[0])
         self.order_info["kitting_task"]["tray_id"].set(TRAY_IDS[0])
-        self.order_info["kitting_task"]["destination"].set(KITTING_DESTINATIONS[0])
         self.order_info["kitting_task"]["parts"] = []
 
         self.order_info["assembly_task"]["agv_number"].set(AGV_OPTIONS[0])
@@ -260,14 +257,6 @@ class order_gui(ctk.CTk):
         tray_id_menu = ctk.CTkOptionMenu(self,variable=self.order_info["kitting_task"]["tray_id"], values = TRAY_IDS)
         self.grid_left_column(tray_id_menu)
         self.current_left_widgets.append(tray_id_menu)
-
-        desination_label = ctk.CTkLabel(self,text="Select the destination for the kitting order")
-        self.grid_left_column(desination_label)
-        self.current_left_widgets.append(desination_label)
-
-        desination_menu = ctk.CTkOptionMenu(self,variable=self.order_info["kitting_task"]["destination"],values = KITTING_DESTINATIONS)
-        self.grid_left_column(desination_menu)
-        self.current_left_widgets.append(desination_menu)
 
         add_part_kitting_task = ctk.CTkButton(self, text="Add part", command=self.add_kitting_part)
         self.grid_left_column(add_part_kitting_task)
@@ -405,9 +394,9 @@ class order_gui(ctk.CTk):
 
     def save_order(self):
         self.clear_menu()
-        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1)
-        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2)
-        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3)
+        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1,pady=10)
+        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2,pady=10)
+        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3,pady=10)
         self.current_main_widgets.append(self.add_kitting_order_button)
         self.current_main_widgets.append(self.add_assembly_order_button)
         self.current_main_widgets.append(self.add_combined_order_button)
@@ -418,9 +407,9 @@ class order_gui(ctk.CTk):
     
     def cancel_order(self):
         self.clear_menu()
-        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1)
-        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2)
-        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3)
+        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1,pady=10)
+        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2,pady=10)
+        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3,pady=10)
         self.current_main_widgets.append(self.add_kitting_order_button)
         self.current_main_widgets.append(self.add_assembly_order_button)
         self.current_main_widgets.append(self.add_combined_order_button)

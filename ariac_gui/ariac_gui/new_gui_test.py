@@ -31,6 +31,7 @@ from ariac_msgs.msg import (
     RobotMalfunctionChallenge as RobotMalfunctionChallengeMsg,
     HumanChallenge as HumanChallengeMsg,
 )
+from ament_index_python.packages import get_package_share_directory
 
 
 FRAMEWIDTH=700
@@ -52,7 +53,8 @@ ALL_BINS=['bin'+str(i) for i in range(1,9)]
 CONVEYOR_ORDERS = ["random", "sequential"]
 
 # Menu images
-MENU_IMAGES = {part_label:Image.open(os.getcwd()+f"/ariac_gui/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
+GUI_PACKAGE = get_package_share_directory('ariac_gui')
+MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
 
 # Values for the sliders
 SLIDER_VALUES = [-pi,-4*pi/5,-3*pi/4,-3*pi/5,-pi/2,-2*pi/5,-pi/4,-pi/5,0,pi/5,pi/4,2*pi/5,pi/2,3*pi/5,3*pi/4,4*pi/5,pi]

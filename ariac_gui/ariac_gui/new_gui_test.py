@@ -12,6 +12,7 @@ from PIL import Image  # needed for images in gui
 from math import pi
 from ariac_msgs.msg import (
     Part as PartMsg,
+    PartLot as PartLotMsg,
     Order as OrderMsg,
     AssemblyPart as AssemblyPartMsg,
     KittingPart as KittingPartMsg,
@@ -59,19 +60,37 @@ MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png"
 # Values for the sliders
 SLIDER_VALUES = [-pi,-4*pi/5,-3*pi/4,-3*pi/5,-pi/2,-2*pi/5,-pi/4,-pi/5,0,pi/5,pi/4,2*pi/5,pi/2,3*pi/5,3*pi/4,4*pi/5,pi]
 SLIDER_STR = ["-pi","-4pi/5","-3pi/4","-3pi/5","-pi/2","-2pi/5","-pi/4","-pi/5","0","pi/5","pi/4","2pi/5","pi/2","3pi/5","3pi/4","4pi/5","pi"]
+_part_color_ints = {"RED":0,
+                    "GREEN":1,
+                    "BLUE":2,
+                    "ORANGE":3,
+                    "PURPLE":4}
+    
+_part_type_ints = {"BATTERY":10,
+                    "PUMP":11,
+                    "SENSOR":12,
+                    "REGULATOR":13}
+
+_part_color_str = {_part_color_ints[key]:key.lower() for key in _part_color_ints.keys()}
+    
+_part_type_str = {_part_type_ints[key]:key.lower() for key in _part_type_ints.keys()}
 
 class BinPart():
-    def __init__(self,color = "", pType = "", rotation = "", flipped = ""):
-        self.color = color
-        self.pType = pType
+    def __init__(self,color = "green", pType = "battery", rotation = "", flipped = ""):
+        self.part= PartMsg()
+        self.part.color = _part_color_ints[color.upper()]
+        self.part.type = _part_type_ints[pType.upper()]
         self.rotation = rotation
         self.flipped = flipped
 
 class ConveyorPart():
     def __init__(self,color, pType, num_parts, offset, rotation):
-        self.color = color
-        self.pType = pType
-        self.num_parts = num_parts
+        part = PartMsg()
+        part.color = _part_color_ints[color.upper()]
+        part.type = _part_type_ints[pType.upper()]
+        self.part_lot = PartLotMsg()
+        self.part_lot.part = part
+        self.part_lot.quantity = num_parts
         self.rotation = rotation
         self.offset = offset
 
@@ -266,8 +285,8 @@ class GUI_CLASS(ctk.CTk):
             bin_vals["rotation"].set(0.0)
             bin_vals["flipped"].set("0")
         else:
-            bin_vals["color"].set(self.bin_parts[bin][index].color)
-            bin_vals["pType"].set(self.bin_parts[bin][index].pType)
+            bin_vals["color"].set(_part_color_str[self.bin_parts[bin][index].part.color])
+            bin_vals["pType"].set(_part_type_str[self.bin_parts[bin][index].part.type])
             bin_vals["rotation"].set(self.bin_parts[bin][index].rotation)
             bin_vals["flipped"].set(self.bin_parts[bin][index].flipped)
         color_menu = ctk.CTkOptionMenu(add_part_bin_window, variable=bin_vals["color"],values=PART_COLORS)
@@ -281,17 +300,29 @@ class GUI_CLASS(ctk.CTk):
         bin_vals["rotation"].trace('w', partial(self.nearest_slider_value, bin_vals["rotation"], rotation_slider,rotation_label))
         flipped_cb = ctk.CTkCheckBox(add_part_bin_window,text="Flipped",variable=bin_vals["flipped"], onvalue="1", offvalue="0", height=1, width=20)
         flipped_cb.pack(pady=5)
+        if self.current_bin_parts[bin][index]!="":
+            remove_part_button = ctk.CTkButton(add_part_bin_window, text="Remove part", command = partial(self.remove_part_from_bin,bin,index,add_part_bin_window))
+            remove_part_button.pack()
         back_button = ctk.CTkButton(add_part_bin_window,text="Back",command=add_part_bin_window.destroy)
         back_button.pack()
         save_button = ctk.CTkButton(add_part_bin_window,text="Save part",command=partial(self.save_bin_part,bin,index,add_part_bin_window,bin_vals))
         save_button.pack()
 
+    def remove_part_from_bin(self, bin, index, window):
+        self.current_bin_parts[bin][index] = ""
+        self.bin_parts[bin][index] = BinPart()
+        self.bin_parts_counter.set(str(int(self.bin_parts_counter.get())-1))
+        window.destroy()
+
+
     def save_bin_part(self,bin, index, window:ctk.CTkToplevel, bin_vals):
         color = bin_vals["color"].get()
         pType = bin_vals["pType"].get()
         self.current_bin_parts[bin][index]=color+pType
-        self.bin_parts[bin][index].color = color
-        self.bin_parts[bin][index].pType = pType
+        temp_part = PartMsg()
+        temp_part.color = _part_color_ints[color.upper()]
+        temp_part.type = _part_type_ints[pType.upper()]
+        self.bin_parts[bin][index].part = temp_part
         self.bin_parts[bin][index].rotation = bin_vals["rotation"].get() 
         self.bin_parts[bin][index].flipped = bin_vals["flipped"].get()
         self.bin_parts_counter.set(str(int(self.bin_parts_counter.get())+1))
@@ -338,8 +369,10 @@ class GUI_CLASS(ctk.CTk):
         slot_indices = [int(val.get()) for val in slot_values if val.get()!="-1"]
         for index in slot_indices:
             self.current_bin_parts[bin][index]=color+pType
-            self.bin_parts[bin][index].color = color
-            self.bin_parts[bin][index].pType = pType
+            temp_part = PartMsg()
+            temp_part.color = _part_color_ints[color.upper()]
+            temp_part.type = _part_type_ints[pType.upper()]
+            self.bin_parts[bin][index].part = temp_part
             self.bin_parts[bin][index].rotation = bin_vals["rotation"].get() 
             self.bin_parts[bin][index].flipped = bin_vals["flipped"].get()
         self.bin_parts_counter.set(str(int(self.bin_parts_counter.get())+len(slot_indices)))
@@ -387,17 +420,33 @@ class GUI_CLASS(ctk.CTk):
         self.current_conveyor_canvas_elements.clear()
         image_coordinates = [(25,10+(75*i)) for i in range(10)]
         num_parts_coordinates = [(65,10+(75*i)) for i in range(10)]
+        remove_button_coordinates = [(200,30+(75*i)) for i in range(10)]
+        edit_button_coordinates = [(350,30+(75*i)) for i in range(10)]
         image_labels = []
         num_parts_labels = []
+        remove_part_buttons = []
+        edit_part_buttons = []
         for i in range(len(self.current_conveyor_parts)):
-            part = self.conveyor_parts[i].color+self.conveyor_parts[i].pType
+            part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]
             image_labels.append(ctk.CTkLabel(self.conveyor_parts_frame,text="",
             image=ctk.CTkImage(MENU_IMAGES[part].rotate(self.conveyor_parts[i].rotation*180/pi),size=(75,75))))
-            num_parts_labels.append(ctk.CTkLabel(self.conveyor_parts_frame,text=f"X {self.conveyor_parts[i].num_parts}"))
+            num_parts_labels.append(ctk.CTkLabel(self.conveyor_parts_frame,text=f"X {self.conveyor_parts[i].part_lot.quantity}"))
+            remove_part_buttons.append(ctk.CTkButton(self.conveyor_parts_frame,
+                                                     text="Remove part"+("s" if self.conveyor_parts[i].part_lot.quantity>1 else ""),
+                                                     command = partial(self.remove_conveyor_part,i)))
+            edit_part_buttons.append(ctk.CTkButton(self.conveyor_parts_frame, 
+                                                   text="Edit part"+("s" if self.conveyor_parts[i].part_lot.quantity>1 else ""), 
+                                                   command=partial(self.add_conveyor_parts,i)))
         for i in range(len(image_labels)):
             self.current_conveyor_canvas_elements.append(canvas.create_window(image_coordinates[i], window = image_labels[i]))
             self.current_conveyor_canvas_elements.append(canvas.create_window(num_parts_coordinates[i], window = num_parts_labels[i]))
+            self.current_conveyor_canvas_elements.append(canvas.create_window(remove_button_coordinates[i], window = remove_part_buttons[i]))
+            self.current_conveyor_canvas_elements.append(canvas.create_window(edit_button_coordinates[i], window = edit_part_buttons[i]))
     
+    def remove_conveyor_part(self, index):
+        del self.current_conveyor_parts[index]
+        self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
+
     def update_spawn_rate_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
         label.configure(text=f"current spawn rate (seconds): {value.get()}")
 
@@ -412,21 +461,28 @@ class GUI_CLASS(ctk.CTk):
             conveyor_setup_vals['spawn_rate'].set(1)
             conveyor_setup_vals["order"].set(CONVEYOR_ORDERS[0])
     
-    def add_conveyor_parts(self):
+    def add_conveyor_parts(self, index = -1):
         add_parts_conveyor_window = ctk.CTkToplevel()
         add_parts_conveyor_window.geometry("400x450 + 700 + 300")
         conveyor_part_vals = {}
-        
         conveyor_part_vals["color"] = ctk.StringVar()
-        conveyor_part_vals["color"].set(PART_COLORS[0])
         conveyor_part_vals["pType"] = ctk.StringVar()
-        conveyor_part_vals["pType"].set(PART_TYPES[0])
         conveyor_part_vals["num_parts"] = ctk.IntVar()
-        conveyor_part_vals["num_parts"].set(1)
         conveyor_part_vals["offset"] = ctk.DoubleVar()
-        conveyor_part_vals["offset"].set(0.0)
         conveyor_part_vals["rotation"] = ctk.DoubleVar()
-        conveyor_part_vals["rotation"].set(0.0)
+        if index ==-1:
+            conveyor_part_vals["color"].set(PART_COLORS[0])
+            conveyor_part_vals["pType"].set(PART_TYPES[0])
+            conveyor_part_vals["num_parts"].set(1)
+            conveyor_part_vals["offset"].set(0.0)
+            conveyor_part_vals["rotation"].set(0.0)
+        else:
+            conveyor_part_vals["color"].set(_part_color_str[self.conveyor_parts[index].part_lot.part.color])
+            conveyor_part_vals["pType"].set(_part_type_str[self.conveyor_parts[index].part_lot.part.type])
+            conveyor_part_vals["num_parts"].set(self.conveyor_parts[index].part_lot.quantity)
+            conveyor_part_vals["offset"].set(self.conveyor_parts[index].offset)
+            conveyor_part_vals["rotation"].set(self.conveyor_parts[index].rotation)
+
         color_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["color"],values=PART_COLORS)
         color_menu.pack()
         type_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["pType"],values=PART_TYPES)
@@ -448,7 +504,7 @@ class GUI_CLASS(ctk.CTk):
         conveyor_part_vals["rotation"].trace('w', partial(self.nearest_slider_value, conveyor_part_vals["rotation"], rotation_slider,rotation_label))
         back_button = ctk.CTkButton(add_parts_conveyor_window,text="Back",command=add_parts_conveyor_window.destroy)
         back_button.pack()
-        save_button = ctk.CTkButton(add_parts_conveyor_window,text="Save part",command=partial(self.save_conveyor_parts,add_parts_conveyor_window,conveyor_part_vals))
+        save_button = ctk.CTkButton(add_parts_conveyor_window,text="Save part",command=partial(self.save_conveyor_parts,add_parts_conveyor_window,conveyor_part_vals, index))
         save_button.pack()
     
     def update_num_parts_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
@@ -458,12 +514,16 @@ class GUI_CLASS(ctk.CTk):
         value.set(round(value.get(),3))
         label.configure(text=f"Current offset: {value.get()}")
     
-    def save_conveyor_parts(self, window:ctk.CTkToplevel, conveyor_part_vals):
+    def save_conveyor_parts(self, window:ctk.CTkToplevel, conveyor_part_vals, index):
         color = conveyor_part_vals["color"].get()
         pType = conveyor_part_vals["pType"].get()
-        self.conveyor_parts.append(ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get()))
-        self.current_conveyor_parts.append(color+pType)
-        self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
+        if index == -1:    
+            self.conveyor_parts.append(ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get()))
+            self.current_conveyor_parts.append(color+pType)
+            self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
+        else:
+            self.conveyor_parts[index] = ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get())
+            self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
         window.destroy()
 
     # =======================================================

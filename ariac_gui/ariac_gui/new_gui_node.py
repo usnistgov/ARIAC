@@ -18,14 +18,12 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from ariac_msgs.msg import Part
 # from ariac_gui.newGui import *
-print("TEST")
-print(__import__("os").getcwd())
 from ariac_gui.new_gui_test import GUI_CLASS
 
 
 def main(args=None):
     rclpy.init(args=args)
-    print("TEST")
+    print("started_node")
     main_gui = GUI_CLASS()
     main_gui.mainloop()
     print("finished_node")

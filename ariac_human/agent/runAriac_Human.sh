@@ -1,6 +1,6 @@
 #!/bin/bash
 ros2 launch test_competitor competitor.launch.py > tmp_outp.log &
-pid_ros=$!
+pid_ros=$! 
 echo "Starting Gradlew and Monitoring ROS+Jason"
 ./gradlew runAntag -q --console=plain &
 sleep 3

@@ -6,7 +6,7 @@ except:
     quit()    
 from tkinter import *
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, filedialog
 from functools import partial
 from turtle import right
 from PIL import Image  # needed for images in gui
@@ -224,7 +224,8 @@ class GUI_CLASS(ctk.CTk):
     # =======================================================
 
     def _load_file(self):
-        with open("/home/jtf4/sample.yaml") as f:
+        file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')])
+        with open(file_to_open.name) as f:
             yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
         self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
 
@@ -244,6 +245,8 @@ class GUI_CLASS(ctk.CTk):
 
         self.current_orders = competition.competition["orders"]
         self.order_counter.set(str(len(self.current_orders)))
+        for order in self.current_orders:
+            self.used_ids.append(order.id)
 
         self.show_main_order_menu()
     
@@ -756,12 +759,13 @@ class GUI_CLASS(ctk.CTk):
             self.order_info["kitting_task"]["parts"] = order.kitting_task.parts
 
         elif order.type == 1:
+            print(order.assembly_task.station)
             for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
                 self.order_info["assembly_task"]["agv_numbers"][i].set("1" if i+1 in order.assembly_task.agv_numbers else "0")
-            self.order_info["assembly_task"]["station"].set(ASSEMBLY_STATIONS[order.assembly_task.station])
+            self.order_info["assembly_task"]["station"].set(order.assembly_task.station)
             self.order_info["assembly_task"]["parts"] = order.assembly_task.parts
         else:
-            self.order_info["combined_task"]["station"].set(ASSEMBLY_STATIONS[order.combined_task.station])
+            self.order_info["combined_task"]["station"].set(order.combined_task.station)
             self.order_info["combined_task"]["parts"] = order.combined_task.parts
 
     def delete_order(self, index):

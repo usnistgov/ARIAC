@@ -151,8 +151,35 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
 
     bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
     current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
-    for bin in yaml_dict["parts"]["bins"].keys():
-        for part in yaml_dict["parts"]["bins"][bin]:
+    try:
+        for bin in yaml_dict["parts"]["bins"].keys():
+            for part in yaml_dict["parts"]["bins"][bin]:
+                try:
+                    part_rotation = SLIDER_VALUES[SLIDER_STR.index(part["rotation"])]
+                except:
+                    part_rotation = 0.0
+                try:
+                    part_flipped = "1" if part["flipped"] else "0"
+                except:
+                    part_flipped = "0"
+                for slot in part["slots"]:
+                    bin_parts[bin][slot-1] = BinPart(part["color"], part["type"], part_rotation, part_flipped)
+                    current_bin_parts[bin][slot-1] = part["color"]+part["type"]
+    except:
+        pass
+    
+    try:
+        conveyor_active = "1" if yaml_dict["parts"]["conveyor_belt"]["active"] else "0"
+        spawn_rate = str(yaml_dict["parts"]["conveyor_belt"]["spawn_rate"])
+        conveyor_order = yaml_dict["parts"]["conveyor_belt"]["order"]
+        conveyor_parts = []
+        current_conveyor_parts = []
+        for part in yaml_dict["parts"]["conveyor_belt"]["parts_to_spawn"]:
+            num_parts = part["number"]
+            try:
+                part_offset = SLIDER_VALUES[SLIDER_STR.index(part["offset"])]
+            except:
+                part_offset = 0.0
             try:
                 part_rotation = SLIDER_VALUES[SLIDER_STR.index(part["rotation"])]
             except:
@@ -161,33 +188,16 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
                 part_flipped = "1" if part["flipped"] else "0"
             except:
                 part_flipped = "0"
-            for slot in part["slots"]:
-                bin_parts[bin][slot-1] = BinPart(part["color"], part["type"], part_rotation, part_flipped)
-                current_bin_parts[bin][slot-1] = part["color"]+part["type"]
-    
-    conveyor_active = "1" if yaml_dict["parts"]["conveyor_belt"]["active"] else "0"
-    spawn_rate = str(yaml_dict["parts"]["conveyor_belt"]["spawn_rate"])
-    conveyor_order = yaml_dict["parts"]["conveyor_belt"]["order"]
-    conveyor_parts = []
-    current_conveyor_parts = []
-    for part in yaml_dict["parts"]["conveyor_belt"]["parts_to_spawn"]:
-        num_parts = part["number"]
-        try:
-            part_offset = SLIDER_VALUES[SLIDER_STR.index(part["offset"])]
-        except:
-            part_offset = 0.0
-        try:
-            part_rotation = SLIDER_VALUES[SLIDER_STR.index(part["rotation"])]
-        except:
-            part_rotation = 0.0
-        try:
-            part_flipped = "1" if part["flipped"] else "0"
-        except:
-            part_flipped = "0"
-        conveyor_parts.append(ConveyorPart(part["color"], part["type"],
-                                           num_parts, part_offset,
-                                           part_rotation, part_flipped))
-        current_conveyor_parts.append(part["color"]+part["type"])
+            conveyor_parts.append(ConveyorPart(part["color"], part["type"],
+                                            num_parts, part_offset,
+                                            part_rotation, part_flipped))
+            current_conveyor_parts.append(part["color"]+part["type"])
+    except:
+        conveyor_active="1"
+        spawn_rate = 1
+        conveyor_order = "random"
+        conveyor_parts = []
+        current_conveyor_parts = []
     
     orders = []
     for order in yaml_dict["orders"]:

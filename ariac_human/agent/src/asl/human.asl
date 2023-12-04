@@ -24,7 +24,7 @@ previous_location(station3,station4).
 !standby.
 
 /* Plans */
-+!standby: true <- .wait("+human_start"); !start.
++!standby: true <- .wait("+human_start"); +conterClock; !start.
 //+!standby: true <- !start.   // used for tests
 
 +!start : firstStation(ST) & helpful <- .include("helpful.asl"); .print("Human agent started as HELPFUL"); !work(ST).

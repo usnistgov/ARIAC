@@ -90,7 +90,8 @@ def launch_setup(context, *args, **kwargs):
     )
 
     # Terminal command to launch agent
-    cmd = pkg_share + "/agent/gradlew "
+    cmd = "sleep 3 && "
+    cmd += pkg_share + "/agent/gradlew "
 
     behavior = LaunchConfiguration("human_behavior").perform(context)
     if behavior == "helpful":

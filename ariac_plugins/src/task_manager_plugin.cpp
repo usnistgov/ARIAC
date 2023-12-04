@@ -2763,13 +2763,14 @@ namespace ariac_plugins
         // check if the ceiling robot is not just coming out of the penalty
         // give it a 10 second grace period
 
-        if (impl_->safe_zone_penalty_end_time_ > 0.0) // penalty was previously ended
-        {
-            if (impl_->elapsed_time_ < impl_->safe_zone_penalty_end_time_ + impl_->ceiling_robot_grace_period_)
-            {
-                return;
-            }
-        }
+        // Commented by Manchester (LBB) because this spoils the planned behavior
+        // if (impl_->safe_zone_penalty_end_time_ > 0.0) // penalty was previously ended
+        // {
+        //     if (impl_->elapsed_time_ < impl_->safe_zone_penalty_end_time_ + impl_->ceiling_robot_grace_period_)
+        //     {
+        //         return;
+        //     }
+        // }
 
         impl_->ceiling_robot_health_ = false;
         impl_->safe_zone_penalty_start_time_ = impl_->elapsed_time_;

@@ -7,7 +7,7 @@ location(station2, -10.8,  3.75, 0.0).
 location(station4, -10.8, -3.75, 0.0).  
 location(station3,  -5.0, -3.75, 0.0). 
 
-// Determine the first station to be visited
+// Determine the first station to be visited 
 firstStation(station4).   
 
 // Determine the next location to work (second parameter) based on the current one (first parameter)

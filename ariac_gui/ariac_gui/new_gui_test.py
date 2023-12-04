@@ -227,6 +227,7 @@ class GUI_CLASS(ctk.CTk):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')])
         with open(file_to_open.name) as f:
             yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
         self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):

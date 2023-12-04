@@ -8,14 +8,18 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk
 from functools import partial
+from turtle import right
 from PIL import Image  # needed for images in gui
 from math import pi
 import random
 import string
+import yaml
+
+from click import command
 from ariac_msgs.msg import (
     Part as PartMsg,
     PartLot as PartLotMsg,
-    Order as OrderMsg,
+    OrderCondition as OrderMsg,
     AssemblyPart as AssemblyPartMsg,
     KittingPart as KittingPartMsg,
     KittingTask as KittingTaskMsg,
@@ -36,7 +40,14 @@ from ariac_msgs.msg import (
 )
 from geometry_msgs.msg import PoseStamped, Vector3, Pose, Point, Quaternion
 from ament_index_python.packages import get_package_share_directory
-
+from ariac_gui.utils import (build_competition_from_file, quaternion_from_euler, 
+                             rpy_from_quaternion, 
+                             BinPart, 
+                             ConveyorPart,
+                             CompetitionClass,
+                             SLIDER_STR, 
+                             SLIDER_VALUES, 
+                             ORDER_TYPES)
 
 FRAMEWIDTH=700
 FRAMEHEIGHT=900
@@ -61,15 +72,13 @@ GUI_PACKAGE = get_package_share_directory('ariac_gui')
 MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
 
 # Values for the sliders
-SLIDER_VALUES = [-pi,-4*pi/5,-3*pi/4,-3*pi/5,-pi/2,-2*pi/5,-pi/4,-pi/5,0,pi/5,pi/4,2*pi/5,pi/2,3*pi/5,3*pi/4,4*pi/5,pi]
-SLIDER_STR = ["-pi","-4pi/5","-3pi/4","-3pi/5","-pi/2","-2pi/5","-pi/4","-pi/5","0","pi/5","pi/4","2pi/5","pi/2","3pi/5","3pi/4","4pi/5","pi"]
+
 
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
 ASSEMBLY_STATIONS=["as1","as2","as3","as4"]
 CONDITION_TYPE=['time','part_place']
 TRAY_IDS=[str(i) for i in range(10)]
-ORDER_TYPES=["kitting", "assembly", "combined"]
 
 
 _part_color_ints = {"RED":0,
@@ -87,24 +96,12 @@ _part_color_str = {_part_color_ints[key]:key.lower() for key in _part_color_ints
     
 _part_type_str = {_part_type_ints[key]:key.lower() for key in _part_type_ints.keys()}
 
-class BinPart():
-    def __init__(self,color = "green", pType = "battery", rotation = "", flipped = ""):
-        self.part= PartMsg()
-        self.part.color = _part_color_ints[color.upper()]
-        self.part.type = _part_type_ints[pType.upper()]
-        self.rotation = rotation
-        self.flipped = flipped
 
-class ConveyorPart():
-    def __init__(self,color, pType, num_parts, offset, rotation):
-        part = PartMsg()
-        part.color = _part_color_ints[color.upper()]
-        part.type = _part_type_ints[pType.upper()]
-        self.part_lot = PartLotMsg()
-        self.part_lot.part = part
-        self.part_lot.quantity = num_parts
-        self.rotation = rotation
-        self.offset = offset
+_assembly_part_poses = {}
+
+_assembly_part_install_directions = {}
+
+
 
 class GUI_CLASS(ctk.CTk):
     def __init__(self):
@@ -187,6 +184,10 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["combined_task"]["station"] = ctk.StringVar()
         self.order_info["combined_task"]["parts"] = []
 
+        self.reset_order()
+
+        self.current_orders = []
+
         # Menu tabs
         self.setup_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.setup_frame.pack(fill='both',expand=True)
@@ -212,6 +213,92 @@ class GUI_CLASS(ctk.CTk):
         self.orders_frame.pack(fill='both',expand=True)
         self.notebook.add(self.orders_frame, text="Orders")
         self.add_order_widgets_to_frame()
+
+        self.load_in_from_file_button = ctk.CTkButton(self, text="Load in data from file", command=self._load_file)
+        self.load_in_from_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
+
+        self._build_assembly_parts_pose_direction()
+    
+    # =======================================================
+    #            Load gui from a previous file
+    # =======================================================
+
+    def _load_file(self):
+        with open("/home/jtf4/sample.yaml") as f:
+            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+
+    def _load_options_from_competition_class(self, competition: CompetitionClass):
+        self.time_limit.set(competition.competition["time_limit"])
+
+        self.bin_parts = competition.competition["bin_parts"]
+        self.current_bin_parts = competition.competition["current_bin_parts"]
+        self.bin_parts_counter.set(str(len([1 for part in self.current_bin_parts if part !=""])))
+
+        self.conveyor_setup_vals["active"].set(competition.competition["conveyor_belt"]["active"])
+        self.conveyor_setup_vals["spawn_rate"].set(competition.competition["conveyor_belt"]["spawn_rate"])
+        self.conveyor_setup_vals["order"].set(competition.competition["conveyor_belt"]["order"])
+        self.conveyor_parts = competition.competition["conveyor_belt"]["parts_to_spawn"]
+        self.current_conveyor_parts = competition.competition["conveyor_belt"]["current_conveyor_parts"]
+        self.conveyor_parts_counter.set(str(len(self.conveyor_parts)))
+
+        self.current_orders = competition.competition["orders"]
+        self.order_counter.set(str(len(self.current_orders)))
+
+        self.show_main_order_menu()
+    
+    # =======================================================
+    #           Assembly Part Orientation Setup
+    # =======================================================
+    def _build_assembly_parts_pose_direction(self):
+        regulator_pose = PoseStamped()
+        regulator_pose.pose.position.x = 0.175
+        regulator_pose.pose.position.y = -0.233
+        regulator_pose.pose.position.z = 0.215
+        regulator_pose.pose.orientation = quaternion_from_euler(pi/2,0,-pi/2)
+        _assembly_part_poses["REGULATOR"] = regulator_pose
+        regulator_install_direction = Vector3()
+        regulator_install_direction.x = 0
+        regulator_install_direction.y = 0
+        regulator_install_direction.z = -1
+        _assembly_part_install_directions["REGULATOR"] = regulator_install_direction
+
+        battery_pose = PoseStamped()
+        battery_pose.pose.position.x = -0.15
+        battery_pose.pose.position.y = 0.035
+        battery_pose.pose.position.z = 0.043
+        battery_pose.pose.orientation = quaternion_from_euler(0,0,pi/2)
+        _assembly_part_poses["BATTERY"] = battery_pose
+        battery_install_direction = Vector3()
+        battery_install_direction.x = 0
+        battery_install_direction.y = 1
+        battery_install_direction.z = 0
+        _assembly_part_install_directions["BATTERY"] = battery_install_direction
+
+        pump_pose = PoseStamped()
+        pump_pose.pose.position.x = 0.14
+        pump_pose.pose.position.y = 0.0
+        pump_pose.pose.position.z = 0.02
+        pump_pose.pose.orientation = quaternion_from_euler(0,0,-pi/2)
+        _assembly_part_poses["PUMP"] = pump_pose
+        pump_install_direction = Vector3()
+        pump_install_direction.x = 0
+        pump_install_direction.y = 0
+        pump_install_direction.z = -1
+        _assembly_part_install_directions["PUMP"] = pump_install_direction
+
+        sensor_pose = PoseStamped()
+        sensor_pose.pose.position.x = -0.1
+        sensor_pose.pose.position.y = 0.395
+        sensor_pose.pose.position.z = 0.045
+        sensor_pose.pose.orientation = quaternion_from_euler(0,0,-pi/2)
+        _assembly_part_poses["SENSOR"] = sensor_pose
+        sensor_install_direction = Vector3()
+        sensor_install_direction.x = 0
+        sensor_install_direction.y = -1
+        sensor_install_direction.z = 0
+        _assembly_part_install_directions["SENSOR"] = sensor_install_direction
+
 
     # =======================================================
     #            Configuration Setup Functions
@@ -442,21 +529,21 @@ class GUI_CLASS(ctk.CTk):
         has_parts.set("0")
         trial_has_parts_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Trial has conveyor parts",variable=has_parts, onvalue="1", offvalue="0", height=1, width=20)
         trial_has_parts_cb.pack(pady=5)
-        conveyor_setup_vals = {"active":ctk.StringVar(),"spawn_rate":ctk.IntVar(),"order":ctk.StringVar()}
-        conveyor_setup_vals["active"].set('1')
-        conveyor_setup_vals['spawn_rate'].set(1)
-        conveyor_setup_vals["order"].set(CONVEYOR_ORDERS[0])
-        conveyor_active_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Conveyor active",variable=conveyor_setup_vals["active"], onvalue="1", offvalue="0", height=1, width=20, state=tk.DISABLED)
+        self.conveyor_setup_vals = {"active":ctk.StringVar(),"spawn_rate":ctk.IntVar(),"order":ctk.StringVar()}
+        self.conveyor_setup_vals["active"].set('1')
+        self.conveyor_setup_vals['spawn_rate'].set(1)
+        self.conveyor_setup_vals["order"].set(CONVEYOR_ORDERS[0])
+        conveyor_active_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Conveyor active",variable=self.conveyor_setup_vals["active"], onvalue="1", offvalue="0", height=1, width=20, state=tk.DISABLED)
         conveyor_active_cb.pack(pady=5)
         self.present_conveyor_widgets.append(conveyor_active_cb)
-        spawn_rate_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"current spawn rate (seconds): {conveyor_setup_vals['spawn_rate'].get()}")
+        spawn_rate_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"current spawn rate (seconds): {self.conveyor_setup_vals['spawn_rate'].get()}")
         spawn_rate_label.pack()
-        spawn_rate_slider = ctk.CTkSlider(self.conveyor_parts_frame, state=tk.DISABLED,variable=conveyor_setup_vals["spawn_rate"],from_=1, to=10, number_of_steps=9, orientation="horizontal")
+        spawn_rate_slider = ctk.CTkSlider(self.conveyor_parts_frame, state=tk.DISABLED,variable=self.conveyor_setup_vals["spawn_rate"],from_=1, to=10, number_of_steps=9, orientation="horizontal")
         spawn_rate_slider.pack()
         self.present_conveyor_widgets.append(spawn_rate_slider)
         conveyor_order_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"Select the conveyor order:")
         conveyor_order_label.pack()
-        conveyor_order_menu = ctk.CTkOptionMenu(self.conveyor_parts_frame, variable=conveyor_setup_vals["order"],values=CONVEYOR_ORDERS,state=tk.DISABLED)
+        conveyor_order_menu = ctk.CTkOptionMenu(self.conveyor_parts_frame, variable=self.conveyor_setup_vals["order"],values=CONVEYOR_ORDERS,state=tk.DISABLED)
         conveyor_order_menu.pack()
         self.present_conveyor_widgets.append(conveyor_order_menu)
         add_parts_button = ctk.CTkButton(self.conveyor_parts_frame,text="Add parts", command=partial(self.add_conveyor_parts), state=tk.DISABLED)
@@ -465,9 +552,11 @@ class GUI_CLASS(ctk.CTk):
         current_parts_label.pack()
         conveyor_canvas = Canvas(self.conveyor_parts_frame)
         conveyor_canvas.pack(fill = BOTH, expand = 1)
+        flipped_meaning_label = ctk.CTkLabel(self.conveyor_parts_frame, text="When a part if flipped, an \"F\" will show up in the bottom right of the part image.")
+        flipped_meaning_label.pack(pady=10)
         self.present_conveyor_widgets.append(add_parts_button)
-        conveyor_setup_vals["spawn_rate"].trace('w',partial(self.update_spawn_rate_slider,conveyor_setup_vals["spawn_rate"],spawn_rate_label))
-        has_parts.trace('w', partial(self.activate_deactivate_menu, has_parts,conveyor_setup_vals))
+        self.conveyor_setup_vals["spawn_rate"].trace('w',partial(self.update_spawn_rate_slider,self.conveyor_setup_vals["spawn_rate"],spawn_rate_label))
+        has_parts.trace('w', partial(self.activate_deactivate_menu, has_parts,self.conveyor_setup_vals))
         self.conveyor_parts_counter.trace('w',partial(self.show_current_parts,conveyor_canvas))
     
     def show_current_parts(self,canvas : tk.Canvas,_,__,___):
@@ -478,10 +567,12 @@ class GUI_CLASS(ctk.CTk):
         num_parts_coordinates = [(65,10+(75*i)) for i in range(10)]
         remove_button_coordinates = [(200,30+(75*i)) for i in range(10)]
         edit_button_coordinates = [(350,30+(75*i)) for i in range(10)]
+        flipped_label_coordinates = [(coord[0]+30, coord[1]+30) for coord in image_coordinates]
         image_labels = []
         num_parts_labels = []
         remove_part_buttons = []
         edit_part_buttons = []
+        current_flipped_labels = ["" for _ in range(len(flipped_label_coordinates))]
         for i in range(len(self.current_conveyor_parts)):
             part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]
             image_labels.append(ctk.CTkLabel(self.conveyor_parts_frame,text="",
@@ -493,12 +584,16 @@ class GUI_CLASS(ctk.CTk):
             edit_part_buttons.append(ctk.CTkButton(self.conveyor_parts_frame, 
                                                    text="Edit part"+("s" if self.conveyor_parts[i].part_lot.quantity>1 else ""), 
                                                    command=partial(self.add_conveyor_parts,i)))
+            if self.conveyor_parts[i].flipped=="1":
+                current_flipped_labels[i]=(ctk.CTkLabel(self.conveyor_parts_frame, text="F"))
         for i in range(len(image_labels)):
             self.current_conveyor_canvas_elements.append(canvas.create_window(image_coordinates[i], window = image_labels[i]))
             self.current_conveyor_canvas_elements.append(canvas.create_window(num_parts_coordinates[i], window = num_parts_labels[i]))
             self.current_conveyor_canvas_elements.append(canvas.create_window(remove_button_coordinates[i], window = remove_part_buttons[i]))
             self.current_conveyor_canvas_elements.append(canvas.create_window(edit_button_coordinates[i], window = edit_part_buttons[i]))
-    
+            if current_flipped_labels[i]!="":
+                self.current_bin_canvas_elements.append(canvas.create_window(flipped_label_coordinates[i], window=current_flipped_labels[i]))
+
     def remove_conveyor_part(self, index):
         del self.current_conveyor_parts[index]
         self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
@@ -526,18 +621,21 @@ class GUI_CLASS(ctk.CTk):
         conveyor_part_vals["num_parts"] = ctk.IntVar()
         conveyor_part_vals["offset"] = ctk.DoubleVar()
         conveyor_part_vals["rotation"] = ctk.DoubleVar()
+        conveyor_part_vals["flipped"] = ctk.StringVar()
         if index ==-1:
             conveyor_part_vals["color"].set(PART_COLORS[0])
             conveyor_part_vals["pType"].set(PART_TYPES[0])
             conveyor_part_vals["num_parts"].set(1)
             conveyor_part_vals["offset"].set(0.0)
             conveyor_part_vals["rotation"].set(0.0)
+            conveyor_part_vals["flipped"].set("0")
         else:
             conveyor_part_vals["color"].set(_part_color_str[self.conveyor_parts[index].part_lot.part.color])
             conveyor_part_vals["pType"].set(_part_type_str[self.conveyor_parts[index].part_lot.part.type])
             conveyor_part_vals["num_parts"].set(self.conveyor_parts[index].part_lot.quantity)
             conveyor_part_vals["offset"].set(self.conveyor_parts[index].offset)
             conveyor_part_vals["rotation"].set(self.conveyor_parts[index].rotation)
+            conveyor_part_vals["flipped"].set(self.conveyor_parts[index].flipped)
 
         color_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["color"],values=PART_COLORS)
         color_menu.pack()
@@ -558,6 +656,8 @@ class GUI_CLASS(ctk.CTk):
         rotation_slider = ctk.CTkSlider(add_parts_conveyor_window, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=conveyor_part_vals["rotation"], orientation="horizontal")
         rotation_slider.pack(pady=5)
         conveyor_part_vals["rotation"].trace('w', partial(self.nearest_slider_value, conveyor_part_vals["rotation"], rotation_slider,rotation_label))
+        flipped_cb = ctk.CTkCheckBox(add_parts_conveyor_window,text="Flipped",variable=conveyor_part_vals["flipped"], onvalue="1", offvalue="0", height=1, width=20)
+        flipped_cb.pack(pady=5)
         back_button = ctk.CTkButton(add_parts_conveyor_window,text="Back",command=add_parts_conveyor_window.destroy)
         back_button.pack()
         save_button = ctk.CTkButton(add_parts_conveyor_window,text="Save part",command=partial(self.save_conveyor_parts,add_parts_conveyor_window,conveyor_part_vals, index))
@@ -574,11 +674,11 @@ class GUI_CLASS(ctk.CTk):
         color = conveyor_part_vals["color"].get()
         pType = conveyor_part_vals["pType"].get()
         if index == -1:    
-            self.conveyor_parts.append(ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get()))
+            self.conveyor_parts.append(ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get(), conveyor_part_vals["flipped"].get()))
             self.current_conveyor_parts.append(color+pType)
             self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
         else:
-            self.conveyor_parts[index] = ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get())
+            self.conveyor_parts[index] = ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get(),conveyor_part_vals["flipped"].get())
             self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
         window.destroy()
 
@@ -587,22 +687,88 @@ class GUI_CLASS(ctk.CTk):
     # =======================================================
     def add_order_widgets_to_frame(self):
         self.add_kitting_order_button = ctk.CTkButton(self.orders_frame, text="Add kitting order", command=self.add_kitting_order)
-        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1, pady=10)
         self.add_assembly_order_button = ctk.CTkButton(self.orders_frame, text="Add assembly order", command=self.add_assembly_order)
-        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2, pady=10)
         self.add_combined_order_button = ctk.CTkButton(self.orders_frame, text="Add combined order", command=self.add_combined_order)
+
+        self.show_main_order_menu()
+
+        self.save_order_button = ctk.CTkButton(self.orders_frame,text="Save_order", command=self.save_order)
+        self.cancel_order_button = ctk.CTkButton(self.orders_frame,text="Cancel order", command=self.show_main_order_menu)
+
+        # Trace functions
+        self.order_info["announcement_type"].trace('w', self.show_correct_announcement_menu)
+    
+    def show_main_order_menu(self):
+        self.clear_order_menu()
+
+        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1, pady=10)
+        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2, pady=10)
         self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3, pady=10)
 
         self.current_main_order_widgets.append(self.add_kitting_order_button)
         self.current_main_order_widgets.append(self.add_assembly_order_button)
         self.current_main_order_widgets.append(self.add_combined_order_button)
 
-        self.save_order_button = ctk.CTkButton(self.orders_frame,text="Save_order", command=self.save_order)
-        self.cancel_order_button = ctk.CTkButton(self.orders_frame,text="Cancel order", command=self.cancel_order)
+        current_row = 4
+        for i in range(len(self.current_orders)):
+            temp_order_label = ctk.CTkLabel(self.orders_frame,
+                                            text=f"Order {i}. ID: {self.current_orders[i].id}\nType {ORDER_TYPES[self.current_orders[i].type]}")
+            temp_order_label.grid(column = LEFT_COLUMN, row = current_row+i)
+            self.current_left_order_widgets.append(temp_order_label)
 
-        # Trace functions
-        self.order_info["announcement_type"].trace('w', self.show_correct_announcement_menu)
+            edit_order_button = ctk.CTkButton(self.orders_frame, text="Edit order", command=partial(self.edit_order, i))
+            edit_order_button.grid(column=MIDDLE_COLUMN, row=current_row+i)
+            self.current_main_order_widgets.append(edit_order_button)
+
+            delete_order_button = ctk.CTkButton(self.orders_frame, text = "Delete order", command=partial(self.delete_order, i))
+            delete_order_button.grid(column = RIGHT_COLUMN, row = current_row+i)
+            self.current_right_order_widgets.append(delete_order_button)
     
+    def edit_order(self, index : int):
+        self.set_order_variables_to_current_order(self.current_orders[index])
+        self.left_row_index = 1
+        self.clear_order_menu()
+        if self.order_info["order_type"].get() == "kitting":
+            self.show_kitting_menu()
+        elif self.order_info["order_type"].get() == "assembly":
+            self.show_assembly_menu()
+        else:
+            self.show_combined_menu()
+        self.add_order_main_widgets(index)
+    
+    def set_order_variables_to_current_order(self, order : OrderMsg):
+        self.order_info["order_type"].set(ORDER_TYPES[order.type])
+        self.order_info["priority"].set('1' if order.priority else '0')
+        self.order_info["announcement_type"].set(CONDITION_TYPE[order.condition.type])
+        if order.condition.type == 0:
+            self.order_info["announcement"]["time_condition"].set(str(order.condition.time_condition.seconds))
+        elif order.condition.type == 1:
+            self.order_info["announcement"]["color"].set(_part_color_str[order.condition.part_place_condition.part.color])
+            self.order_info["announcement"]["type"].set(_part_type_str[order.condition.part_place_condition.part.type])
+            self.order_info["announcement"]["agv"].set(str(order.condition.part_place_condition.agv))
+        else:
+            self.order_info["announcement"]["submission_id"].set(str(order.condition.submission_condition.order_id))
+        self.order_info["priority"].set('1' if order.priority else'0')
+        
+        if order.type == 0:
+            self.order_info["kitting_task"]["agv_number"].set(str(order.kitting_task.agv_number))
+            self.order_info["kitting_task"]["tray_id"].set(str(order.kitting_task.tray_id))
+            self.order_info["kitting_task"]["parts"] = order.kitting_task.parts
+
+        elif order.type == 1:
+            for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
+                self.order_info["assembly_task"]["agv_numbers"][i].set("1" if i+1 in order.assembly_task.agv_numbers else "0")
+            self.order_info["assembly_task"]["station"].set(ASSEMBLY_STATIONS[order.assembly_task.station])
+            self.order_info["assembly_task"]["parts"] = order.assembly_task.parts
+        else:
+            self.order_info["combined_task"]["station"].set(ASSEMBLY_STATIONS[order.combined_task.station])
+            self.order_info["combined_task"]["parts"] = order.combined_task.parts
+
+    def delete_order(self, index):
+        del self.current_orders[index]
+        del self.used_ids[index]
+        self.show_main_order_menu()
+
     def add_kitting_order(self):
         self.clear_order_menu()
 
@@ -627,7 +793,7 @@ class GUI_CLASS(ctk.CTk):
         self.show_combined_menu()
         self.add_order_main_widgets()
 
-    def add_order_main_widgets(self):
+    def add_order_main_widgets(self, index = -1):
         self.priority_cb = ctk.CTkCheckBox(self.orders_frame,text="Priority",variable=self.order_info["priority"], onvalue="1", offvalue="0", height=1, width=20)
         self.priority_cb.grid(column=MIDDLE_COLUMN, row=1)
         self.current_main_order_widgets.append(self.priority_cb)
@@ -643,7 +809,9 @@ class GUI_CLASS(ctk.CTk):
         self.announcement_type_menu.grid(column = RIGHT_COLUMN, row = 2)
         self.current_main_order_widgets.append(self.announcement_type_menu)
 
-        self.reset_order()
+        self.save_order_button.configure(command = partial(self.save_order, index))
+
+        self.order_info["announcement_type"].set(CONDITION_TYPE[0])
     
     def grid_left_column(self, widget, pady=7):
         widget.grid(column = LEFT_COLUMN, row = self.left_row_index, pady=pady)
@@ -672,7 +840,7 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["announcement"]["submission_id"].set('' if len(self.used_ids)==0 else self.used_ids[0])
         self.order_info["priority"].set('0')
 
-        self.order_info["kitting_task"]["agv_numbers"].set(AGV_OPTIONS[0])
+        self.order_info["kitting_task"]["agv_number"].set(AGV_OPTIONS[0])
         self.order_info["kitting_task"]["tray_id"].set(TRAY_IDS[0])
         self.order_info["kitting_task"]["parts"] = []
 
@@ -747,6 +915,7 @@ class GUI_CLASS(ctk.CTk):
         self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
     
     def show_kitting_menu(self):
+        self.order_info["order_type"].set("kitting")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
         self.current_left_order_widgets.clear()
@@ -798,10 +967,15 @@ class GUI_CLASS(ctk.CTk):
         add_k_part_wind.mainloop()
 
     def save_kitting_part(self, k_part_dict, window):
-        self.order_info["kitting_task"]["parts"].append(k_part_dict["color"].get()+k_part_dict["pType"].get())
+        new_kitting_part = KittingPartMsg()
+        new_kitting_part.part.color = _part_color_ints[k_part_dict["color"].get().upper()]
+        new_kitting_part.part.type = _part_type_ints[k_part_dict["pType"].get().upper()]
+        new_kitting_part.quadrant = int(k_part_dict["quadrant"].get())
+        self.order_info["kitting_task"]["parts"].append(new_kitting_part)
         window.destroy()
     
     def show_assembly_menu(self):
+        self.order_info["order_type"].set("assembly")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
         self.current_left_order_widgets.clear()
@@ -813,7 +987,7 @@ class GUI_CLASS(ctk.CTk):
         for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
             check_box = ctk.CTkCheckBox(self.orders_frame,
                                         text=f"AGV {i+1}",
-                                        variable=self.order_info["assembly_task"]["agv_number"][i],
+                                        variable=self.order_info["assembly_task"]["agv_numbers"][i],
                                         offvalue="0",
                                         onvalue="1",
                                         height=1, 
@@ -856,10 +1030,17 @@ class GUI_CLASS(ctk.CTk):
         add_a_part_wind.mainloop()
 
     def save_assembly_part(self, a_part_dict, window):
-        self.order_info["assembly_task"]["parts"].append(a_part_dict["color"].get()+a_part_dict["pType"].get())
+        new_assembly_part = AssemblyPartMsg()
+
+        new_assembly_part.part.color = _part_color_ints[a_part_dict["color"].get().upper()]
+        new_assembly_part.part.type = _part_type_ints[a_part_dict["pType"].get().upper()]
+        new_assembly_part.assembled_pose = _assembly_part_poses[a_part_dict["pType"].get().upper()]
+        new_assembly_part.install_direction = _assembly_part_install_directions[a_part_dict["pType"].get().upper()]
+        self.order_info["combined_task"]["parts"].append(new_assembly_part)
         window.destroy()
     
     def show_combined_menu(self):
+        self.order_info["order_type"].set("combined")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
         self.current_left_order_widgets.clear()
@@ -901,12 +1082,12 @@ class GUI_CLASS(ctk.CTk):
     def save_combined_part(self, c_part_dict, window):
         new_combined_part = AssemblyPartMsg()
         new_part = PartMsg()
-        new_part.color = _part_color_ints[c_part_dict["color"].get()]
-        new_part.type = _part_type_ints[c_part_dict["pType"].get()]
-
-        new_part_pose_stamped = PoseStamped()
-        new_part_pose = Pose()
+        new_part.color = _part_color_ints[c_part_dict["color"].get().upper()]
+        new_part.type = _part_type_ints[c_part_dict["pType"].get().upper()]
         
+        new_combined_part.part = new_part
+        new_combined_part.assembled_pose = _assembly_part_poses[c_part_dict["pType"].get().upper()]
+        new_combined_part.install_direction = _assembly_part_install_directions[c_part_dict["pType"].get().upper()]
         self.order_info["combined_task"]["parts"].append(new_combined_part)
         window.destroy()
 
@@ -916,21 +1097,37 @@ class GUI_CLASS(ctk.CTk):
                 widget.grid_forget()
             widget_list.clear()
 
-    def save_order(self):
-        self.clear_order_menu()
-        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1,pady=10)
-        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2,pady=10)
-        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3,pady=10)
-        self.current_main_order_widgets.append(self.add_kitting_order_button)
-        self.current_main_order_widgets.append(self.add_assembly_order_button)
-        self.current_main_order_widgets.append(self.add_combined_order_button)
-        self.used_ids.append(self.generate_order_id())
+    def save_order(self, index):
         new_order = OrderMsg()
-        new_order.id = self.used_ids[-1]
+        if index==-1:
+            self.used_ids.append(self.generate_order_id())
+            new_order.id = self.used_ids[-1]
+        else:
+            new_order.id = self.current_orders[index].id
         new_order.type = ORDER_TYPES.index(self.order_info["order_type"].get())
         new_order.priority = True if self.order_info["priority"].get() == 1 else False
-
+        if self.order_info["order_type"].get() == "kitting":
+            new_order.kitting_task = self.create_kitting_task_msg()
+        elif self.order_info["order_type"].get() == "assembly":
+            new_order.assembly_task = self.create_assembly_task_msg()
+        else:
+            new_order.combined_task = self.create_combined_task_msg()
+        new_order.condition.type = CONDITION_TYPE.index(self.order_info["announcement_type"].get())
+        if self.order_info["announcement_type"].get() == "time":
+            new_order.condition.time_condition.seconds = float(self.order_info["announcement"]["time_condition"].get())
+        elif self.order_info["announcement_type"].get() == "part_place":
+            new_order.condition.part_place_condition.part.color = _part_color_ints[self.order_info["announcement"]["color"].get().upper()]
+            new_order.condition.part_place_condition.part.type = _part_type_ints[self.order_info["announcement"]["type"].get().upper()]
+            new_order.condition.part_place_condition.agv = int(self.order_info["announcement"]["agv"].get())
+        else:
+            new_order.condition.submission_condition.order_id = self.order_info["announcement"]["submission_id"].get()
+        if index == -1:
+            self.current_orders.append(new_order)
+        else:
+            self.current_orders[index] = new_order
         self.order_counter.set(str(len(self.used_ids)))
+        self.reset_order()
+        self.show_main_order_menu()
         if 'submission' not in CONDITION_TYPE:
             CONDITION_TYPE.append('submission')
 
@@ -945,27 +1142,18 @@ class GUI_CLASS(ctk.CTk):
     def create_assembly_task_msg(self)->AssemblyTaskMsg:
         new_assembly_task = AssemblyTaskMsg()
         new_assembly_task.agv_numbers = [i+1 
-                                         for i in range(len(self.order_info["assembly_task"]["agv_number"]))
-                                         if self.order_info["assembly_task"]["agv_number"][i].get()=="1"]
+                                         for i in range(len(self.order_info["assembly_task"]["agv_numbers"]))
+                                         if self.order_info["assembly_task"]["agv_numbers"][i].get()=="1"]
         new_assembly_task.station = ASSEMBLY_STATIONS.index(self.order_info["assembly_task"]["station"].get())
         new_assembly_task.parts = self.order_info["assembly_task"]["parts"]
         return new_assembly_task
 
     def create_combined_task_msg(self)->CombinedTaskMsg:
         new_combined_task = CombinedTaskMsg()
-        new_combined_task.station = ASSEMBLY_STATIONS.index(self.order_info["combined_task"]["station"])
+        new_combined_task.station = ASSEMBLY_STATIONS.index(self.order_info["combined_task"]["station"].get())
         new_combined_task.parts = self.order_info["combined_task"]["parts"]
         return new_combined_task
         
-    
-    def cancel_order(self):
-        self.clear_order_menu()
-        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1,pady=10)
-        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2,pady=10)
-        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3,pady=10)
-        self.current_main_order_widgets.append(self.add_kitting_order_button)
-        self.current_main_order_widgets.append(self.add_assembly_order_button)
-        self.current_main_order_widgets.append(self.add_combined_order_button)
 
     # =======================================================
     #               General Gui Functions

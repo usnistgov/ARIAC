@@ -55,3 +55,6 @@ log/
 
 /automated_evaluation/nist_team.yaml
 
+# ARIAC Logs
+/ariac_log/*/
+

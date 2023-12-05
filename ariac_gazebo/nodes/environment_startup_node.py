@@ -14,6 +14,9 @@ def main():
     # Wait five seconds for gazebo to start up
     time.sleep(2)
 
+    # Parse the trial config file
+    startup_node.parse_trial_file()
+
     # Spawn robots
     startup_node.spawn_robots()
 
@@ -34,9 +37,6 @@ def main():
 
     # Read conveyor part config
     startup_node.parse_conveyor_config()
-    
-    # Parse the trial config file
-    startup_node.parse_trial_file()
 
     try:
         rclpy.spin(startup_node)

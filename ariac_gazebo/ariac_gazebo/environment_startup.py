@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import math
 import yaml
 import xml.etree.ElementTree as ET
@@ -13,7 +14,7 @@ from rcl_interfaces.msg import ParameterDescriptor
 
 from rclpy.qos import QoSProfile, DurabilityPolicy
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory, get_package_prefix
 
 from tf2_geometry_msgs import do_transform_pose
 from ariac_gazebo.utilities import quaternion_from_euler, euler_from_quaternion, convert_pi_string_to_float
@@ -191,6 +192,29 @@ class EnvironmentStartup(Node):
         
         message.trial_name = config_file_name
         self.trial_info_pub.publish(message)
+
+        # Find workspace location
+        ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+
+        # Find ariac folder
+        pkgs = [ f.name for f in os.scandir(ws + '/src/') if f.is_dir() ]
+        
+        parent_folder = ''
+        for pkg in pkgs:
+            if pkg.lower().count('ariac') >= 1:
+                parent_folder = ws + 'src/' + pkg + '/ariac_log/' 
+                break
+        
+        if not parent_folder:
+            self.get_logger().fatal("Unable to find ariac_logs directory")
+            return
+
+        trial_folder = message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
+        self.get_logger().info(bcolors.OKCYAN + "ARIAC logs for this trial can be found at:" + bcolors.ENDC)
+        self.get_logger().info(bcolors.OKCYAN + '  ' + parent_folder + trial_folder + bcolors.ENDC)
+        
+        # Create trial log folder
+        os.mkdir(parent_folder + trial_folder)
 
 
     def convert_order_type_to_int(self, order_type):

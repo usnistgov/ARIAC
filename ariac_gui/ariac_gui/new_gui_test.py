@@ -71,14 +71,15 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 GUI_PACKAGE = get_package_share_directory('ariac_gui')
 MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
 
-# Values for the sliders
-
-
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
 ASSEMBLY_STATIONS=["as1","as2","as3","as4"]
 CONDITION_TYPE=['time','part_place']
 TRAY_IDS=[str(i) for i in range(10)]
+
+SENSORS = ["break_beam", "proximity", "laser_profiler", "lidar", "camera", "logical_camera"]
+ROBOTS = ["floor_robot", "ceiling_robot"]
+BEHAVIORS = ["antagonistic","indifferent","helpful"]
 
 
 _part_color_ints = {"RED":0,
@@ -188,6 +189,50 @@ class GUI_CLASS(ctk.CTk):
 
         self.current_orders = []
 
+        # Challenges widgets
+        self.current_challenges_widgets = []
+        self.current_challenges_condition_widgets = []
+
+        # Dropped part challenge variables
+        self.dropped_part_info = {}
+        self.dropped_part_info["robot"] = ctk.StringVar()
+        self.dropped_part_info["type"] = ctk.StringVar()
+        self.dropped_part_info["color"] = ctk.StringVar()
+        self.dropped_part_info["drop_after"] = ctk.StringVar()
+        self.dropped_part_info["delay"] = ctk.StringVar()
+
+        # Robot malfunction challenge variables
+        self.robot_malfunction_info = {}
+        self.robot_malfunction_info["duration"] = ctk.StringVar()
+        self.robot_malfunction_info["floor_robot"] = ctk.StringVar()
+        self.robot_malfunction_info["ceiling_robot"] = ctk.StringVar()
+
+        # Sensor blackout challenge variables
+        self.sensor_blackout_info = {}
+        self.sensor_blackout_info["duration"] = ctk.StringVar()
+        self.sensor_blackout_info["sensors_to_disable"] = [ctk.StringVar() for _ in range(len(SENSORS))]
+
+        # Faulty part challenge variables
+        self.faulty_part_info = {}
+        self.faulty_part_info["order_id"] = ctk.StringVar()
+        self.faulty_part_info["quadrants"] = [ctk.StringVar() for _ in range(4)]
+
+        # Human challenge variables
+        self.human_info = {}
+        self.human_info["behavior"] = ctk.StringVar()
+
+        # Challenge condition variables
+        self.challenge_condition_type = ctk.StringVar()
+        self.challenge_condition_info = {}
+        self.challenge_condition_info["time_condition"] = ctk.StringVar()
+        self.challenge_condition_info["color"] = ctk.StringVar()
+        self.challenge_condition_info["type"] = ctk.StringVar()
+        self.challenge_condition_info["agv"] = ctk.StringVar()
+        self.challenge_condition_info["submission_id"] = ctk.StringVar()
+
+        # List to hold saved challenges
+        self.current_challenges = []
+
         # Menu tabs
         self.setup_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.setup_frame.pack(fill='both',expand=True)
@@ -213,6 +258,11 @@ class GUI_CLASS(ctk.CTk):
         self.orders_frame.pack(fill='both',expand=True)
         self.notebook.add(self.orders_frame, text="Orders")
         self.add_order_widgets_to_frame()
+
+        self.challenges_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.challenges_frame.pack(fill='both',expand=True)
+        self.notebook.add(self.challenges_frame, text="Challenges")
+        self.add_challenges_widgets_to_frame()
 
         self.load_in_from_file_button = ctk.CTkButton(self, text="Load in data from file", command=self._load_file)
         self.load_in_from_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
@@ -696,7 +746,7 @@ class GUI_CLASS(ctk.CTk):
 
         self.show_main_order_menu()
 
-        self.save_order_button = ctk.CTkButton(self.orders_frame,text="Save_order", command=self.save_order)
+        self.save_order_button = ctk.CTkButton(self.orders_frame,text="Save order", command=self.save_order)
         self.cancel_order_button = ctk.CTkButton(self.orders_frame,text="Cancel order", command=self.show_main_order_menu)
 
         # Trace functions
@@ -772,6 +822,7 @@ class GUI_CLASS(ctk.CTk):
     def delete_order(self, index):
         del self.current_orders[index]
         del self.used_ids[index]
+        self.order_counter.set(str(len(self.current_orders)))
         self.show_main_order_menu()
 
     def add_kitting_order(self):
@@ -1158,7 +1209,257 @@ class GUI_CLASS(ctk.CTk):
         new_combined_task.station = ASSEMBLY_STATIONS.index(self.order_info["combined_task"]["station"].get())
         new_combined_task.parts = self.order_info["combined_task"]["parts"]
         return new_combined_task
+    
+    # =======================================================
+    #                  Challenges functions
+    # =======================================================
+
+    def add_challenges_widgets_to_frame(self):
+        self.reset_all_challenges()
+        self.add_dropped_part_button = ctk.CTkButton(self.challenges_frame, text="Add dropped part challenge", command=self.add_dropped_part_challenge)
+        self.add_robot_malfunction_button = ctk.CTkButton(self.challenges_frame, text="Add robot malfunction challenge", command=self.add_robot_malfunction_challenge)
+        self.add_sensor_blackout_button = ctk.CTkButton(self.challenges_frame, text="Add sensor blackout challenge", command=self.add_sensor_blackout_challenge)
+        self.add_faulty_part_button = ctk.CTkButton(self.challenges_frame, text = "Add faulty part challenge", command=self.add_faulty_part_challenge)
+        self.add_human_button = ctk.CTkButton(self.challenges_frame, text="Add human challenge", command = self.add_human_challenge)
+
+        self.show_main_challenges_menu(1,1,1)
+
+        self.save_challenge_button = ctk.CTkButton(self.challenges_frame,text="Save challenge", command=self.save_challenge)
+        self.cancel_challenge_button = ctk.CTkButton(self.challenges_frame,text="Cancel challenge", command=partial(self.show_main_challenges_menu,1,1,1))
+        self.order_counter.trace('w', self.show_main_challenges_menu)
+        self.challenge_condition_type.trace('w', self.show_correct_condition_menu)
+
+    def reset_challenge_condition_variables(self, type_aswell = True):
+        if type_aswell:
+            self.challenge_condition_type.set(CONDITION_TYPE[0])
+        self.challenge_condition_info["time_condition"].set("0.0")
+        self.challenge_condition_info["color"].set(PART_COLORS[0])
+        self.challenge_condition_info["type"].set(PART_TYPES[0])
+        self.challenge_condition_info["agv"].set(AGV_OPTIONS[0])
+        self.challenge_condition_info["submission_id"].set("" if len(self.used_ids) == 0 else self.used_ids[0])
+
+    def show_challenges_condition_menu(self):
+        challenge_condition_type_label = ctk.CTkLabel(self.challenges_frame, text="Select the type of condition for the challenge")
+        self.pack_and_append_challenge_widget(challenge_condition_type_label)
+        challenge_condition_type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_type,values=CONDITION_TYPE)
+        self.pack_and_append_challenge_widget(challenge_condition_type_menu)
+        self.reset_challenge_condition_variables()
+    
+    def show_correct_condition_menu(self,_,__,____):
+        for widget in self.current_challenges_condition_widgets:
+            widget.pack_forget()
+        self.current_challenges_condition_widgets.clear()
+        self.reset_challenge_condition_variables(False)
+        if self.challenge_condition_type.get() == "time":
+            time_label = ctk.CTkLabel(self.challenges_frame, text="Enter the time for the time_condition:")
+            time_label.pack()
+            self.current_challenges_condition_widgets.append(time_label)
+            time_entry = ctk.CTkEntry(self.challenges_frame, textvariable=self.challenge_condition_info["time_condition"])
+            time_entry.pack()
+            self.current_challenges_condition_widgets.append(time_entry)
+        elif self.challenge_condition_type.get() == "part_place":
+            color_label = ctk.CTkLabel(self.challenges_frame, text="Select the color for the part condition")
+            color_label.pack()
+            self.current_challenges_condition_widgets.append(color_label)
+            color_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["color"], values=PART_COLORS)
+            color_menu.pack()
+            self.current_challenges_condition_widgets.append(color_menu)
+            type_label = ctk.CTkLabel(self.challenges_frame, text="Select the type for the part condition")
+            type_label.pack()
+            self.current_challenges_condition_widgets.append(type_label)
+            type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["type"], values=PART_TYPES)
+            type_menu.pack()
+            self.current_challenges_condition_widgets.append(type_menu)
+            agv_label = ctk.CTkLabel(self.challenges_frame, text="Select the agv for the condition")
+            agv_label.pack()
+            self.current_challenges_condition_widgets.append(agv_label)
+            agv_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["agv"], values=AGV_OPTIONS)
+            agv_menu.pack()
+            self.current_challenges_condition_widgets.append(agv_menu)
+        else:
+            submission_id_label = ctk.CTkLabel(self.challenges_frame, text="Select the order id for the submission condition")
+            submission_id_label.pack()
+            self.current_challenges_condition_widgets.append(submission_id_label)
+            submission_id_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["submission_id"], values=self.used_ids)
+            submission_id_menu.pack()
+            self.current_challenges_condition_widgets.append(submission_id_menu)
+            
+    def pack_and_append_challenge_widget(self, widget):
+        widget.pack(pady=10)
+        self.current_challenges_widgets.append(widget)
+
+    def show_main_challenges_menu(self, _,__,___):
+        self.clear_challenges_menu()
+
+        self.pack_and_append_challenge_widget(self.add_dropped_part_button)
+        self.pack_and_append_challenge_widget(self.add_robot_malfunction_button)
+        self.pack_and_append_challenge_widget(self.add_sensor_blackout_button)
+        if len(self.used_ids)>0:
+            self.pack_and_append_challenge_widget(self.add_faulty_part_button)
+        self.pack_and_append_challenge_widget(self.add_human_button)
+    
+    def clear_challenges_menu(self):
+        for widget in self.current_challenges_widgets:
+            widget.pack_forget()
+        self.current_challenges_widgets.clear()
+        for widget in self.current_challenges_condition_widgets:
+            widget.pack_forget()
+        self.current_challenges_condition_widgets.clear()
+
+    def reset_dropped_part_info(self):
+        self.dropped_part_info["robot"].set(ROBOTS[0])
+        self.dropped_part_info["color"].set(PART_COLORS[0])
+        self.dropped_part_info["type"].set(PART_TYPES[0])
+        self.dropped_part_info["drop_after"].set("0")
+        self.dropped_part_info["delay"].set("0.0")
+    
+    def add_dropped_part_challenge(self):
+        self.clear_challenges_menu()
+
+        robot_label = ctk.CTkLabel(self.challenges_frame, text="Select the robot for the dropped part")
+        self.pack_and_append_challenge_widget(robot_label)
+        robot_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["robot"],values=ROBOTS)
+        self.pack_and_append_challenge_widget(robot_menu)
+
+        color_label = ctk.CTkLabel(self.challenges_frame, text="Select the color of the dropped part")
+        self.pack_and_append_challenge_widget(color_label)
+        color_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["color"],values=PART_COLORS)
+        self.pack_and_append_challenge_widget(color_menu)
+
+        type_label = ctk.CTkLabel(self.challenges_frame, text="Select the type of the dropped part")
+        self.pack_and_append_challenge_widget(type_label)
+        type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["type"],values=PART_TYPES)
+        self.pack_and_append_challenge_widget(type_menu)
+
+        drop_after_label = CTkLabel(self.challenges_frame, text="Select the part number to drop after")
+        self.pack_and_append_challenge_widget(drop_after_label)
+        drop_after_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["drop_after"])
+        self.pack_and_append_challenge_widget(drop_after_entry)
+
+        delay_label = CTkLabel(self.challenges_frame, text="Select the time to drop after")
+        self.pack_and_append_challenge_widget(delay_label)
+        delay_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["delay"])
+        self.pack_and_append_challenge_widget(delay_entry)
+
+        self.save_challenge_button.configure(text="Save dropped part challenge", command=partial(self.save_challenge, "dropped_part"))
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.cancel_challenge_button)
+
+    def reset_robot_malfunction_info(self):
+        self.robot_malfunction_info["duration"].set('0.0')
+        self.robot_malfunction_info["floor_robot"].set('0')
+        self.robot_malfunction_info["ceiling_robot"].set('0')
+    
+    def add_robot_malfunction_challenge(self):
+        self.clear_challenges_menu()
+
+        duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the robot malfunction")
+        self.pack_and_append_challenge_widget(duration_label)
+        duration_menu = ctk.CTkEntry(self.challenges_frame, textvariable=self.robot_malfunction_info["duration"])
+        self.pack_and_append_challenge_widget(duration_menu)
+
+        robots_label = ctk.CTkLabel(self.challenges_frame, text="Select the robot or robots you would like to malfunction")
+        self.pack_and_append_challenge_widget(robots_label)
+        floor_robot_cb = ctk.CTkCheckBox(self.challenges_frame,text="floor_robot",variable=self.robot_malfunction_info["floor_robot"], onvalue="1", offvalue="0", height=1, width=20)
+        self.pack_and_append_challenge_widget(floor_robot_cb)
+        ceiling_robot_cb = ctk.CTkCheckBox(self.challenges_frame,text="ceiling_robot",variable=self.robot_malfunction_info["ceiling_robot"], onvalue="1", offvalue="0", height=1, width=20)
+        self.pack_and_append_challenge_widget(ceiling_robot_cb)
+
+        self.show_challenges_condition_menu()
+
+        self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction"))
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.cancel_challenge_button)
+    
+    def reset_sensor_blackout_info(self):
+        self.sensor_blackout_info["duration"].set('0.0')
+        for variable in self.sensor_blackout_info["sensors_to_disable"]:
+            variable.set('0')
+
+    def add_sensor_blackout_challenge(self):
+        self.clear_challenges_menu()
+
+        duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the sensor blackout")
+        self.pack_and_append_challenge_widget(duration_label)
+        duration_menu = ctk.CTkEntry(self.challenges_frame, textvariable=self.sensor_blackout_info["duration"])
+        self.pack_and_append_challenge_widget(duration_menu)
+
+        sensors_label = ctk.CTkLabel(self.challenges_frame, text="Select the sensors for the sensor blackout")
+        self.pack_and_append_challenge_widget(sensors_label)
+        for i in range(len(self.sensor_blackout_info["sensors_to_disable"])):
+            sensor_cb = ctk.CTkCheckBox(self.challenges_frame,text=SENSORS[i],variable=self.sensor_blackout_info["sensors_to_disable"][i], onvalue="1", offvalue="0", height=1, width=20)
+            self.pack_and_append_challenge_widget(sensor_cb)
         
+        self.show_challenges_condition_menu()
+
+        self.save_challenge_button.configure(text="Save sensor blackout challenge", command=partial(self.save_challenge, "sensor_blackout"))
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.cancel_challenge_button)
+    
+    def reset_faulty_part_info(self):
+        self.faulty_part_info["order_id"].set("" if len(self.used_ids) == 0 else self.used_ids[0])
+        for variable in self.faulty_part_info["quadrants"]:
+            variable.set('0')
+
+    def add_faulty_part_challenge(self):
+        self.clear_challenges_menu()
+
+        submission_id_label = ctk.CTkLabel(self.challenges_frame, text="Select the submission id for the faulty part order")
+        self.pack_and_append_challenge_widget(submission_id_label)
+        submission_id_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.faulty_part_info["order_id"],values=self.used_ids)
+        self.pack_and_append_challenge_widget(submission_id_menu)
+
+        quadrants_label = ctk.CTkLabel(self.challenges_frame, text="Select the quadrants for the faulty part challenge")
+        self.pack_and_append_challenge_widget(quadrants_label)
+        for i in range(len(QUADRANTS)):
+            quadrants_cb = ctk.CTkCheckBox(self.challenges_frame,text=f"Quadrant {QUADRANTS[i]}",variable=self.faulty_part_info["quadrants"][i], onvalue="1", offvalue="0", height=1, width=20)
+            self.pack_and_append_challenge_widget(quadrants_cb)
+
+        self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part"))
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.cancel_challenge_button)
+
+    def reset_human_info(self):
+        self.human_info["behavior"].set(BEHAVIORS[0])
+    
+    def add_human_challenge(self):
+        self.clear_challenges_menu()
+        
+        behavior_label = ctk.CTkLabel(self.challenges_frame, text="Select the behavior for the human")
+        self.pack_and_append_challenge_widget(behavior_label)
+        behavior_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.human_info["behavior"],values=BEHAVIORS)
+        self.pack_and_append_challenge_widget(behavior_menu)
+
+        self.show_challenges_condition_menu()
+
+        self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human"))
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.cancel_challenge_button)
+
+    def save_challenge(self, type_of_challenge:str):
+        print(type_of_challenge)
+        self.reset_all_challenges()
+        self.clear_challenges_menu()
+        self.show_main_challenges_menu(1,1,1)
+    
+    def reset_all_challenges(self):
+        self.reset_challenge_condition_variables()
+        self.reset_dropped_part_info()
+        self.reset_faulty_part_info()
+        self.reset_human_info()
+        self.reset_robot_malfunction_info()
+        self.reset_sensor_blackout_info()
+
 
     # =======================================================
     #               General Gui Functions
@@ -1167,24 +1468,6 @@ class GUI_CLASS(ctk.CTk):
         newvalue = min(SLIDER_VALUES, key=lambda x:abs(x-float(value.get())))
         slider.set(newvalue)
         label.configure(text=f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(newvalue)]}")
-
-    # =======================================================
-    #               General Gui Utilities
-    # =======================================================
-    def make_pose(self, x, y, z):
-        new_pose = Pose()
-        new_pose.x = x
-        new_pose.y = y
-        new_pose.z = z
-        return new_pose
-    
-    def make_quaternion(self, x, y, z, w):
-        new_quaternion = Quaternion()
-        new_quaternion.x = x
-        new_quaternion.y = y
-        new_quaternion.z = z
-        new_quaternion.w = w
-        return new_quaternion
 
 
 if __name__=="__main__":

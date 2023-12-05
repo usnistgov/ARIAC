@@ -101,8 +101,6 @@ TestCompetitor::TestCompetitor()
   floor_robot_gripper_enable_ = this->create_client<ariac_msgs::srv::VacuumGripperControl>("/ariac/floor_robot_enable_gripper");
   ceiling_robot_gripper_enable_ = this->create_client<ariac_msgs::srv::VacuumGripperControl>("/ariac/ceiling_robot_enable_gripper");
 
-  AddModelsToPlanningScene();
-
   RCLCPP_INFO(this->get_logger(), "Initialization successful.");
 }
 
@@ -431,10 +429,7 @@ void TestCompetitor::AddModelToPlanningScene(
 
   collision.operation = collision.ADD;
 
-  std::vector<moveit_msgs::msg::CollisionObject> collision_objects;
-  collision_objects.push_back(collision);
-
-  planning_scene_.addCollisionObjects(collision_objects);
+  planning_scene_.applyCollisionObject(collision);
 }
 
 void TestCompetitor::AddModelsToPlanningScene()
@@ -489,14 +484,17 @@ void TestCompetitor::AddModelsToPlanningScene()
   };
 
   geometry_msgs::msg::Pose assembly_insert_pose;
+
   for (auto const &insert : assembly_insert_positions)
   {
-    assembly_insert_pose.position.x = insert.second.first;
-    assembly_insert_pose.position.y = insert.second.second;
-    assembly_insert_pose.position.z = 1.011;
-    assembly_insert_pose.orientation = QuaternionFromRPY(0, 0, 0);
+    // assembly_insert_pose.position.x = insert.second.first;
+    // assembly_insert_pose.position.y = insert.second.second;
+    // assembly_insert_pose.position.z = 1.011;
+    // assembly_insert_pose.orientation = QuaternionFromRPY(0, 0, 0);
 
-    AddModelToPlanningScene(insert.first, "assembly_insert.stl", assembly_insert_pose);
+    std::string frame_name = insert.first + "_frame";
+
+    AddModelToPlanningScene(insert.first, "assembly_insert.stl", FrameWorldPose(frame_name));
   }
 
   geometry_msgs::msg::Pose conveyor_pose;

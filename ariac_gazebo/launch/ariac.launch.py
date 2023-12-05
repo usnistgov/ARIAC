@@ -85,6 +85,7 @@ def launch_setup(context, *args, **kwargs):
         output='screen',
         parameters=[
             {"use_sim_time": True},
+            {'trial_config_path': trial_config_path},
         ]
     )
 

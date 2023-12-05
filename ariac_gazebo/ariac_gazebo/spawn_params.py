@@ -25,6 +25,13 @@ class SpawnParams:
             return ''
         
         return entity_xml
+    
+    def set_xml_from_file_path(self):
+        try:
+            f = open(self.file_path, 'r')
+            self.xml = f.read()
+        except IOError:
+            return
 
 
 class RobotSpawnParams(SpawnParams):

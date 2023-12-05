@@ -55,6 +55,8 @@ public:
 
   ~TestCompetitor();
 
+  void AddModelsToPlanningScene();
+
   // Floor Robot Public Functions
   void FloorRobotSendHome();
   bool FloorRobotSetGripperState(bool enable);
@@ -110,8 +112,7 @@ private:
   geometry_msgs::msg::Quaternion QuaternionFromRPY(double r, double p, double y);
 
   void AddModelToPlanningScene(std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose);
-  void AddModelsToPlanningScene();
-
+  
   // AGV location
   std::map<int, int> agv_locations_ = {{1, -1}, {2, -1}, {3, -1}, {4, -1}};
   

@@ -72,6 +72,7 @@ public:
   bool StartCompetition();
   bool EndCompetition();
   bool LockAGVTray(int agv_num);
+  bool UnlockAGVTray(int agv_num);
   bool MoveAGV(int agv_num, int destination);
   bool SubmitOrder(std::string order_id);
 

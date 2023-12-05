@@ -1834,6 +1834,22 @@ bool TestCompetitor::LockAGVTray(int agv_num)
   return future.get()->success;
 }
 
+bool TestCompetitor::UnlockAGVTray(int agv_num)
+{
+  rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr client;
+
+  std::string srv_name = "/ariac/agv" + std::to_string(agv_num) + "_unlock_tray";
+
+  client = this->create_client<std_srvs::srv::Trigger>(srv_name);
+
+  auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
+
+  auto future = client->async_send_request(request);
+  future.wait();
+
+  return future.get()->success;
+}
+
 bool TestCompetitor::MoveAGV(int agv_num, int destination)
 {
   rclcpp::Client<ariac_msgs::srv::MoveAGV>::SharedPtr client;

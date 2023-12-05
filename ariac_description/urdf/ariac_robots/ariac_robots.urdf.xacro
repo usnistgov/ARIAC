@@ -9,6 +9,14 @@
     <color rgba="${220/255} ${220/255} ${220/255} 1.0"/>
   </material>
 
+  <material name="Black">
+    <color rgba="${240/255} ${240/255} ${240/255} 1.0"/>
+  </material>
+
+  <material name="white">
+    <color rgba="${20/255} ${20/255} ${20/255} 1.0"/>
+  </material>
+
   <!-- Locate Robot Macros -->
   <xacro:include filename="$(find ariac_description)/urdf/floor_robot/floor_robot_macro.xacro"/>
   <xacro:include filename="$(find ariac_description)/urdf/ceiling_robot/ceiling_robot_macro.xacro"/>

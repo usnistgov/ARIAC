@@ -10,6 +10,7 @@ from itertools import cycle, count
 
 import rclpy
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterDescriptor
 
 from rclpy.qos import QoSProfile, DurabilityPolicy
@@ -102,6 +103,8 @@ class EnvironmentStartup(Node):
                                ParameterDescriptor(description='Path of the user\'s configuration yaml file'))
         self.declare_parameter('development_mode', False,
                                ParameterDescriptor(description='Whether to run the competition in development mode'))
+        self.declare_parameter('trial_log_folder', '',
+                               ParameterDescriptor(description='Whether to run the competition in development mode'))
 
         self.trial_config = self.read_yaml(
             self.get_parameter('trial_config_path').get_parameter_value().string_value)
@@ -193,28 +196,45 @@ class EnvironmentStartup(Node):
         message.trial_name = config_file_name
         self.trial_info_pub.publish(message)
 
-        # Find workspace location
-        ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+        # Creat log folder
+        trial_log_folder = self.get_parameter('trial_log_folder').get_parameter_value().string_value
 
-        # Find ariac folder
-        pkgs = [ f.name for f in os.scandir(ws + '/src/') if f.is_dir() ]
-        
-        parent_folder = ''
-        for pkg in pkgs:
-            if pkg.lower().count('ariac') >= 1:
-                parent_folder = ws + 'src/' + pkg + '/ariac_log/' 
-                break
-        
-        if not parent_folder:
-            self.get_logger().fatal("Unable to find ariac_logs directory")
-            return
+        if not trial_log_folder:
+            # Find workspace location
+            ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
 
-        trial_folder = message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
+            # Find ariac folder
+            pkgs = [ f.name for f in os.scandir(ws + '/src/') if f.is_dir() ]
+            
+            parent_folder = ''
+            for pkg in pkgs:
+                if pkg.lower().count('ariac') >= 1:
+                    parent_folder = ws + 'src/' + pkg + '/ariac_log/' 
+                    break
+            
+            if not parent_folder:
+                self.get_logger().fatal("Unable to find ariac_logs directory")
+                return
+
+            trial_log_folder = parent_folder + message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
+
+            trial_log_folder_param = Parameter(
+                'trial_log_folder',
+                rclpy.Parameter.Type.STRING,
+                trial_log_folder
+            )
+
+            self.set_parameters([trial_log_folder_param])
+
+        try:
+            os.mkdir(trial_log_folder)
+        except OSError:
+            self.get_logger().fatal("Unable to create log folder")
+
         self.get_logger().info(bcolors.OKCYAN + "ARIAC logs for this trial can be found at:" + bcolors.ENDC)
-        self.get_logger().info(bcolors.OKCYAN + '  ' + parent_folder + trial_folder + bcolors.ENDC)
+        self.get_logger().info(bcolors.OKCYAN + '  ' + trial_log_folder + bcolors.ENDC)
+
         
-        # Create trial log folder
-        os.mkdir(parent_folder + trial_folder)
 
 
     def convert_order_type_to_int(self, order_type):

@@ -47,6 +47,7 @@ public:
   gazebo::transport::SubscriberPtr contact_sub_;
   gazebo::transport::NodePtr gznode_;
 
+  // Position of warehouse for agv_joint 
   double warehouse_location_ = 17;
 
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr lock_tray_service_;

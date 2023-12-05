@@ -126,6 +126,18 @@ class EnvironmentStartup(Node):
         self.conveyor_status_sub = self.create_subscription(ConveyorBeltState,
                                                             '/ariac/conveyor_state', self.conveyor_status, 10)
 
+        # Sensor Costs
+        self.sensor_costs = {
+            'break_beam': 100,
+            'proximity': 100,            
+            'laser_profiler': 200,
+            'lidar': 300,
+            'rgb_camera': 300,
+            'rgbd_camera': 500,
+            'basic_logical_camera': 500,
+            'advanced_logical_camera': 2000,            
+        }
+
         # Create publishers for bin and conveyor parts
         self.bin_parts = BinParts()
         self.bin_parts_publisher = self.create_publisher(BinParts,
@@ -197,9 +209,9 @@ class EnvironmentStartup(Node):
         self.trial_info_pub.publish(message)
 
         # Creat log folder
-        trial_log_folder = self.get_parameter('trial_log_folder').get_parameter_value().string_value
+        self.trial_log_folder = self.get_parameter('trial_log_folder').get_parameter_value().string_value
 
-        if not trial_log_folder:
+        if not self.trial_log_folder:
             # Find workspace location
             ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
 
@@ -216,25 +228,23 @@ class EnvironmentStartup(Node):
                 self.get_logger().fatal("Unable to find ariac_logs directory")
                 return
 
-            trial_log_folder = parent_folder + message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
+            self.trial_log_folder = parent_folder + message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
 
             trial_log_folder_param = Parameter(
                 'trial_log_folder',
                 rclpy.Parameter.Type.STRING,
-                trial_log_folder
+                self.trial_log_folder
             )
 
             self.set_parameters([trial_log_folder_param])
 
         try:
-            os.mkdir(trial_log_folder)
+            os.mkdir(self.trial_log_folder)
         except OSError:
             self.get_logger().fatal("Unable to create log folder")
 
         self.get_logger().info(bcolors.OKCYAN + "ARIAC logs for this trial can be found at:" + bcolors.ENDC)
-        self.get_logger().info(bcolors.OKCYAN + '  ' + trial_log_folder + bcolors.ENDC)
-
-        
+        self.get_logger().info(bcolors.OKCYAN + '  ' + self.trial_log_folder + bcolors.ENDC)
 
 
     def convert_order_type_to_int(self, order_type):
@@ -873,6 +883,7 @@ class EnvironmentStartup(Node):
             user_sensors = []
 
         # Spawn user sensors
+        cost = 0
         for sensor_name in user_sensors:
             sensor_type = user_sensors[sensor_name]['type']
             xyz = user_sensors[sensor_name]['pose']['xyz']
@@ -889,9 +900,15 @@ class EnvironmentStartup(Node):
                     self.get_logger().error(bcolors.FAIL + "Advanced Logical Cameras can only be used in development mode" + bcolors.ENDC)
                     continue
 
+            cost += self.sensor_costs[sensor_type]
+
             params = SensorSpawnParams(
                 sensor_name, sensor_type, visualize=vis, xyz=xyz, rpy=rpy)
             self.spawn_entity(params)
+
+        # Create sensor log
+        with open(self.trial_log_folder + 'sensor_cost.txt', 'w') as f:
+            f.write(f"Total sensor cost is {cost}")
 
         # Spawn agv tray sensors
         for i in range(1, 5):

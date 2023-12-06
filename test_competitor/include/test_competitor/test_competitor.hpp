@@ -364,4 +364,12 @@ private:
     {"floor_wrist_2_joint", -1.57},
     {"floor_wrist_3_joint", 0.0}
   };
+
+  std::map<int, std::string> agv_destination_ = {
+    {ariac_msgs::msg::AGVStatus::KITTING, "kitting"},
+    {ariac_msgs::msg::AGVStatus::ASSEMBLY_FRONT, "assembly station front"},
+    {ariac_msgs::msg::AGVStatus::ASSEMBLY_BACK, "assembly station back"},
+    {ariac_msgs::msg::AGVStatus::WAREHOUSE, "warehouse"}
+  };
+  
 };

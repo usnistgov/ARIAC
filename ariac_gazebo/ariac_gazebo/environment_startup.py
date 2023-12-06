@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import time
 import math
 import yaml
 import xml.etree.ElementTree as ET
@@ -9,11 +10,12 @@ from itertools import cycle, count
 
 import rclpy
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from rcl_interfaces.msg import ParameterDescriptor
 
 from rclpy.qos import QoSProfile, DurabilityPolicy
 
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory, get_package_prefix
 
 from tf2_geometry_msgs import do_transform_pose
 from ariac_gazebo.utilities import quaternion_from_euler, euler_from_quaternion, convert_pi_string_to_float
@@ -101,6 +103,8 @@ class EnvironmentStartup(Node):
                                ParameterDescriptor(description='Path of the user\'s configuration yaml file'))
         self.declare_parameter('development_mode', False,
                                ParameterDescriptor(description='Whether to run the competition in development mode'))
+        self.declare_parameter('trial_log_folder', '',
+                               ParameterDescriptor(description='Whether to run the competition in development mode'))
 
         self.trial_config = self.read_yaml(
             self.get_parameter('trial_config_path').get_parameter_value().string_value)
@@ -121,6 +125,18 @@ class EnvironmentStartup(Node):
 
         self.conveyor_status_sub = self.create_subscription(ConveyorBeltState,
                                                             '/ariac/conveyor_state', self.conveyor_status, 10)
+
+        # Sensor Costs
+        self.sensor_costs = {
+            'break_beam': 100,
+            'proximity': 100,            
+            'laser_profiler': 200,
+            'lidar': 300,
+            'rgb_camera': 300,
+            'rgbd_camera': 500,
+            'basic_logical_camera': 500,
+            'advanced_logical_camera': 2000,            
+        }
 
         # Create publishers for bin and conveyor parts
         self.bin_parts = BinParts()
@@ -191,6 +207,44 @@ class EnvironmentStartup(Node):
         
         message.trial_name = config_file_name
         self.trial_info_pub.publish(message)
+
+        # Creat log folder
+        self.trial_log_folder = self.get_parameter('trial_log_folder').get_parameter_value().string_value
+
+        if not self.trial_log_folder:
+            # Find workspace location
+            ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+
+            # Find ariac folder
+            pkgs = [ f.name for f in os.scandir(ws + '/src/') if f.is_dir() ]
+            
+            parent_folder = ''
+            for pkg in pkgs:
+                if pkg.lower().count('ariac') >= 1:
+                    parent_folder = ws + 'src/' + pkg + '/ariac_log/' 
+                    break
+            
+            if not parent_folder:
+                self.get_logger().fatal("Unable to find ariac_logs directory")
+                return
+
+            self.trial_log_folder = parent_folder + message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
+
+            trial_log_folder_param = Parameter(
+                'trial_log_folder',
+                rclpy.Parameter.Type.STRING,
+                self.trial_log_folder
+            )
+
+            self.set_parameters([trial_log_folder_param])
+
+        try:
+            os.mkdir(self.trial_log_folder)
+        except OSError:
+            self.get_logger().fatal("Unable to create log folder")
+
+        self.get_logger().info(bcolors.OKCYAN + "ARIAC logs for this trial can be found at:" + bcolors.ENDC)
+        self.get_logger().info(bcolors.OKCYAN + '  ' + self.trial_log_folder + bcolors.ENDC)
 
 
     def convert_order_type_to_int(self, order_type):
@@ -829,6 +883,18 @@ class EnvironmentStartup(Node):
             user_sensors = []
 
         # Spawn user sensors
+        sensor_counts = {
+            'break_beam': 0,
+            'proximity': 0,            
+            'laser_profiler': 0,
+            'lidar': 0,
+            'rgb_camera': 0,
+            'rgbd_camera': 0,
+            'basic_logical_camera': 0,
+            'advanced_logical_camera': 0,            
+        }
+
+        total_cost = 0
         for sensor_name in user_sensors:
             sensor_type = user_sensors[sensor_name]['type']
             xyz = user_sensors[sensor_name]['pose']['xyz']
@@ -845,9 +911,19 @@ class EnvironmentStartup(Node):
                     self.get_logger().error(bcolors.FAIL + "Advanced Logical Cameras can only be used in development mode" + bcolors.ENDC)
                     continue
 
+            sensor_counts[sensor_type] += 1
+            total_cost += self.sensor_costs[sensor_type]
+
             params = SensorSpawnParams(
                 sensor_name, sensor_type, visualize=vis, xyz=xyz, rpy=rpy)
             self.spawn_entity(params)
+
+        # Create sensor log
+        with open(self.trial_log_folder + 'sensor_cost.txt', 'w') as f:
+            f.write('User Sensor Log\n\n')
+            for sensor in sensor_counts.keys():
+                f.write(f'Number of {sensor} used: {sensor_counts[sensor]}\n')
+            f.write(f"\n\nTotal sensor cost is: ${total_cost}")
 
         # Spawn agv tray sensors
         for i in range(1, 5):

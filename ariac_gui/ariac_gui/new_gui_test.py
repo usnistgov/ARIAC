@@ -39,7 +39,7 @@ from ariac_msgs.msg import (
     HumanChallenge as HumanChallengeMsg,
 )
 from geometry_msgs.msg import PoseStamped, Vector3, Pose, Point, Quaternion
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory, get_package_prefix
 from ariac_gui.utils import (build_competition_from_file, quaternion_from_euler, 
                              rpy_from_quaternion, 
                              BinPart, 
@@ -119,6 +119,11 @@ class GUI_CLASS(ctk.CTk):
 
         self.notebook = ttk.Notebook(self)
         self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
+
+        # Loaded file information
+        self.load_through_file_flag = False
+        self.file_name = ""
+        self.save_flag = True
 
         # Setup info
         self.time_limit = ctk.StringVar()
@@ -266,8 +271,14 @@ class GUI_CLASS(ctk.CTk):
 
         self.load_in_from_file_button = ctk.CTkButton(self, text="Load in data from file", command=self._load_file)
         self.load_in_from_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
+        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.save_file)
+        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
+        
 
         self._build_assembly_parts_pose_direction()
+
+        # File dict
+        self.file_dict = {}
     
     # =======================================================
     #            Load gui from a previous file
@@ -280,6 +291,8 @@ class GUI_CLASS(ctk.CTk):
                 yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
             self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
             self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+            self.load_through_file_flag = True
+            self.loaded_file_path = file_to_open.name
         except:
             pass
 
@@ -407,6 +420,16 @@ class GUI_CLASS(ctk.CTk):
         kitting_tray_canvas.create_window((90,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_1"))
         kitting_tray_canvas.create_window((310,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
         kitting_tray_canvas.pack(fill = BOTH, expand = 1)
+
+    def kitting_trays_to_dict(self):
+        slots = []
+        trays = []
+        for i in range(len(self.kitting_tray_selections)):
+            tray = self.kitting_tray_selections[i].get()
+            if tray != "":
+                slots.append(i+1)
+                trays.append(int(tray))
+        self.file_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
     
     # =======================================================
     #                 Bin Parts Functions
@@ -581,6 +604,38 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_counter.set(str(int(self.bin_parts_counter.get())+len(slot_indices)))
         window.destroy()
 
+    def bin_part_equal(self, part_1 : BinPart, part_2 : BinPart)->bool:
+        if part_1.part.color == part_2.part.color:
+            if part_1.part.type == part_2.part.type:
+                if part_1.rotation == part_2.rotation:
+                    if part_1.flipped == part_2.flipped:
+                        return True
+        return False
+    
+    def bin_parts_to_dict(self):
+        for bin in self.current_bin_parts.keys():
+            used_slots = []
+            for slot in range(9):
+                if self.current_bin_parts[bin][slot]!="" and slot not in used_slots:
+                    if "bins" not in self.file_dict.keys():
+                        self.file_dict["bins"] = {}
+                    temp_slots = []
+                    for i in range(slot,9):
+                        if self.bin_part_equal(self.bin_parts[bin][slot],self.bin_parts[bin][i]):
+                            temp_slots.append(i+1)
+                            used_slots.append(i)
+                    temp_bin_part_dict = {}
+                    temp_bin_part_dict["type"] = _part_type_str[self.bin_parts[bin][slot].part.type]
+                    temp_bin_part_dict["color"] = _part_color_str[self.bin_parts[bin][slot].part.color]
+                    temp_bin_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(self.bin_parts[bin][slot].rotation)]
+                    temp_bin_part_dict["flipped"] = True if self.bin_parts[bin][slot].flipped == "1" else False
+                    temp_bin_part_dict["slots"] = temp_slots
+                    try:
+                        self.file_dict["bins"][bin].append(temp_bin_part_dict)
+                    except:
+                        self.file_dict["bins"][bin] = []
+                        self.file_dict["bins"][bin].append(temp_bin_part_dict)
+                    
     # =======================================================
     #               Conveyor Parts Functions
     # =======================================================
@@ -1291,7 +1346,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_challenges_condition_widgets.append(submission_id_menu)
             
     def pack_and_append_challenge_widget(self, widget):
-        widget.pack(pady=10)
+        widget.pack(pady=2)
         self.current_challenges_widgets.append(widget)
 
     def show_main_challenges_menu(self, _,__,___):
@@ -1466,6 +1521,52 @@ class GUI_CLASS(ctk.CTk):
         self.reset_robot_malfunction_info()
         self.reset_sensor_blackout_info()
 
+    # =======================================================
+    #              Save configuration file
+    # =======================================================
+    def build_file_dict(self):
+        self.file_dict["time_limit"] = int(self.time_limit.get())
+        self.kitting_trays_to_dict()
+        self.bin_parts_to_dict()
+
+    def choose_save_location(self, window = None):
+        if window != None:
+            window.destroy()
+        ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+
+        pkgs = [ f.name for f in os.scandir(ws + '/src/') if f.is_dir() ]
+
+        trials_file_location = ''
+        for pkg in pkgs:
+            if pkg.lower().count('ariac') >= 1:
+                temp_folder = ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
+                if os.path.exists(temp_folder):
+                    trials_file_location = temp_folder
+                    break
+
+        file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=trials_file_location)
+        try:
+            self.file_name = file_to_open.name
+            self.save_flag = True
+        except:
+            self.save_flag = False
+
+    def save_file(self):
+        if self.load_through_file_flag:
+            overwrite_window = ctk.CTkToplevel()
+            overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.trial_name.get()}?")
+            overwrite_question_label.grid(column = MIDDLE_COLUMN, row = 0)
+            overwrite_yes_button = ctk.CTkButton(overwrite_window, text="Yes", command = overwrite_window.destroy)
+            overwrite_yes_button.grid(column = LEFT_COLUMN, row = 1)
+            overwrite_no_button = ctk.CTkButton(overwrite_window, text="No", command = partial(self.choose_save_location, overwrite_window))
+            overwrite_no_button.grid(column = RIGHT_COLUMN, row = 1)
+            overwrite_window.mainloop()
+        else:
+            self.choose_save_location()
+        if self.save_flag:
+            self.build_file_dict()
+            with open(self.file_name,'w') as f:
+                yaml.dump(self.file_dict,f,sort_keys=False)
 
     # =======================================================
     #               General Gui Functions

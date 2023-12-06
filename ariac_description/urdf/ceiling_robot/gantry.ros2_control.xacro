@@ -3,7 +3,7 @@
 
   <xacro:macro name="gantry_ros2_control" params="
     name
-    initial_positions:=${dict(gantry_x_axis_joint=0.0)}
+    initial_positions
     ">
 
     <ros2_control name="${name}" type="system">

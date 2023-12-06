@@ -883,7 +883,18 @@ class EnvironmentStartup(Node):
             user_sensors = []
 
         # Spawn user sensors
-        cost = 0
+        sensor_counts = {
+            'break_beam': 0,
+            'proximity': 0,            
+            'laser_profiler': 0,
+            'lidar': 0,
+            'rgb_camera': 0,
+            'rgbd_camera': 0,
+            'basic_logical_camera': 0,
+            'advanced_logical_camera': 0,            
+        }
+
+        total_cost = 0
         for sensor_name in user_sensors:
             sensor_type = user_sensors[sensor_name]['type']
             xyz = user_sensors[sensor_name]['pose']['xyz']
@@ -900,7 +911,8 @@ class EnvironmentStartup(Node):
                     self.get_logger().error(bcolors.FAIL + "Advanced Logical Cameras can only be used in development mode" + bcolors.ENDC)
                     continue
 
-            cost += self.sensor_costs[sensor_type]
+            sensor_counts[sensor_type] += 1
+            total_cost += self.sensor_costs[sensor_type]
 
             params = SensorSpawnParams(
                 sensor_name, sensor_type, visualize=vis, xyz=xyz, rpy=rpy)
@@ -908,7 +920,10 @@ class EnvironmentStartup(Node):
 
         # Create sensor log
         with open(self.trial_log_folder + 'sensor_cost.txt', 'w') as f:
-            f.write(f"Total sensor cost is {cost}")
+            f.write('User Sensor Log\n\n')
+            for sensor in sensor_counts.keys():
+                f.write(f'Number of {sensor} used: {sensor_counts[sensor]}\n')
+            f.write(f"\n\nTotal sensor cost is: ${total_cost}")
 
         # Spawn agv tray sensors
         for i in range(1, 5):

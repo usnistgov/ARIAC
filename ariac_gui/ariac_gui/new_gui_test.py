@@ -275,13 +275,19 @@ class GUI_CLASS(ctk.CTk):
 
     def _load_file(self):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')])
-        with open(file_to_open.name) as f:
-            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        try:
+            with open(file_to_open.name) as f:
+                yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+            self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+            self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        except:
+            pass
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.time_limit.set(competition.competition["time_limit"])
+
+        for i in range(len(competition.competition["kitting_trays"]["slots"])):
+            self.kitting_tray_selections[competition.competition["kitting_trays"]["slots"][i]-1].set(str(competition.competition["kitting_trays"]["tray_ids"][i]))
 
         self.bin_parts = competition.competition["bin_parts"]
         self.current_bin_parts = competition.competition["current_bin_parts"]
@@ -396,7 +402,7 @@ class GUI_CLASS(ctk.CTk):
                                         button_hover_color="#9e9e9e",
                                         anchor='center') for i in range(6)]
         for i in range(6):
-            kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"{i}:"))
+            kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"{i+1}:"))
             kitting_tray_canvas.create_window(menu_coordinates[i], window = tray_menus[i])
         kitting_tray_canvas.create_window((90,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_1"))
         kitting_tray_canvas.create_window((310,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
@@ -1294,7 +1300,7 @@ class GUI_CLASS(ctk.CTk):
         self.pack_and_append_challenge_widget(self.add_dropped_part_button)
         self.pack_and_append_challenge_widget(self.add_robot_malfunction_button)
         self.pack_and_append_challenge_widget(self.add_sensor_blackout_button)
-        if len(self.used_ids)>0:
+        if len(self.current_orders)>0:
             self.pack_and_append_challenge_widget(self.add_faulty_part_button)
         self.pack_and_append_challenge_widget(self.add_human_button)
     

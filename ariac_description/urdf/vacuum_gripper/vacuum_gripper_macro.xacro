@@ -2,8 +2,11 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
   <xacro:macro name="vacuum_gripper" params="
     parent
-    prefix">
+    prefix
+    use_camera:=true
+    ">
 
+    <!-- Gripper Link -->
     <link name="${prefix}_gripper">
       <visual name="${prefix}_gripper_visual">
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -21,57 +24,19 @@
       </collision>
       
       <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="0.01"/>
-        <inertia ixx="0.0000063" ixy="0.0" ixz="0.0" iyy="0.0000063" iyz="0.0" izz="0.000025"/>
+        <origin xyz="0 0 -0.005" rpy="0 0 0"/>
+        <mass value="0.102"/>
+        <inertia ixx="0.0000647" ixy="0.0" ixz="0.0" iyy="0.0000647" iyz="0.0" izz="0.0001276"/>
       </inertial>
     </link>
 
-    <link name ="${prefix}_camera_link">
-      <visual>
-        <origin xyz="0 0 -.06" rpy="1.57 0 0"/>
-        <geometry>
-          <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/camera_mount.stl" scale="1 1 1"/>
-        </geometry>
-      </visual>
-
-      <visual>
-        <origin xyz="0 .06 -.03" rpy="1.57 0 0"/>
-        <geometry>
-          <sphere radius=".01"/>
-        </geometry>
-      </visual>
-
-      
-    </link>
-
-    <gazebo reference="${prefix}_camera_link">
-      <material>Gazebo/Orange</material>
-    </gazebo>
-
-    <gazebo reference="${prefix}_gripper">
-      <visual name="${prefix}_gripper_visual">
-        <plugin filename="libGripperColorPlugin.so" name="${prefix}_gripper_color_plugin">
-          <ros>
-          </ros>
-          <robot_name>${prefix}_robot</robot_name>
-        </plugin>   
-      </visual>
-    </gazebo>
-
+    <!-- Gripper Joint -->
     <joint name="${prefix}_gripper_joint" type="revolute">
       <axis xyz="0 0 1"/>
       <parent link="${prefix}_${parent}"/>
       <child link="${prefix}_gripper"/>
       <limit lower="-.001" upper=".001" effort="1000" velocity="0" />
       <origin xyz="0.0 0.0 0.01" rpy="0.0 0.0 0.0"/>
-    </joint>
-
-    <joint name="${prefix}_camera_joint" type="fixed">
-      <axis xyz="0 1 0" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <parent link="${prefix}_gripper"/>
-      <child link="${prefix}_camera_link"/>
     </joint>
 
     <!-- Add a contact sensor to the gripper -->
@@ -84,6 +49,7 @@
       </sensor>
     </gazebo>
 
+    <!-- Vacuum gripper plugin -->
     <gazebo>
       <plugin filename="libVacuumGripperPlugin.so" name="${prefix}_vacuum_gripper_plugin">
         <ros>
@@ -93,6 +59,18 @@
       </plugin>
     </gazebo>
 
+    <!-- Color change plugin -->
+    <gazebo reference="${prefix}_gripper">
+      <visual name="${prefix}_gripper_visual">
+        <plugin filename="libGripperColorPlugin.so" name="${prefix}_gripper_color_plugin">
+          <ros>
+          </ros>
+          <robot_name>${prefix}_robot</robot_name>
+        </plugin>   
+      </visual>
+    </gazebo>
+
+    <!-- ROS2 Control for the gripper joint -->
     <ros2_control name="${prefix}_gripper_control" type="system">
       <hardware>
         <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -103,6 +81,52 @@
         </state_interface>
       </joint>
     </ros2_control>
+
+    <!-- Camera -->
+    <xacro:if value="${use_camera}">
+      <link name ="${prefix}_camera_mount_link">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/camera_mount.stl" scale="1 1 1"/>
+          </geometry>
+        </visual>
+      </link>
+
+      <link name ="${prefix}_camera_link">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/camera.stl" scale="1 1 1"/>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- Add camera mount joint -->
+      <joint name="${prefix}_camera_mount_joint" type="fixed">
+        <axis xyz="0 1 0" />
+        <origin xyz="0 0 -0.012" rpy="0 0 3.14"/>
+        <parent link="${prefix}_gripper"/>
+        <child link="${prefix}_camera_mount_link"/>
+      </joint>
+
+      <joint name="${prefix}_camera_joint" type="fixed">
+        <axis xyz="0 1 0" />
+        <origin xyz="0 -.07 -.006" rpy="0 0 0"/>
+        <parent link="${prefix}_camera_mount_link"/>
+        <child link="${prefix}_camera_link"/>
+      </joint>
+
+      <!-- Add color to links -->
+      <gazebo reference="${prefix}_camera_mount_link">
+        <material>Gazebo/Black</material>
+      </gazebo>
+
+      <gazebo reference="${prefix}_camera_link">
+        <material>Gazebo/White</material>
+      </gazebo>
+
+    </xacro:if>
 
   </xacro:macro>
 </robot>

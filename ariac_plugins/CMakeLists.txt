@@ -24,6 +24,16 @@ find_package(orocos_kdl REQUIRED)
 
 link_directories(${gazebo_dev_LIBRARY_DIRS})
 
+# Light Malfunction Challenge
+add_library(LightMalfunctionPlugin SHARED src/light_malfunction_plugin.cpp)
+target_include_directories(LightMalfunctionPlugin PUBLIC ${GAZEBO_INCLUDE_DIRS} PUBLIC include)
+target_link_libraries(LightMalfunctionPlugin ${GAZEBO_LIBRARIES})
+ament_target_dependencies(LightMalfunctionPlugin
+  "gazebo_ros"
+)
+ament_export_libraries(LightMalfunctionPlugin)
+
+
 # Vacuum Gripper
 add_library(VacuumGripperPlugin SHARED
   src/vacuum_gripper_plugin.cpp

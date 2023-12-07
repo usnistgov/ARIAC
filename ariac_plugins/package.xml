@@ -6,6 +6,7 @@
   <description>TODO: Package description</description>
   <maintainer email="justin.albrecht@nist.gov">justin albrecht</maintainer>
   <maintainer email="zeid.kootbally@nist.gov">zeid kootbally</maintainer>
+  <maintainer email="sparsh.bhogavilli@nist.gov">sparsh bhogavilli</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

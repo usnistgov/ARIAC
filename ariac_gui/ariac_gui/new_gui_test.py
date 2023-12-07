@@ -14,6 +14,7 @@ from math import pi
 import random
 import string
 import yaml
+from copy import copy
 
 from click import command
 from ariac_msgs.msg import (
@@ -37,6 +38,7 @@ from ariac_msgs.msg import (
     SensorBlackoutChallenge as SensorBlackoutChallengeMsg,
     RobotMalfunctionChallenge as RobotMalfunctionChallengeMsg,
     HumanChallenge as HumanChallengeMsg,
+    Challenge as ChallengeMsg
 )
 from geometry_msgs.msg import PoseStamped, Vector3, Pose, Point, Quaternion
 from ament_index_python.packages import get_package_share_directory, get_package_prefix
@@ -80,6 +82,7 @@ TRAY_IDS=[str(i) for i in range(10)]
 SENSORS = ["break_beam", "proximity", "laser_profiler", "lidar", "camera", "logical_camera"]
 ROBOTS = ["floor_robot", "ceiling_robot"]
 BEHAVIORS = ["antagonistic","indifferent","helpful"]
+CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction","human"]
 
 
 _part_color_ints = {"RED":0,
@@ -102,7 +105,22 @@ _assembly_part_poses = {}
 
 _assembly_part_install_directions = {}
 
-
+_assembly_part_pose_and_direction_dicts = {"SENSOR":{"assembled_pose":{"xyz":[-0.1,0.395,0.045],
+                                                                       "rpy":[0,0,'-pi/2']
+                                                                       },
+                                                                       "assembly_direction":[0,-1,0]},
+                                           "BATTERY":{"assembled_pose":{"xyz":[-0.15,0.035,0.043],
+                                                                       "rpy":[0,0,'pi/2']
+                                                                       },
+                                                                       "assembly_direction":[0,1,0]},
+                                            "REGULATOR":{"assembled_pose":{"xyz":[0.175,-0.223,0.215],
+                                                                       "rpy":['pi/2',0,'-pi/2']
+                                                                       },
+                                                                       "assembly_direction":[0,0,-1]},
+                                            "PUMP":{"assembled_pose":{"xyz":[0.14,0.0,0.02],
+                                                                       "rpy":[0,0,'-pi/2']
+                                                                       },
+                                                                       "assembly_direction":[0,0,-1]}}
 
 class GUI_CLASS(ctk.CTk):
     def __init__(self):
@@ -124,6 +142,19 @@ class GUI_CLASS(ctk.CTk):
         self.load_through_file_flag = False
         self.file_name = ""
         self.save_flag = True
+
+        # Trial files location
+        self.ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+
+        self.pkgs = [ f.name for f in os.scandir(self.ws + '/src/') if f.is_dir() ]
+
+        self.trials_file_location = ''
+        for pkg in self.pkgs:
+            if pkg.lower().count('ariac') >= 1:
+                temp_folder = self.ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
+                if os.path.exists(temp_folder):
+                    self.trials_file_location = temp_folder
+                    break
 
         # Setup info
         self.time_limit = ctk.StringVar()
@@ -215,7 +246,7 @@ class GUI_CLASS(ctk.CTk):
         # Sensor blackout challenge variables
         self.sensor_blackout_info = {}
         self.sensor_blackout_info["duration"] = ctk.StringVar()
-        self.sensor_blackout_info["sensors_to_disable"] = [ctk.StringVar() for _ in range(len(SENSORS))]
+        self.sensor_blackout_info["sensors_to_disable"] = {SENSORS[i]:ctk.StringVar() for i in range(len(SENSORS))}
 
         # Faulty part challenge variables
         self.faulty_part_info = {}
@@ -285,7 +316,7 @@ class GUI_CLASS(ctk.CTk):
     # =======================================================
 
     def _load_file(self):
-        file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')])
+        file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location)
         try:
             with open(file_to_open.name) as f:
                 yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
@@ -796,6 +827,26 @@ class GUI_CLASS(ctk.CTk):
             self.conveyor_parts[index] = ConveyorPart(color, pType,conveyor_part_vals["num_parts"].get(),conveyor_part_vals["offset"].get(), conveyor_part_vals["rotation"].get(),conveyor_part_vals["flipped"].get())
             self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
         window.destroy()
+    
+    def conveyor_parts_to_dict(self):
+        if len(self.conveyor_parts)>0:
+            self.file_dict["conveyor_belt"] = {}
+            self.file_dict["conveyor_belt"]["active"] = True if self.conveyor_setup_vals["active"].get() == "1" else False
+            self.file_dict["conveyor_belt"]["spawn_rate"] = float(self.conveyor_setup_vals["spawn_rate"].get())
+            self.file_dict["conveyor_belt"]["order"] = self.conveyor_setup_vals["order"].get()
+            self.file_dict["conveyor_belt"]["parts_to_spawn"] = []
+            temp_conveyor_parts = []
+            for part in self.conveyor_parts:
+                part : ConveyorPart
+                temp_conveyor_part_dict = {}
+                temp_conveyor_part_dict["type"]=_part_type_str[part.part_lot.part.type].lower()
+                temp_conveyor_part_dict["color"]=_part_color_str[part.part_lot.part.color].lower()
+                temp_conveyor_part_dict["number"] = part.part_lot.quantity
+                temp_conveyor_part_dict["offset"] = part.offset
+                temp_conveyor_part_dict["flipped"] = True if part.flipped == "1" else False
+                temp_conveyor_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
+                self.file_dict["conveyor_belt"]["parts_to_spawn"].append(temp_conveyor_part_dict)
+
 
     # =======================================================
     #                 Order Functions
@@ -871,7 +922,6 @@ class GUI_CLASS(ctk.CTk):
             self.order_info["kitting_task"]["parts"] = order.kitting_task.parts
 
         elif order.type == 1:
-            print(order.assembly_task.station)
             for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
                 self.order_info["assembly_task"]["agv_numbers"][i].set("1" if i+1 in order.assembly_task.agv_numbers else "0")
             self.order_info["assembly_task"]["station"].set(order.assembly_task.station)
@@ -1222,7 +1272,7 @@ class GUI_CLASS(ctk.CTk):
         else:
             new_order.id = self.current_orders[index].id
         new_order.type = ORDER_TYPES.index(self.order_info["order_type"].get())
-        new_order.priority = True if self.order_info["priority"].get() == 1 else False
+        new_order.priority = True if self.order_info["priority"].get() == "1" else False
         if self.order_info["order_type"].get() == "kitting":
             new_order.kitting_task = self.create_kitting_task_msg()
         elif self.order_info["order_type"].get() == "assembly":
@@ -1270,6 +1320,56 @@ class GUI_CLASS(ctk.CTk):
         new_combined_task.station = ASSEMBLY_STATIONS.index(self.order_info["combined_task"]["station"].get())
         new_combined_task.parts = self.order_info["combined_task"]["parts"]
         return new_combined_task
+
+    def orders_to_dict(self):
+        if len(self.current_orders)>0:
+            self.file_dict["orders"] = []
+            for order in self.current_orders:
+                temp_order_dict = {}
+                order : OrderMsg
+                temp_order_dict["id"] = order.id
+                temp_order_dict["type"] = ORDER_TYPES[order.type]
+                temp_order_dict["announcement"] = self.announcement_to_dict(order.condition)
+                temp_order_dict["priority"] = order.priority
+                if order.type == 0:
+                    temp_order_dict["kitting_task"] = {}
+                    temp_order_dict["kitting_task"]["agv_number"] = order.kitting_task.agv_number
+                    temp_order_dict["kitting_task"]["tray_id"] = order.kitting_task.tray_id
+                    temp_order_dict["kitting_task"]["destination"] = "warehouse"
+                    temp_order_dict["kitting_task"]["products"] = []
+                    for part in order.kitting_task.parts:
+                        part : KittingPartMsg
+                        temp_kitting_part_dict = {}
+                        temp_kitting_part_dict["type"] = _part_type_str[part.part.type].lower()
+                        temp_kitting_part_dict["color"] = _part_color_str[part.part.color].lower()
+                        temp_kitting_part_dict["quadrant"] = part.quadrant
+                        temp_order_dict["kitting_task"]["products"].append(temp_kitting_part_dict)
+                elif order.type == 1:
+                    temp_order_dict["assembly_task"] = {}
+                    temp_order_dict["assembly_task"]["agv_number"] = order.assembly_task.agv_numbers
+                    temp_order_dict["assembly_task"]["station"] = order.assembly_task.station
+                    temp_order_dict["assembly_task"]["products"] = []
+                    for part in order.assembly_task.parts:
+                        part : AssemblyPartMsg
+                        temp_assembly_part_dict = {}
+                        temp_assembly_part_dict["type"] = _part_type_str[part.part.type].lower()
+                        temp_assembly_part_dict["color"] = _part_color_str[part.part.color].lower()
+                        for key in _assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()].keys():
+                            temp_assembly_part_dict[key] = copy(_assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()][key])
+                        temp_order_dict["assembly_task"]["products"].append(temp_assembly_part_dict)
+                else:
+                    temp_order_dict["combined_task"] = {}
+                    temp_order_dict["combined_task"]["station"] = order.combined_task.station
+                    temp_order_dict["combined_task"]["products"] = []
+                    for part in order.combined_task.parts:
+                        part : AssemblyPartMsg
+                        temp_combined_part_dict = {}
+                        temp_combined_part_dict["type"] = _part_type_str[part.part.type].lower()
+                        temp_combined_part_dict["color"] = _part_color_str[part.part.color].lower()
+                        for key in _assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()].keys():
+                            temp_combined_part_dict[key] = copy(_assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()][key])
+                        temp_order_dict["combined_task"]["products"].append(temp_combined_part_dict)
+                self.file_dict["orders"].append(temp_order_dict)
     
     # =======================================================
     #                  Challenges functions
@@ -1358,6 +1458,9 @@ class GUI_CLASS(ctk.CTk):
         if len(self.current_orders)>0:
             self.pack_and_append_challenge_widget(self.add_faulty_part_button)
         self.pack_and_append_challenge_widget(self.add_human_button)
+        for challenge in self.current_challenges:
+            challenge : ChallengeMsg
+            self.pack_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame, text=CHALLENGE_TYPES[challenge.type]))
     
     def clear_challenges_menu(self):
         for widget in self.current_challenges_widgets:
@@ -1403,10 +1506,22 @@ class GUI_CLASS(ctk.CTk):
         self.pack_and_append_challenge_widget(delay_entry)
 
         self.save_challenge_button.configure(text="Save dropped part challenge", command=partial(self.save_challenge, "dropped_part"))
-        self.save_challenge_button.pack(side=tk.BOTTOM)
-        self.current_challenges_widgets.append(self.save_challenge_button)
         self.cancel_challenge_button.pack(side=tk.BOTTOM)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+    
+    def save_dropped_part_challenge(self):
+        new_challenge = ChallengeMsg()
+        new_challenge.type = 1
+        dropped_part_challenge = DroppedPartChallengeMsg()
+        dropped_part_challenge.robot = self.dropped_part_info["robot"].get()
+        dropped_part_challenge.part_to_drop.type = _part_type_ints[self.dropped_part_info["type"].get().upper()]
+        dropped_part_challenge.part_to_drop.color = _part_color_ints[self.dropped_part_info["color"].get().upper()]
+        dropped_part_challenge.drop_after_num = int(self.dropped_part_info["drop_after"].get())
+        dropped_part_challenge.drop_after_time = float(self.dropped_part_info["delay"].get())
+        new_challenge.dropped_part_challenge = dropped_part_challenge
+        self.current_challenges.append(new_challenge)
 
     def reset_robot_malfunction_info(self):
         self.robot_malfunction_info["duration"].set('0.0')
@@ -1431,15 +1546,35 @@ class GUI_CLASS(ctk.CTk):
         self.show_challenges_condition_menu()
 
         self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction"))
-        self.save_challenge_button.pack(side=tk.BOTTOM)
-        self.current_challenges_widgets.append(self.save_challenge_button)
         self.cancel_challenge_button.pack(side=tk.BOTTOM)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+        
     
+    def save_robot_malfunction_challenge(self):
+        new_challenge = ChallengeMsg()
+        new_challenge.type = 3
+        robot_malfunction_challenge = RobotMalfunctionChallengeMsg()
+        robot_malfunction_challenge.duration = float(self.robot_malfunction_info["duration"].get())
+        robot_malfunction_challenge.condition.type = CONDITION_TYPE.index(self.challenge_condition_type.get())
+        if self.challenge_condition_type.get()=="time":
+            robot_malfunction_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
+        elif self.challenge_condition_type.get()=="part_place":
+            robot_malfunction_challenge.condition.part_place_condition.part.color = _part_color_ints[self.challenge_condition_info["color"].get().upper()]
+            robot_malfunction_challenge.condition.part_place_condition.part.type = _part_type_ints[self.challenge_condition_info["type"].get().upper()]
+            robot_malfunction_challenge.condition.part_place_condition.agv = int(self.challenge_condition_info["agv"].get())
+        else:
+            robot_malfunction_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
+        robot_malfunction_challenge.robots_to_disable.floor_robot = True if self.robot_malfunction_info["floor_robot"].get()=="1" else False
+        robot_malfunction_challenge.robots_to_disable.ceiling_robot = True if self.robot_malfunction_info["ceiling_robot"].get()=="1" else False
+        new_challenge.robot_malfunction_challenge = robot_malfunction_challenge
+        self.current_challenges.append(new_challenge)
+
     def reset_sensor_blackout_info(self):
         self.sensor_blackout_info["duration"].set('0.0')
-        for variable in self.sensor_blackout_info["sensors_to_disable"]:
-            variable.set('0')
+        for sensor in SENSORS:
+            self.sensor_blackout_info["sensors_to_disable"][sensor].set('0')
 
     def add_sensor_blackout_challenge(self):
         self.clear_challenges_menu()
@@ -1452,16 +1587,39 @@ class GUI_CLASS(ctk.CTk):
         sensors_label = ctk.CTkLabel(self.challenges_frame, text="Select the sensors for the sensor blackout")
         self.pack_and_append_challenge_widget(sensors_label)
         for i in range(len(self.sensor_blackout_info["sensors_to_disable"])):
-            sensor_cb = ctk.CTkCheckBox(self.challenges_frame,text=SENSORS[i],variable=self.sensor_blackout_info["sensors_to_disable"][i], onvalue="1", offvalue="0", height=1, width=20)
+            sensor_cb = ctk.CTkCheckBox(self.challenges_frame,text=SENSORS[i],variable=self.sensor_blackout_info["sensors_to_disable"][SENSORS[i]], onvalue="1", offvalue="0", height=1, width=20)
             self.pack_and_append_challenge_widget(sensor_cb)
         
         self.show_challenges_condition_menu()
 
         self.save_challenge_button.configure(text="Save sensor blackout challenge", command=partial(self.save_challenge, "sensor_blackout"))
-        self.save_challenge_button.pack(side=tk.BOTTOM)
-        self.current_challenges_widgets.append(self.save_challenge_button)
         self.cancel_challenge_button.pack(side=tk.BOTTOM)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+    
+    def save_sensor_blackout_challenge(self):
+        new_challenge = ChallengeMsg()
+        new_challenge.type = 2
+        sensor_blackout_challenge = SensorBlackoutChallengeMsg()
+        sensor_blackout_challenge.duration = float(self.sensor_blackout_info["duration"].get())
+        sensor_blackout_challenge.condition.type = CONDITION_TYPE.index(self.challenge_condition_type.get())
+        if self.challenge_condition_type.get()=="time":
+            sensor_blackout_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
+        elif self.challenge_condition_type.get()=="part_place":
+            sensor_blackout_challenge.condition.part_place_condition.part.color = _part_color_ints[self.challenge_condition_info["color"].get().upper()]
+            sensor_blackout_challenge.condition.part_place_condition.part.type = _part_type_ints[self.challenge_condition_info["type"].get().upper()]
+            sensor_blackout_challenge.condition.part_place_condition.agv = int(self.challenge_condition_info["agv"].get())
+        else:
+            sensor_blackout_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
+        sensor_blackout_challenge.sensors_to_disable.break_beam = self.sensor_blackout_info["sensors_to_disable"]["break_beam"].get() == "1"
+        sensor_blackout_challenge.sensors_to_disable.camera = self.sensor_blackout_info["sensors_to_disable"]["camera"].get() == "1"
+        sensor_blackout_challenge.sensors_to_disable.laser_profiler = self.sensor_blackout_info["sensors_to_disable"]["laser_profiler"].get() == "1"
+        sensor_blackout_challenge.sensors_to_disable.lidar = self.sensor_blackout_info["sensors_to_disable"]["lidar"].get() == "1"
+        sensor_blackout_challenge.sensors_to_disable.proximity = self.sensor_blackout_info["sensors_to_disable"]["proximity"].get() == "1"
+        sensor_blackout_challenge.sensors_to_disable.logical_camera = self.sensor_blackout_info["sensors_to_disable"]["logical_camera"].get() == "1"
+        new_challenge.sensor_blackout_challenge = sensor_blackout_challenge
+        self.current_challenges.append(new_challenge)
     
     def reset_faulty_part_info(self):
         self.faulty_part_info["order_id"].set("" if len(self.used_ids) == 0 else self.used_ids[0])
@@ -1483,10 +1641,22 @@ class GUI_CLASS(ctk.CTk):
             self.pack_and_append_challenge_widget(quadrants_cb)
 
         self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part"))
-        self.save_challenge_button.pack(side=tk.BOTTOM)
-        self.current_challenges_widgets.append(self.save_challenge_button)
         self.cancel_challenge_button.pack(side=tk.BOTTOM)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+    
+    def save_faulty_part_challenge(self):
+        new_challenge = ChallengeMsg()
+        new_challenge.type = 0
+        faulty_part_challenge = FaultyPartChallengeMsg()
+        faulty_part_challenge.order_id = self.faulty_part_info["order_id"].get()
+        faulty_part_challenge.quadrant1 = self.faulty_part_info["quadrants"][0].get()=="1"
+        faulty_part_challenge.quadrant2 = self.faulty_part_info["quadrants"][1].get()=="1"
+        faulty_part_challenge.quadrant3 = self.faulty_part_info["quadrants"][2].get()=="1"
+        faulty_part_challenge.quadrant4 = self.faulty_part_info["quadrants"][3].get()=="1"
+        new_challenge.faulty_part_challenge = faulty_part_challenge
+        self.current_challenges.append(new_challenge)
 
     def reset_human_info(self):
         self.human_info["behavior"].set(BEHAVIORS[0])
@@ -1502,13 +1672,38 @@ class GUI_CLASS(ctk.CTk):
         self.show_challenges_condition_menu()
 
         self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human"))
-        self.save_challenge_button.pack(side=tk.BOTTOM)
-        self.current_challenges_widgets.append(self.save_challenge_button)
         self.cancel_challenge_button.pack(side=tk.BOTTOM)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
+        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.current_challenges_widgets.append(self.save_challenge_button)
+    
+    def save_human_challenge(self):
+        new_challenge = ChallengeMsg()
+        new_challenge.type = 4
+        human_challenge = HumanChallengeMsg()
+        human_challenge.behavior = BEHAVIORS.index(self.human_info["behavior"].get())
+        if self.challenge_condition_type.get()=="time":
+            human_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
+        elif self.challenge_condition_type.get()=="part_place":
+            human_challenge.condition.part_place_condition.part.color = _part_color_ints[self.challenge_condition_info["color"].get().upper()]
+            human_challenge.condition.part_place_condition.part.type = _part_type_ints[self.challenge_condition_info["type"].get().upper()]
+            human_challenge.condition.part_place_condition.agv = int(self.challenge_condition_info["agv"].get())
+        else:
+            human_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
+        new_challenge.human_challenge = human_challenge
+        self.current_challenges.append(new_challenge)
 
     def save_challenge(self, type_of_challenge:str):
-        print(type_of_challenge)
+        if type_of_challenge == "dropped_part":
+            self.save_dropped_part_challenge()
+        elif type_of_challenge == "robot_malfunction":
+            self.save_robot_malfunction_challenge()
+        elif type_of_challenge == "sensor_blackout":
+            self.save_sensor_blackout_challenge()
+        elif type_of_challenge == "faulty_part":
+            self.save_faulty_part_challenge()
+        else:
+            self.save_human_challenge()
         self.reset_all_challenges()
         self.clear_challenges_menu()
         self.show_main_challenges_menu(1,1,1)
@@ -1520,6 +1715,77 @@ class GUI_CLASS(ctk.CTk):
         self.reset_human_info()
         self.reset_robot_malfunction_info()
         self.reset_sensor_blackout_info()
+    
+    def challenges_to_dict(self):
+        if len(self.current_challenges)>0:
+            self.file_dict["challenges"] = []
+            for challenge in self.current_challenges:
+                challenge:ChallengeMsg
+                if challenge.type == ChallengeMsg.DROPPED_PART:
+                    dropped_part_dict = {"dropped_part":{}}
+                    dropped_part_dict["dropped_part"]["robot"] = challenge.dropped_part_challenge.robot
+                    dropped_part_dict["dropped_part"]["type"] = _part_type_str[challenge.dropped_part_challenge.part_to_drop.type]
+                    dropped_part_dict["dropped_part"]["color"] = _part_color_str[challenge.dropped_part_challenge.part_to_drop.color]
+                    dropped_part_dict["dropped_part"]["drop_after"] = challenge.dropped_part_challenge.drop_after_num
+                    dropped_part_dict["dropped_part"]["delay"] = challenge.dropped_part_challenge.drop_after_time
+                    self.file_dict["challenges"].append(dropped_part_dict)
+
+                elif challenge.type == ChallengeMsg.FAULTY_PART:
+                    faulty_part_dict = {"faulty_part":{}}
+                    faulty_part_dict["faulty_part"]["order_id"] = challenge.faulty_part_challenge.order_id
+                    if challenge.faulty_part_challenge.quadrant1:
+                        faulty_part_dict["faulty_part"]["quadrant1"] = True
+                    if challenge.faulty_part_challenge.quadrant2:
+                        faulty_part_dict["faulty_part"]["quadrant2"] = True
+                    if challenge.faulty_part_challenge.quadrant3:
+                        faulty_part_dict["faulty_part"]["quadrant3"] = True
+                    if challenge.faulty_part_challenge.quadrant4:
+                        faulty_part_dict["faulty_part"]["quadrant4"] = True
+                    self.file_dict["challenges"].append(faulty_part_dict)
+
+                elif challenge.type == ChallengeMsg.HUMAN:
+                    human_dict = {"human":{}}
+                    human_dict["human"]["behavior"] = BEHAVIORS[challenge.human_challenge.behavior]
+                    condition_dict = self.announcement_to_dict(challenge.human_challenge.condition)
+                    for key in condition_dict.keys():
+                        human_dict["human"][key] = condition_dict[key]
+                    self.file_dict["challenges"].append(human_dict)
+
+                elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
+                    robot_malfunction_dict = {"robot_malfunction":{}}
+                    robot_malfunction_dict["robot_malfunction"]["duration"] = challenge.robot_malfunction_challenge.duration
+                    robot_malfunction_dict["robot_malfunction"]["robots_to_disable"] = []
+                    if challenge.robot_malfunction_challenge.robots_to_disable.floor_robot:
+                        robot_malfunction_dict["robot_malfunction"]["robots_to_disable"].append("floor_robot")
+                    if challenge.robot_malfunction_challenge.robots_to_disable.ceiling_robot:
+                        robot_malfunction_dict["robot_malfunction"]["robots_to_disable"].append("ceiling_robot")
+                    condition_dict = self.announcement_to_dict(challenge.robot_malfunction_challenge.condition)
+                    for key in condition_dict.keys():
+                        robot_malfunction_dict["robot_malfunction"][key] = copy(condition_dict[key])
+                    self.file_dict["challenges"].append(robot_malfunction_dict)
+                    
+
+                else:
+                    sensor_blackout_dict = {"sensor_blackout":{}}
+                    sensor_blackout_dict["sensor_blackout"]["duration"] = challenge.sensor_blackout_challenge.duration
+                    sensor_blackout_dict["sensor_blackout"]["sensors_to_disable"] = []
+                    if challenge.sensor_blackout_challenge.sensors_to_disable.break_beam:
+                        sensor_blackout_dict["sensor_blackout"]["sensors_to_disable"].append("break_beam")
+                    if challenge.sensor_blackout_challenge.sensors_to_disable.lidar:
+                        sensor_blackout_dict["sensor_blackout"]["sensors_to_disable"].append("lidar")
+                    if challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler:
+                        sensor_blackout_dict["sensor_blackout"]["sensors_to_disable"].append("laser_profiler")
+                    if challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera:
+                        sensor_blackout_dict["sensor_blackout"]["sensors_to_disable"].append("logical_camera")
+                    if challenge.sensor_blackout_challenge.sensors_to_disable.camera:
+                        sensor_blackout_dict["sensor_blackout"]["sensors_to_disable"].append("camera")
+                    if challenge.sensor_blackout_challenge.sensors_to_disable.proximity:
+                        sensor_blackout_dict["sensor_blackout"]["sensors_to_disable"].append("proximity")
+                    condition_dict = self.announcement_to_dict(challenge.sensor_blackout_challenge.condition)
+                    for key in condition_dict.keys():
+                        sensor_blackout_dict["sensor_blackout"][key] = copy(condition_dict[key])
+                    self.file_dict["challenges"].append(sensor_blackout_dict)
+
 
     # =======================================================
     #              Save configuration file
@@ -1528,23 +1794,16 @@ class GUI_CLASS(ctk.CTk):
         self.file_dict["time_limit"] = int(self.time_limit.get())
         self.kitting_trays_to_dict()
         self.bin_parts_to_dict()
+        self.conveyor_parts_to_dict()
+        self.orders_to_dict()
+        self.challenges_to_dict()
 
     def choose_save_location(self, window = None):
         if window != None:
             window.destroy()
-        ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+        
 
-        pkgs = [ f.name for f in os.scandir(ws + '/src/') if f.is_dir() ]
-
-        trials_file_location = ''
-        for pkg in pkgs:
-            if pkg.lower().count('ariac') >= 1:
-                temp_folder = ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
-                if os.path.exists(temp_folder):
-                    trials_file_location = temp_folder
-                    break
-
-        file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=trials_file_location)
+        file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location)
         try:
             self.file_name = file_to_open.name
             self.save_flag = True
@@ -1554,7 +1813,7 @@ class GUI_CLASS(ctk.CTk):
     def save_file(self):
         if self.load_through_file_flag:
             overwrite_window = ctk.CTkToplevel()
-            overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.trial_name.get()}?")
+            overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.trial_name.get()}.yaml?")
             overwrite_question_label.grid(column = MIDDLE_COLUMN, row = 0)
             overwrite_yes_button = ctk.CTkButton(overwrite_window, text="Yes", command = overwrite_window.destroy)
             overwrite_yes_button.grid(column = LEFT_COLUMN, row = 1)
@@ -1575,6 +1834,18 @@ class GUI_CLASS(ctk.CTk):
         newvalue = min(SLIDER_VALUES, key=lambda x:abs(x-float(value.get())))
         slider.set(newvalue)
         label.configure(text=f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(newvalue)]}")
+    
+    def announcement_to_dict(self, announcement : ConditionMsg)->dict:
+        temp_announcement_dict = {}
+        if announcement.type == 0:
+            temp_announcement_dict["time_condition"] = announcement.time_condition.seconds
+        elif announcement.type == 1:
+            temp_announcement_dict["part_place_condition"] = {"color":_part_color_str[announcement.part_place_condition.part.color],
+                                                              "type":_part_type_str[announcement.part_place_condition.part.type],
+                                                              "agv": announcement.part_place_condition.agv}
+        else:
+            temp_announcement_dict["submission_condition"] = {"order_id":announcement.submission_condition.order_id}
+        return temp_announcement_dict
 
 
 if __name__=="__main__":

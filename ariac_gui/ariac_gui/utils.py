@@ -177,7 +177,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
         for part in yaml_dict["parts"]["conveyor_belt"]["parts_to_spawn"]:
             num_parts = part["number"]
             try:
-                part_offset = SLIDER_VALUES[SLIDER_STR.index(part["offset"])]
+                part_offset = part["offset"]
             except:
                 part_offset = 0.0
             try:

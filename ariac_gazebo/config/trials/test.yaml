@@ -1,0 +1,10 @@
+time_limit: 0
+kitting_trays:
+  tray_ids: []
+  slots: []
+challenges:
+- robot_malfunction:
+    duration: 0.0
+    robots_to_disable:
+    - floor_robot
+    time_condition: 0.0

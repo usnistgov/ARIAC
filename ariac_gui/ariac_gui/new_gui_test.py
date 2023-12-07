@@ -1954,11 +1954,10 @@ class GUI_CLASS(ctk.CTk):
         file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location)
         try:
             self.file_name = file_to_open.name
-            self.save_flag = True
             self.save_file()
         except:
-            self.save_flag = False
-
+            pass
+    
     def run_overwrite_window(self):
         overwrite_window = ctk.CTkToplevel()
         overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.trial_name.get()}.yaml?")
@@ -1970,11 +1969,10 @@ class GUI_CLASS(ctk.CTk):
         overwrite_window.mainloop()
     
     def save_file(self):
-        if self.save_flag:
-            self.build_file_dict()
-            with open(self.file_name,'w') as f:
-                yaml.dump(self.file_dict,f,sort_keys=False)
-            self.destroy()
+        self.build_file_dict()
+        with open(self.file_name,'w') as f:
+            yaml.dump(self.file_dict,f,sort_keys=False)
+        self.destroy()
             
             
     # =======================================================

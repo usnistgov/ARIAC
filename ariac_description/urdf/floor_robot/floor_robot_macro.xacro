@@ -12,8 +12,7 @@
     <!-- Inclue gripper macro -->
     <xacro:include filename="$(find ariac_description)/urdf/vacuum_gripper/vacuum_gripper_macro.xacro"/>
 
-    <xacro:arg name="initial_positions_file" default="$(find ariac_description)/config/floor_robot_initial_positions.yaml"/>
-    <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
+    <xacro:property name="initial_positions_file" default="$(find ariac_description)/config/floor_robot_initial_positions.yaml"/>
 
     <!-- Run linear actuator macro -->
     <xacro:linear_actuator

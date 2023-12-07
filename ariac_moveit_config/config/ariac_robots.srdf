@@ -32,7 +32,7 @@
         <joint name="floor_shoulder_pan_joint" value="0"/>
         <joint name="floor_wrist_1_joint" value="-1.571"/>
         <joint name="floor_wrist_2_joint" value="-1.571"/>
-        <joint name="floor_wrist_3_joint" value="0.012"/>
+        <joint name="floor_wrist_3_joint" value="0.0"/>
         <joint name="linear_actuator_joint" value="0"/>
     </group_state>
     <group_state name="home" group="ceiling_robot">

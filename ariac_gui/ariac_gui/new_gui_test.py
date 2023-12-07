@@ -312,7 +312,7 @@ class GUI_CLASS(ctk.CTk):
         self.notebook.add(self.challenges_frame, text="Challenges")
         self.add_challenges_widgets_to_frame()
 
-        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.save_file)        
+        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)        
 
         self._build_assembly_parts_pose_direction()
 
@@ -348,12 +348,13 @@ class GUI_CLASS(ctk.CTk):
             self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
             self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
             self.load_through_file_flag = True
-            self.loaded_file_path = file_to_open.name
+            self.file_name = file_to_open.name
         except:
             print("Unable to load file")
         self.open_main_window()
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
+        self.save_file_button.configure(command=self.run_overwrite_window)
         self.time_limit.set(competition.competition["time_limit"])
 
         for i in range(len(competition.competition["kitting_trays"]["slots"])):
@@ -1950,32 +1951,32 @@ class GUI_CLASS(ctk.CTk):
     def choose_save_location(self, window = None):
         if window != None:
             window.destroy()
-        
-
         file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location)
         try:
             self.file_name = file_to_open.name
             self.save_flag = True
+            self.save_file()
         except:
             self.save_flag = False
 
+    def run_overwrite_window(self):
+        overwrite_window = ctk.CTkToplevel()
+        overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.trial_name.get()}.yaml?")
+        overwrite_question_label.grid(column = MIDDLE_COLUMN, row = 0)
+        overwrite_yes_button = ctk.CTkButton(overwrite_window, text="Yes", command = self.save_file)
+        overwrite_yes_button.grid(column = LEFT_COLUMN, row = 1)
+        overwrite_no_button = ctk.CTkButton(overwrite_window, text="No", command = partial(self.choose_save_location, overwrite_window))
+        overwrite_no_button.grid(column = RIGHT_COLUMN, row = 1)
+        overwrite_window.mainloop()
+    
     def save_file(self):
-        if self.load_through_file_flag:
-            overwrite_window = ctk.CTkToplevel()
-            overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.trial_name.get()}.yaml?")
-            overwrite_question_label.grid(column = MIDDLE_COLUMN, row = 0)
-            overwrite_yes_button = ctk.CTkButton(overwrite_window, text="Yes", command = overwrite_window.destroy)
-            overwrite_yes_button.grid(column = LEFT_COLUMN, row = 1)
-            overwrite_no_button = ctk.CTkButton(overwrite_window, text="No", command = partial(self.choose_save_location, overwrite_window))
-            overwrite_no_button.grid(column = RIGHT_COLUMN, row = 1)
-            overwrite_window.mainloop()
-        else:
-            self.choose_save_location()
         if self.save_flag:
             self.build_file_dict()
             with open(self.file_name,'w') as f:
                 yaml.dump(self.file_dict,f,sort_keys=False)
-
+            self.destroy()
+            
+            
     # =======================================================
     #               General Gui Functions
     # =======================================================

@@ -49,6 +49,7 @@ _assembly_part_install_directions = {}
 SLIDER_VALUES = [-pi,-5*pi/6,-4*pi/5,-3*pi/4,-2*pi/3,-3*pi/5,-pi/2,-2*pi/5,-pi/3,-pi/4,-pi/5,-pi/6,0,pi/6,pi/5,pi/4,pi/3,2*pi/5,pi/2,3*pi/5,2*pi/3,3*pi/4,4*pi/5,5*pi/6,pi]
 SLIDER_STR = ["-pi","-5*pi/6","-4pi/5","-3pi/4","-2*pi/3","-3pi/5","-pi/2","-2pi/5","-pi/3","-pi/4","-pi/5","-pi/6","0","pi/6","pi/5","pi/4","pi/3","2pi/5","pi/2","3pi/5","2*pi/3","3pi/4","4pi/5","5*pi/6","pi"]
 ORDER_TYPES=["kitting", "assembly", "combined"]
+ACCEPTED_NUMBERS = "0123456789."  # for requiring number input
 
 class BinPart():
     def __init__(self,color = "green", pType = "battery", rotation = "", flipped = ""):
@@ -303,3 +304,28 @@ def build_pose(x,y,z,q : Quaternion)->Pose:
     p.position.z = z
     p.orientation = q
     return p
+
+def require_num(val, _, __, ___):
+    """Makes sure a tkinter stringvar is numerical and has no more than one decimal point"""
+    perFlag=0
+    tempStr=val.get()
+    for i in tempStr:
+        if i not in ACCEPTED_NUMBERS:
+            tempStr=tempStr.replace(i, "")
+    if tempStr.count('.')>0:
+        for i in range(len(tempStr)):
+            if tempStr[i]=='.' and perFlag==0:
+                perFlag=1
+            elif tempStr[i]=='.':
+                tempStr=tempStr[:i]+tempStr[i+1:]
+                break
+    val.set(tempStr)
+
+def require_int(val, _, __, ___):
+    """Makes sure a tkinter stringvar is numerical and has no more than one decimal point"""
+    perFlag=0
+    tempStr=val.get()
+    for i in tempStr:
+        if not i.isnumeric():
+            tempStr=tempStr.replace(i, "")
+    val.set(tempStr)

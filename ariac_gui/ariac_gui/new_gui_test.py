@@ -42,8 +42,9 @@ from ariac_msgs.msg import (
 )
 from geometry_msgs.msg import PoseStamped, Vector3, Pose, Point, Quaternion
 from ament_index_python.packages import get_package_share_directory, get_package_prefix
-from ariac_gui.utils import (build_competition_from_file, quaternion_from_euler, 
-                             rpy_from_quaternion, 
+from ariac_gui.utils import (build_competition_from_file, quaternion_from_euler, require_int, 
+                             rpy_from_quaternion,
+                             require_num, 
                              BinPart, 
                              ConveyorPart,
                              CompetitionClass,
@@ -135,8 +136,11 @@ class GUI_CLASS(ctk.CTk):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(4, weight=1)
 
+        s = ttk.Style()
+        s.theme_use('clam')
+        s.configure('TNotebook', font='Arial Bold')
+
         self.notebook = ttk.Notebook(self)
-        self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
 
         # Loaded file information
         self.load_through_file_flag = False
@@ -163,6 +167,7 @@ class GUI_CLASS(ctk.CTk):
         self.time_limit.set('0')
         self.trial_name.set('')
         self.author.set('')
+        self.time_limit.trace('w', partial(require_int, self.time_limit))
 
         # Kitting tray info
         self.kitting_tray_selections = [ctk.StringVar() for _ in range(6)]
@@ -186,6 +191,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_left_order_widgets = []
         self.current_right_order_widgets = []
         self.current_main_order_widgets = []
+        self.current_order_part_widgets = []
 
         # Order row indeces
         self.left_row_index = 1
@@ -235,17 +241,21 @@ class GUI_CLASS(ctk.CTk):
         self.dropped_part_info["type"] = ctk.StringVar()
         self.dropped_part_info["color"] = ctk.StringVar()
         self.dropped_part_info["drop_after"] = ctk.StringVar()
+        self.dropped_part_info["drop_after"].trace('w', partial(require_int, self.dropped_part_info["drop_after"]))
         self.dropped_part_info["delay"] = ctk.StringVar()
+        self.dropped_part_info["delay"].trace('w', partial(require_num, self.dropped_part_info["delay"]))
 
         # Robot malfunction challenge variables
         self.robot_malfunction_info = {}
         self.robot_malfunction_info["duration"] = ctk.StringVar()
+        self.robot_malfunction_info["duration"].trace('w', partial(require_num, self.robot_malfunction_info["duration"]))
         self.robot_malfunction_info["floor_robot"] = ctk.StringVar()
         self.robot_malfunction_info["ceiling_robot"] = ctk.StringVar()
 
         # Sensor blackout challenge variables
         self.sensor_blackout_info = {}
         self.sensor_blackout_info["duration"] = ctk.StringVar()
+        self.sensor_blackout_info["duration"].trace('w', partial(require_num, self.sensor_blackout_info["duration"]))
         self.sensor_blackout_info["sensors_to_disable"] = {SENSORS[i]:ctk.StringVar() for i in range(len(SENSORS))}
 
         # Faulty part challenge variables
@@ -265,9 +275,11 @@ class GUI_CLASS(ctk.CTk):
         self.challenge_condition_info["type"] = ctk.StringVar()
         self.challenge_condition_info["agv"] = ctk.StringVar()
         self.challenge_condition_info["submission_id"] = ctk.StringVar()
+        self.challenge_condition_info["time_condition"].trace('w',partial(require_num,self.challenge_condition_info["time_condition"]))
 
         # List to hold saved challenges
         self.current_challenges = []
+        self.current_challenges_row = 1
 
         # Menu tabs
         self.setup_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
@@ -300,20 +312,33 @@ class GUI_CLASS(ctk.CTk):
         self.notebook.add(self.challenges_frame, text="Challenges")
         self.add_challenges_widgets_to_frame()
 
-        self.load_in_from_file_button = ctk.CTkButton(self, text="Load in data from file", command=self._load_file)
-        self.load_in_from_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
-        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.save_file)
-        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
-        
+        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.save_file)        
 
         self._build_assembly_parts_pose_direction()
 
         # File dict
         self.file_dict = {}
+
+        self.open_initial_window()
     
     # =======================================================
     #            Load gui from a previous file
     # =======================================================
+
+    def open_main_window(self):
+        self.initial_label.grid_forget()
+        self.load_file_button.grid_forget()
+        self.new_file_button.grid_forget()
+        self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
+        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
+
+    def open_initial_window(self):
+        self.initial_label = ctk.CTkLabel(self, text="Would you like to open an existing file or create a new one?")
+        self.initial_label.grid(column = LEFT_COLUMN, row = 1, columnspan = 3, pady = 85, padx=75)
+        self.load_file_button = ctk.CTkButton(self, text="Load file", command = self._load_file)
+        self.load_file_button.grid(column = LEFT_COLUMN, row = 2, pady = 85)
+        self.new_file_button = ctk.CTkButton(self, text="New file", command = self.open_main_window)
+        self.new_file_button.grid(column = RIGHT_COLUMN, row = 2, pady = 85)
 
     def _load_file(self):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location)
@@ -325,7 +350,8 @@ class GUI_CLASS(ctk.CTk):
             self.load_through_file_flag = True
             self.loaded_file_path = file_to_open.name
         except:
-            pass
+            print("Unable to load file")
+        self.open_main_window()
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.time_limit.set(competition.competition["time_limit"])
@@ -852,6 +878,11 @@ class GUI_CLASS(ctk.CTk):
     #                 Order Functions
     # =======================================================
     def add_order_widgets_to_frame(self):
+        self.orders_frame.grid_rowconfigure(0, weight=1)
+        self.orders_frame.grid_rowconfigure(100, weight=1)
+        self.orders_frame.grid_columnconfigure(0, weight=1)
+        self.orders_frame.grid_columnconfigure(4, weight=1)
+
         self.add_kitting_order_button = ctk.CTkButton(self.orders_frame, text="Add kitting order", command=self.add_kitting_order)
         self.add_assembly_order_button = ctk.CTkButton(self.orders_frame, text="Add assembly order", command=self.add_assembly_order)
         self.add_combined_order_button = ctk.CTkButton(self.orders_frame, text="Add combined order", command=self.add_combined_order)
@@ -904,7 +935,7 @@ class GUI_CLASS(ctk.CTk):
     
     def set_order_variables_to_current_order(self, order : OrderMsg):
         self.order_info["order_type"].set(ORDER_TYPES[order.type])
-        self.order_info["priority"].set('1' if order.priority else '0')
+        self.order_info["priority"].set(str(order.priority))
         self.order_info["announcement_type"].set(CONDITION_TYPE[order.condition.type])
         if order.condition.type == 0:
             self.order_info["announcement"]["time_condition"].set(str(order.condition.time_condition.seconds))
@@ -914,7 +945,6 @@ class GUI_CLASS(ctk.CTk):
             self.order_info["announcement"]["agv"].set(str(order.condition.part_place_condition.agv))
         else:
             self.order_info["announcement"]["submission_id"].set(str(order.condition.submission_condition.order_id))
-        self.order_info["priority"].set('1' if order.priority else'0')
         
         if order.type == 0:
             self.order_info["kitting_task"]["agv_number"].set(str(order.kitting_task.agv_number))
@@ -1027,7 +1057,7 @@ class GUI_CLASS(ctk.CTk):
             self.show_part_place_announcement_menu()
         else:
             self.show_submission_announcement_menu()
-        self.move_save_cancel_order_buttons()
+        self.move_order_widgets()
         
     def show_time_announcement_menu(self):
         for widget in self.current_right_order_widgets:
@@ -1065,22 +1095,81 @@ class GUI_CLASS(ctk.CTk):
         id_menu = ctk.CTkOptionMenu(self.orders_frame, variable=self.order_info["announcement"]["submission_id"],values=self.used_ids)
         self.grid_right_column(id_menu)
         self.current_right_order_widgets.append(id_menu)
-
-    def show_correct_menu(self,_,__,___):
-        self.left_row_index = 1
+    
+    def move_order_widgets(self):
+        for widget in self.current_order_part_widgets:
+            widget.grid_forget()
+        self.current_order_part_widgets.clear()
+        current_row = max(self.left_row_index,self.right_row_index)+1
+        index = 0
         if self.order_info["order_type"].get() == "kitting":
-            self.show_kitting_menu()
-        elif self.order_info["order_type"].get() == "assembly":
-            self.show_assembly_menu()
+            if len(self.order_info["kitting_task"]["parts"])>0:
+                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Current kitting parts:")
+                current_parts_label.grid(row = current_row, column = MIDDLE_COLUMN)
+                self.current_order_part_widgets.append(current_parts_label)
+                current_row+=1
+                for part in self.order_info["kitting_task"]["parts"]:
+                    part:KittingPartMsg
+                    part_label = ctk.CTkLabel(self.orders_frame, text=f"{_part_color_str[part.part.color]} {_part_type_str[part.part.type]}\n Quadrant: {part.quadrant}")
+                    part_label.grid(row = current_row, column = LEFT_COLUMN)
+                    self.current_order_part_widgets.append(part_label)
+                    edit_part_button = ctk.CTkButton(self.orders_frame, text="edit part", command=partial(self.add_kitting_part,part, index))
+                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN)
+                    self.current_order_part_widgets.append(edit_part_button)
+                    delete_part_button = ctk.CTkButton(self.orders_frame, text="Delete part", command=partial(self.remove_order_part,"kitting_task", index))
+                    delete_part_button.grid(row = current_row, column = RIGHT_COLUMN)
+                    self.current_order_part_widgets.append(delete_part_button)
+                    index+=1
+                    current_row+=1
+        elif self.order_info["order_type"].get()=="assembly":
+            if len(self.order_info["assembly_task"]["parts"])>0:
+                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Current assembly parts:")
+                current_parts_label.grid(row = current_row, column = MIDDLE_COLUMN)
+                self.current_order_part_widgets.append(current_parts_label)
+                current_row+=1
+                for part in self.order_info["assembly_task"]["parts"]:
+                    part:AssemblyPartMsg
+                    part_label = ctk.CTkLabel(self.orders_frame, text=f"{_part_color_str[part.part.color]} {_part_type_str[part.part.type]}")
+                    part_label.grid(row = current_row, column = LEFT_COLUMN)
+                    self.current_order_part_widgets.append(part_label)
+                    edit_part_button = ctk.CTkButton(self.orders_frame, text="Edit part", command=partial(self.add_assembly_part,part, index))
+                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN)
+                    self.current_order_part_widgets.append(edit_part_button)
+                    delete_part_button = ctk.CTkButton(self.orders_frame, text="Delete part", command=partial(self.remove_order_part,"assembly_task", index))
+                    delete_part_button.grid(row = current_row, column = RIGHT_COLUMN)
+                    self.current_order_part_widgets.append(delete_part_button)
+                    index+=1
+                    current_row+=1
         else:
-            self.show_combined_menu()
-    
-    def move_save_cancel_order_buttons(self):
+            if len(self.order_info["combined_task"]["parts"])>0:
+                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Current combined parts:")
+                current_parts_label.grid(row = current_row, column = MIDDLE_COLUMN)
+                self.current_order_part_widgets.append(current_parts_label)
+                current_row+=1
+                for part in self.order_info["combined_task"]["parts"]:
+                    part:AssemblyPartMsg
+                    part_label = ctk.CTkLabel(self.orders_frame, text=f"{_part_color_str[part.part.color]} {_part_type_str[part.part.type]}")
+                    part_label.grid(row = current_row, column = LEFT_COLUMN)
+                    self.current_order_part_widgets.append(part_label)
+                    edit_part_button = ctk.CTkButton(self.orders_frame, text="Edit part", command=partial(self.add_combined_part,part, index))
+                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN)
+                    self.current_order_part_widgets.append(edit_part_button)
+                    part_label = ctk.CTkButton(self.orders_frame, text="Delete part", command=partial(self.remove_order_part,"combined_task", index))
+                    part_label.grid(row = current_row, column = RIGHT_COLUMN)
+                    self.current_order_part_widgets.append(part_label)
+                    index+=1
+                    current_row+=1
+        
         self.save_order_button.grid_forget()
-        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
+        self.save_order_button.grid(column = MIDDLE_COLUMN, row=current_row, pady=5)
+        current_row+=1
         self.cancel_order_button.grid_forget()
-        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
+        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=current_row, pady=5)
     
+    def remove_order_part(self, task, index):
+        del self.order_info[task]["parts"][index]
+        self.move_order_widgets()
+
     def show_kitting_menu(self):
         self.order_info["order_type"].set("kitting")
         for widget in self.current_left_order_widgets:
@@ -1110,35 +1199,49 @@ class GUI_CLASS(ctk.CTk):
         self.cancel_order_button.configure(text="Cancel kitting order")
         self.save_order_button.configure(text="Save kitting order")
     
-    def add_kitting_part(self):
+    def add_kitting_part(self, kitting_part = None, index = -1):
         add_k_part_wind = ctk.CTkToplevel()
 
         k_part_dict = {}
         k_part_dict["color"] = ctk.StringVar()
         k_part_dict["pType"] = ctk.StringVar()
         k_part_dict["quadrant"] = ctk.StringVar()
+        if kitting_part!=None:
+            k_part_dict["color"].set(_part_color_str[kitting_part.part.color].lower())
+            k_part_dict["pType"].set(_part_type_str[kitting_part.part.type].lower())
+            k_part_dict["quadrant"].set(str(kitting_part.quadrant))
+        else:
+            k_part_dict["color"].set(PART_COLORS[0])
+            k_part_dict["pType"].set(PART_TYPES[0])
+            k_part_dict["quadrant"].set(QUADRANTS[0])
 
-        k_part_dict["color"].set(PART_COLORS[0])
-        k_part_dict["pType"].set(PART_TYPES[0])
-        k_part_dict["quadrant"].set(QUADRANTS[0])
-
+        color_label = ctk.CTkLabel(add_k_part_wind, text="Select the color for the kitting part")
+        color_label.pack()
         color_menu = ctk.CTkOptionMenu(add_k_part_wind, variable=k_part_dict["color"],values=PART_COLORS)
         color_menu.pack()
+        type_label = ctk.CTkLabel(add_k_part_wind, text="Select the type for the kitting part")
+        type_label.pack()
         type_menu = ctk.CTkOptionMenu(add_k_part_wind, variable=k_part_dict["pType"],values=PART_TYPES)
         type_menu.pack()
+        quadrant_label = ctk.CTkLabel(add_k_part_wind, text="Select the quadrant for the kitting part")
+        quadrant_label.pack()
         quadrant_menu = ctk.CTkOptionMenu(add_k_part_wind, variable=k_part_dict["quadrant"], values=QUADRANTS)
         quadrant_menu.pack()
 
-        save_button = ctk.CTkButton(add_k_part_wind, text="Save kitting part", command=partial(self.save_kitting_part, k_part_dict, add_k_part_wind))
+        save_button = ctk.CTkButton(add_k_part_wind, text="Save kitting part", command=partial(self.save_kitting_part, k_part_dict, add_k_part_wind, index))
         save_button.pack(pady = 10)
         add_k_part_wind.mainloop()
 
-    def save_kitting_part(self, k_part_dict, window):
+    def save_kitting_part(self, k_part_dict, window, index):
         new_kitting_part = KittingPartMsg()
         new_kitting_part.part.color = _part_color_ints[k_part_dict["color"].get().upper()]
         new_kitting_part.part.type = _part_type_ints[k_part_dict["pType"].get().upper()]
         new_kitting_part.quadrant = int(k_part_dict["quadrant"].get())
-        self.order_info["kitting_task"]["parts"].append(new_kitting_part)
+        if index == -1:
+            self.order_info["kitting_task"]["parts"].append(new_kitting_part)
+        else:
+            self.order_info["kitting_task"]["parts"][index]=new_kitting_part
+        self.move_order_widgets()
         window.destroy()
     
     def show_assembly_menu(self):
@@ -1177,33 +1280,44 @@ class GUI_CLASS(ctk.CTk):
         self.cancel_order_button.configure(text="Cancel assembly order")
         self.save_order_button.configure(text="Save assembly order")
     
-    def add_assembly_part(self):
+    def add_assembly_part(self, assembly_part = None, index = -1):
         add_a_part_wind = ctk.CTkToplevel()
 
         a_part_dict = {}
         a_part_dict["color"] = ctk.StringVar()
         a_part_dict["pType"] = ctk.StringVar()
+        if assembly_part==None:
+            a_part_dict["color"].set(PART_COLORS[0])
+            a_part_dict["pType"].set(PART_TYPES[0])
+        else:
+            a_part_dict["color"].set(_part_color_str[assembly_part.part.color].lower())
+            a_part_dict["pType"].set(_part_type_str[assembly_part.part.type].lower())
 
-        a_part_dict["color"].set(PART_COLORS[0])
-        a_part_dict["pType"].set(PART_TYPES[0])
-
+        color_label = ctk.CTkLabel(add_a_part_wind, text="Select the color for the assembly part")
+        color_label.pack()
         color_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["color"],values=PART_COLORS)
         color_menu.pack()
+        type_label = ctk.CTkLabel(add_a_part_wind, text="Select the type for the assembly part")
+        type_label.pack()
         type_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["pType"],values=PART_TYPES)
         type_menu.pack()
 
-        save_button = ctk.CTkButton(add_a_part_wind, text="Save assembly part", command=partial(self.save_assembly_part, a_part_dict, add_a_part_wind))
+        save_button = ctk.CTkButton(add_a_part_wind, text="Save assembly part", command=partial(self.save_assembly_part, a_part_dict, add_a_part_wind, index))
         save_button.pack(pady = 10)
         add_a_part_wind.mainloop()
 
-    def save_assembly_part(self, a_part_dict, window):
+    def save_assembly_part(self, a_part_dict, window, index):
         new_assembly_part = AssemblyPartMsg()
 
         new_assembly_part.part.color = _part_color_ints[a_part_dict["color"].get().upper()]
         new_assembly_part.part.type = _part_type_ints[a_part_dict["pType"].get().upper()]
         new_assembly_part.assembled_pose = _assembly_part_poses[a_part_dict["pType"].get().upper()]
         new_assembly_part.install_direction = _assembly_part_install_directions[a_part_dict["pType"].get().upper()]
-        self.order_info["combined_task"]["parts"].append(new_assembly_part)
+        if index == -1:
+            self.order_info["assembly_task"]["parts"].append(new_assembly_part)
+        else:
+            self.order_info["assembly_task"]["parts"][index] = new_assembly_part
+        self.move_order_widgets()
         window.destroy()
     
     def show_combined_menu(self):
@@ -1227,18 +1341,26 @@ class GUI_CLASS(ctk.CTk):
         self.cancel_order_button.configure(text="Cancel combined order")
         self.save_order_button.configure(text="Save combined order")
     
-    def add_combined_part(self):
+    def add_combined_part(self, combined_part = None, index = -1):
         add_c_part_wind = ctk.CTkToplevel()
 
         c_part_dict = {}
         c_part_dict["color"] = ctk.StringVar()
         c_part_dict["pType"] = ctk.StringVar()
 
-        c_part_dict["color"].set(PART_COLORS[0])
-        c_part_dict["pType"].set(PART_TYPES[0])
+        if combined_part==None:
+            c_part_dict["color"].set(PART_COLORS[0])
+            c_part_dict["pType"].set(PART_TYPES[0])
+        else:
+            c_part_dict["color"].set(_part_color_str[combined_part.part.color].lower())
+            c_part_dict["pType"].set(_part_type_str[combined_part.part.type].lower())
 
+        color_label = ctk.CTkLabel(add_c_part_wind, text="Select the color for the assembly part")
+        color_label.pack()
         color_menu = ctk.CTkOptionMenu(add_c_part_wind, variable=c_part_dict["color"],values=PART_COLORS)
         color_menu.pack()
+        type_label = ctk.CTkLabel(add_c_part_wind, text="Select the type for the combined part")
+        type_label.pack()
         type_menu = ctk.CTkOptionMenu(add_c_part_wind, variable=c_part_dict["pType"],values=PART_TYPES)
         type_menu.pack()
 
@@ -1246,7 +1368,7 @@ class GUI_CLASS(ctk.CTk):
         save_button.pack(pady = 10)
         add_c_part_wind.mainloop()
 
-    def save_combined_part(self, c_part_dict, window):
+    def save_combined_part(self, c_part_dict, window, index):
         new_combined_part = AssemblyPartMsg()
         new_part = PartMsg()
         new_part.color = _part_color_ints[c_part_dict["color"].get().upper()]
@@ -1255,7 +1377,11 @@ class GUI_CLASS(ctk.CTk):
         new_combined_part.part = new_part
         new_combined_part.assembled_pose = _assembly_part_poses[c_part_dict["pType"].get().upper()]
         new_combined_part.install_direction = _assembly_part_install_directions[c_part_dict["pType"].get().upper()]
-        self.order_info["combined_task"]["parts"].append(new_combined_part)
+        if index == -1:
+            self.order_info["combined_task"]["parts"].append(new_combined_part)
+        else:
+            self.order_info["combined_task"]["parts"][index] = new_combined_part
+        self.move_order_widgets()
         window.destroy()
 
     def clear_order_menu(self):
@@ -1377,6 +1503,10 @@ class GUI_CLASS(ctk.CTk):
 
     def add_challenges_widgets_to_frame(self):
         self.reset_all_challenges()
+        self.challenges_frame.grid_rowconfigure(0, weight=1)
+        self.challenges_frame.grid_rowconfigure(100, weight=1)
+        self.challenges_frame.grid_columnconfigure(0, weight=1)
+        self.challenges_frame.grid_columnconfigure(4, weight=1)
         self.add_dropped_part_button = ctk.CTkButton(self.challenges_frame, text="Add dropped part challenge", command=self.add_dropped_part_challenge)
         self.add_robot_malfunction_button = ctk.CTkButton(self.challenges_frame, text="Add robot malfunction challenge", command=self.add_robot_malfunction_challenge)
         self.add_sensor_blackout_button = ctk.CTkButton(self.challenges_frame, text="Add sensor blackout challenge", command=self.add_sensor_blackout_challenge)
@@ -1401,74 +1531,76 @@ class GUI_CLASS(ctk.CTk):
 
     def show_challenges_condition_menu(self):
         challenge_condition_type_label = ctk.CTkLabel(self.challenges_frame, text="Select the type of condition for the challenge")
-        self.pack_and_append_challenge_widget(challenge_condition_type_label)
+        self.grid_and_append_challenge_widget(challenge_condition_type_label)
         challenge_condition_type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_type,values=CONDITION_TYPE)
-        self.pack_and_append_challenge_widget(challenge_condition_type_menu)
+        self.grid_and_append_challenge_widget(challenge_condition_type_menu)
         self.reset_challenge_condition_variables()
     
     def show_correct_condition_menu(self,_,__,____):
         for widget in self.current_challenges_condition_widgets:
-            widget.pack_forget()
+            widget.grid_forget()
         self.current_challenges_condition_widgets.clear()
         self.reset_challenge_condition_variables(False)
         if self.challenge_condition_type.get() == "time":
             time_label = ctk.CTkLabel(self.challenges_frame, text="Enter the time for the time_condition:")
-            time_label.pack()
+            time_label.grid(column = MIDDLE_COLUMN, row = 25)
             self.current_challenges_condition_widgets.append(time_label)
             time_entry = ctk.CTkEntry(self.challenges_frame, textvariable=self.challenge_condition_info["time_condition"])
-            time_entry.pack()
+            time_entry.grid(column = MIDDLE_COLUMN, row = 26)
             self.current_challenges_condition_widgets.append(time_entry)
         elif self.challenge_condition_type.get() == "part_place":
             color_label = ctk.CTkLabel(self.challenges_frame, text="Select the color for the part condition")
-            color_label.pack()
+            color_label.grid(column = MIDDLE_COLUMN, row = 25)
             self.current_challenges_condition_widgets.append(color_label)
             color_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["color"], values=PART_COLORS)
-            color_menu.pack()
+            color_menu.grid(column = MIDDLE_COLUMN, row = 26)
             self.current_challenges_condition_widgets.append(color_menu)
             type_label = ctk.CTkLabel(self.challenges_frame, text="Select the type for the part condition")
-            type_label.pack()
+            type_label.grid(column = MIDDLE_COLUMN, row = 27)
             self.current_challenges_condition_widgets.append(type_label)
             type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["type"], values=PART_TYPES)
-            type_menu.pack()
+            type_menu.grid(column = MIDDLE_COLUMN, row = 28)
             self.current_challenges_condition_widgets.append(type_menu)
             agv_label = ctk.CTkLabel(self.challenges_frame, text="Select the agv for the condition")
-            agv_label.pack()
+            agv_label.grid(column = MIDDLE_COLUMN, row = 29)
             self.current_challenges_condition_widgets.append(agv_label)
             agv_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["agv"], values=AGV_OPTIONS)
-            agv_menu.pack()
+            agv_menu.grid(column = MIDDLE_COLUMN, row = 30)
             self.current_challenges_condition_widgets.append(agv_menu)
         else:
             submission_id_label = ctk.CTkLabel(self.challenges_frame, text="Select the order id for the submission condition")
-            submission_id_label.pack()
+            submission_id_label.grid(column = MIDDLE_COLUMN, row = 25)
             self.current_challenges_condition_widgets.append(submission_id_label)
             submission_id_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.challenge_condition_info["submission_id"], values=self.used_ids)
-            submission_id_menu.pack()
+            submission_id_menu.grid(column = MIDDLE_COLUMN, row = 26)
             self.current_challenges_condition_widgets.append(submission_id_menu)
             
-    def pack_and_append_challenge_widget(self, widget):
-        widget.pack(pady=2)
+    def grid_and_append_challenge_widget(self, widget):
+        widget.grid(column = MIDDLE_COLUMN, row = self.current_challenges_row)
+        self.current_challenges_row+=1
         self.current_challenges_widgets.append(widget)
 
     def show_main_challenges_menu(self, _,__,___):
         self.clear_challenges_menu()
 
-        self.pack_and_append_challenge_widget(self.add_dropped_part_button)
-        self.pack_and_append_challenge_widget(self.add_robot_malfunction_button)
-        self.pack_and_append_challenge_widget(self.add_sensor_blackout_button)
+        self.grid_and_append_challenge_widget(self.add_dropped_part_button)
+        self.grid_and_append_challenge_widget(self.add_robot_malfunction_button)
+        self.grid_and_append_challenge_widget(self.add_sensor_blackout_button)
         if len(self.current_orders)>0:
-            self.pack_and_append_challenge_widget(self.add_faulty_part_button)
-        self.pack_and_append_challenge_widget(self.add_human_button)
+            self.grid_and_append_challenge_widget(self.add_faulty_part_button)
+        self.grid_and_append_challenge_widget(self.add_human_button)
         for challenge in self.current_challenges:
             challenge : ChallengeMsg
-            self.pack_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame, text=CHALLENGE_TYPES[challenge.type]))
+            self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame, text=CHALLENGE_TYPES[challenge.type]))
     
     def clear_challenges_menu(self):
         for widget in self.current_challenges_widgets:
-            widget.pack_forget()
+            widget.grid_forget()
         self.current_challenges_widgets.clear()
         for widget in self.current_challenges_condition_widgets:
-            widget.pack_forget()
+            widget.grid_forget()
         self.current_challenges_condition_widgets.clear()
+        self.current_challenges_row = 1
 
     def reset_dropped_part_info(self):
         self.dropped_part_info["robot"].set(ROBOTS[0])
@@ -1481,34 +1613,34 @@ class GUI_CLASS(ctk.CTk):
         self.clear_challenges_menu()
 
         robot_label = ctk.CTkLabel(self.challenges_frame, text="Select the robot for the dropped part")
-        self.pack_and_append_challenge_widget(robot_label)
+        self.grid_and_append_challenge_widget(robot_label)
         robot_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["robot"],values=ROBOTS)
-        self.pack_and_append_challenge_widget(robot_menu)
+        self.grid_and_append_challenge_widget(robot_menu)
 
         color_label = ctk.CTkLabel(self.challenges_frame, text="Select the color of the dropped part")
-        self.pack_and_append_challenge_widget(color_label)
+        self.grid_and_append_challenge_widget(color_label)
         color_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["color"],values=PART_COLORS)
-        self.pack_and_append_challenge_widget(color_menu)
+        self.grid_and_append_challenge_widget(color_menu)
 
         type_label = ctk.CTkLabel(self.challenges_frame, text="Select the type of the dropped part")
-        self.pack_and_append_challenge_widget(type_label)
+        self.grid_and_append_challenge_widget(type_label)
         type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["type"],values=PART_TYPES)
-        self.pack_and_append_challenge_widget(type_menu)
+        self.grid_and_append_challenge_widget(type_menu)
 
         drop_after_label = CTkLabel(self.challenges_frame, text="Select the part number to drop after")
-        self.pack_and_append_challenge_widget(drop_after_label)
+        self.grid_and_append_challenge_widget(drop_after_label)
         drop_after_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["drop_after"])
-        self.pack_and_append_challenge_widget(drop_after_entry)
+        self.grid_and_append_challenge_widget(drop_after_entry)
 
         delay_label = CTkLabel(self.challenges_frame, text="Select the time to drop after")
-        self.pack_and_append_challenge_widget(delay_label)
+        self.grid_and_append_challenge_widget(delay_label)
         delay_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["delay"])
-        self.pack_and_append_challenge_widget(delay_entry)
+        self.grid_and_append_challenge_widget(delay_entry)
 
         self.save_challenge_button.configure(text="Save dropped part challenge", command=partial(self.save_challenge, "dropped_part"))
-        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def save_dropped_part_challenge(self):
@@ -1532,23 +1664,23 @@ class GUI_CLASS(ctk.CTk):
         self.clear_challenges_menu()
 
         duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the robot malfunction")
-        self.pack_and_append_challenge_widget(duration_label)
+        self.grid_and_append_challenge_widget(duration_label)
         duration_menu = ctk.CTkEntry(self.challenges_frame, textvariable=self.robot_malfunction_info["duration"])
-        self.pack_and_append_challenge_widget(duration_menu)
+        self.grid_and_append_challenge_widget(duration_menu)
 
         robots_label = ctk.CTkLabel(self.challenges_frame, text="Select the robot or robots you would like to malfunction")
-        self.pack_and_append_challenge_widget(robots_label)
+        self.grid_and_append_challenge_widget(robots_label)
         floor_robot_cb = ctk.CTkCheckBox(self.challenges_frame,text="floor_robot",variable=self.robot_malfunction_info["floor_robot"], onvalue="1", offvalue="0", height=1, width=20)
-        self.pack_and_append_challenge_widget(floor_robot_cb)
+        self.grid_and_append_challenge_widget(floor_robot_cb)
         ceiling_robot_cb = ctk.CTkCheckBox(self.challenges_frame,text="ceiling_robot",variable=self.robot_malfunction_info["ceiling_robot"], onvalue="1", offvalue="0", height=1, width=20)
-        self.pack_and_append_challenge_widget(ceiling_robot_cb)
+        self.grid_and_append_challenge_widget(ceiling_robot_cb)
 
         self.show_challenges_condition_menu()
 
         self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction"))
-        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
         
     
@@ -1580,22 +1712,22 @@ class GUI_CLASS(ctk.CTk):
         self.clear_challenges_menu()
 
         duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the sensor blackout")
-        self.pack_and_append_challenge_widget(duration_label)
+        self.grid_and_append_challenge_widget(duration_label)
         duration_menu = ctk.CTkEntry(self.challenges_frame, textvariable=self.sensor_blackout_info["duration"])
-        self.pack_and_append_challenge_widget(duration_menu)
+        self.grid_and_append_challenge_widget(duration_menu)
 
         sensors_label = ctk.CTkLabel(self.challenges_frame, text="Select the sensors for the sensor blackout")
-        self.pack_and_append_challenge_widget(sensors_label)
+        self.grid_and_append_challenge_widget(sensors_label)
         for i in range(len(self.sensor_blackout_info["sensors_to_disable"])):
             sensor_cb = ctk.CTkCheckBox(self.challenges_frame,text=SENSORS[i],variable=self.sensor_blackout_info["sensors_to_disable"][SENSORS[i]], onvalue="1", offvalue="0", height=1, width=20)
-            self.pack_and_append_challenge_widget(sensor_cb)
+            self.grid_and_append_challenge_widget(sensor_cb)
         
         self.show_challenges_condition_menu()
 
         self.save_challenge_button.configure(text="Save sensor blackout challenge", command=partial(self.save_challenge, "sensor_blackout"))
-        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def save_sensor_blackout_challenge(self):
@@ -1630,20 +1762,20 @@ class GUI_CLASS(ctk.CTk):
         self.clear_challenges_menu()
 
         submission_id_label = ctk.CTkLabel(self.challenges_frame, text="Select the submission id for the faulty part order")
-        self.pack_and_append_challenge_widget(submission_id_label)
+        self.grid_and_append_challenge_widget(submission_id_label)
         submission_id_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.faulty_part_info["order_id"],values=self.used_ids)
-        self.pack_and_append_challenge_widget(submission_id_menu)
+        self.grid_and_append_challenge_widget(submission_id_menu)
 
         quadrants_label = ctk.CTkLabel(self.challenges_frame, text="Select the quadrants for the faulty part challenge")
-        self.pack_and_append_challenge_widget(quadrants_label)
+        self.grid_and_append_challenge_widget(quadrants_label)
         for i in range(len(QUADRANTS)):
             quadrants_cb = ctk.CTkCheckBox(self.challenges_frame,text=f"Quadrant {QUADRANTS[i]}",variable=self.faulty_part_info["quadrants"][i], onvalue="1", offvalue="0", height=1, width=20)
-            self.pack_and_append_challenge_widget(quadrants_cb)
+            self.grid_and_append_challenge_widget(quadrants_cb)
 
         self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part"))
-        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def save_faulty_part_challenge(self):
@@ -1665,16 +1797,16 @@ class GUI_CLASS(ctk.CTk):
         self.clear_challenges_menu()
         
         behavior_label = ctk.CTkLabel(self.challenges_frame, text="Select the behavior for the human")
-        self.pack_and_append_challenge_widget(behavior_label)
+        self.grid_and_append_challenge_widget(behavior_label)
         behavior_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.human_info["behavior"],values=BEHAVIORS)
-        self.pack_and_append_challenge_widget(behavior_menu)
+        self.grid_and_append_challenge_widget(behavior_menu)
 
         self.show_challenges_condition_menu()
 
         self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human"))
-        self.cancel_challenge_button.pack(side=tk.BOTTOM)
+        self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.pack(side=tk.BOTTOM)
+        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def save_human_challenge(self):

@@ -186,6 +186,8 @@ class GUI_CLASS(ctk.CTk):
         self.conveyor_parts_counter.set('0')
         self.present_conveyor_widgets = []
         self.current_conveyor_canvas_elements = []
+        self.has_parts = ctk.StringVar()
+        self.has_parts.set('0')
 
         # Order widgets
         self.current_left_order_widgets = []
@@ -364,6 +366,8 @@ class GUI_CLASS(ctk.CTk):
         self.current_bin_parts = competition.competition["current_bin_parts"]
         self.bin_parts_counter.set(str(len([1 for part in self.current_bin_parts if part !=""])))
 
+        if len(competition.competition["conveyor_belt"]["parts_to_spawn"])>0:
+            self.has_parts.set("1")
         self.conveyor_setup_vals["active"].set(competition.competition["conveyor_belt"]["active"])
         self.conveyor_setup_vals["spawn_rate"].set(competition.competition["conveyor_belt"]["spawn_rate"])
         self.conveyor_setup_vals["order"].set(competition.competition["conveyor_belt"]["order"])
@@ -517,7 +521,7 @@ class GUI_CLASS(ctk.CTk):
         bin_parts_canvas.pack(fill = BOTH, expand = 1)
         add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection.get()))
         add_multiple_parts_button.pack(pady=15)
-        flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part if flipped, an \"F\" will show up in the bottom right of the part image.")
+        flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
         flipped_meaning_label.pack(pady=10)
         bin_selection.trace('w',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
         self.bin_parts_counter.trace('w',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
@@ -698,9 +702,7 @@ class GUI_CLASS(ctk.CTk):
     #               Conveyor Parts Functions
     # =======================================================
     def add_conveyor_parts_widgets_to_frame(self):
-        has_parts = ctk.StringVar()
-        has_parts.set("0")
-        trial_has_parts_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Trial has conveyor parts",variable=has_parts, onvalue="1", offvalue="0", height=1, width=20)
+        trial_has_parts_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Trial has conveyor parts",variable=self.has_parts, onvalue="1", offvalue="0", height=1, width=20)
         trial_has_parts_cb.pack(pady=5)
         self.conveyor_setup_vals = {"active":ctk.StringVar(),"spawn_rate":ctk.IntVar(),"order":ctk.StringVar()}
         self.conveyor_setup_vals["active"].set('1')
@@ -725,11 +727,11 @@ class GUI_CLASS(ctk.CTk):
         current_parts_label.pack()
         conveyor_canvas = Canvas(self.conveyor_parts_frame)
         conveyor_canvas.pack(fill = BOTH, expand = 1)
-        flipped_meaning_label = ctk.CTkLabel(self.conveyor_parts_frame, text="When a part if flipped, an \"F\" will show up in the bottom right of the part image.")
+        flipped_meaning_label = ctk.CTkLabel(self.conveyor_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
         flipped_meaning_label.pack(pady=10)
         self.present_conveyor_widgets.append(add_parts_button)
         self.conveyor_setup_vals["spawn_rate"].trace('w',partial(self.update_spawn_rate_slider,self.conveyor_setup_vals["spawn_rate"],spawn_rate_label))
-        has_parts.trace('w', partial(self.activate_deactivate_menu, has_parts,self.conveyor_setup_vals))
+        self.has_parts.trace('w', self.activate_deactivate_menu)
         self.conveyor_parts_counter.trace('w',partial(self.show_current_parts,conveyor_canvas))
     
     def show_current_parts(self,canvas : tk.Canvas,_,__,___):
@@ -765,7 +767,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_conveyor_canvas_elements.append(canvas.create_window(remove_button_coordinates[i], window = remove_part_buttons[i]))
             self.current_conveyor_canvas_elements.append(canvas.create_window(edit_button_coordinates[i], window = edit_part_buttons[i]))
             if current_flipped_labels[i]!="":
-                self.current_bin_canvas_elements.append(canvas.create_window(flipped_label_coordinates[i], window=current_flipped_labels[i]))
+                self.current_conveyor_canvas_elements.append(canvas.create_window(flipped_label_coordinates[i], window=current_flipped_labels[i]))
 
     def remove_conveyor_part(self, index):
         del self.current_conveyor_parts[index]
@@ -774,16 +776,13 @@ class GUI_CLASS(ctk.CTk):
     def update_spawn_rate_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
         label.configure(text=f"current spawn rate (seconds): {value.get()}")
 
-    def activate_deactivate_menu(self,has_parts:ctk.StringVar,conveyor_setup_vals,_,__,___):
-        if has_parts.get()=="1":
+    def activate_deactivate_menu(self,_,__,___):
+        if self.has_parts.get()=="1":
             for widget in self.present_conveyor_widgets:
                 widget.configure(state=tk.NORMAL)
         else:
             for widget in self.present_conveyor_widgets:
                 widget.configure(state=tk.DISABLED)
-            conveyor_setup_vals["active"].set('1')
-            conveyor_setup_vals['spawn_rate'].set(1)
-            conveyor_setup_vals["order"].set(CONVEYOR_ORDERS[0])
     
     def add_conveyor_parts(self, index = -1):
         add_parts_conveyor_window = ctk.CTkToplevel()

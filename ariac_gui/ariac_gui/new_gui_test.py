@@ -1114,7 +1114,7 @@ class GUI_CLASS(ctk.CTk):
                     part_label.grid(row = current_row, column = LEFT_COLUMN)
                     self.current_order_part_widgets.append(part_label)
                     edit_part_button = ctk.CTkButton(self.orders_frame, text="edit part", command=partial(self.add_kitting_part,part, index))
-                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN)
+                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN, pady = 3)
                     self.current_order_part_widgets.append(edit_part_button)
                     delete_part_button = ctk.CTkButton(self.orders_frame, text="Delete part", command=partial(self.remove_order_part,"kitting_task", index))
                     delete_part_button.grid(row = current_row, column = RIGHT_COLUMN)
@@ -1133,7 +1133,7 @@ class GUI_CLASS(ctk.CTk):
                     part_label.grid(row = current_row, column = LEFT_COLUMN)
                     self.current_order_part_widgets.append(part_label)
                     edit_part_button = ctk.CTkButton(self.orders_frame, text="Edit part", command=partial(self.add_assembly_part,part, index))
-                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN)
+                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN, pady = 3)
                     self.current_order_part_widgets.append(edit_part_button)
                     delete_part_button = ctk.CTkButton(self.orders_frame, text="Delete part", command=partial(self.remove_order_part,"assembly_task", index))
                     delete_part_button.grid(row = current_row, column = RIGHT_COLUMN)
@@ -1152,7 +1152,7 @@ class GUI_CLASS(ctk.CTk):
                     part_label.grid(row = current_row, column = LEFT_COLUMN)
                     self.current_order_part_widgets.append(part_label)
                     edit_part_button = ctk.CTkButton(self.orders_frame, text="Edit part", command=partial(self.add_combined_part,part, index))
-                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN)
+                    edit_part_button.grid(row = current_row, column = MIDDLE_COLUMN, pady = 3)
                     self.current_order_part_widgets.append(edit_part_button)
                     part_label = ctk.CTkButton(self.orders_frame, text="Delete part", command=partial(self.remove_order_part,"combined_task", index))
                     part_label.grid(row = current_row, column = RIGHT_COLUMN)
@@ -1167,8 +1167,20 @@ class GUI_CLASS(ctk.CTk):
         self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=current_row, pady=5)
     
     def remove_order_part(self, task, index):
+        self.add_part_kitting_task_button.grid_forget()
+        self.left_row_index-=1
+        self.grid_left_column(self.add_part_kitting_task_button)
         del self.order_info[task]["parts"][index]
         self.move_order_widgets()
+
+    def get_remaining_quadrants(self, current_selection = -1):
+        quadrant_options = [1,2,3,4]
+        if current_selection!=-1:
+            quadrant_options.append(current_selection)
+        for part in self.order_info["kitting_task"]["parts"]:
+            part : KittingPartMsg
+            quadrant_options.remove(part.quadrant)
+        return sorted(quadrant_options)
 
     def show_kitting_menu(self):
         self.order_info["order_type"].set("kitting")
@@ -1192,28 +1204,31 @@ class GUI_CLASS(ctk.CTk):
         self.grid_left_column(tray_id_menu)
         self.current_left_order_widgets.append(tray_id_menu)
 
-        add_part_kitting_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_kitting_part)
-        self.grid_left_column(add_part_kitting_task)
-        self.current_left_order_widgets.append(add_part_kitting_task)
+        self.add_part_kitting_task_button = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_kitting_part)
+        self.grid_left_column(self.add_part_kitting_task_button)
+        self.current_left_order_widgets.append(self.add_part_kitting_task_button)
 
         self.cancel_order_button.configure(text="Cancel kitting order")
         self.save_order_button.configure(text="Save kitting order")
     
     def add_kitting_part(self, kitting_part = None, index = -1):
         add_k_part_wind = ctk.CTkToplevel()
-
+        quadrant_options = self.get_remaining_quadrants()
         k_part_dict = {}
         k_part_dict["color"] = ctk.StringVar()
         k_part_dict["pType"] = ctk.StringVar()
         k_part_dict["quadrant"] = ctk.StringVar()
+        quadrant_options = [-1]
         if kitting_part!=None:
             k_part_dict["color"].set(_part_color_str[kitting_part.part.color].lower())
             k_part_dict["pType"].set(_part_type_str[kitting_part.part.type].lower())
             k_part_dict["quadrant"].set(str(kitting_part.quadrant))
+            quadrant_options = [str(val) for val in self.get_remaining_quadrants(kitting_part.quadrant)]
         else:
+            quadrant_options = [str(val) for val in self.get_remaining_quadrants()]
             k_part_dict["color"].set(PART_COLORS[0])
             k_part_dict["pType"].set(PART_TYPES[0])
-            k_part_dict["quadrant"].set(QUADRANTS[0])
+            k_part_dict["quadrant"].set(quadrant_options[0])
 
         color_label = ctk.CTkLabel(add_k_part_wind, text="Select the color for the kitting part")
         color_label.pack()
@@ -1225,7 +1240,7 @@ class GUI_CLASS(ctk.CTk):
         type_menu.pack()
         quadrant_label = ctk.CTkLabel(add_k_part_wind, text="Select the quadrant for the kitting part")
         quadrant_label.pack()
-        quadrant_menu = ctk.CTkOptionMenu(add_k_part_wind, variable=k_part_dict["quadrant"], values=QUADRANTS)
+        quadrant_menu = ctk.CTkOptionMenu(add_k_part_wind, variable=k_part_dict["quadrant"], values=quadrant_options)
         quadrant_menu.pack()
 
         save_button = ctk.CTkButton(add_k_part_wind, text="Save kitting part", command=partial(self.save_kitting_part, k_part_dict, add_k_part_wind, index))
@@ -1241,6 +1256,8 @@ class GUI_CLASS(ctk.CTk):
             self.order_info["kitting_task"]["parts"].append(new_kitting_part)
         else:
             self.order_info["kitting_task"]["parts"][index]=new_kitting_part
+        if len(self.order_info["kitting_task"]["parts"])>=4:
+            self.add_part_kitting_task_button.grid_forget()
         self.move_order_widgets()
         window.destroy()
     
@@ -1385,7 +1402,7 @@ class GUI_CLASS(ctk.CTk):
         window.destroy()
 
     def clear_order_menu(self):
-        for widget_list in [self.current_left_order_widgets,self.current_right_order_widgets, self.current_main_order_widgets]:
+        for widget_list in [self.current_left_order_widgets,self.current_right_order_widgets, self.current_main_order_widgets, self.current_order_part_widgets]:
             for widget in widget_list:
                 widget.grid_forget()
             widget_list.clear()

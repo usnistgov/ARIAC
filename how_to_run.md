@@ -13,6 +13,8 @@
     - A value of [0,1] can be given ([here](https://github.com/sparsh-b/ARIAC/blob/777d442f134d388869115e584b4efebdec11b128/ariac_plugins/src/light_malfunction_plugin.cpp#L127))
 - Nominal Brightness:
     - It can take values from [0,100]. Change it in the ariac.world file [here](https://github.com/sparsh-b/ARIAC/blob/777d442f134d388869115e584b4efebdec11b128/ariac_gazebo/worlds/ariac.world#L124) file
+## Note:
+- These parameteres should be read from config file eventually.
 
 # How to run:
 - Build & source the workspace.

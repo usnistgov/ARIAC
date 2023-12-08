@@ -120,7 +120,9 @@
           <cast_shadows>0</cast_shadows>
         </light>
       </link>
-      <plugin name='light_control' filename='liblight_malfunction_plugin.so'/>
+      <plugin name='light_control' filename='libLightMalfunctionPlugin.so'>
+        <nominal_brightness>40</nominal_brightness>
+      </plugin>
     </model>
 
     <include>

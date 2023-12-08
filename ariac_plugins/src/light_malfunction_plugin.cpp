@@ -117,7 +117,7 @@ LightPlugin::LightPlugin() : gazebo::ModelPlugin(), dataPtr(new LightPluginPriva
 
     this->dataPtr->scenario = "dim";
     this->dataPtr->challenge_duration = 10;
-    this->dataPtr->challenge_trigger_time = 5;
+    this->dataPtr->challenge_trigger_time = 10;
 
     this->dataPtr->light_range = 1000;
     if (this->dataPtr->scenario == "flicker") {
@@ -181,21 +181,23 @@ void LightPlugin::Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf) 
 void LightPlugin::OnUpdate() {
     // Getting called every 1ms in simTime
     gazebo::common::Time currentTime = this->dataPtr->world->SimTime();
+    bool challenge_is_active;
     
     if (currentTime >= this->dataPtr->challenge_trigger_time and not this->dataPtr->challenge_started and not this->dataPtr->challenge_completed) {
         this->dataPtr->challenge_started = true;
         this->dataPtr->time_challenge_started_at = currentTime;
+        std::cout << this->dataPtr->challenge_started << "|" << this->dataPtr->challenge_completed << "|" << currentTime << '\n';
     } else if (this->dataPtr->challenge_started and not this->dataPtr->challenge_completed and
       currentTime > (this->dataPtr->time_challenge_started_at + this->dataPtr->challenge_duration)) {
         this->dataPtr->challenge_completed = true;
+        std::cout << this->dataPtr->challenge_started << "|" << this->dataPtr->challenge_completed << "|" << currentTime << '\n';
     } else {
-        return;
+        // return;
     }
 
-    bool challenge_is_active = this->dataPtr->challenge_started and not this->dataPtr->challenge_completed;
-    std::cout << this->dataPtr->challenge_started << "|" << this->dataPtr->challenge_completed << "|" << challenge_is_active << "|" << currentTime << '\n';
+    challenge_is_active = this->dataPtr->challenge_started and not this->dataPtr->challenge_completed;
 
-    for (auto &setting : this->dataPtr->listLight) {
+     for (auto &setting : this->dataPtr->listLight) {
         setting->UpdateLightInEnv(currentTime, challenge_is_active, this->dataPtr->nominal_brightness);
     }
 }

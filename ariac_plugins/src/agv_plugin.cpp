@@ -221,7 +221,7 @@ void AGVPluginPrivate::MoveToGoal(double goal){
       this->PublishVelocity(velocity);
     }
 
-    while(agv_joint_-> Position(0) < goal - error_margin_){
+    while(abs(agv_joint_-> Position(0) - goal) <= error_margin_){
       this->PublishVelocity(velocity);
     }
 
@@ -254,8 +254,7 @@ void AGVPluginPrivate::MoveToGoal(double goal){
     }
 
 
-    while(agv_joint_-> Position(0) > goal + error_margin_){
-      RCLCPP_INFO(ros_node_->get_logger(), "Current error: %f", agv_joint_->Position(0)-goal);
+    while(abs(agv_joint_-> Position(0) - goal) <= error_margin_){
       this->PublishVelocity(velocity);
     }
 

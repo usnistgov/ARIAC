@@ -29,6 +29,7 @@ from ariac_msgs.msg import (
     SensorBlackoutChallenge as SensorBlackoutChallengeMsg,
     RobotMalfunctionChallenge as RobotMalfunctionChallengeMsg,
     HumanChallenge as HumanChallengeMsg,
+    Challenge as ChallengeMsg
 )
 
 _part_color_ints = {"RED":0,
@@ -50,6 +51,11 @@ SLIDER_VALUES = [-pi,-5*pi/6,-4*pi/5,-3*pi/4,-2*pi/3,-3*pi/5,-pi/2,-2*pi/5,-pi/3
 SLIDER_STR = ["-pi","-5*pi/6","-4pi/5","-3pi/4","-2*pi/3","-3pi/5","-pi/2","-2pi/5","-pi/3","-pi/4","-pi/5","-pi/6","0","pi/6","pi/5","pi/4","pi/3","2pi/5","pi/2","3pi/5","2*pi/3","3pi/4","4pi/5","5*pi/6","pi"]
 ORDER_TYPES=["kitting", "assembly", "combined"]
 ACCEPTED_NUMBERS = "0123456789."  # for requiring number input
+
+SENSORS = ["break_beam", "proximity", "laser_profiler", "lidar", "camera", "logical_camera"]
+ROBOTS = ["floor_robot", "ceiling_robot"]
+BEHAVIORS = ["antagonistic","indifferent","helpful"]
+CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction","human"]
 
 class BinPart():
     def __init__(self,color = "green", pType = "battery", rotation = "", flipped = ""):
@@ -73,7 +79,7 @@ class ConveyorPart():
 
 class CompetitionClass():
     def __init__(self, time_limit, tray_ids, slots, bin_dict, current_bin_parts, conveyor_active, spawn_rate, conveyor_order,
-                 conveyor_parts_to_spawn, current_conveyor_parts, orders):
+                 conveyor_parts_to_spawn, current_conveyor_parts, orders, challenges):
         self.competition = {}
 
         self.competition["time_limit"] = time_limit
@@ -94,6 +100,7 @@ class CompetitionClass():
 
         self.competition["orders"] = orders
         
+        self.competition["challenges"] = challenges
 
 def _build_assembly_parts_pose_direction():
         regulator_pose = PoseStamped()
@@ -250,16 +257,120 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
             new_order.condition.time_condition.seconds = order["announcement"]["time_condition"]
         elif "part_place_condition" in current_keys:
             new_order.condition.type = 1
-            new_order.condition.part_place_condition.part.color = order["announcement"]["part_place_condition"]["color"]
-            new_order.condition.part_place_condition.part.type = order["announcement"]["part_place_condition"]["type"]
+            new_order.condition.part_place_condition.part.color = _part_color_ints[order["announcement"]["part_place_condition"]["color"].upper()]
+            new_order.condition.part_place_condition.part.type = _part_type_ints[order["announcement"]["part_place_condition"]["type"].upper()]
             new_order.condition.part_place_condition.agv = order["announcement"]["part_place_condition"]["agv"]
         else:
             new_order.condition.type = 2
             new_order.condition.submission_condition.order_id = order["announcement"]["submission_condition"]["order_id"]
         orders.append(new_order)
+
+    challenges = []
+    for challenge in yaml_dict["challenges"]:
+        new_challenge = ChallengeMsg()
+        if "dropped_part" in challenge.keys():
+            new_challenge.type = 1
+            new_challenge.dropped_part_challenge.robot = challenge["dropped_part"]["robot"]
+            new_challenge.dropped_part_challenge.part_to_drop.type = _part_type_ints[challenge["dropped_part"]["type"].upper()]
+            new_challenge.dropped_part_challenge.part_to_drop.color = _part_color_ints[challenge["dropped_part"]["color"].upper()]
+            new_challenge.dropped_part_challenge.drop_after_num = challenge["dropped_part"]["drop_after"]
+            new_challenge.dropped_part_challenge.drop_after_time = challenge["dropped_part"]["delay"]
+        elif "human" in challenge.keys():
+            new_challenge.type = 4
+            new_challenge.human_challenge.behavior = BEHAVIORS.index(challenge["human"]["behavior"])
+            if "time_condition" in challenge["human"].keys():
+                new_challenge.human_challenge.condition.type = 0
+                new_challenge.human_challenge.condition.time_condition.seconds = challenge["human"]["time_condition"]
+            elif "part_place_condition" in challenge["human"].keys():
+                new_challenge.human_challenge.condition.type = 1
+                new_challenge.human_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["human"]["part_place_condition"]["color"].upper()]
+                new_challenge.human_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["human"]["part_place_condition"]["type"].upper()]
+                new_challenge.human_challenge.condition.part_place_condition.agv = challenge["human"]["part_place_condition"]["agv"]
+            else:
+                new_challenge.human_challenge.condition.type = 2
+                new_challenge.human_challenge.condition.submission_condition.order_id = challenge["human"]["submission_condition"]["order_id"]
+        elif "robot_malfunction" in challenge.keys():
+            new_challenge.type = 3
+            new_challenge.robot_malfunction_challenge.duration = challenge["robot_malfunction"]["duration"]
+            if "floor_robot" in challenge["robot_malfunction"]["robots_to_disable"]:
+                new_challenge.robot_malfunction_challenge.robots_to_disable.floor_robot = True
+            if "ceiling_robot" in challenge["robot_malfunction"]["robots_to_disable"]:
+                new_challenge.robot_malfunction_challenge.robots_to_disable.ceiling_robot = True
+            if "time_condition" in challenge["robot_malfunction"].keys():
+                new_challenge.robot_malfunction_challenge.condition.type = 0
+                new_challenge.robot_malfunction_challenge.condition.time_condition.seconds = challenge["robot_malfunction"]["time_condition"]
+            elif "part_place_condition" in challenge["robot_malfunction"].keys():
+                new_challenge.robot_malfunction_challenge.condition.type = 1
+                new_challenge.robot_malfunction_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["robot_malfunction"]["part_place_condition"]["color"].upper()]
+                new_challenge.robot_malfunction_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["robot_malfunction"]["part_place_condition"]["type"].upper()]
+                new_challenge.robot_malfunction_challenge.condition.part_place_condition.agv = challenge["robot_malfunction"]["part_place_condition"]["agv"]
+            else:
+                new_challenge.robot_malfunction_challenge.condition.type = 2
+                new_challenge.robot_malfunction_challenge.condition.submission_condition.order_id = challenge["robot_malfunction"]["submission_condition"]["order_id"]
+        elif "sensor_blackout" in challenge.keys():
+            new_challenge.type = 2
+            new_challenge.sensor_blackout_challenge.duration = challenge["sensor_blackout"]["duration"]
+            if "break_beam" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.break_beam = True
+            else:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.break_beam = False
+            if "proximity" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.proximity = True
+            else:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.proximity = False
+            if "laser_profiler" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler = True
+            else:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler = False
+            if "lidar" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.lidar = True
+            else:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.lidar = False
+            if "camera" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.camera = True
+            else:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.camera = False
+            if "logical_camera" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera = True
+            else:
+                new_challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera = False
+            if "time_condition" in challenge["sensor_blackout"].keys():
+                new_challenge.sensor_blackout_challenge.condition.type = 0
+                new_challenge.sensor_blackout_challenge.condition.time_condition.seconds = challenge["sensor_blackout"]["time_condition"]
+            elif "part_place_condition" in challenge["sensor_blackout"].keys():
+                new_challenge.sensor_blackout_challenge.condition.type = 1
+                new_challenge.sensor_blackout_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["sensor_blackout"]["part_place_condition"]["color"].upper()]
+                new_challenge.sensor_blackout_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["sensor_blackout"]["part_place_condition"]["type"].upper()]
+                new_challenge.sensor_blackout_challenge.condition.part_place_condition.agv = challenge["sensor_blackout"]["part_place_condition"]["agv"]
+            else:
+                new_challenge.sensor_blackout_challenge.condition.type = 2
+                new_challenge.sensor_blackout_challenge.condition.submission_condition.order_id = challenge["sensor_blackout"]["submission_condition"]["order_id"]
+        else:
+            new_challenge.type = 0
+            new_challenge.faulty_part_challenge.order_id = challenge["faulty_part"]["order_id"]
+            try:
+                new_challenge.faulty_part_challenge.quadrant1 = True if challenge["faulty_part"]["quadrant1"] else False
+            except:
+                new_challenge.faulty_part_challenge.quadrant1 = False
+            try:
+                new_challenge.faulty_part_challenge.quadrant2 = True if challenge["faulty_part"]["quadrant2"] else False
+            except:
+                new_challenge.faulty_part_challenge.quadrant2 = False
+            try:
+                new_challenge.faulty_part_challenge.quadrant3 = True if challenge["faulty_part"]["quadrant3"] else False
+            except:
+                new_challenge.faulty_part_challenge.quadrant3 = False
+            try:
+                new_challenge.faulty_part_challenge.quadrant4 = True if challenge["faulty_part"]["quadrant4"] else False
+            except:
+                new_challenge.faulty_part_challenge.quadrant4 = False
+        challenges.append(new_challenge)
+
+
+
     return CompetitionClass(time_limit, tray_ids, slots, bin_parts, current_bin_parts, 
                             conveyor_active, spawn_rate, conveyor_order,
-                            conveyor_parts, current_conveyor_parts, orders)
+                            conveyor_parts, current_conveyor_parts, orders, challenges)
 
 
 

@@ -148,17 +148,17 @@ class GUI_CLASS(ctk.CTk):
         self.save_flag = True
 
         # Trial files location
-        self.ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+        # self.ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
 
-        self.pkgs = [ f.name for f in os.scandir(self.ws + '/src/') if f.is_dir() ]
+        # self.pkgs = [ f.name for f in os.scandir(self.ws + '/src/') if f.is_dir() ]
 
         self.trials_file_location = ''
-        for pkg in self.pkgs:
-            if pkg.lower().count('ariac') >= 1:
-                temp_folder = self.ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
-                if os.path.exists(temp_folder):
-                    self.trials_file_location = temp_folder
-                    break
+        # for pkg in self.pkgs:
+        #     if pkg.lower().count('ariac') >= 1:
+        #         temp_folder = self.ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
+        #         if os.path.exists(temp_folder):
+        #             self.trials_file_location = temp_folder
+        #             break
 
         # Setup info
         self.time_limit = ctk.StringVar()
@@ -236,6 +236,8 @@ class GUI_CLASS(ctk.CTk):
         # Challenges widgets
         self.current_challenges_widgets = []
         self.current_challenges_condition_widgets = []
+        self.challenges_counter = ctk.StringVar()
+        self.challenges_counter.set("0")
 
         # Dropped part challenge variables
         self.dropped_part_info = {}
@@ -351,9 +353,13 @@ class GUI_CLASS(ctk.CTk):
             self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
             self.load_through_file_flag = True
             self.file_name = file_to_open.name
+            self.open_main_window()
         except:
-            print("Unable to load file")
-        self.open_main_window()
+            try:
+                if file_to_open.name != None:
+                    print("Unable to open or parse file")
+            except:
+                pass
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.save_file_button.configure(command=self.run_overwrite_window)
@@ -377,8 +383,14 @@ class GUI_CLASS(ctk.CTk):
 
         self.current_orders = competition.competition["orders"]
         self.order_counter.set(str(len(self.current_orders)))
+        if len(self.current_orders)>0:
+            if 'submission' not in CONDITION_TYPE:
+                CONDITION_TYPE.append('submission')
         for order in self.current_orders:
             self.used_ids.append(order.id)
+        
+        self.current_challenges = competition.competition["challenges"]
+        self.challenges_counter.set(str(len(self.current_challenges)))
 
         self.show_main_order_menu()
     
@@ -1535,6 +1547,7 @@ class GUI_CLASS(ctk.CTk):
         self.save_challenge_button = ctk.CTkButton(self.challenges_frame,text="Save challenge", command=self.save_challenge)
         self.cancel_challenge_button = ctk.CTkButton(self.challenges_frame,text="Cancel challenge", command=partial(self.show_main_challenges_menu,1,1,1))
         self.order_counter.trace('w', self.show_main_challenges_menu)
+        self.challenges_counter.trace('w', self.show_main_challenges_menu)
         self.challenge_condition_type.trace('w', self.show_correct_condition_menu)
 
     def reset_challenge_condition_variables(self, type_aswell = True):
@@ -1556,8 +1569,8 @@ class GUI_CLASS(ctk.CTk):
     def show_correct_condition_menu(self,_,__,____):
         for widget in self.current_challenges_condition_widgets:
             widget.grid_forget()
-        self.current_challenges_condition_widgets.clear()
         self.reset_challenge_condition_variables(False)
+        self.current_challenges_condition_widgets.clear()
         if self.challenge_condition_type.get() == "time":
             time_label = ctk.CTkLabel(self.challenges_frame, text="Enter the time for the time_condition:")
             time_label.grid(column = MIDDLE_COLUMN, row = 25)
@@ -1593,7 +1606,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_challenges_condition_widgets.append(submission_id_menu)
             
     def grid_and_append_challenge_widget(self, widget):
-        widget.grid(column = MIDDLE_COLUMN, row = self.current_challenges_row)
+        widget.grid(column = MIDDLE_COLUMN, row = self.current_challenges_row, pady = 5)
         self.current_challenges_row+=1
         self.current_challenges_widgets.append(widget)
 
@@ -1606,9 +1619,93 @@ class GUI_CLASS(ctk.CTk):
         if len(self.current_orders)>0:
             self.grid_and_append_challenge_widget(self.add_faulty_part_button)
         self.grid_and_append_challenge_widget(self.add_human_button)
+        index = 0
+        if len(self.current_challenges)>0:
+            self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame,text="Current challenges:"))
         for challenge in self.current_challenges:
             challenge : ChallengeMsg
-            self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame, text=CHALLENGE_TYPES[challenge.type]))
+
+            label_text = f"Type: {CHALLENGE_TYPES[challenge.type]} "
+            if challenge.type == ChallengeMsg.FAULTY_PART:
+                faulty_part_challenge_quadrants = []
+                if challenge.faulty_part_challenge.quadrant1:
+                    faulty_part_challenge_quadrants.append(1)
+                if challenge.faulty_part_challenge.quadrant2:
+                    faulty_part_challenge_quadrants.append(2)
+                if challenge.faulty_part_challenge.quadrant3:
+                    faulty_part_challenge_quadrants.append(3)
+                if challenge.faulty_part_challenge.quadrant4:
+                    faulty_part_challenge_quadrants.append(4)
+                label_text+=f"\nOrder_id: {challenge.faulty_part_challenge.order_id}\nQuadrants: {faulty_part_challenge_quadrants}"
+            elif challenge.type == ChallengeMsg.DROPPED_PART:
+                label_text+=f"\nRobot: {challenge.dropped_part_challenge.robot}\nPart: {_part_color_str[challenge.dropped_part_challenge.part_to_drop.color]} {_part_type_str[challenge.dropped_part_challenge.part_to_drop.type]}"
+            elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
+                sensor_blackout_disabled_sensors = []
+                if challenge.sensor_blackout_challenge.sensors_to_disable.break_beam:
+                    sensor_blackout_disabled_sensors.append("break_beam")
+                if challenge.sensor_blackout_challenge.sensors_to_disable.proximity:
+                    sensor_blackout_disabled_sensors.append("proximity")
+                if challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler:
+                    sensor_blackout_disabled_sensors.append("laser_profiler")
+                if challenge.sensor_blackout_challenge.sensors_to_disable.lidar:
+                    sensor_blackout_disabled_sensors.append("lidar")
+                if challenge.sensor_blackout_challenge.sensors_to_disable.camera:
+                    sensor_blackout_disabled_sensors.append("camera")
+                if challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera:
+                    sensor_blackout_disabled_sensors.append("logical_camera")
+                label_text+=f"\nDuration: {challenge.sensor_blackout_challenge.duration}\nSensors: {sensor_blackout_disabled_sensors}"
+            elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
+                disabled_robots = []
+                if challenge.robot_malfunction_challenge.robots_to_disable.floor_robot:
+                    disabled_robots.append("floor_robot")
+                if challenge.robot_malfunction_challenge.robots_to_disable.ceiling_robot:
+                    disabled_robots.append("ceiling_robot")
+                label_text+=f"\nDuration: {challenge.robot_malfunction_challenge.duration}\nRobots: {disabled_robots}"
+            else:
+                label_text+=f"\nBehavior: {BEHAVIORS[challenge.human_challenge.behavior]}"
+
+            challenge_label = ctk.CTkLabel(self.challenges_frame, text=label_text)
+            challenge_label.grid(column = LEFT_COLUMN, row = self.current_challenges_row, pady=3)
+            self.current_challenges_widgets.append(challenge_label)
+
+            edit_challenge_button = ctk.CTkButton(self.challenges_frame, text="Edit challenge", command = partial(self.edit_challenge, challenge, index))
+            edit_challenge_button.grid(column = MIDDLE_COLUMN, row = self.current_challenges_row)
+            self.current_challenges_widgets.append(edit_challenge_button)
+
+            remove_challenge_button = ctk.CTkButton(self.challenges_frame,text="Remove challenge", command=partial(self.remove_challenge, index))
+            remove_challenge_button.grid(column = RIGHT_COLUMN, row = self.current_challenges_row)
+            self.current_challenges_widgets.append(remove_challenge_button)
+            self.current_challenges_row+=1
+            index+=1
+    
+    def edit_challenge(self, challenge, index):
+        if challenge.type == ChallengeMsg.FAULTY_PART:
+            self.add_faulty_part_challenge(challenge.faulty_part_challenge, index)
+        elif challenge.type == ChallengeMsg.DROPPED_PART:
+            self.add_dropped_part_challenge(challenge.dropped_part_challenge,index)
+        elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
+            self.add_sensor_blackout_challenge(challenge.sensor_blackout_challenge,index)
+        elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
+            self.add_robot_malfunction_challenge(challenge.robot_malfunction_challenge, index)
+        else:
+            self.add_human_challenge(challenge.human_challenge, index)
+    
+    def remove_challenge(self, index):
+        del self.current_challenges[index]
+        self.challenges_counter.set(str(len(self.current_challenges)))
+    
+    def set_challenge_condition_info_to_existing(self, condition):
+        if condition.type == ConditionMsg.TIME:
+            self.challenge_condition_type.set("time")
+            self.challenge_condition_info["time_condition"].set(str(condition.time_condition.seconds))
+        elif condition.type == ConditionMsg.PART_PLACE:
+            self.challenge_condition_type.set("part_place")
+            self.challenge_condition_info["color"].set(_part_color_str[condition.part_place_condition.part.color])
+            self.challenge_condition_info["type"].set(_part_type_str[condition.part_place_condition.part.type])
+            self.challenge_condition_info["agv"].set(str(condition.part_place_condition.agv))
+        else:
+            self.challenge_condition_type.set("submission")
+            self.challenge_condition_info["submission_id"].set(condition.submission_condition.order_id)
     
     def clear_challenges_menu(self):
         for widget in self.current_challenges_widgets:
@@ -1626,7 +1723,7 @@ class GUI_CLASS(ctk.CTk):
         self.dropped_part_info["drop_after"].set("0")
         self.dropped_part_info["delay"].set("0.0")
     
-    def add_dropped_part_challenge(self):
+    def add_dropped_part_challenge(self, dropped_part_challenge = None, index = -1):
         self.clear_challenges_menu()
 
         robot_label = ctk.CTkLabel(self.challenges_frame, text="Select the robot for the dropped part")
@@ -1654,13 +1751,20 @@ class GUI_CLASS(ctk.CTk):
         delay_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["delay"])
         self.grid_and_append_challenge_widget(delay_entry)
 
-        self.save_challenge_button.configure(text="Save dropped part challenge", command=partial(self.save_challenge, "dropped_part"))
+        if dropped_part_challenge!=None:
+            self.dropped_part_info["robot"].set(dropped_part_challenge.robot)
+            self.dropped_part_info["color"].set(_part_color_str[dropped_part_challenge.part_to_drop.color])
+            self.dropped_part_info["type"].set(_part_type_str[dropped_part_challenge.part_to_drop.type])
+            self.dropped_part_info["drop_after"].set(dropped_part_challenge.drop_after_num)
+            self.dropped_part_info["delay"].set(dropped_part_challenge.drop_after_time)
+
+        self.save_challenge_button.configure(text="Save dropped part challenge", command=partial(self.save_challenge, "dropped_part", index))
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
         self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
-    def save_dropped_part_challenge(self):
+    def save_dropped_part_challenge(self,index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 1
         dropped_part_challenge = DroppedPartChallengeMsg()
@@ -1670,14 +1774,17 @@ class GUI_CLASS(ctk.CTk):
         dropped_part_challenge.drop_after_num = int(self.dropped_part_info["drop_after"].get())
         dropped_part_challenge.drop_after_time = float(self.dropped_part_info["delay"].get())
         new_challenge.dropped_part_challenge = dropped_part_challenge
-        self.current_challenges.append(new_challenge)
+        if index == -1:
+            self.current_challenges.append(new_challenge)
+        else:
+            self.current_challenges[index] = new_challenge
 
     def reset_robot_malfunction_info(self):
         self.robot_malfunction_info["duration"].set('0.0')
         self.robot_malfunction_info["floor_robot"].set('0')
         self.robot_malfunction_info["ceiling_robot"].set('0')
     
-    def add_robot_malfunction_challenge(self):
+    def add_robot_malfunction_challenge(self, robot_malfunction_challenge = None, index = -1):
         self.clear_challenges_menu()
 
         duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the robot malfunction")
@@ -1691,17 +1798,22 @@ class GUI_CLASS(ctk.CTk):
         self.grid_and_append_challenge_widget(floor_robot_cb)
         ceiling_robot_cb = ctk.CTkCheckBox(self.challenges_frame,text="ceiling_robot",variable=self.robot_malfunction_info["ceiling_robot"], onvalue="1", offvalue="0", height=1, width=20)
         self.grid_and_append_challenge_widget(ceiling_robot_cb)
-
         self.show_challenges_condition_menu()
 
-        self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction"))
+        if robot_malfunction_challenge != None:
+            self.robot_malfunction_info["duration"].set(str(robot_malfunction_challenge.duration))
+            self.robot_malfunction_info["floor_robot"].set("1" if robot_malfunction_challenge.robots_to_disable.floor_robot else "0")
+            self.robot_malfunction_info["ceiling_robot"].set("1" if robot_malfunction_challenge.robots_to_disable.ceiling_robot else "0")
+            self.set_challenge_condition_info_to_existing(robot_malfunction_challenge.condition)
+
+        self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction", index))
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
         self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
         
     
-    def save_robot_malfunction_challenge(self):
+    def save_robot_malfunction_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 3
         robot_malfunction_challenge = RobotMalfunctionChallengeMsg()
@@ -1718,14 +1830,17 @@ class GUI_CLASS(ctk.CTk):
         robot_malfunction_challenge.robots_to_disable.floor_robot = True if self.robot_malfunction_info["floor_robot"].get()=="1" else False
         robot_malfunction_challenge.robots_to_disable.ceiling_robot = True if self.robot_malfunction_info["ceiling_robot"].get()=="1" else False
         new_challenge.robot_malfunction_challenge = robot_malfunction_challenge
-        self.current_challenges.append(new_challenge)
+        if index == -1:
+            self.current_challenges.append(new_challenge)
+        else:
+            self.current_challenges[index] = new_challenge
 
     def reset_sensor_blackout_info(self):
         self.sensor_blackout_info["duration"].set('0.0')
         for sensor in SENSORS:
             self.sensor_blackout_info["sensors_to_disable"][sensor].set('0')
 
-    def add_sensor_blackout_challenge(self):
+    def add_sensor_blackout_challenge(self, sensor_blackout_challenge = None, index = -1):
         self.clear_challenges_menu()
 
         duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the sensor blackout")
@@ -1741,13 +1856,23 @@ class GUI_CLASS(ctk.CTk):
         
         self.show_challenges_condition_menu()
 
-        self.save_challenge_button.configure(text="Save sensor blackout challenge", command=partial(self.save_challenge, "sensor_blackout"))
+        if sensor_blackout_challenge != None:
+            self.sensor_blackout_info["duration"].set(str(sensor_blackout_challenge.duration))
+            self.sensor_blackout_info["sensors_to_disable"]["break_beam"].set("1" if sensor_blackout_challenge.sensors_to_disable.break_beam else "0")
+            self.sensor_blackout_info["sensors_to_disable"]["proximity"].set("1" if sensor_blackout_challenge.sensors_to_disable.proximity else "0")
+            self.sensor_blackout_info["sensors_to_disable"]["laser_profiler"].set("1" if sensor_blackout_challenge.sensors_to_disable.laser_profiler else "0")
+            self.sensor_blackout_info["sensors_to_disable"]["lidar"].set("1" if sensor_blackout_challenge.sensors_to_disable.lidar else "0")
+            self.sensor_blackout_info["sensors_to_disable"]["camera"].set("1" if sensor_blackout_challenge.sensors_to_disable.camera else "0")
+            self.sensor_blackout_info["sensors_to_disable"]["logical_camera"].set("1" if sensor_blackout_challenge.sensors_to_disable.logical_camera else "0")
+            self.set_challenge_condition_info_to_existing(sensor_blackout_challenge.condition)
+
+        self.save_challenge_button.configure(text="Save sensor blackout challenge", command=partial(self.save_challenge, "sensor_blackout", index))
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
         self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
-    def save_sensor_blackout_challenge(self):
+    def save_sensor_blackout_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 2
         sensor_blackout_challenge = SensorBlackoutChallengeMsg()
@@ -1768,14 +1893,17 @@ class GUI_CLASS(ctk.CTk):
         sensor_blackout_challenge.sensors_to_disable.proximity = self.sensor_blackout_info["sensors_to_disable"]["proximity"].get() == "1"
         sensor_blackout_challenge.sensors_to_disable.logical_camera = self.sensor_blackout_info["sensors_to_disable"]["logical_camera"].get() == "1"
         new_challenge.sensor_blackout_challenge = sensor_blackout_challenge
-        self.current_challenges.append(new_challenge)
+        if index == -1:
+            self.current_challenges.append(new_challenge)
+        else:
+            self.current_challenges[index] = new_challenge
     
     def reset_faulty_part_info(self):
         self.faulty_part_info["order_id"].set("" if len(self.used_ids) == 0 else self.used_ids[0])
         for variable in self.faulty_part_info["quadrants"]:
             variable.set('0')
 
-    def add_faulty_part_challenge(self):
+    def add_faulty_part_challenge(self,faulty_part_challenge = None, index = -1):
         self.clear_challenges_menu()
 
         submission_id_label = ctk.CTkLabel(self.challenges_frame, text="Select the submission id for the faulty part order")
@@ -1788,14 +1916,21 @@ class GUI_CLASS(ctk.CTk):
         for i in range(len(QUADRANTS)):
             quadrants_cb = ctk.CTkCheckBox(self.challenges_frame,text=f"Quadrant {QUADRANTS[i]}",variable=self.faulty_part_info["quadrants"][i], onvalue="1", offvalue="0", height=1, width=20)
             self.grid_and_append_challenge_widget(quadrants_cb)
+        
+        if faulty_part_challenge!=None:
+            self.faulty_part_info["order_id"].set(faulty_part_challenge.order_id)
+            self.faulty_part_info["quadrants"][0].set("1" if faulty_part_challenge.quadrant1 else "0")
+            self.faulty_part_info["quadrants"][1].set("1" if faulty_part_challenge.quadrant2 else "0")
+            self.faulty_part_info["quadrants"][2].set("1" if faulty_part_challenge.quadrant3 else "0")
+            self.faulty_part_info["quadrants"][3].set("1" if faulty_part_challenge.quadrant4 else "0")
 
-        self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part"))
+        self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part", index))
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
         self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
-    def save_faulty_part_challenge(self):
+    def save_faulty_part_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 0
         faulty_part_challenge = FaultyPartChallengeMsg()
@@ -1805,14 +1940,17 @@ class GUI_CLASS(ctk.CTk):
         faulty_part_challenge.quadrant3 = self.faulty_part_info["quadrants"][2].get()=="1"
         faulty_part_challenge.quadrant4 = self.faulty_part_info["quadrants"][3].get()=="1"
         new_challenge.faulty_part_challenge = faulty_part_challenge
-        self.current_challenges.append(new_challenge)
+        if index == -1:
+            self.current_challenges.append(new_challenge)
+        else:
+            self.current_challenges[index] = new_challenge
 
     def reset_human_info(self):
         self.human_info["behavior"].set(BEHAVIORS[0])
     
-    def add_human_challenge(self):
+    def add_human_challenge(self, human_challenge = None, index = -1):
         self.clear_challenges_menu()
-        
+
         behavior_label = ctk.CTkLabel(self.challenges_frame, text="Select the behavior for the human")
         self.grid_and_append_challenge_widget(behavior_label)
         behavior_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.human_info["behavior"],values=BEHAVIORS)
@@ -1820,17 +1958,22 @@ class GUI_CLASS(ctk.CTk):
 
         self.show_challenges_condition_menu()
 
-        self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human"))
+        if human_challenge != None:
+            self.human_info["behavior"].set(BEHAVIORS[human_challenge.behavior])
+            self.set_challenge_condition_info_to_existing(human_challenge.condition)
+
+        self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human", index))
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
         self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
-    def save_human_challenge(self):
+    def save_human_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 4
         human_challenge = HumanChallengeMsg()
         human_challenge.behavior = BEHAVIORS.index(self.human_info["behavior"].get())
+        human_challenge.condition.type = CONDITION_TYPE.index(self.challenge_condition_type.get())
         if self.challenge_condition_type.get()=="time":
             human_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
         elif self.challenge_condition_type.get()=="part_place":
@@ -1840,19 +1983,22 @@ class GUI_CLASS(ctk.CTk):
         else:
             human_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
         new_challenge.human_challenge = human_challenge
-        self.current_challenges.append(new_challenge)
-
-    def save_challenge(self, type_of_challenge:str):
-        if type_of_challenge == "dropped_part":
-            self.save_dropped_part_challenge()
-        elif type_of_challenge == "robot_malfunction":
-            self.save_robot_malfunction_challenge()
-        elif type_of_challenge == "sensor_blackout":
-            self.save_sensor_blackout_challenge()
-        elif type_of_challenge == "faulty_part":
-            self.save_faulty_part_challenge()
+        if index == -1:
+            self.current_challenges.append(new_challenge)
         else:
-            self.save_human_challenge()
+            self.current_challenges[index] = new_challenge
+
+    def save_challenge(self, type_of_challenge:str, index):
+        if type_of_challenge == "dropped_part":
+            self.save_dropped_part_challenge(index)
+        elif type_of_challenge == "robot_malfunction":
+            self.save_robot_malfunction_challenge(index)
+        elif type_of_challenge == "sensor_blackout":
+            self.save_sensor_blackout_challenge(index)
+        elif type_of_challenge == "faulty_part":
+            self.save_faulty_part_challenge(index)
+        else:
+            self.save_human_challenge(index)
         self.reset_all_challenges()
         self.clear_challenges_menu()
         self.show_main_challenges_menu(1,1,1)

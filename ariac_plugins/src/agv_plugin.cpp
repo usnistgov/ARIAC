@@ -211,7 +211,7 @@ void AGVPluginPrivate::MoveToGoal(double goal){
 
     start = ros_node_->get_clock()->now();
     while(agv_joint_->Position(0) < goal){
-      if (velocity <= 0.1){
+      if (velocity <= 0.2){
         break;
       } else {
         rclcpp::Duration dur = ros_node_->get_clock()->now() - start;
@@ -221,7 +221,7 @@ void AGVPluginPrivate::MoveToGoal(double goal){
       this->PublishVelocity(velocity);
     }
 
-    while(abs(agv_joint_-> Position(0) - goal) <= error_margin_){
+    while(abs(agv_joint_-> Position(0) - goal) > error_margin_){
       this->PublishVelocity(velocity);
     }
 
@@ -243,7 +243,7 @@ void AGVPluginPrivate::MoveToGoal(double goal){
 
     start = ros_node_->get_clock()->now();
     while(agv_joint_->Position(0) > goal){
-      if (velocity >= -0.1){
+      if (velocity >= -0.2){
         break;
       } else {
         rclcpp::Duration dur = ros_node_->get_clock()->now() - start;
@@ -254,7 +254,7 @@ void AGVPluginPrivate::MoveToGoal(double goal){
     }
 
 
-    while(abs(agv_joint_-> Position(0) - goal) <= error_margin_){
+    while(abs(agv_joint_-> Position(0) - goal) > error_margin_){
       this->PublishVelocity(velocity);
     }
 

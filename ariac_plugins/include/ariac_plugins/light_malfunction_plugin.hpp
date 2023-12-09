@@ -26,7 +26,7 @@
 #include <gazebo_ros/node.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-// #include <ariac_msgs/srv/StartLightMalfunctionChallenge.hpp>
+#include <ariac_msgs/srv/light_malfunction_challenge.hpp>
 
 #include "gazebo/common/Plugin.hh"
 #include "gazebo/msgs/msgs.hh"
@@ -107,16 +107,10 @@ namespace ariac_plugins
             virtual ~LightSetting();
             virtual void InitPubLight(const gazebo::transport::PublisherPtr &_pubLight) final;
             virtual void UpdateLightInEnv(const gazebo::common::Time &_currentTime, bool challenge_is_active, float nominal_brightness) final;
-            // virtual const std::string Name() const final;
-            // virtual const physics::LinkPtr Link() const final;
-            // virtual void SwitchOn() final;
-            // virtual void SwitchOff() final;
-            // virtual unsigned int BlockCount() final;
 
         protected:
             virtual void Flash(float brightness = -1);
             virtual void Dim();
-            // virtual ignition::math::Color CurrentColor() final;
 
     
         private:
@@ -126,19 +120,12 @@ namespace ariac_plugins
 
     class LightPluginPrivate {
     public:
+        LightPluginPrivate() : enabled_(false) {}
 
-        LightPluginPrivate() : challenge_started(false), challenge_completed(false) {}
-        // std::shared_ptr<LightSetting> SettingByLightNameAndLinkName( const std::string &_lightName,
-        //                                                              const std::string &_linkName) const {
-        //     for (auto &setting: this->listLight) {
-        //         if (setting->Name() == _lightName) {
-        //             if (_linkName.length() == 0 || setting->Link()->GetName() == _linkName) {
-        //                 return setting;
-        //             }
-        //         }
-        //     }
-        //     return nullptr;
-        // }
+        void EnableChallenge(
+            ariac_msgs::srv::LightMalfunctionChallenge::Request::SharedPtr req, 
+            ariac_msgs::srv::LightMalfunctionChallenge::Response::SharedPtr res
+        );
 
     /// \brief pointer to the model.
         gazebo::physics::ModelPtr model;
@@ -159,22 +146,13 @@ namespace ariac_plugins
         gazebo::event::ConnectionPtr updateConnection;
 
         /// Node for ROS communication.
-        // gazebo_ros::Node::SharedPtr ros_node_;
-        // rclcpp::Service<ariac_msgs::srv::StartLightMalfunctionChallenge>::SharedPtr start_LMC_sevice;
+        gazebo_ros::Node::SharedPtr ros_node_;
+        rclcpp::Service<ariac_msgs::srv::LightMalfunctionChallenge>::SharedPtr LMC_sevice;
 
-        // Whether challenge has started
-        bool challenge_started;
+        // Whether challenge is active
+        bool enabled_;
 
-        // Whether challenge has completed
-        bool challenge_completed;
-
-        // Required time at which challenge should be triggered
-        float challenge_trigger_time;
-
-        // Sim Time at which the challenge started
-        gazebo::common::Time time_challenge_started_at;
-
-        // Brightness of the lights when there is no challenge being implemented.
+          // Brightness of the lights when there is no challenge being implemented.
         float nominal_brightness;
 
         // Challenge scenario: dip, flicker, fluctuate
@@ -208,17 +186,7 @@ namespace ariac_plugins
 
         protected:
             virtual void OnUpdate();
-            // void EnableChallenge(ariac_msgs::srv::StartLightMalfunctionChallenge::Request::SharedPtr req, 
-            //                     ariac_msgs::srv::StartLightMalfunctionChallenge::Response::SharedPtr res);
-            // virtual bool TurnOn(const std::string &_lightName, const std::string &_linkName) final;
-            // virtual bool TurnOnAll() final;
-            // virtual bool TurnOff(const std::string &_lightName, const std::string &_linkName) final;
-            // virtual bool TurnOffAll() final;
-            // virtual std::shared_ptr<LightSetting> CreateSetting(const sdf::ElementPtr &_sdf,
-            //     const physics::ModelPtr &_model,
-            //     const common::Time &_currentTime);
-            // virtual void InitSettingBySpecificData(std::shared_ptr<LightSetting> &_setting);
-
+            
         private:
             std::unique_ptr<LightPluginPrivate> dataPtr;
     };

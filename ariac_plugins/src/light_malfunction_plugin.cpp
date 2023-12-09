@@ -115,8 +115,7 @@ LightPlugin::LightPlugin() : gazebo::ModelPlugin(), dataPtr(new LightPluginPriva
                                      "lights_link/bin_light_1",
                                      "lights_link/bin_light_2"};
 
-    this->dataPtr->scenario = "dim";
-    this->dataPtr->challenge_duration = 10;
+     this->dataPtr->challenge_duration = 10;
     this->dataPtr->challenge_trigger_time = 10;
 
     this->dataPtr->light_range = 1000;
@@ -134,15 +133,42 @@ LightPlugin::LightPlugin() : gazebo::ModelPlugin(), dataPtr(new LightPluginPriva
 LightPlugin::~LightPlugin() {}
 
 
+void LightPluginPrivate::EnableChallenge(
+    ariac_msgs::srv::LightMalfunctionChallenge::Request::SharedPtr req, 
+    ariac_msgs::srv::LightMalfunctionChallenge::Response::SharedPtr res
+    )
+{
+    res->success = false;
+    if (req->enable) {
+        if (!enabled_) {
+            enabled_ = true;
+            res->success = true;
+        } else {
+            RCLCPP_WARN(ros_node_->get_logger(), "Challenge is already Enabled!");
+        }
+    } else {
+        if (enabled_) {
+            enabled_ = false;
+            res->success = true;
+        } else {
+            RCLCPP_WARN(ros_node_->get_logger(), "Challenge is already Disabled!");
+        }
+    }
+}
+
+
+
 void LightPlugin::Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf) {
     printf("Load started");
-    // this->dataPtr->ros_node_ = gazebo_ros::Node::Get(_sdf);
-    // this->dataPtr->start_LMC_sevice = this->dataPtr->ros_node_->create_service<ariac_msgs::srv::StartLightMalfunctionChallenge> (
-    //     "ariac/start_light_malfunction_challenge", 
-    //     std::bind(
-    //         &LightPlugin::EnableChallenge, this->dataPtr.get(),
-    //         std::placeholders::_1, std::placeholders::_2));
-    
+    this->dataPtr->ros_node_ = gazebo_ros::Node::Get(_sdf);
+    this->dataPtr->LMC_sevice = this->dataPtr->ros_node_->create_service<ariac_msgs::srv::LightMalfunctionChallenge> (
+        "ariac/light_malfunction_challenge",
+        std::bind(
+            &LightPluginPrivate::EnableChallenge, this->dataPtr.get(),
+            std::placeholders::_1, std::placeholders::_2
+    ));
+
+
     // Store the pointers to the model and world
     this->dataPtr->model = _parent;
     this->dataPtr->world = _parent->GetWorld();
@@ -170,32 +196,11 @@ void LightPlugin::Load(gazebo::physics::ModelPtr _parent, sdf::ElementPtr _sdf) 
 }
 
 
-// void LightPlugin::EnableChallenge(
-//     ariac_msgs::srv::StartLightMalfunctionChallenge::Request::SharedPtr req, 
-//     ariac_msgs::srv::StartLightMalfunctionChallenge::Response::SharedPtr res)
-// {
-
-// }
-
 
 void LightPlugin::OnUpdate() {
     // Getting called every 1ms in simTime
     gazebo::common::Time currentTime = this->dataPtr->world->SimTime();
-    bool challenge_is_active;
-    
-    if (currentTime >= this->dataPtr->challenge_trigger_time and not this->dataPtr->challenge_started and not this->dataPtr->challenge_completed) {
-        this->dataPtr->challenge_started = true;
-        this->dataPtr->time_challenge_started_at = currentTime;
-        std::cout << this->dataPtr->challenge_started << "|" << this->dataPtr->challenge_completed << "|" << currentTime << '\n';
-    } else if (this->dataPtr->challenge_started and not this->dataPtr->challenge_completed and
-      currentTime > (this->dataPtr->time_challenge_started_at + this->dataPtr->challenge_duration)) {
-        this->dataPtr->challenge_completed = true;
-        std::cout << this->dataPtr->challenge_started << "|" << this->dataPtr->challenge_completed << "|" << currentTime << '\n';
-    } else {
-        // return;
-    }
-
-    challenge_is_active = this->dataPtr->challenge_started and not this->dataPtr->challenge_completed;
+    bool challenge_is_active = this->dataPtr->enabled_;
 
      for (auto &setting : this->dataPtr->listLight) {
         setting->UpdateLightInEnv(currentTime, challenge_is_active, this->dataPtr->nominal_brightness);

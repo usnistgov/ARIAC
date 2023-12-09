@@ -25,11 +25,14 @@ find_package(orocos_kdl REQUIRED)
 link_directories(${gazebo_dev_LIBRARY_DIRS})
 
 # Light Malfunction Challenge
-add_library(LightMalfunctionPlugin SHARED src/light_malfunction_plugin.cpp)
+add_library(LightMalfunctionPlugin SHARED
+  src/light_malfunction_plugin.cpp
+)
 target_include_directories(LightMalfunctionPlugin PUBLIC ${GAZEBO_INCLUDE_DIRS} PUBLIC include)
 target_link_libraries(LightMalfunctionPlugin ${GAZEBO_LIBRARIES})
 ament_target_dependencies(LightMalfunctionPlugin
   "gazebo_ros"
+  "ariac_msgs"
 )
 ament_export_libraries(LightMalfunctionPlugin)
 

@@ -1,0 +1,7 @@
+# Light Malfunciton Challenge
+
+# Enable/Disable Light Malfunciton Challenge
+bool enable
+
+---
+bool success

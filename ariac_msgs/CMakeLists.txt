@@ -58,6 +58,7 @@ set(srv_files
   "srv/ChangeGripper.srv"
   "srv/ChangeGripperColor.srv"
   "srv/ConveyorBeltControl.srv"
+  "srv/LightMalfunctionChallenge.srv"
   "srv/MoveAGV.srv"
   "srv/ScoreTask.srv"
   "srv/SubmitOrder.srv"

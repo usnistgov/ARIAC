@@ -1,8 +1,0 @@
-# Start Light Malfunciton Challenge
-
-# Signal the plugin to start the challenge
-
-bool start
-
----
-bool success

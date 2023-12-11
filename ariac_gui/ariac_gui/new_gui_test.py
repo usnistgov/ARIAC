@@ -148,17 +148,21 @@ class GUI_CLASS(ctk.CTk):
         self.save_flag = True
 
         # Trial files location
-        # self.ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
-
-        # self.pkgs = [ f.name for f in os.scandir(self.ws + '/src/') if f.is_dir() ]
 
         self.trials_file_location = ''
-        # for pkg in self.pkgs:
-        #     if pkg.lower().count('ariac') >= 1:
-        #         temp_folder = self.ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
-        #         if os.path.exists(temp_folder):
-        #             self.trials_file_location = temp_folder
-        #             break
+        try:
+            self.ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
+
+            self.pkgs = [ f.name for f in os.scandir(self.ws + '/src/') if f.is_dir() ]
+
+            for pkg in self.pkgs:
+                if pkg.lower().count('ariac') >= 1:
+                    temp_folder = self.ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
+                    if os.path.exists(temp_folder):
+                        self.trials_file_location = temp_folder
+                        break
+        except:
+            pass
 
         # Setup info
         self.time_limit = ctk.StringVar()
@@ -353,28 +357,21 @@ class GUI_CLASS(ctk.CTk):
         self.new_file_button.grid(column = RIGHT_COLUMN, row = 2, pady = 85)
 
     def _load_file(self):
-        file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location)
-        # try:
-        #     with open(file_to_open.name) as f:
-        #         yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        #     self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-        #     self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-        #     self.load_through_file_flag = True
-        #     self.file_name = file_to_open.name
-        #     self.open_main_window()
-        # except:
-        #     try:
-        #         if file_to_open.name != None:
-        #             print("Unable to open or parse file")
-        #     except:
-        #         pass
-        with open(file_to_open.name) as f:
-            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-        self.load_through_file_flag = True
-        self.file_name = file_to_open.name
-        self.open_main_window()
+        file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location,title='Open ARIAC configuration',)
+        try:
+            with open(file_to_open.name) as f:
+                yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+            self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+            self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+            self.load_through_file_flag = True
+            self.file_name = file_to_open.name
+            self.open_main_window()
+        except:
+            try:
+                if file_to_open.name != None:
+                    print("Unable to open or parse file")
+            except:
+                pass
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.save_file_button.configure(command=self.run_overwrite_window)
@@ -2136,7 +2133,11 @@ class GUI_CLASS(ctk.CTk):
     def choose_save_location(self, window = None):
         if window != None:
             window.destroy()
-        file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location)
+        if self.trial_name.get()=="":
+            file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location,title='Save ARIAC configuration')
+        else:
+            file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location,title='Save ARIAC configuration',initialfile=f"{self.trial_name.get()}")
+            initialfile="xyz.txt"
         try:
             self.file_name = file_to_open.name
             self.save_file()

@@ -817,7 +817,7 @@ class EnvironmentStartup(Node):
 
     def spawn_sensors(self):
         try:
-            user_sensors = self.user_config['sensors']
+            user_sensors = self.user_config['static_sensors']
         except (TypeError, KeyError):
             self.get_logger().warn(bcolors.WARNING + "No sensors found in config" + bcolors.ENDC)
             user_sensors = []

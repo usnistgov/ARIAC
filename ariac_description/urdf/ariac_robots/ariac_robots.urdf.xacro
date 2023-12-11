@@ -22,11 +22,30 @@
   <xacro:include filename="$(find ariac_description)/urdf/ceiling_robot/ceiling_robot_macro.xacro"/>
   <xacro:include filename="$(find ariac_description)/urdf/agv/agv_macro.xacro"/>
 
+  <!-- Define arguments for robot cameras -->
+  <xacro:arg name="floor_robot_camera_active_arg" default="false"/>
+  <xacro:property name="floor_robot_camera_active" value="$(arg floor_robot_camera_active_arg)" />
+
+  <xacro:arg name="floor_robot_camera_type_arg" default="rgb"/>
+  <xacro:property name="floor_robot_camera_type" value="$(arg floor_robot_camera_type_arg)" />
+
+  <xacro:arg name="ceiling_robot_camera_active_arg" default="false"/>
+  <xacro:property name="ceiling_robot_camera_active" value="$(arg ceiling_robot_camera_active_arg)" />
+
+  <xacro:arg name="ceiling_robot_camera_type_arg" default="rgb"/>
+  <xacro:property name="ceiling_robot_camera_type" value="$(arg ceiling_robot_camera_type_arg)" />
+
   <!-- Floor Robot -->
-  <xacro:floor_robot/>
+  <xacro:floor_robot
+    camera_active="${floor_robot_camera_active}"
+    camera_type="${floor_robot_camera_type}">
+  </xacro:floor_robot>
 
   <!-- Ceiling Robot -->
-  <xacro:ceiling_robot/>
+  <xacro:ceiling_robot
+    camera_active="${ceiling_robot_camera_active}"
+    camera_type="${ceiling_robot_camera_type}">
+  </xacro:ceiling_robot>
 
   <!-- AGV1 -->
   <xacro:agv

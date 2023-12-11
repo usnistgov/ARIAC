@@ -172,6 +172,9 @@ class GUI_CLASS(ctk.CTk):
         # Kitting tray info
         self.kitting_tray_selections = [ctk.StringVar() for _ in range(6)]
 
+        # Assembly insert info
+        self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
+
         # Bin parts info
         self.current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
         self.bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
@@ -296,6 +299,11 @@ class GUI_CLASS(ctk.CTk):
         self.notebook.add(self.kitting_tray_frame,text="Kitting Trays")
         self.add_kitting_trays_widgets_to_frame()
 
+        self.assembly_inserts_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.assembly_inserts_frame.pack(fill='both',expand=True)
+        self.notebook.add(self.assembly_inserts_frame,text="Assembly Inserts")
+        self.add_assembly_inserts_widgets_to_frame()
+
         self.bin_parts_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.bin_parts_frame.pack(fill='both',expand=True)
         self.notebook.add(self.bin_parts_frame,text="Bin Parts")
@@ -346,20 +354,27 @@ class GUI_CLASS(ctk.CTk):
 
     def _load_file(self):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location)
-        try:
-            with open(file_to_open.name) as f:
-                yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-            self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-            self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-            self.load_through_file_flag = True
-            self.file_name = file_to_open.name
-            self.open_main_window()
-        except:
-            try:
-                if file_to_open.name != None:
-                    print("Unable to open or parse file")
-            except:
-                pass
+        # try:
+        #     with open(file_to_open.name) as f:
+        #         yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        #     self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+        #     self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        #     self.load_through_file_flag = True
+        #     self.file_name = file_to_open.name
+        #     self.open_main_window()
+        # except:
+        #     try:
+        #         if file_to_open.name != None:
+        #             print("Unable to open or parse file")
+        #     except:
+        #         pass
+        with open(file_to_open.name) as f:
+            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        self.load_through_file_flag = True
+        self.file_name = file_to_open.name
+        self.open_main_window()
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.save_file_button.configure(command=self.run_overwrite_window)
@@ -367,6 +382,9 @@ class GUI_CLASS(ctk.CTk):
 
         for i in range(len(competition.competition["kitting_trays"]["slots"])):
             self.kitting_tray_selections[competition.competition["kitting_trays"]["slots"][i]-1].set(str(competition.competition["kitting_trays"]["tray_ids"][i]))
+        
+        for i in range(len(competition.competition["assembly_insert_rotations"])):
+            self.assembly_insert_rotations[i].set(competition.competition["assembly_insert_rotations"][i])
 
         self.bin_parts = competition.competition["bin_parts"]
         self.current_bin_parts = competition.competition["current_bin_parts"]
@@ -505,6 +523,27 @@ class GUI_CLASS(ctk.CTk):
                 trays.append(int(tray))
         self.file_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
     
+    # =======================================================
+    #               Assembly Inserts Functions
+    # =======================================================
+    def add_assembly_inserts_widgets_to_frame(self):
+        self.assembly_inserts_frame.grid_rowconfigure(0, weight=1)
+        self.assembly_inserts_frame.grid_rowconfigure(100, weight=1)
+        self.assembly_inserts_frame.grid_columnconfigure(0, weight=1)
+        self.assembly_inserts_frame.grid_columnconfigure(4, weight=1)
+        for i in range(len(ASSEMBLY_STATIONS)):
+            label_text = f"{ASSEMBLY_STATIONS[i]} rotation value: {SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())]}"
+            station_label = ctk.CTkLabel(self.assembly_inserts_frame, text=label_text)
+            station_label.grid(row = i+1, column = LEFT_COLUMN, padx = 10, pady = 15)
+            rotation_slider = ctk.CTkSlider(self.assembly_inserts_frame, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=self.assembly_insert_rotations[i], orientation="horizontal")
+            rotation_slider.grid(row = i+1, column = RIGHT_COLUMN, padx = 10, pady = 15)
+            self.assembly_insert_rotations[i].trace('w', partial(self.nearest_slider_value_assembly_inserts,self.assembly_insert_rotations[i], rotation_slider,station_label, ASSEMBLY_STATIONS[i]))
+        filler_label = ctk.CTkLabel(self.assembly_inserts_frame, text = " "*60) # So the menu does not move when the labels change
+        filler_label.grid(row = 10, column = LEFT_COLUMN)
+    
+    def assembly_inserts_to_dict(self):
+        self.file_dict["assembly_inserts"] = {ASSEMBLY_STATIONS[i]:SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())] for i in range(len(ASSEMBLY_STATIONS))}
+
     # =======================================================
     #                 Bin Parts Functions
     # =======================================================
@@ -1463,9 +1502,9 @@ class GUI_CLASS(ctk.CTk):
 
     def create_assembly_task_msg(self)->AssemblyTaskMsg:
         new_assembly_task = AssemblyTaskMsg()
-        new_assembly_task.agv_numbers = [i+1 
-                                         for i in range(len(self.order_info["assembly_task"]["agv_numbers"]))
-                                         if self.order_info["assembly_task"]["agv_numbers"][i].get()=="1"]
+        agv_numbers_list = [i+1 for i in range(len(self.order_info["assembly_task"]["agv_numbers"])) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="1"]
+        print(agv_numbers_list)
+        new_assembly_task.agv_numbers = agv_numbers_list
         new_assembly_task.station = ASSEMBLY_STATIONS.index(self.order_info["assembly_task"]["station"].get())
         new_assembly_task.parts = self.order_info["assembly_task"]["parts"]
         return new_assembly_task
@@ -1501,7 +1540,7 @@ class GUI_CLASS(ctk.CTk):
                         temp_order_dict["kitting_task"]["products"].append(temp_kitting_part_dict)
                 elif order.type == 1:
                     temp_order_dict["assembly_task"] = {}
-                    temp_order_dict["assembly_task"]["agv_number"] = order.assembly_task.agv_numbers
+                    temp_order_dict["assembly_task"]["agv_number"] = [order.assembly_task.agv_numbers[i] for i in range(len(order.assembly_task.agv_numbers))]
                     temp_order_dict["assembly_task"]["station"] = order.assembly_task.station
                     temp_order_dict["assembly_task"]["products"] = []
                     for part in order.assembly_task.parts:
@@ -2088,6 +2127,7 @@ class GUI_CLASS(ctk.CTk):
     def build_file_dict(self):
         self.file_dict["time_limit"] = int(self.time_limit.get())
         self.kitting_trays_to_dict()
+        self.assembly_inserts_to_dict()
         self.bin_parts_to_dict()
         self.conveyor_parts_to_dict()
         self.orders_to_dict()
@@ -2127,6 +2167,12 @@ class GUI_CLASS(ctk.CTk):
         newvalue = min(SLIDER_VALUES, key=lambda x:abs(x-float(value.get())))
         slider.set(newvalue)
         label.configure(text=f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(newvalue)]}")
+    
+    def nearest_slider_value_assembly_inserts(self,value,slider,label,station,_,__,___):
+        newvalue = min(SLIDER_VALUES, key=lambda x:abs(x-float(value.get())))
+        slider.set(newvalue)
+        new_text = f"{station} rotation value: {SLIDER_STR[SLIDER_VALUES.index(newvalue)]}"
+        label.configure(text=new_text)
     
     def announcement_to_dict(self, announcement : ConditionMsg)->dict:
         temp_announcement_dict = {}

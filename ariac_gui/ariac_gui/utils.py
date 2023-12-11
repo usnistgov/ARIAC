@@ -78,7 +78,7 @@ class ConveyorPart():
         self.flipped = flipped
 
 class CompetitionClass():
-    def __init__(self, time_limit, tray_ids, slots, bin_dict, current_bin_parts, conveyor_active, spawn_rate, conveyor_order,
+    def __init__(self, time_limit, tray_ids, slots, assembly_insert_rotations, bin_dict, current_bin_parts, conveyor_active, spawn_rate, conveyor_order,
                  conveyor_parts_to_spawn, current_conveyor_parts, orders, challenges):
         self.competition = {}
 
@@ -87,6 +87,8 @@ class CompetitionClass():
         self.competition["kitting_trays"] = {}
         self.competition["kitting_trays"]["tray_ids"] = tray_ids
         self.competition["kitting_trays"]["slots"] = slots
+
+        self.competition["assembly_insert_rotations"] = assembly_insert_rotations
 
         self.competition["current_bin_parts"] = current_bin_parts
         self.competition["bin_parts"] = bin_dict
@@ -156,7 +158,14 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
     time_limit = int(float(yaml_dict["time_limit"]))
     tray_ids = yaml_dict["kitting_trays"]["tray_ids"]
     slots = yaml_dict["kitting_trays"]["slots"]
-
+    
+    assembly_insert_rotations = [0.0 for _ in range(4)]
+    if "assembly_inserts" in yaml_dict.keys():
+        assembly_insert_rotations[0] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as1"])]
+        assembly_insert_rotations[1] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as2"])]
+        assembly_insert_rotations[2] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as3"])]
+        assembly_insert_rotations[3] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as4"])]
+    
     bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
     current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
     try:
@@ -208,167 +217,168 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
         current_conveyor_parts = []
     
     orders = []
-    for order in yaml_dict["orders"]:
-        new_order = OrderMsg()
-        new_order.id = order["id"]
-        new_order.type = ORDER_TYPES.index(order["type"])
-        new_order.priority = "1" if order["priority"] else "0"
-        if order["type"]=="kitting":
-            new_order.kitting_task.agv_number = order["kitting_task"]["agv_number"]
-            new_order.kitting_task.tray_id = order["kitting_task"]["tray_id"]
-            new_order.kitting_task.destination = 3
-            kitting_parts = []
-            for part in order["kitting_task"]["products"]:
-                kitting_part = KittingPartMsg()
-                kitting_part.part.color = _part_color_ints[part["color"].upper()]
-                kitting_part.part.type = _part_type_ints[part["type"].upper()]
-                kitting_part.quadrant = part["quadrant"]
-                kitting_parts.append(kitting_part)
-            new_order.kitting_task.parts = kitting_parts
-        
-        if order["type"]=="assembly":
-            new_order.assembly_task.agv_numbers = order["assembly_task"]["agv_number"]
-            new_order.assembly_task.station = order["assembly_task"]["station"]
-            assembly_parts = []
-            for part in order["assembly_task"]["products"]:
-                assembly_part = AssemblyPartMsg()
-                assembly_part.part.color = _part_color_ints[part["color"].upper()]
-                assembly_part.part.type = _part_type_ints[part["type"].upper()]
-                assembly_part.assembled_pose = _assembly_part_poses[part["type"].upper()]
-                assembly_part.install_direction = _assembly_part_install_directions[part["type"].upper()]
-                assembly_parts.append(assembly_part)
-            new_order.assembly_task.parts = assembly_parts
-        
-        if order["type"] == "combined":
-            new_order.combined_task.station = order["combined_task"]["station"]
-            combined_parts = []
-            for part in order["combined_task"]["products"]:
-                combined_part = AssemblyPartMsg()
-                combined_part.part.color = _part_color_ints[part["color"].upper()]
-                combined_part.part.type = _part_type_ints[part["type"].upper()]
-                combined_part.assembled_pose = _assembly_part_poses[part["type"].upper()]
-                combined_part.install_direction = _assembly_part_install_directions[part["type"].upper()]
-                combined_parts.append(combined_part)
-            new_order.combined_task.parts = combined_parts
-        
-        current_keys = [key for key in order["announcement"].keys()]
-        if "time_condition" in current_keys:
-            new_order.condition.type = 0
-            new_order.condition.time_condition.seconds = order["announcement"]["time_condition"]
-        elif "part_place_condition" in current_keys:
-            new_order.condition.type = 1
-            new_order.condition.part_place_condition.part.color = _part_color_ints[order["announcement"]["part_place_condition"]["color"].upper()]
-            new_order.condition.part_place_condition.part.type = _part_type_ints[order["announcement"]["part_place_condition"]["type"].upper()]
-            new_order.condition.part_place_condition.agv = order["announcement"]["part_place_condition"]["agv"]
-        else:
-            new_order.condition.type = 2
-            new_order.condition.submission_condition.order_id = order["announcement"]["submission_condition"]["order_id"]
-        orders.append(new_order)
+    if "orders" in yaml_dict.keys():
+        for order in yaml_dict["orders"]:
+            new_order = OrderMsg()
+            new_order.id = order["id"]
+            new_order.type = ORDER_TYPES.index(order["type"])
+            new_order.priority = "1" if order["priority"] else "0"
+            if order["type"]=="kitting":
+                new_order.kitting_task.agv_number = order["kitting_task"]["agv_number"]
+                new_order.kitting_task.tray_id = order["kitting_task"]["tray_id"]
+                new_order.kitting_task.destination = 3
+                kitting_parts = []
+                for part in order["kitting_task"]["products"]:
+                    kitting_part = KittingPartMsg()
+                    kitting_part.part.color = _part_color_ints[part["color"].upper()]
+                    kitting_part.part.type = _part_type_ints[part["type"].upper()]
+                    kitting_part.quadrant = part["quadrant"]
+                    kitting_parts.append(kitting_part)
+                new_order.kitting_task.parts = kitting_parts
+            
+            if order["type"]=="assembly":
+                new_order.assembly_task.agv_numbers = order["assembly_task"]["agv_number"]
+                new_order.assembly_task.station = order["assembly_task"]["station"]
+                assembly_parts = []
+                for part in order["assembly_task"]["products"]:
+                    assembly_part = AssemblyPartMsg()
+                    assembly_part.part.color = _part_color_ints[part["color"].upper()]
+                    assembly_part.part.type = _part_type_ints[part["type"].upper()]
+                    assembly_part.assembled_pose = _assembly_part_poses[part["type"].upper()]
+                    assembly_part.install_direction = _assembly_part_install_directions[part["type"].upper()]
+                    assembly_parts.append(assembly_part)
+                new_order.assembly_task.parts = assembly_parts
+            
+            if order["type"] == "combined":
+                new_order.combined_task.station = order["combined_task"]["station"]
+                combined_parts = []
+                for part in order["combined_task"]["products"]:
+                    combined_part = AssemblyPartMsg()
+                    combined_part.part.color = _part_color_ints[part["color"].upper()]
+                    combined_part.part.type = _part_type_ints[part["type"].upper()]
+                    combined_part.assembled_pose = _assembly_part_poses[part["type"].upper()]
+                    combined_part.install_direction = _assembly_part_install_directions[part["type"].upper()]
+                    combined_parts.append(combined_part)
+                new_order.combined_task.parts = combined_parts
+            
+            current_keys = [key for key in order["announcement"].keys()]
+            if "time_condition" in current_keys:
+                new_order.condition.type = 0
+                new_order.condition.time_condition.seconds = order["announcement"]["time_condition"]
+            elif "part_place_condition" in current_keys:
+                new_order.condition.type = 1
+                new_order.condition.part_place_condition.part.color = _part_color_ints[order["announcement"]["part_place_condition"]["color"].upper()]
+                new_order.condition.part_place_condition.part.type = _part_type_ints[order["announcement"]["part_place_condition"]["type"].upper()]
+                new_order.condition.part_place_condition.agv = order["announcement"]["part_place_condition"]["agv"]
+            else:
+                new_order.condition.type = 2
+                new_order.condition.submission_condition.order_id = order["announcement"]["submission_condition"]["order_id"]
+            orders.append(new_order)
 
     challenges = []
-    for challenge in yaml_dict["challenges"]:
-        new_challenge = ChallengeMsg()
-        if "dropped_part" in challenge.keys():
-            new_challenge.type = 1
-            new_challenge.dropped_part_challenge.robot = challenge["dropped_part"]["robot"]
-            new_challenge.dropped_part_challenge.part_to_drop.type = _part_type_ints[challenge["dropped_part"]["type"].upper()]
-            new_challenge.dropped_part_challenge.part_to_drop.color = _part_color_ints[challenge["dropped_part"]["color"].upper()]
-            new_challenge.dropped_part_challenge.drop_after_num = challenge["dropped_part"]["drop_after"]
-            new_challenge.dropped_part_challenge.drop_after_time = challenge["dropped_part"]["delay"]
-        elif "human" in challenge.keys():
-            new_challenge.type = 4
-            new_challenge.human_challenge.behavior = BEHAVIORS.index(challenge["human"]["behavior"])
-            if "time_condition" in challenge["human"].keys():
-                new_challenge.human_challenge.condition.type = 0
-                new_challenge.human_challenge.condition.time_condition.seconds = challenge["human"]["time_condition"]
-            elif "part_place_condition" in challenge["human"].keys():
-                new_challenge.human_challenge.condition.type = 1
-                new_challenge.human_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["human"]["part_place_condition"]["color"].upper()]
-                new_challenge.human_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["human"]["part_place_condition"]["type"].upper()]
-                new_challenge.human_challenge.condition.part_place_condition.agv = challenge["human"]["part_place_condition"]["agv"]
+    if "challenges" in yaml_dict.keys():
+        for challenge in yaml_dict["challenges"]:
+            new_challenge = ChallengeMsg()
+            if "dropped_part" in challenge.keys():
+                new_challenge.type = 1
+                new_challenge.dropped_part_challenge.robot = challenge["dropped_part"]["robot"]
+                new_challenge.dropped_part_challenge.part_to_drop.type = _part_type_ints[challenge["dropped_part"]["type"].upper()]
+                new_challenge.dropped_part_challenge.part_to_drop.color = _part_color_ints[challenge["dropped_part"]["color"].upper()]
+                new_challenge.dropped_part_challenge.drop_after_num = challenge["dropped_part"]["drop_after"]
+                new_challenge.dropped_part_challenge.drop_after_time = challenge["dropped_part"]["delay"]
+            elif "human" in challenge.keys():
+                new_challenge.type = 4
+                new_challenge.human_challenge.behavior = BEHAVIORS.index(challenge["human"]["behavior"])
+                if "time_condition" in challenge["human"].keys():
+                    new_challenge.human_challenge.condition.type = 0
+                    new_challenge.human_challenge.condition.time_condition.seconds = challenge["human"]["time_condition"]
+                elif "part_place_condition" in challenge["human"].keys():
+                    new_challenge.human_challenge.condition.type = 1
+                    new_challenge.human_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["human"]["part_place_condition"]["color"].upper()]
+                    new_challenge.human_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["human"]["part_place_condition"]["type"].upper()]
+                    new_challenge.human_challenge.condition.part_place_condition.agv = challenge["human"]["part_place_condition"]["agv"]
+                else:
+                    new_challenge.human_challenge.condition.type = 2
+                    new_challenge.human_challenge.condition.submission_condition.order_id = challenge["human"]["submission_condition"]["order_id"]
+            elif "robot_malfunction" in challenge.keys():
+                new_challenge.type = 3
+                new_challenge.robot_malfunction_challenge.duration = challenge["robot_malfunction"]["duration"]
+                if "floor_robot" in challenge["robot_malfunction"]["robots_to_disable"]:
+                    new_challenge.robot_malfunction_challenge.robots_to_disable.floor_robot = True
+                if "ceiling_robot" in challenge["robot_malfunction"]["robots_to_disable"]:
+                    new_challenge.robot_malfunction_challenge.robots_to_disable.ceiling_robot = True
+                if "time_condition" in challenge["robot_malfunction"].keys():
+                    new_challenge.robot_malfunction_challenge.condition.type = 0
+                    new_challenge.robot_malfunction_challenge.condition.time_condition.seconds = challenge["robot_malfunction"]["time_condition"]
+                elif "part_place_condition" in challenge["robot_malfunction"].keys():
+                    new_challenge.robot_malfunction_challenge.condition.type = 1
+                    new_challenge.robot_malfunction_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["robot_malfunction"]["part_place_condition"]["color"].upper()]
+                    new_challenge.robot_malfunction_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["robot_malfunction"]["part_place_condition"]["type"].upper()]
+                    new_challenge.robot_malfunction_challenge.condition.part_place_condition.agv = challenge["robot_malfunction"]["part_place_condition"]["agv"]
+                else:
+                    new_challenge.robot_malfunction_challenge.condition.type = 2
+                    new_challenge.robot_malfunction_challenge.condition.submission_condition.order_id = challenge["robot_malfunction"]["submission_condition"]["order_id"]
+            elif "sensor_blackout" in challenge.keys():
+                new_challenge.type = 2
+                new_challenge.sensor_blackout_challenge.duration = challenge["sensor_blackout"]["duration"]
+                if "break_beam" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.break_beam = True
+                else:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.break_beam = False
+                if "proximity" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.proximity = True
+                else:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.proximity = False
+                if "laser_profiler" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler = True
+                else:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler = False
+                if "lidar" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.lidar = True
+                else:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.lidar = False
+                if "camera" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.camera = True
+                else:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.camera = False
+                if "logical_camera" in challenge["sensor_blackout"]["sensors_to_disable"]:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera = True
+                else:
+                    new_challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera = False
+                if "time_condition" in challenge["sensor_blackout"].keys():
+                    new_challenge.sensor_blackout_challenge.condition.type = 0
+                    new_challenge.sensor_blackout_challenge.condition.time_condition.seconds = challenge["sensor_blackout"]["time_condition"]
+                elif "part_place_condition" in challenge["sensor_blackout"].keys():
+                    new_challenge.sensor_blackout_challenge.condition.type = 1
+                    new_challenge.sensor_blackout_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["sensor_blackout"]["part_place_condition"]["color"].upper()]
+                    new_challenge.sensor_blackout_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["sensor_blackout"]["part_place_condition"]["type"].upper()]
+                    new_challenge.sensor_blackout_challenge.condition.part_place_condition.agv = challenge["sensor_blackout"]["part_place_condition"]["agv"]
+                else:
+                    new_challenge.sensor_blackout_challenge.condition.type = 2
+                    new_challenge.sensor_blackout_challenge.condition.submission_condition.order_id = challenge["sensor_blackout"]["submission_condition"]["order_id"]
             else:
-                new_challenge.human_challenge.condition.type = 2
-                new_challenge.human_challenge.condition.submission_condition.order_id = challenge["human"]["submission_condition"]["order_id"]
-        elif "robot_malfunction" in challenge.keys():
-            new_challenge.type = 3
-            new_challenge.robot_malfunction_challenge.duration = challenge["robot_malfunction"]["duration"]
-            if "floor_robot" in challenge["robot_malfunction"]["robots_to_disable"]:
-                new_challenge.robot_malfunction_challenge.robots_to_disable.floor_robot = True
-            if "ceiling_robot" in challenge["robot_malfunction"]["robots_to_disable"]:
-                new_challenge.robot_malfunction_challenge.robots_to_disable.ceiling_robot = True
-            if "time_condition" in challenge["robot_malfunction"].keys():
-                new_challenge.robot_malfunction_challenge.condition.type = 0
-                new_challenge.robot_malfunction_challenge.condition.time_condition.seconds = challenge["robot_malfunction"]["time_condition"]
-            elif "part_place_condition" in challenge["robot_malfunction"].keys():
-                new_challenge.robot_malfunction_challenge.condition.type = 1
-                new_challenge.robot_malfunction_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["robot_malfunction"]["part_place_condition"]["color"].upper()]
-                new_challenge.robot_malfunction_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["robot_malfunction"]["part_place_condition"]["type"].upper()]
-                new_challenge.robot_malfunction_challenge.condition.part_place_condition.agv = challenge["robot_malfunction"]["part_place_condition"]["agv"]
-            else:
-                new_challenge.robot_malfunction_challenge.condition.type = 2
-                new_challenge.robot_malfunction_challenge.condition.submission_condition.order_id = challenge["robot_malfunction"]["submission_condition"]["order_id"]
-        elif "sensor_blackout" in challenge.keys():
-            new_challenge.type = 2
-            new_challenge.sensor_blackout_challenge.duration = challenge["sensor_blackout"]["duration"]
-            if "break_beam" in challenge["sensor_blackout"]["sensors_to_disable"]:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.break_beam = True
-            else:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.break_beam = False
-            if "proximity" in challenge["sensor_blackout"]["sensors_to_disable"]:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.proximity = True
-            else:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.proximity = False
-            if "laser_profiler" in challenge["sensor_blackout"]["sensors_to_disable"]:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler = True
-            else:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler = False
-            if "lidar" in challenge["sensor_blackout"]["sensors_to_disable"]:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.lidar = True
-            else:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.lidar = False
-            if "camera" in challenge["sensor_blackout"]["sensors_to_disable"]:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.camera = True
-            else:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.camera = False
-            if "logical_camera" in challenge["sensor_blackout"]["sensors_to_disable"]:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera = True
-            else:
-                new_challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera = False
-            if "time_condition" in challenge["sensor_blackout"].keys():
-                new_challenge.sensor_blackout_challenge.condition.type = 0
-                new_challenge.sensor_blackout_challenge.condition.time_condition.seconds = challenge["sensor_blackout"]["time_condition"]
-            elif "part_place_condition" in challenge["sensor_blackout"].keys():
-                new_challenge.sensor_blackout_challenge.condition.type = 1
-                new_challenge.sensor_blackout_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["sensor_blackout"]["part_place_condition"]["color"].upper()]
-                new_challenge.sensor_blackout_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["sensor_blackout"]["part_place_condition"]["type"].upper()]
-                new_challenge.sensor_blackout_challenge.condition.part_place_condition.agv = challenge["sensor_blackout"]["part_place_condition"]["agv"]
-            else:
-                new_challenge.sensor_blackout_challenge.condition.type = 2
-                new_challenge.sensor_blackout_challenge.condition.submission_condition.order_id = challenge["sensor_blackout"]["submission_condition"]["order_id"]
-        else:
-            new_challenge.type = 0
-            new_challenge.faulty_part_challenge.order_id = challenge["faulty_part"]["order_id"]
-            try:
-                new_challenge.faulty_part_challenge.quadrant1 = True if challenge["faulty_part"]["quadrant1"] else False
-            except:
-                new_challenge.faulty_part_challenge.quadrant1 = False
-            try:
-                new_challenge.faulty_part_challenge.quadrant2 = True if challenge["faulty_part"]["quadrant2"] else False
-            except:
-                new_challenge.faulty_part_challenge.quadrant2 = False
-            try:
-                new_challenge.faulty_part_challenge.quadrant3 = True if challenge["faulty_part"]["quadrant3"] else False
-            except:
-                new_challenge.faulty_part_challenge.quadrant3 = False
-            try:
-                new_challenge.faulty_part_challenge.quadrant4 = True if challenge["faulty_part"]["quadrant4"] else False
-            except:
-                new_challenge.faulty_part_challenge.quadrant4 = False
-        challenges.append(new_challenge)
+                new_challenge.type = 0
+                new_challenge.faulty_part_challenge.order_id = challenge["faulty_part"]["order_id"]
+                try:
+                    new_challenge.faulty_part_challenge.quadrant1 = True if challenge["faulty_part"]["quadrant1"] else False
+                except:
+                    new_challenge.faulty_part_challenge.quadrant1 = False
+                try:
+                    new_challenge.faulty_part_challenge.quadrant2 = True if challenge["faulty_part"]["quadrant2"] else False
+                except:
+                    new_challenge.faulty_part_challenge.quadrant2 = False
+                try:
+                    new_challenge.faulty_part_challenge.quadrant3 = True if challenge["faulty_part"]["quadrant3"] else False
+                except:
+                    new_challenge.faulty_part_challenge.quadrant3 = False
+                try:
+                    new_challenge.faulty_part_challenge.quadrant4 = True if challenge["faulty_part"]["quadrant4"] else False
+                except:
+                    new_challenge.faulty_part_challenge.quadrant4 = False
+            challenges.append(new_challenge)
 
 
-
-    return CompetitionClass(time_limit, tray_ids, slots, bin_parts, current_bin_parts, 
+    return CompetitionClass(time_limit, tray_ids, slots, assembly_insert_rotations, bin_parts, current_bin_parts, 
                             conveyor_active, spawn_rate, conveyor_order,
                             conveyor_parts, current_conveyor_parts, orders, challenges)
 

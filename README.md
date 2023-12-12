@@ -2,6 +2,6 @@
 
 ![License](https://img.shields.io/badge/License-NIST-blue) 
 
-[Official documentation](https://ariac.readthedocs.io/en/latest/)
+[Official documentation](https://pages.nist.gov/ARIAC_docs/en/2023.5.0/index.html)
 
 ![Environment](docs/images/environment.png)

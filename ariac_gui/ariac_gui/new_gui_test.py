@@ -475,7 +475,6 @@ class GUI_CLASS(ctk.CTk):
         sensor_install_direction.z = 0
         _assembly_part_install_directions["SENSOR"] = sensor_install_direction
 
-
     # =======================================================
     #            Configuration Setup Functions
     # =======================================================
@@ -673,7 +672,6 @@ class GUI_CLASS(ctk.CTk):
             if current_flipped_labels[i]!="":
                 self.current_bin_canvas_elements.append(canvas.create_window(flipped_label_coordinates[i], window=current_flipped_labels[i]))
             
-
     def update_bin_grid(self,bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk,_,__,___):
         for i in self.current_bin_canvas_elements:
             canvas.delete(i)
@@ -725,7 +723,6 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts[bin][index] = BinPart()
         self.bin_parts_counter.set(str(int(self.bin_parts_counter.get())-1))
         window.destroy()
-
 
     def save_bin_part(self,bin, index, window:ctk.CTkToplevel, bin_vals):
         color = bin_vals["color"].get()
@@ -996,7 +993,6 @@ class GUI_CLASS(ctk.CTk):
                 temp_conveyor_part_dict["flipped"] = True if part.flipped == "1" else False
                 temp_conveyor_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
                 self.conveyor_parts_dict["parts_to_spawn"].append(temp_conveyor_part_dict)
-
 
     # =======================================================
     #                 Order Functions
@@ -1759,7 +1755,6 @@ class GUI_CLASS(ctk.CTk):
 
     def show_main_challenges_menu(self, _,__,___):
         self.clear_challenges_menu()
-        self.save_challenge_button.configure(state=NORMAL)
 
         self.grid_and_append_challenge_widget(self.add_dropped_part_button)
         self.grid_and_append_challenge_widget(self.add_robot_malfunction_button)
@@ -1960,7 +1955,6 @@ class GUI_CLASS(ctk.CTk):
         self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
         
-    
     def save_robot_malfunction_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 3
@@ -2071,6 +2065,8 @@ class GUI_CLASS(ctk.CTk):
             self.faulty_part_info["quadrants"][1].set("1" if faulty_part_challenge.quadrant2 else "0")
             self.faulty_part_info["quadrants"][2].set("1" if faulty_part_challenge.quadrant3 else "0")
             self.faulty_part_info["quadrants"][3].set("1" if faulty_part_challenge.quadrant4 else "0")
+        else:
+            self.reset_faulty_part_info()
 
         self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part", index))
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
@@ -2229,7 +2225,6 @@ class GUI_CLASS(ctk.CTk):
                         sensor_blackout_dict["sensor_blackout"][key] = copy(condition_dict[key])
                     self.challenges_dict["challenges"].append(sensor_blackout_dict)
 
-
     # =======================================================
     #              Save configuration file
     # =======================================================
@@ -2241,7 +2236,6 @@ class GUI_CLASS(ctk.CTk):
         self.conveyor_parts_to_dict()
         self.orders_to_dict()
         self.challenges_to_dict()
-
 
     def choose_save_location(self, window = None):
         if window != None:
@@ -2281,7 +2275,10 @@ class GUI_CLASS(ctk.CTk):
             assembly_inserts_data = yaml.dump(self.assembly_inserts_dict,sort_keys=False,Dumper=NoAliasDumper)
             f.write(f"\n{assembly_inserts_data}\n")
 
-            parts_dict = {"parts":{"agvs":self.agv_parts_dict,"bins":self.bin_parts_dict,"conveyor_belt":self.conveyor_parts_dict}}
+            if self.has_parts.get()=="1":
+                parts_dict = {"parts":{"agvs":self.agv_parts_dict,"bins":self.bin_parts_dict,"conveyor_belt":self.conveyor_parts_dict}}
+            else:
+                parts_dict = {"parts":{"agvs":self.agv_parts_dict,"bins":self.bin_parts_dict}}
             parts_data = yaml.dump(parts_dict,sort_keys=False,Dumper=NoAliasDumper)
             f.write(f"\n{parts_data}\n")
 
@@ -2291,8 +2288,7 @@ class GUI_CLASS(ctk.CTk):
             challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
             f.write(f"\n{challenges_data}\n")
         self.destroy()
-            
-            
+                  
     # =======================================================
     #               General Gui Functions
     # =======================================================

@@ -74,6 +74,8 @@ namespace ariac_plugins
         double trial_score_;
         /*!< Time limit for the current trial. */
         double time_limit_;
+        /*!< Path to the log folder to save the trial scores. */
+        std::string ariac_log_folder_;
         /*!< Name of the trial file. */
         std::string trial_name_;
         /*< Health status for the break beam*/
@@ -324,7 +326,14 @@ namespace ariac_plugins
                                                    {"orange", ariac_msgs::msg::Part::ORANGE},
                                                    {"purple", ariac_msgs::msg::Part::PURPLE}};
 
-        void WriteToLog();
+        //============== Helper Functions =================
+        /*!< Helper function to write out a log file for the current trial. */
+        void WriteToAriacLogFile();
+        int ComputeMaxScoreKittingTask(int expected_number_of_parts);
+        int ComputeMaxScoreAssemblyTask(int expected_number_of_parts);
+        int ComputeMaxScoreCombinedTask(int expected_number_of_parts);
+
+        /*!< Message to write in the log file. */
         std::string log_message_ = "";
     };
     //==============================================================================
@@ -338,7 +347,33 @@ namespace ariac_plugins
         impl_->ros_node_.reset();
     }
 
-    void TaskManagerPluginPrivate::WriteToLog()
+
+    //==============================================================================
+    int ComputeMaxScoreKittingTask(int expected_number_of_parts){
+        unsigned correct_part_tray_score = 3;
+        unsigned quadrants_score = 3 * expected_number_of_parts;
+        unsigned bonus_score = expected_number_of_parts;
+        return correct_part_tray_score + quadrants_score + bonus_score;
+    }
+
+
+    //==============================================================================
+    int ComputeMaxScoreAssemblyTask(int expected_number_of_parts){
+        unsigned slots_score = 3 * expected_number_of_parts;
+        unsigned bonus_score = 4 * expected_number_of_parts;
+        return slots_score + bonus_score;
+    }
+
+    //==============================================================================
+    int ComputeMaxScoreCombinedTask(int expected_number_of_parts){
+        unsigned slots_score = 5 * expected_number_of_parts;
+        unsigned bonus_score = 4 * expected_number_of_parts;
+        return slots_score + bonus_score;
+    }
+
+
+    //==============================================================================
+    void TaskManagerPluginPrivate::WriteToAriacLogFile()
     {
         // Get the environment variable INSIDE_DOCKER
         auto inside_docker = std::getenv("INSIDE_DOCKER");
@@ -350,10 +385,6 @@ namespace ariac_plugins
             return;
         }
 
-        // Create a folder
-        std::string folder_path = "/home/ubuntu/logs/";
-        std::string command = "mkdir -p " + folder_path;
-        system(command.c_str());
 
         // remove .yaml from trial name
         if (trial_name_.length() > 5)
@@ -363,7 +394,7 @@ namespace ariac_plugins
 
         // Create a file name with the trial name
         std::string file_name = trial_name_ + ".txt";
-        auto log_file_path = folder_path + file_name;
+        auto log_file_path = ariac_log_folder_ + file_name;
 
         // Open the log file
         RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
@@ -373,6 +404,44 @@ namespace ariac_plugins
         // Close the log file
         log_file.close();
     }
+
+
+    // OLD code from ARIAC2023
+    // void TaskManagerPluginPrivate::WriteToLog()
+    // {
+    //     // Get the environment variable INSIDE_DOCKER
+    //     auto inside_docker = std::getenv("INSIDE_DOCKER");
+
+    //     // compare inside_docker to "ok"
+    //     if (inside_docker == NULL)
+    //     {
+    //         // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "INSIDE_DOCKER environment variable not set");
+    //         return;
+    //     }
+
+    //     // Create a folder
+    //     std::string folder_path = "/home/ubuntu/logs/";
+    //     std::string command = "mkdir -p " + folder_path;
+    //     system(command.c_str());
+
+    //     // remove .yaml from trial name
+    //     if (trial_name_.length() > 5)
+    //     {
+    //         trial_name_.erase(trial_name_.length() - 5);
+    //     }
+
+    //     // Create a file name with the trial name
+    //     std::string file_name = trial_name_ + ".txt";
+    //     auto log_file_path = folder_path + file_name;
+
+    //     // Open the log file
+    //     RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
+    //     auto log_file = std::ofstream(log_file_path);
+    //     // Write to log file
+    //     log_file << log_message_;
+    //     // Close the log file
+    //     log_file.close();
+    // }
 
     //==============================================================================
     void
@@ -477,6 +546,8 @@ namespace ariac_plugins
         impl_->safe_zone_penalty_duration_ = 15.0;
         // Init safe zone penalty grace period
         impl_->ceiling_robot_grace_period_ = 10.0;
+        // Init path to the ariac log folder
+        impl_->ariac_log_folder_ = "";
         // Init elapsed time
         impl_->elapsed_time_ = 0.0;
         double publish_rate = 10;
@@ -1332,6 +1403,10 @@ namespace ariac_plugins
         impl_->time_limit_ = _msg->time_limit;
         impl_->trial_name_ = _msg->trial_name;
 
+        // Create a file for the trial scores
+        impl_->ariac_log_folder_ = _msg->log_folder_path; // path to the log folder
+
+
         // Store orders to be processed later
         std::vector<std::shared_ptr<ariac_msgs::msg::OrderCondition>>
             order_conditions;
@@ -1971,6 +2046,12 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score)
     {
+
+        // Get the number of parts expected in this order
+        // This is used to compute the max score for this order
+        auto order_id = kitting_score->GetOrderId();
+        
+
         std::string output = "";
         output += "\n========================================\n";
         output += "Order: " + kitting_score->GetOrderId() + "\n";
@@ -2300,8 +2381,8 @@ namespace ariac_plugins
         output += "Order: " + combined_score->GetOrderId() + "\n";
         output += "Type: Combined\n";
         output += "Station: " + std::to_string(combined_score->GetStation()) + "\n";
-        output += "Bonus: " + std::to_string(combined_score->GetBonus()) + "\n";
-        output += "Score: " + std::to_string(combined_score->GetScore()) + "\n";
+        output += "Bonus: " + std::to_string(combined_score->GetBonus()) + "\n";        
+        output += "Current Score: " + std::to_string(combined_score->GetScore()) + "\n";
 
         auto battery = combined_score->GetBatteryPtr();
         auto pump = combined_score->GetPumpPtr();
@@ -2526,7 +2607,10 @@ namespace ariac_plugins
                     else if (order_product.GetPart().GetType() == ariac_msgs::msg::Part::PUMP)
                     {
                         pump_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, is_faulty);
-                    }
+                    }// auto number_of_products = kitting_order->GetKittingTask()->GetProducts().size();
+            // auto number_of_products = assembly_order->GetAssemblyTask()->GetProducts().size();
+            // auto number_of_products = combined_order->GetCombinedTask()->GetProducts().size();
+            // output += "Max Score: " + ComputeMaxScoreCombinedTask() + "\n";
                     else if (order_product.GetPart().GetType() == ariac_msgs::msg::Part::REGULATOR)
                     {
                         regulator_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, is_faulty);
@@ -2732,6 +2816,12 @@ namespace ariac_plugins
 
         auto trial_completion_time = std::max({kitting_submitted_time, assembly_submitted_time, combined_submitted_time});
 
+
+        // auto number_of_products = kitting_order->GetKittingTask()->GetProducts().size();
+            // auto number_of_products = assembly_order->GetAssemblyTask()->GetProducts().size();
+            // auto number_of_products = combined_order->GetCombinedTask()->GetProducts().size();
+            // output += "Max Score: " + ComputeMaxScoreCombinedTask() + "\n";
+
         std::string output = "";
         output += "\n\n\n\n========================================\n";
         output += "END OF TRIAL\n";
@@ -2750,7 +2840,8 @@ namespace ariac_plugins
             output += "Announcement time: " + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
             output += "Submission time: " + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
             output += "Completion time: " + std::to_string(kitting_completion_time) + "\n";
-            output += "Score: " + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
+            output += "Max Score: " + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
+            output += "Current Score: " + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
         }
 
         if (assembly_order != nullptr)
@@ -2760,7 +2851,9 @@ namespace ariac_plugins
             output += "Announcement time: " + std::to_string(assembly_order->GetAnnouncedTime()) + "\n";
             output += "Submission time: " + std::to_string(assembly_order->GetSubmittedTime()) + "\n";
             output += "Completion time: " + std::to_string(assembly_completion_time) + "\n";
-            output += "Score: " + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
+            output += "Max Score: " + std::to_string(ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size())) + "\n";
+            output += "Current Score: " + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
+            
         }
 
         if (combined_order != nullptr)
@@ -2770,12 +2863,15 @@ namespace ariac_plugins
             output += "Announcement time: " + std::to_string(combined_order->GetAnnouncedTime()) + "\n";
             output += "Submission time: " + std::to_string(combined_order->GetSubmittedTime()) + "\n";
             output += "Completion time: " + std::to_string(combined_completion_time) + "\n";
-            output += "Score: " + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
+            output += "Max Score: " + std::to_string(ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size())) + "\n";
+            output += "Current Score: " + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
+            
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
         log_message_ += output;
-        WriteToLog();
+        WriteToAriacLogFile();
+        // WriteToLog();
     }
 
     //==============================================================================

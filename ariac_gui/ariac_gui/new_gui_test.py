@@ -236,6 +236,9 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["combined_task"]["parts"] = []
 
         self.reset_order()
+        
+        for var in self.order_info["assembly_task"]["agv_numbers"]:
+            var.trace('w', self.activate_assembly_save)
 
         self.current_orders = []
 
@@ -1010,6 +1013,7 @@ class GUI_CLASS(ctk.CTk):
 
         self.show_main_order_menu()
 
+        self.save_error_message = ctk.CTkLabel(self.orders_frame, text="")
         self.save_order_button = ctk.CTkButton(self.orders_frame,text="Save order", command=self.save_order)
         self.cancel_order_button = ctk.CTkButton(self.orders_frame,text="Cancel order", command=self.show_main_order_menu)
 
@@ -1115,9 +1119,11 @@ class GUI_CLASS(ctk.CTk):
         self.priority_cb = ctk.CTkCheckBox(self.orders_frame,text="Priority",variable=self.order_info["priority"], onvalue="1", offvalue="0", height=1, width=20)
         self.priority_cb.grid(column=MIDDLE_COLUMN, row=1)
         self.current_main_order_widgets.append(self.priority_cb)
-        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
+        self.save_error_message.grid(column=LEFT_COLUMN, columnspan = 3, row=max(self.left_row_index,self.right_row_index)+1)
+        self.current_main_order_widgets.append(self.save_error_message)
+        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
         self.current_main_order_widgets.append(self.save_order_button)
-        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
+        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+3)
         self.current_main_order_widgets.append(self.cancel_order_button)
 
         self.announcement_type_label = ctk.CTkLabel(self.orders_frame, text = "Select the type of announcement:")
@@ -1281,6 +1287,9 @@ class GUI_CLASS(ctk.CTk):
                     index+=1
                     current_row+=1
         
+        self.save_error_message.grid_forget()
+        self.save_error_message.grid(column = LEFT_COLUMN, columnspan=3, row=current_row, pady=10)
+        current_row+=1
         self.save_order_button.grid_forget()
         self.save_order_button.grid(column = MIDDLE_COLUMN, row=current_row, pady=5)
         current_row+=1
@@ -1288,10 +1297,16 @@ class GUI_CLASS(ctk.CTk):
         self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=current_row, pady=5)
     
     def remove_order_part(self, task, index):
-        self.add_part_kitting_task_button.grid_forget()
-        self.left_row_index-=1
-        self.grid_left_column(self.add_part_kitting_task_button)
+        if task == "kitting_task":
+            self.add_part_kitting_task_button.grid_forget()
+            self.left_row_index-=1
+            self.grid_left_column(self.add_part_kitting_task_button)
         del self.order_info[task]["parts"][index]
+        if len(self.order_info[task]["parts"])<1 and task!="assembly_task":
+            self.save_order_button.configure(state=DISABLED)
+            self.save_error_message.configure(text="To save, you need at least one part")
+        if task=="assembly_task":
+            self.activate_assembly_save(1,1,1)
         self.move_order_widgets()
 
     def get_remaining_quadrants(self, current_selection = -1):
@@ -1328,9 +1343,12 @@ class GUI_CLASS(ctk.CTk):
         self.add_part_kitting_task_button = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_kitting_part)
         self.grid_left_column(self.add_part_kitting_task_button)
         self.current_left_order_widgets.append(self.add_part_kitting_task_button)
-
         self.cancel_order_button.configure(text="Cancel kitting order")
-        self.save_order_button.configure(text="Save kitting order")
+        if len(self.order_info["kitting_task"]["parts"]) == 0:
+            self.save_error_message.configure(text="To save, you need at least one part")
+            self.save_order_button.configure(text="Save kitting order", state=DISABLED)
+        else:
+            self.save_order_button.configure(state=NORMAL)
     
     def add_kitting_part(self, kitting_part = None, index = -1):
         add_k_part_wind = ctk.CTkToplevel()
@@ -1380,6 +1398,8 @@ class GUI_CLASS(ctk.CTk):
         if len(self.order_info["kitting_task"]["parts"])>=4:
             self.add_part_kitting_task_button.grid_forget()
         self.move_order_widgets()
+        self.save_error_message.configure(text="")
+        self.save_order_button.configure(state=NORMAL)
         window.destroy()
     
     def show_assembly_menu(self):
@@ -1416,7 +1436,21 @@ class GUI_CLASS(ctk.CTk):
         self.current_left_order_widgets.append(add_part_assembly_task)
 
         self.cancel_order_button.configure(text="Cancel assembly order")
-        self.save_order_button.configure(text="Save assembly order")
+        self.activate_assembly_save(1,1,1)
+    
+    def activate_assembly_save(self,_,__,___):
+        if len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4 and len(self.order_info["assembly_task"]["parts"])<1:
+            self.save_error_message.configure(text="To save, you need at least one part and one agv selected")
+            self.save_order_button.configure(state=DISABLED)
+        elif len(self.order_info["assembly_task"]["parts"])<1:
+            self.save_error_message.configure(text="To save, you need at least one part")
+            self.save_order_button.configure(state=DISABLED)
+        elif len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4:
+            self.save_error_message.configure(text="To save, you need at least one agv selected")
+            self.save_order_button.configure(state=DISABLED)
+        else:
+            self.save_error_message.configure(text="")
+            self.save_order_button.configure(state=NORMAL)
     
     def add_assembly_part(self, assembly_part = None, index = -1):
         add_a_part_wind = ctk.CTkToplevel()
@@ -1456,6 +1490,7 @@ class GUI_CLASS(ctk.CTk):
         else:
             self.order_info["assembly_task"]["parts"][index] = new_assembly_part
         self.move_order_widgets()
+        self.activate_assembly_save(1,1,1)
         window.destroy()
     
     def show_combined_menu(self):
@@ -1477,7 +1512,11 @@ class GUI_CLASS(ctk.CTk):
         self.current_left_order_widgets.append(add_part_combined_task)
 
         self.cancel_order_button.configure(text="Cancel combined order")
-        self.save_order_button.configure(text="Save combined order")
+        if len(self.order_info["assembly_task"]["parts"]) == 0:
+            self.save_error_message.configure(text="To save, you need at least one part")
+            self.save_order_button.configure(text="Save kitting order", state=DISABLED)
+        else:
+            self.save_order_button.configure(state=NORMAL)
     
     def add_combined_part(self, combined_part = None, index = -1):
         add_c_part_wind = ctk.CTkToplevel()
@@ -1502,7 +1541,7 @@ class GUI_CLASS(ctk.CTk):
         type_menu = ctk.CTkOptionMenu(add_c_part_wind, variable=c_part_dict["pType"],values=PART_TYPES)
         type_menu.pack()
 
-        save_button = ctk.CTkButton(add_c_part_wind, text="Save combined part", command=partial(self.save_combined_part, c_part_dict, add_c_part_wind))
+        save_button = ctk.CTkButton(add_c_part_wind, text="Save combined part", command=partial(self.save_combined_part, c_part_dict, add_c_part_wind, index))
         save_button.pack(pady = 10)
         add_c_part_wind.mainloop()
 
@@ -1520,6 +1559,7 @@ class GUI_CLASS(ctk.CTk):
         else:
             self.order_info["combined_task"]["parts"][index] = new_combined_part
         self.move_order_widgets()
+        self.save_order_button.configure(state=NORMAL)
         window.destroy()
 
     def clear_order_menu(self):
@@ -1719,6 +1759,7 @@ class GUI_CLASS(ctk.CTk):
 
     def show_main_challenges_menu(self, _,__,___):
         self.clear_challenges_menu()
+        self.save_challenge_button.configure(state=NORMAL)
 
         self.grid_and_append_challenge_widget(self.add_dropped_part_button)
         self.grid_and_append_challenge_widget(self.add_robot_malfunction_button)
@@ -2209,13 +2250,11 @@ class GUI_CLASS(ctk.CTk):
             file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location,title='Save ARIAC configuration')
         else:
             file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location,title='Save ARIAC configuration',initialfile=f"{self.trial_name.get()}")
-        self.file_name = file_to_open.name
-        self.save_file()
-        # try:
-        #     self.file_name = file_to_open.name
-        #     self.save_file()
-        # except:
-        #     pass
+        try:
+            self.file_name = file_to_open.name
+            self.save_file()
+        except:
+            pass
     
     def run_overwrite_window(self):
         overwrite_window = ctk.CTkToplevel()

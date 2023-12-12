@@ -18,7 +18,6 @@ from datetime import datetime
 
 from ariac_msgs.msg import (
     Part as PartMsg,
-    PartLot as PartLotMsg,
     OrderCondition as OrderMsg,
     AssemblyPart as AssemblyPartMsg,
     KittingPart as KittingPartMsg,
@@ -363,27 +362,20 @@ class GUI_CLASS(ctk.CTk):
 
     def _load_file(self):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location,title='Open ARIAC configuration',)
-        # try:
-        #     with open(file_to_open.name) as f:
-        #         yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        #     self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-        #     self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-        #     self.load_through_file_flag = True
-        #     self.file_name = file_to_open.name
-        #     self.open_main_window()
-        # except:
-        #     try:
-        #         if file_to_open.name != None:
-        #             print("Unable to open or parse file")
-        #     except:
-        #         pass
-        with open(file_to_open.name) as f:
-            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-        self.load_through_file_flag = True
-        self.file_name = file_to_open.name
-        self.open_main_window()
+        try:
+            with open(file_to_open.name) as f:
+                yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+            self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+            self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+            self.load_through_file_flag = True
+            self.file_name = file_to_open.name
+            self.open_main_window()
+        except:
+            try:
+                if file_to_open.name != None:
+                    print("Unable to open or parse file")
+            except:
+                pass
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.save_file_button.configure(command=self.run_overwrite_window)
@@ -501,9 +493,13 @@ class GUI_CLASS(ctk.CTk):
     #               Kitting Tray Functions
     # =======================================================
     def add_kitting_trays_widgets_to_frame(self):
+        self.kitting_tray_frame.grid_rowconfigure(0, weight=1)
+        self.kitting_tray_frame.grid_rowconfigure(100, weight=1)
+        self.kitting_tray_frame.grid_columnconfigure(0, weight=1)
+        self.kitting_tray_frame.grid_columnconfigure(4, weight=1)
         tray_label = ctk.CTkLabel(self.kitting_tray_frame,text="Select the tray ids for each slot")
-        tray_label.pack()
-        kitting_tray_canvas = Canvas(self.kitting_tray_frame)
+        tray_label.grid(row=1, column = MIDDLE_COLUMN)
+        kitting_tray_canvas = Canvas(self.kitting_tray_frame, height=400)
         kitting_tray_canvas.create_rectangle(10, 10, 170, 310, 
                                 outline = "black", fill = "#f6f6f6",
                                 width = 2)
@@ -526,8 +522,8 @@ class GUI_CLASS(ctk.CTk):
             kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"{i+1}:"))
             kitting_tray_canvas.create_window(menu_coordinates[i], window = tray_menus[i])
         kitting_tray_canvas.create_window((90,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_1"))
-        kitting_tray_canvas.create_window((310,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
-        kitting_tray_canvas.pack(fill = BOTH, expand = 1)
+        kitting_tray_canvas.create_window((280,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
+        kitting_tray_canvas.grid(row = 3,column = MIDDLE_COLUMN, sticky = "we")
 
     def kitting_trays_to_dict(self):
         slots = []
@@ -618,10 +614,14 @@ class GUI_CLASS(ctk.CTk):
     #                 Bin Parts Functions
     # =======================================================
     def add_bin_parts_widgets_to_frame(self):
+        self.bin_parts_frame.grid_rowconfigure(0, weight=1)
+        self.bin_parts_frame.grid_rowconfigure(100, weight=1)
+        self.bin_parts_frame.grid_columnconfigure(0, weight=1)
+        self.bin_parts_frame.grid_columnconfigure(4, weight=1)
         bin_selection = ctk.StringVar()
         bin_selection.set(ALL_BINS[0])
         bin_label = ctk.CTkLabel(self.bin_parts_frame,text="Select the bin you would like to add parts to:")
-        bin_label.pack()
+        bin_label.grid(column = MIDDLE_COLUMN)
         bin_menu = ctk.CTkOptionMenu(self.bin_parts_frame,
                                         variable=bin_selection,
                                         values=ALL_BINS,
@@ -631,26 +631,26 @@ class GUI_CLASS(ctk.CTk):
                                         button_hover_color="#9e9e9e",
                                         anchor='center',
                                         )
-        bin_menu.pack()
+        bin_menu.grid(column = MIDDLE_COLUMN)
 
-        bin_parts_canvas = Canvas(self.bin_parts_frame)
+        bin_parts_canvas = Canvas(self.bin_parts_frame, height=375)
         
-        bin_parts_canvas.create_rectangle(50, 10, 350, 310, 
+        bin_parts_canvas.create_rectangle(75, 10, 375, 310, 
                                 outline = "black", fill = "#60c6f1",
                                 width = 2)
         self.show_grid(bin_selection,bin_parts_canvas,self.bin_parts_frame)
-        bin_parts_canvas.pack(fill = BOTH, expand = 1)
+        bin_parts_canvas.grid(column = MIDDLE_COLUMN, sticky = "we")
         add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection.get()))
-        add_multiple_parts_button.pack(pady=15)
+        add_multiple_parts_button.grid(column = MIDDLE_COLUMN, pady = 15)
         flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
-        flipped_meaning_label.pack(pady=10)
+        flipped_meaning_label.grid(column = MIDDLE_COLUMN, pady = 10)
         bin_selection.trace('w',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
         self.bin_parts_counter.trace('w',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
 
     def show_grid(self,bin_selection : ctk.StringVar,canvas:Canvas, main_wind : ctk.CTk):
-        button_coordinates = [(100,60),(200,60),(300,60),
-                            (100,160),(200,160),(300,160),
-                            (100,260),(200,260),(300,260)]
+        button_coordinates = [(125,60),(225,60),(325,60),
+                            (125,160),(225,160),(325,160),
+                            (125,260),(225,260),(325,260)]
         flipped_label_coordinates = [(coord[0]+30, coord[1]+30) for coord in button_coordinates]
         current_bin_slot_widgets = []
         current_flipped_labels = ["" for _ in range(len(flipped_label_coordinates))]
@@ -1035,7 +1035,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_left_order_widgets.append(temp_order_label)
 
             edit_order_button = ctk.CTkButton(self.orders_frame, text="Edit order", command=partial(self.edit_order, i))
-            edit_order_button.grid(column=MIDDLE_COLUMN, row=current_row+i)
+            edit_order_button.grid(column=MIDDLE_COLUMN, row=current_row+i, padx=10)
             self.current_main_order_widgets.append(edit_order_button)
 
             delete_order_button = ctk.CTkButton(self.orders_frame, text = "Delete order", command=partial(self.delete_order, i))

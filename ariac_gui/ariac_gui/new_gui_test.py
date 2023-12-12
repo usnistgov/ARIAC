@@ -14,6 +14,7 @@ import random
 import string
 import yaml
 from copy import copy
+from datetime import datetime
 
 from ariac_msgs.msg import (
     Part as PartMsg,
@@ -331,8 +332,14 @@ class GUI_CLASS(ctk.CTk):
 
         self._build_assembly_parts_pose_direction()
 
-        # File dict
-        self.file_dict = {}
+        # File dicts
+        self.kitting_trays_dict = {}
+        self.assembly_inserts_dict = {}
+        self.agv_parts_dict = {}
+        self.bin_parts_dict = {}
+        self.conveyor_parts_dict = {}
+        self.orders_dict = {}
+        self.challenges_dict = {}
 
         self.open_initial_window()
     
@@ -356,20 +363,27 @@ class GUI_CLASS(ctk.CTk):
 
     def _load_file(self):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location,title='Open ARIAC configuration',)
-        try:
-            with open(file_to_open.name) as f:
-                yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-            self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-            self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-            self.load_through_file_flag = True
-            self.file_name = file_to_open.name
-            self.open_main_window()
-        except:
-            try:
-                if file_to_open.name != None:
-                    print("Unable to open or parse file")
-            except:
-                pass
+        # try:
+        #     with open(file_to_open.name) as f:
+        #         yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        #     self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+        #     self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        #     self.load_through_file_flag = True
+        #     self.file_name = file_to_open.name
+        #     self.open_main_window()
+        # except:
+        #     try:
+        #         if file_to_open.name != None:
+        #             print("Unable to open or parse file")
+        #     except:
+        #         pass
+        with open(file_to_open.name) as f:
+            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        self.load_through_file_flag = True
+        self.file_name = file_to_open.name
+        self.open_main_window()
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.save_file_button.configure(command=self.run_overwrite_window)
@@ -398,7 +412,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_conveyor_parts = competition.competition["conveyor_belt"]["current_conveyor_parts"]
         self.conveyor_parts_counter.set(str(len(self.conveyor_parts)))
         for part in self.conveyor_parts:
-            for _ in range(part.part_lot_quantity):
+            for _ in range(part.part_lot.quantity):
                 self.all_present_parts.append(_part_color_str[part.part_lot.part.color]+" "+_part_type_str[part.part_lot.part.type])
 
         self.current_orders = competition.competition["orders"]
@@ -523,7 +537,7 @@ class GUI_CLASS(ctk.CTk):
             if tray != "":
                 slots.append(i+1)
                 trays.append(int(tray))
-        self.file_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
+        self.kitting_trays_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
     
     # =======================================================
     #               Assembly Inserts Functions
@@ -544,7 +558,7 @@ class GUI_CLASS(ctk.CTk):
         filler_label.grid(row = 10, column = LEFT_COLUMN)
     
     def assembly_inserts_to_dict(self):
-        self.file_dict["assembly_inserts"] = {ASSEMBLY_STATIONS[i]:SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())] for i in range(len(ASSEMBLY_STATIONS))}
+        self.assembly_inserts_dict["assembly_inserts"] = {ASSEMBLY_STATIONS[i]:SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())] for i in range(len(ASSEMBLY_STATIONS))}
     
     # =======================================================
     #                 AGV Parts Functions
@@ -574,20 +588,17 @@ class GUI_CLASS(ctk.CTk):
                 if len(needed_parts)==index:
                     break
         if num_parts_needed>0:
-            if "parts" not in self.file_dict.keys():
-                        self.file_dict["parts"] = {}
-            self.file_dict["parts"]["agvs"] = {}
             for agv_key in parts_on_agv.keys():
                 if len(parts_on_agv[agv_key])>0:
-                    self.file_dict["parts"]["agvs"][agv_key] = {}
-                    self.file_dict["parts"]["agvs"][agv_key]["tray_id"] = self.needed_kitting_trays[AGV_TITLES.index(agv_key)]
-                    self.file_dict["parts"]["agvs"][agv_key]["parts"] = []
+                    self.agv_parts_dict[agv_key] = {}
+                    self.agv_parts_dict[agv_key]["tray_id"] = self.needed_kitting_trays[AGV_TITLES.index(agv_key)]
+                    self.agv_parts_dict[agv_key]["parts"] = []
                     for part in parts_on_agv[agv_key]:
                         temp_dict = {}
                         temp_dict["type"] = part[0].split(" ")[0]
                         temp_dict["color"] = part[0].split(" ")[1]
                         temp_dict["quadrant"] = part[1]
-                        self.file_dict["parts"]["agvs"][agv_key]["parts"].append(temp_dict)
+                        self.agv_parts_dict[agv_key]["parts"].append(temp_dict)
 
     def get_needed_parts(self):
         needed_parts = []
@@ -791,10 +802,6 @@ class GUI_CLASS(ctk.CTk):
             used_slots = []
             for slot in range(9):
                 if self.current_bin_parts[bin][slot]!="" and slot not in used_slots:
-                    if "parts" not in self.file_dict.keys():
-                        self.file_dict["parts"] = {}
-                    if "bins" not in self.file_dict["parts"].keys():
-                        self.file_dict["parts"]["bins"] = {}
                     temp_slots = []
                     for i in range(slot,9):
                         if self.bin_part_equal(self.bin_parts[bin][slot],self.bin_parts[bin][i]):
@@ -807,10 +814,10 @@ class GUI_CLASS(ctk.CTk):
                     temp_bin_part_dict["flipped"] = True if self.bin_parts[bin][slot].flipped == "1" else False
                     temp_bin_part_dict["slots"] = temp_slots
                     try:
-                        self.file_dict["parts"]["bins"][bin].append(temp_bin_part_dict)
+                        self.bin_parts_dict[bin].append(temp_bin_part_dict)
                     except:
-                        self.file_dict["parts"]["bins"][bin] = []
-                        self.file_dict["parts"]["bins"][bin].append(temp_bin_part_dict)
+                        self.bin_parts_dict[bin] = []
+                        self.bin_parts_dict[bin].append(temp_bin_part_dict)
                     
     # =======================================================
     #               Conveyor Parts Functions
@@ -972,13 +979,10 @@ class GUI_CLASS(ctk.CTk):
     
     def conveyor_parts_to_dict(self):
         if len(self.conveyor_parts)>0:
-            if "parts" not in self.file_dict.keys():
-                self.file_dict["parts"] = {}
-            self.file_dict["parts"]["conveyor_belt"] = {}
-            self.file_dict["parts"]["conveyor_belt"]["active"] = True if self.conveyor_setup_vals["active"].get() == "1" else False
-            self.file_dict["parts"]["conveyor_belt"]["spawn_rate"] = float(self.conveyor_setup_vals["spawn_rate"].get())
-            self.file_dict["parts"]["conveyor_belt"]["order"] = self.conveyor_setup_vals["order"].get()
-            self.file_dict["parts"]["conveyor_belt"]["parts_to_spawn"] = []
+            self.conveyor_parts_dict["active"] = True if self.conveyor_setup_vals["active"].get() == "1" else False
+            self.conveyor_parts_dict["spawn_rate"] = float(self.conveyor_setup_vals["spawn_rate"].get())
+            self.conveyor_parts_dict["order"] = self.conveyor_setup_vals["order"].get()
+            self.conveyor_parts_dict["parts_to_spawn"] = []
             for part in self.conveyor_parts:
                 part : ConveyorPart
                 temp_conveyor_part_dict = {}
@@ -988,7 +992,7 @@ class GUI_CLASS(ctk.CTk):
                 temp_conveyor_part_dict["offset"] = part.offset
                 temp_conveyor_part_dict["flipped"] = True if part.flipped == "1" else False
                 temp_conveyor_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
-                self.file_dict["parts"]["conveyor_belt"]["parts_to_spawn"].append(temp_conveyor_part_dict)
+                self.conveyor_parts_dict["parts_to_spawn"].append(temp_conveyor_part_dict)
 
 
     # =======================================================
@@ -1582,7 +1586,7 @@ class GUI_CLASS(ctk.CTk):
 
     def orders_to_dict(self):
         if len(self.current_orders)>0:
-            self.file_dict["orders"] = []
+            self.orders_dict["orders"] = []
             for order in self.current_orders:
                 temp_order_dict = {}
                 order : OrderMsg
@@ -1628,7 +1632,7 @@ class GUI_CLASS(ctk.CTk):
                         for key in _assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()].keys():
                             temp_combined_part_dict[key] = copy(_assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()][key])
                         temp_order_dict["combined_task"]["products"].append(temp_combined_part_dict)
-                self.file_dict["orders"].append(temp_order_dict)
+                self.orders_dict["orders"].append(temp_order_dict)
     
     # =======================================================
     #                  Challenges functions
@@ -2116,7 +2120,7 @@ class GUI_CLASS(ctk.CTk):
     
     def challenges_to_dict(self):
         if len(self.current_challenges)>0:
-            self.file_dict["challenges"] = []
+            self.challenges_dict["challenges"] = []
             for challenge in self.current_challenges:
                 challenge:ChallengeMsg
                 if challenge.type == ChallengeMsg.DROPPED_PART:
@@ -2126,7 +2130,7 @@ class GUI_CLASS(ctk.CTk):
                     dropped_part_dict["dropped_part"]["color"] = _part_color_str[challenge.dropped_part_challenge.part_to_drop.color]
                     dropped_part_dict["dropped_part"]["drop_after"] = challenge.dropped_part_challenge.drop_after_num
                     dropped_part_dict["dropped_part"]["delay"] = challenge.dropped_part_challenge.drop_after_time
-                    self.file_dict["challenges"].append(dropped_part_dict)
+                    self.challenges_dict["challenges"].append(dropped_part_dict)
 
                 elif challenge.type == ChallengeMsg.FAULTY_PART:
                     faulty_part_dict = {"faulty_part":{}}
@@ -2139,7 +2143,7 @@ class GUI_CLASS(ctk.CTk):
                         faulty_part_dict["faulty_part"]["quadrant3"] = True
                     if challenge.faulty_part_challenge.quadrant4:
                         faulty_part_dict["faulty_part"]["quadrant4"] = True
-                    self.file_dict["challenges"].append(faulty_part_dict)
+                    self.challenges_dict["challenges"].append(faulty_part_dict)
 
                 elif challenge.type == ChallengeMsg.HUMAN:
                     human_dict = {"human":{}}
@@ -2147,7 +2151,7 @@ class GUI_CLASS(ctk.CTk):
                     condition_dict = self.announcement_to_dict(challenge.human_challenge.condition)
                     for key in condition_dict.keys():
                         human_dict["human"][key] = condition_dict[key]
-                    self.file_dict["challenges"].append(human_dict)
+                    self.challenges_dict["challenges"].append(human_dict)
 
                 elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
                     robot_malfunction_dict = {"robot_malfunction":{}}
@@ -2160,7 +2164,7 @@ class GUI_CLASS(ctk.CTk):
                     condition_dict = self.announcement_to_dict(challenge.robot_malfunction_challenge.condition)
                     for key in condition_dict.keys():
                         robot_malfunction_dict["robot_malfunction"][key] = copy(condition_dict[key])
-                    self.file_dict["challenges"].append(robot_malfunction_dict)
+                    self.challenges_dict["challenges"].append(robot_malfunction_dict)
                     
 
                 else:
@@ -2182,14 +2186,13 @@ class GUI_CLASS(ctk.CTk):
                     condition_dict = self.announcement_to_dict(challenge.sensor_blackout_challenge.condition)
                     for key in condition_dict.keys():
                         sensor_blackout_dict["sensor_blackout"][key] = copy(condition_dict[key])
-                    self.file_dict["challenges"].append(sensor_blackout_dict)
+                    self.challenges_dict["challenges"].append(sensor_blackout_dict)
 
 
     # =======================================================
     #              Save configuration file
     # =======================================================
     def build_file_dict(self):
-        self.file_dict["time_limit"] = int(self.time_limit.get())
         self.kitting_trays_to_dict()
         self.assembly_inserts_to_dict()
         self.agv_parts_to_dict()
@@ -2198,6 +2201,7 @@ class GUI_CLASS(ctk.CTk):
         self.orders_to_dict()
         self.challenges_to_dict()
 
+
     def choose_save_location(self, window = None):
         if window != None:
             window.destroy()
@@ -2205,12 +2209,13 @@ class GUI_CLASS(ctk.CTk):
             file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location,title='Save ARIAC configuration')
         else:
             file_to_open=filedialog.asksaveasfile(defaultextension=".yaml", filetypes=[("YAML file", ".yaml")], initialdir=self.trials_file_location,title='Save ARIAC configuration',initialfile=f"{self.trial_name.get()}")
-            initialfile="xyz.txt"
-        try:
-            self.file_name = file_to_open.name
-            self.save_file()
-        except:
-            pass
+        self.file_name = file_to_open.name
+        self.save_file()
+        # try:
+        #     self.file_name = file_to_open.name
+        #     self.save_file()
+        # except:
+        #     pass
     
     def run_overwrite_window(self):
         overwrite_window = ctk.CTkToplevel()
@@ -2225,7 +2230,27 @@ class GUI_CLASS(ctk.CTk):
     def save_file(self):
         self.build_file_dict()
         with open(self.file_name,'w') as f:
-            yaml.dump(self.file_dict,f,sort_keys=False,Dumper=NoAliasDumper)
+            f.write(f"# Trial name: {self.trial_name.get()}.yaml\n")
+            f.write("# ARIAC2024\n")
+            f.write(f"# Author: {self.author.get()}\n")
+            f.write(f"# {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n# ENVIRONMENT SETUP\n\n")
+            f.write(f"time_limit: {self.time_limit.get()}\n\n")
+
+            kitting_trays_data = yaml.dump(self.kitting_trays_dict,sort_keys=False,Dumper=NoAliasDumper)
+            f.write(f"\n{kitting_trays_data}\n")
+
+            assembly_inserts_data = yaml.dump(self.assembly_inserts_dict,sort_keys=False,Dumper=NoAliasDumper)
+            f.write(f"\n{assembly_inserts_data}\n")
+
+            parts_dict = {"parts":{"agvs":self.agv_parts_dict,"bins":self.bin_parts_dict,"conveyor_belt":self.conveyor_parts_dict}}
+            parts_data = yaml.dump(parts_dict,sort_keys=False,Dumper=NoAliasDumper)
+            f.write(f"\n{parts_data}\n")
+
+            orders_data = yaml.dump(self.orders_dict,sort_keys=False,Dumper=NoAliasDumper)
+            f.write(f"\n{orders_data}\n")
+
+            challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
+            f.write(f"\n{challenges_data}\n")
         self.destroy()
             
             

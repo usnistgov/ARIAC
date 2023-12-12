@@ -148,9 +148,7 @@ class GUI_CLASS(ctk.CTk):
         self.trials_file_location = ''
         try:
             self.ws = ''.join(str(item) + '/' for item in get_package_prefix("ariac_gazebo").split("/")[:-2])
-
             self.pkgs = [ f.name for f in os.scandir(self.ws + '/src/') if f.is_dir() ]
-
             for pkg in self.pkgs:
                 if pkg.lower().count('ariac') >= 1:
                     temp_folder = self.ws + 'src/' + pkg + '/ariac_gazebo/config/trials/'
@@ -341,7 +339,6 @@ class GUI_CLASS(ctk.CTk):
     # =======================================================
     #            Load gui from a previous file
     # =======================================================
-
     def open_main_window(self):
         self.initial_label.grid_forget()
         self.load_file_button.grid_forget()
@@ -1636,7 +1633,6 @@ class GUI_CLASS(ctk.CTk):
     # =======================================================
     #                  Challenges functions
     # =======================================================
-
     def add_challenges_widgets_to_frame(self):
         self.reset_all_challenges()
         self.challenges_frame.grid_rowconfigure(0, weight=1)

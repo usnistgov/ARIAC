@@ -4,6 +4,7 @@ import os
 import time
 import math
 import yaml
+import sys
 import xml.etree.ElementTree as ET
 from random import shuffle
 from itertools import cycle, count
@@ -104,7 +105,7 @@ class EnvironmentStartup(Node):
         self.declare_parameter('development_mode', False,
                                ParameterDescriptor(description='Whether to run the competition in development mode'))
         self.declare_parameter('trial_log_folder', '',
-                               ParameterDescriptor(description='Whether to run the competition in development mode'))
+                               ParameterDescriptor(description='Path to the trial log folder'))
 
         self.trial_config = self.read_yaml(
             self.get_parameter('trial_config_path').get_parameter_value().string_value)
@@ -199,14 +200,16 @@ class EnvironmentStartup(Node):
         # Retrieve challenges
         try:
             challenges = self.trial_config["challenges"]
+            # ariac_msgs/msg/Trial.msg: challenges
             message.challenges = self.create_challenge_list(challenges)
         except KeyError:
             self.get_logger().info("No challenges found in trial configuration file")
 
+        # ariac_msgs/msg/Trial.msg: order_conditions
         message.order_conditions = self.create_order_list(orders)
-        
+        # ariac_msgs/msg/Trial.msg: trial_name
         message.trial_name = config_file_name
-        self.trial_info_pub.publish(message)
+        
 
         # Creat log folder
         self.trial_log_folder = self.get_parameter('trial_log_folder').get_parameter_value().string_value
@@ -230,6 +233,9 @@ class EnvironmentStartup(Node):
 
             self.trial_log_folder = parent_folder + message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
 
+            # ariac_msgs/msg/Trial.msg: log_folder_path
+            message.log_folder_path = self.trial_log_folder
+
             trial_log_folder_param = Parameter(
                 'trial_log_folder',
                 rclpy.Parameter.Type.STRING,
@@ -245,6 +251,9 @@ class EnvironmentStartup(Node):
 
         self.get_logger().info(bcolors.OKCYAN + "ARIAC logs for this trial can be found at:" + bcolors.ENDC)
         self.get_logger().info(bcolors.OKCYAN + '  ' + self.trial_log_folder + bcolors.ENDC)
+
+        # publish to topic /ariac/trial_config
+        self.trial_info_pub.publish(message)
 
 
     def convert_order_type_to_int(self, order_type):
@@ -920,10 +929,13 @@ class EnvironmentStartup(Node):
 
         # Create sensor log
         with open(self.trial_log_folder + 'sensor_cost.txt', 'w') as f:
-            f.write('User Sensor Log\n\n')
+            f.write('='*30+'\n')
+            f.write('User Sensor Log\n')
+            f.write('='*30+'\n')
             for sensor in sensor_counts.keys():
                 f.write(f'Number of {sensor} used: {sensor_counts[sensor]}\n')
-            f.write(f"\n\nTotal sensor cost is: ${total_cost}")
+            f.write(f"\n\nTotal sensor cost is: ${total_cost}\n")
+            f.write('-'*30+'\n')
 
         # Spawn agv tray sensors
         for i in range(1, 5):

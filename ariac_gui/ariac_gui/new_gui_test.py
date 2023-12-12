@@ -8,7 +8,6 @@ from tkinter import *
 import tkinter as tk
 from tkinter import ttk, filedialog
 from functools import partial
-from turtle import right
 from PIL import Image  # needed for images in gui
 from math import pi
 import random
@@ -16,7 +15,6 @@ import string
 import yaml
 from copy import copy
 
-from click import command
 from ariac_msgs.msg import (
     Part as PartMsg,
     PartLot as PartLotMsg,
@@ -26,13 +24,7 @@ from ariac_msgs.msg import (
     KittingTask as KittingTaskMsg,
     AssemblyTask as AssemblyTaskMsg,
     CombinedTask as CombinedTaskMsg,
-    BinParts as BinPartsMsg,
-    BinInfo as BinInfoMsg,
-    ConveyorParts as ConveyorPartsMsg,
     Condition as ConditionMsg,
-    TimeCondition as TimeConditionMsg,
-    PartPlaceCondition as PartPlaceConditionMsg,
-    SubmissionCondition as SubmissionConditionMsg,
     FaultyPartChallenge as FaultyPartChallengeMsg,
     DroppedPartChallenge as DroppedPartChallengeMsg,
     SensorBlackoutChallenge as SensorBlackoutChallengeMsg,
@@ -40,10 +32,9 @@ from ariac_msgs.msg import (
     HumanChallenge as HumanChallengeMsg,
     Challenge as ChallengeMsg
 )
-from geometry_msgs.msg import PoseStamped, Vector3, Pose, Point, Quaternion
+from geometry_msgs.msg import PoseStamped, Vector3
 from ament_index_python.packages import get_package_share_directory, get_package_prefix
 from ariac_gui.utils import (build_competition_from_file, quaternion_from_euler, require_int, 
-                             rpy_from_quaternion,
                              require_num, 
                              BinPart, 
                              ConveyorPart,

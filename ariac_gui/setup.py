@@ -23,9 +23,7 @@ setup(
     license='ARIAC',
     entry_points={
         'console_scripts': [
-            'gui = ariac_gui.gui_node:main',
-            'zeid_gui = ariac_gui.zeid_ariac_gui:main',
-            'new_gui = ariac_gui.new_gui_node:main'
+            'trial_generator = ariac_gui.trial_generator_node:main',
         ],
     },
 )

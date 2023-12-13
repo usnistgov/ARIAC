@@ -4,7 +4,7 @@
   <name>ariac_gui</name>
   <version>0.0.0</version>
   <description>Gui for creating trial configurations</description>
-  <maintainer email="jothomas0615@gmail.com">jfernandez</maintainer>
+  <maintainer email="joseph.fernandez@nist.gov">jfernandez</maintainer>
   <license>ARIAC</license>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>

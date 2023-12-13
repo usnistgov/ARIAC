@@ -18,7 +18,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 from ariac_msgs.msg import Part
 # from ariac_gui.newGui import *
-from ariac_gui.new_gui_test import GUI_CLASS
+from ariac_gui.ariac_gui.trial_generator import GUI_CLASS
 
 
 def main(args=None):

@@ -450,9 +450,4 @@ def validate_time_limit(val, _, __, ___):
     if len(tempStr)>0:
         if tempStr[0]=="-" and tempStr!="-":
                 tempStr="-1"
-        try:
-            if int(tempStr)>400:
-                tempStr="400"
-        except:
-            pass
     val.set(tempStr)

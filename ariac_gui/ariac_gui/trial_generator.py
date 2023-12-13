@@ -1461,6 +1461,7 @@ class GUI_CLASS(ctk.CTk):
         self.activate_assembly_save(1,1,1)
     
     def activate_assembly_save(self,_,__,___):
+        self.save_order_button.configure(text="Save assembly order")
         if len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4 and len(self.order_info["assembly_task"]["parts"])<1:
             self.save_error_message.configure(text="To save, you need at least one part and one agv selected")
             self.save_order_button.configure(state=DISABLED)
@@ -1536,7 +1537,7 @@ class GUI_CLASS(ctk.CTk):
         self.cancel_order_button.configure(text="Cancel combined order")
         if len(self.order_info["assembly_task"]["parts"]) == 0:
             self.save_error_message.configure(text="To save, you need at least one part")
-            self.save_order_button.configure(text="Save kitting order", state=DISABLED)
+            self.save_order_button.configure(text="Save combined order", state=DISABLED)
         else:
             self.save_order_button.configure(state=NORMAL)
     

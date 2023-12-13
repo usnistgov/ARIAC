@@ -2317,24 +2317,47 @@ class GUI_CLASS(ctk.CTk):
             f.write(f"# {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n# ENVIRONMENT SETUP\n\n")
             f.write(f"time_limit: {self.time_limit.get()}\n\n")
 
-            kitting_trays_data = yaml.dump(self.kitting_trays_dict,sort_keys=False,Dumper=NoAliasDumper)
-            f.write(f"\n{kitting_trays_data}\n")
+            if len(self.kitting_trays_dict)!=0:
+                kitting_trays_data = yaml.dump(self.kitting_trays_dict,sort_keys=False,Dumper=NoAliasDumper)
+                f.write(f"\n{kitting_trays_data}\n")
 
             assembly_inserts_data = yaml.dump(self.assembly_inserts_dict,sort_keys=False,Dumper=NoAliasDumper)
             f.write(f"\n{assembly_inserts_data}\n")
+            
+            if len(self.agv_parts_dict)!=0:
+                try:
+                    parts_dict["parts"]["agvs"] = self.agv_parts_dict
+                except:
+                    parts_dict = {}
+                    parts_dict["parts"] = {}
+                    parts_dict["parts"]["agvs"] = self.agv_parts_dict
+            if len(self.bin_parts_dict)!=0:
+                try:
+                    parts_dict["parts"]["bins"] = self.bin_parts_dict
+                except:
+                    parts_dict = {}
+                    parts_dict["parts"] = {}
+                    parts_dict["parts"]["bins"] = self.bin_parts_dict
+            if len(self.conveyor_parts)>0:
+                try:
+                    parts_dict["parts"]["conveyor_belt"] = self.conveyor_parts_dict
+                except:
+                    parts_dict = {}
+                    parts_dict["parts"] = {}
+                    parts_dict["parts"]["conveyor_belt"] = self.conveyor_parts_dict
+            try:
+                parts_data = yaml.dump(parts_dict,sort_keys=False,Dumper=NoAliasDumper)
+                f.write(f"\n{parts_data}\n")
+            except:
+                pass
+            
+            if len(self.orders_dict)!=0:
+                orders_data = yaml.dump(self.orders_dict,sort_keys=False,Dumper=NoAliasDumper)
+                f.write(f"\n{orders_data}\n")
 
-            if self.has_parts.get()=="1":
-                parts_dict = {"parts":{"agvs":self.agv_parts_dict,"bins":self.bin_parts_dict,"conveyor_belt":self.conveyor_parts_dict}}
-            else:
-                parts_dict = {"parts":{"agvs":self.agv_parts_dict,"bins":self.bin_parts_dict}}
-            parts_data = yaml.dump(parts_dict,sort_keys=False,Dumper=NoAliasDumper)
-            f.write(f"\n{parts_data}\n")
-
-            orders_data = yaml.dump(self.orders_dict,sort_keys=False,Dumper=NoAliasDumper)
-            f.write(f"\n{orders_data}\n")
-
-            challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
-            f.write(f"\n{challenges_data}\n")
+            if len(self.challenges_dict)!=0:
+                challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
+                f.write(f"\n{challenges_data}\n")
         self.destroy()
                   
     # =======================================================

@@ -13,7 +13,7 @@ from math import pi
 import random
 import string
 import yaml
-from copy import copy
+from copy import copy, deepcopy
 from datetime import datetime
 
 from ariac_msgs.msg import (
@@ -202,6 +202,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_right_order_widgets = []
         self.current_main_order_widgets = []
         self.current_order_part_widgets = []
+        self.temp_order_hold = None
 
         # Order row indeces
         self.left_row_index = 1
@@ -1027,6 +1028,11 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["announcement_type"].trace('w', self.show_correct_announcement_menu)
     
     def show_main_order_menu(self):
+        
+        if self.temp_order_hold != None:
+            self.current_orders[self.temp_order_hold[1]] = copy(self.temp_order_hold[0])
+            self.temp_order_hold = None
+        
         self.clear_order_menu()
 
         self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1, pady=10)
@@ -1053,6 +1059,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_right_order_widgets.append(delete_order_button)
     
     def edit_order(self, index : int):
+        self.temp_order_hold = (deepcopy(self.current_orders[index]),index)
         self.set_order_variables_to_current_order(self.current_orders[index])
         self.left_row_index = 1
         self.clear_order_menu()
@@ -1354,6 +1361,7 @@ class GUI_CLASS(ctk.CTk):
             self.save_error_message.configure(text="To save, you need at least one part")
             self.save_order_button.configure(text="Save kitting order", state=DISABLED)
         else:
+            self.save_error_message.configure(text="")
             self.save_order_button.configure(state=NORMAL)
     
     def add_kitting_part(self, kitting_part = None, index = -1):
@@ -1575,6 +1583,7 @@ class GUI_CLASS(ctk.CTk):
             widget_list.clear()
 
     def save_order(self, index):
+        self.temp_order_hold = None
         new_order = OrderMsg()
         if index==-1:
             self.used_ids.append(self.generate_order_id())

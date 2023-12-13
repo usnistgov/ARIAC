@@ -4,7 +4,6 @@ try:
 except:
     print("ERROR: customtkinter not installed")
     quit()    
-from sre_parse import State
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, filedialog

@@ -2,7 +2,7 @@ try:
     import customtkinter as ctk
     from customtkinter import *
 except:
-    print("ERROR: customtkinter not installed")
+    print("ERROR: customtkinter not installed\nRun \"pip install customtkinter\" to fix this issue")
     quit()    
 from tkinter import *
 import tkinter as tk

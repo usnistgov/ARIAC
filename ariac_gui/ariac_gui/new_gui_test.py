@@ -4,6 +4,7 @@ try:
 except:
     print("ERROR: customtkinter not installed")
     quit()    
+from sre_parse import State
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, filedialog
@@ -41,7 +42,7 @@ from ariac_gui.utils import (build_competition_from_file, quaternion_from_euler,
                              CompetitionClass,
                              SLIDER_STR, 
                              SLIDER_VALUES, 
-                             ORDER_TYPES)
+                             ORDER_TYPES, validate_time_limit)
 
 FRAMEWIDTH=700
 FRAMEHEIGHT=900
@@ -165,7 +166,7 @@ class GUI_CLASS(ctk.CTk):
         self.time_limit.set('0')
         self.trial_name.set('')
         self.author.set('')
-        self.time_limit.trace('w', partial(require_int, self.time_limit))
+        self.time_limit.trace('w', partial(validate_time_limit, self.time_limit))
 
         # AGV parts info
         self.available_quadrants = {f"agv_{i}":[j for j in range(1,5)] for i in range(1,5)}
@@ -343,6 +344,13 @@ class GUI_CLASS(ctk.CTk):
         self.orders_dict = {}
         self.challenges_dict = {}
 
+        # Challenge trace functions
+        for sensor in SENSORS:
+            self.sensor_blackout_info["sensors_to_disable"][sensor].trace('w', self.enable_disable_sensor_blackout_save)
+        for q in range(4):
+            self.faulty_part_info["quadrants"][q].trace('w', self.enable_disable_faulty_part_save)
+        for robot in ROBOTS:
+            self.robot_malfunction_info[robot].trace('w', self.enable_disable_robot_malfunction_save)
         self.open_initial_window()
     
     # =======================================================
@@ -479,7 +487,7 @@ class GUI_CLASS(ctk.CTk):
     #            Configuration Setup Functions
     # =======================================================
     def add_setup_widgets_to_frame(self):
-        time_limit_label = ctk.CTkLabel(self.setup_frame, text="Enter the time limit (-1 for no time limit):")
+        time_limit_label = ctk.CTkLabel(self.setup_frame, text="Enter the time limit (-1 for no time limit and up to 400):")
         time_limit_label.pack()
         time_limit_entry = ctk.CTkEntry(self.setup_frame, textvariable=self.time_limit)
         time_limit_entry.pack()
@@ -642,7 +650,7 @@ class GUI_CLASS(ctk.CTk):
                                 width = 2)
         self.show_grid(bin_selection,bin_parts_canvas,self.bin_parts_frame)
         bin_parts_canvas.grid(column = MIDDLE_COLUMN, sticky = "we")
-        add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection.get()))
+        add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection))
         add_multiple_parts_button.grid(column = MIDDLE_COLUMN, pady = 15)
         flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
         flipped_meaning_label.grid(column = MIDDLE_COLUMN, pady = 10)
@@ -770,7 +778,7 @@ class GUI_CLASS(ctk.CTk):
         flipped_cb.pack(pady=5)
         back_button = ctk.CTkButton(add_parts_bin_window,text="Back",command=add_parts_bin_window.destroy)
         back_button.pack()
-        save_button = ctk.CTkButton(add_parts_bin_window,text="Save part",command=partial(self.save_bin_parts,bin,slot_values,add_parts_bin_window,bin_vals))
+        save_button = ctk.CTkButton(add_parts_bin_window,text="Save part",command=partial(self.save_bin_parts,bin.get(),slot_values,add_parts_bin_window,bin_vals))
         save_button.pack()
 
     def save_bin_parts(self,bin, slot_values, window:ctk.CTkToplevel, bin_vals):
@@ -1687,6 +1695,7 @@ class GUI_CLASS(ctk.CTk):
 
         self.show_main_challenges_menu(1,1,1)
 
+        self.challenge_error_label = ctk.CTkLabel(self.challenges_frame,text="")
         self.save_challenge_button = ctk.CTkButton(self.challenges_frame,text="Save challenge", command=self.save_challenge)
         self.cancel_challenge_button = ctk.CTkButton(self.challenges_frame,text="Cancel challenge", command=partial(self.show_main_challenges_menu,1,1,1))
         self.order_counter.trace('w', self.show_main_challenges_menu)
@@ -1900,11 +1909,14 @@ class GUI_CLASS(ctk.CTk):
             self.dropped_part_info["type"].set(_part_type_str[dropped_part_challenge.part_to_drop.type])
             self.dropped_part_info["drop_after"].set(dropped_part_challenge.drop_after_num)
             self.dropped_part_info["delay"].set(dropped_part_challenge.drop_after_time)
-
-        self.save_challenge_button.configure(text="Save dropped part challenge", command=partial(self.save_challenge, "dropped_part", index))
+        
+        self.challenge_error_label.configure(text="")
+        self.challenge_error_label.grid(pady=3,row=40,column=MIDDLE_COLUMN)
+        self.current_challenges_widgets.append(self.challenge_error_label)
+        self.save_challenge_button.configure(text="Save dropped part challenge", command=partial(self.save_challenge, "dropped_part", index), state=NORMAL)
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
+        self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def save_dropped_part_challenge(self,index):
@@ -1950,11 +1962,22 @@ class GUI_CLASS(ctk.CTk):
             self.set_challenge_condition_info_to_existing(robot_malfunction_challenge.condition)
 
         self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction", index))
+        self.enable_disable_robot_malfunction_save(1,1,1)
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
+        self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
-        
+    
+    def enable_disable_robot_malfunction_save(self,_,__,___):
+        if [self.robot_malfunction_info[robot].get() for robot in ROBOTS].count("0")==len(ROBOTS):
+            self.challenge_error_label.configure(text="To save the robot malfunction challenge, you must select at least one of the robots")
+            self.challenge_error_label.grid(pady=3,row=40,column=MIDDLE_COLUMN)
+            self.current_challenges_widgets.append(self.challenge_error_label)
+            self.save_challenge_button.configure(state=DISABLED)
+        else:
+            self.challenge_error_label.configure(text="")
+            self.save_challenge_button.configure(state=NORMAL)
+    
     def save_robot_malfunction_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 3
@@ -2009,11 +2032,22 @@ class GUI_CLASS(ctk.CTk):
             self.set_challenge_condition_info_to_existing(sensor_blackout_challenge.condition)
 
         self.save_challenge_button.configure(text="Save sensor blackout challenge", command=partial(self.save_challenge, "sensor_blackout", index))
+        self.enable_disable_sensor_blackout_save(1,1,1)
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
+        self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
+    def enable_disable_sensor_blackout_save(self, _, __, ___):
+        if [self.sensor_blackout_info["sensors_to_disable"][sensor].get() for sensor in SENSORS].count("0") == len(SENSORS):
+            self.challenge_error_label.configure(text="To save the sensor blackout challenge, you must select at least one of the sensors")
+            self.challenge_error_label.grid(pady=3,row=40,column=MIDDLE_COLUMN)
+            self.current_challenges_widgets.append(self.challenge_error_label)
+            self.save_challenge_button.configure(state=DISABLED)
+        else:
+            self.challenge_error_label.configure(text="")
+            self.save_challenge_button.configure(state=NORMAL)
+
     def save_sensor_blackout_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 2
@@ -2068,12 +2102,23 @@ class GUI_CLASS(ctk.CTk):
         else:
             self.reset_faulty_part_info()
 
-        self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part", index))
+        self.save_challenge_button.configure(text="Save faulty part challenge", command=partial(self.save_challenge, "faulty_part", index), state=DISABLED)
+        self.enable_disable_faulty_part_save(1,1,1)
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
+        self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
+    def enable_disable_faulty_part_save(self,_,__,___):
+        if [self.faulty_part_info["quadrants"][q] for q in range(4)].count("0")==len(self.faulty_part_info["quadrants"]):
+            self.challenge_error_label.configure(text="To save the faulty challenge, you must select at least one of the quadrants")
+            self.challenge_error_label.grid(pady=3,row=40,column=MIDDLE_COLUMN)
+            self.current_challenges_widgets.append(self.challenge_error_label)
+            self.save_challenge_button.configure(state=DISABLED)
+        else:
+            self.challenge_error_label.configure(text="")
+            self.save_challenge_button.configure(state=NORMAL)
+
     def save_faulty_part_challenge(self, index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 0
@@ -2106,10 +2151,13 @@ class GUI_CLASS(ctk.CTk):
             self.human_info["behavior"].set(BEHAVIORS[human_challenge.behavior])
             self.set_challenge_condition_info_to_existing(human_challenge.condition)
 
-        self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human", index))
+        self.challenge_error_label.configure(text="")
+        self.challenge_error_label.grid(pady=3,row=40,column=MIDDLE_COLUMN)
+        self.current_challenges_widgets.append(self.challenge_error_label)
+        self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human", index), state=NORMAL)
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.grid(column = MIDDLE_COLUMN, row = 48)
+        self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def save_human_challenge(self, index):

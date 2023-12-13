@@ -1,34 +1,19 @@
 import math
 from typing import List, Tuple
 
-import yaml
 
 from math import pi
 
+from numpy import negative
+
 from geometry_msgs.msg import Quaternion, Pose, PoseStamped, Vector3
 import PyKDL
-from click import command
 from ariac_msgs.msg import (
     Part as PartMsg,
     PartLot as PartLotMsg,
     OrderCondition as OrderMsg,
     AssemblyPart as AssemblyPartMsg,
     KittingPart as KittingPartMsg,
-    KittingTask as KittingTaskMsg,
-    AssemblyTask as AssemblyTaskMsg,
-    CombinedTask as CombinedTaskMsg,
-    BinParts as BinPartsMsg,
-    BinInfo as BinInfoMsg,
-    ConveyorParts as ConveyorPartsMsg,
-    Condition as ConditionMsg,
-    TimeCondition as TimeConditionMsg,
-    PartPlaceCondition as PartPlaceConditionMsg,
-    SubmissionCondition as SubmissionConditionMsg,
-    FaultyPartChallenge as FaultyPartChallengeMsg,
-    DroppedPartChallenge as DroppedPartChallengeMsg,
-    SensorBlackoutChallenge as SensorBlackoutChallengeMsg,
-    RobotMalfunctionChallenge as RobotMalfunctionChallengeMsg,
-    HumanChallenge as HumanChallengeMsg,
     Challenge as ChallengeMsg
 )
 
@@ -443,10 +428,31 @@ def require_num(val, _, __, ___):
     val.set(tempStr)
 
 def require_int(val, _, __, ___):
-    """Makes sure a tkinter stringvar is numerical and has no more than one decimal point"""
+    """Makes sure a tkinter stringvar is numerical and has no decimal places"""
     perFlag=0
     tempStr=val.get()
     for i in tempStr:
         if not i.isnumeric():
             tempStr=tempStr.replace(i, "")
+    val.set(tempStr)
+
+def validate_time_limit(val, _, __, ___):
+    """Makes sure a tkinter stringvar is numerical and the only negative value is -1"""
+    tempStr=val.get()
+    negative_flag = False
+    if len(tempStr)>0:
+        negative_flag = tempStr[0]=="-"
+    for i in range(len(tempStr)-1,-1,-1):
+        if not tempStr[i].isnumeric():
+            tempStr=tempStr.replace(tempStr[i], "")
+    if negative_flag:
+        tempStr="-"+tempStr
+    if len(tempStr)>0:
+        if tempStr[0]=="-" and tempStr!="-":
+                tempStr="-1"
+        try:
+            if int(tempStr)>400:
+                tempStr="400"
+        except:
+            pass
     val.set(tempStr)

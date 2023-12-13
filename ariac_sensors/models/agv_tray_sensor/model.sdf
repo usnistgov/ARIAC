@@ -4,14 +4,6 @@
     <static>false</static>
     <pose>0 0 0 0 1.5708 0</pose>
     <link name="sensor_base">
-      <!-- Visual for debugging -->
-      <!-- <visual name="sensor_visual">
-        <geometry>
-          <box>
-            <size>0.05 0.05 0.05</size>
-          </box>
-        </geometry>
-      </visual> -->
 
       <sensor name="agv_tray_sensor" type="logical_camera">
         <logical_camera>
@@ -25,13 +17,19 @@
         <always_on>true</always_on>
         <update_rate>10</update_rate>
 
-        <!-- <plugin name="agv_tray_sensor_plugin" filename="libAGVTraySensorPlugin.so">
-          <ros>
-            <namespace></namespace>
-          </ros>
-          <sensor_num>0</sensor_num>
-        </plugin> -->
       </sensor>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+        <mass>1</mass>
+      </inertial>
     </link>
   </model>
 </sdf>

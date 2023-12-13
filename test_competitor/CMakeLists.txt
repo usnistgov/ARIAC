@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(test_competitor)
 
-# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
 endif()
@@ -15,10 +14,12 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   moveit_ros_planning_interface
   ariac_msgs
   shape_msgs
+  tf2_kdl 
 )
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
+
 foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
@@ -26,7 +27,10 @@ endforeach()
 add_library(${PROJECT_NAME} SHARED
   src/test_competitor.cpp
 )
-target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_include_directories(${PROJECT_NAME} PUBLIC
+  include
+)
+
 ament_target_dependencies(${PROJECT_NAME} ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 # Add main competitor executable
@@ -74,10 +78,13 @@ install(DIRECTORY
 ament_export_libraries(
   ${PROJECT_NAME}
 )
+
 ament_export_include_directories(
   include
 )
+
 ament_export_dependencies(
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
+
 ament_package()

@@ -2,8 +2,12 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
   <xacro:macro name="vacuum_gripper" params="
     parent
-    prefix">
+    prefix
+    use_camera
+    camera_type
+    ">
 
+    <!-- Gripper Link -->
     <link name="${prefix}_gripper">
       <visual name="${prefix}_gripper_visual">
         <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -12,38 +16,22 @@
         </geometry>
         <material name="Grey"/>
       </visual>
-      
+
       <collision name="${prefix}_gripper_collision">
         <origin xyz="0 0 -0.005" rpy="0 0 0"/>
         <geometry>
-          <!-- <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/vacuum_gripper.stl" scale="1 1 1"/> -->
           <cylinder radius="0.05" length="0.01" />
         </geometry>
       </collision>
       
       <inertial>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <mass value="0.01"/>
-        <inertia ixx="0.0000063" ixy="0.0" ixz="0.0" iyy="0.0000063" iyz="0.0" izz="0.000025"/>
+        <origin xyz="0 0 -0.005" rpy="0 0 0"/>
+        <mass value="0.102"/>
+        <inertia ixx="0.0000647" ixy="0.0" ixz="0.0" iyy="0.0000647" iyz="0.0" izz="0.0001276"/>
       </inertial>
     </link>
 
-
-    <gazebo reference="${prefix}_gripper">
-      <visual name="${prefix}_gripper_visual">
-        <plugin filename="libGripperColorPlugin.so" name="${prefix}_gripper_color_plugin">
-          <ros>
-          </ros>
-          <robot_name>${prefix}_robot</robot_name>
-        </plugin>   
-      </visual>
-    </gazebo>
-
-
-    <gazebo reference="${prefix}_gripper">
-      <material>Gazebo/Black</material>      
-    </gazebo>
-
+    <!-- Gripper Joint -->
     <joint name="${prefix}_gripper_joint" type="revolute">
       <axis xyz="0 0 1"/>
       <parent link="${prefix}_${parent}"/>
@@ -62,6 +50,7 @@
       </sensor>
     </gazebo>
 
+    <!-- Vacuum gripper plugin -->
     <gazebo>
       <plugin filename="libVacuumGripperPlugin.so" name="${prefix}_vacuum_gripper_plugin">
         <ros>
@@ -71,6 +60,18 @@
       </plugin>
     </gazebo>
 
+    <!-- Color change plugin -->
+    <gazebo reference="${prefix}_gripper">
+      <visual name="${prefix}_gripper_visual">
+        <plugin filename="libGripperColorPlugin.so" name="${prefix}_gripper_color_plugin">
+          <ros>
+          </ros>
+          <robot_name>${prefix}_robot</robot_name>
+        </plugin>   
+      </visual>
+    </gazebo>
+
+    <!-- ROS2 Control for the gripper joint -->
     <ros2_control name="${prefix}_gripper_control" type="system">
       <hardware>
         <plugin>gazebo_ros2_control/GazeboSystem</plugin>
@@ -81,6 +82,126 @@
         </state_interface>
       </joint>
     </ros2_control>
+
+    <!-- Camera -->
+    <xacro:if value="${use_camera}">
+      <!-- Mount Link -->
+      <link name ="${prefix}_robot_camera_mount_link">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <geometry>
+            <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/camera_mount.stl" scale="1 1 1"/>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- Camera Link -->
+      <link name ="${prefix}_robot_camera_link">
+        <visual>
+          <origin xyz="0 0 0" rpy="1.57 0 1.57"/>
+          <geometry>
+            <mesh filename="file://$(find ariac_description)/meshes/vacuum_gripper/camera.stl" scale="1 1 1"/>
+          </geometry>
+        </visual>
+      </link>
+
+      <!-- Add camera mount joint -->
+      <joint name="${prefix}_robot_camera_mount_joint" type="fixed">
+        <axis xyz="0 1 0" />
+        <origin xyz="0 0 -0.012" rpy="0 0 0"/>
+        <parent link="${prefix}_gripper"/>
+        <child link="${prefix}_robot_camera_mount_link"/>
+      </joint>
+
+      <!-- Add camera joint -->
+      <joint name="${prefix}_robot_camera_joint" type="fixed">
+        <axis xyz="0 1 0" />
+        <origin xyz="0 -.07 -.006" rpy="0 -1.57 1.57"/>
+        <parent link="${prefix}_robot_camera_mount_link"/>
+        <child link="${prefix}_robot_camera_link"/>
+      </joint>
+
+      <!-- Add color to links -->
+      <gazebo reference="${prefix}_robot_camera_mount_link">
+        <material>Gazebo/Black</material>
+      </gazebo>
+
+      <gazebo reference="${prefix}_robot_camera_link">
+        <material>Gazebo/White</material>
+      </gazebo>
+
+      <!-- Add gazebo sensors -->
+      <xacro:property name="type" value="${camera_type}"/>
+
+      <gazebo reference="${prefix}_robot_camera_link">
+        <!-- Add rgb camera -->
+        <xacro:if value="${type == 'rgb'}">
+          <sensor type="camera" name="rgb_camera">
+            <always_on>true</always_on>
+            <visualize>false</visualize>
+            <update_rate>30</update_rate>
+            
+            <camera name="${prefix}_robot_camera">
+              <horizontal_fov>1.5</horizontal_fov>
+              <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R8G8B8</format>
+              </image>
+              <clip>
+                <near>0.1</near>
+                <far>10</far>
+              </clip>
+            </camera>
+
+            <plugin name="${prefix}_robot_camera_plugin" filename="libAriacCameraPlugin.so">
+              <ros>
+                <namespace></namespace>
+              </ros>
+              <camera_type>rgb</camera_type>
+              <camera_name>${prefix}_robot_camera</camera_name>
+              <frame_name>${prefix}_robot_camera_link</frame_name>
+            </plugin>
+          </sensor>
+        </xacro:if>
+
+        <xacro:if value="${type == 'rgbd'}">        
+          <sensor type="depth" name="rgbd_camera">
+            <always_on>true</always_on>
+            <visualize>false</visualize>
+            <update_rate>30</update_rate>
+            
+            <camera name="${prefix}_robot_camera">
+              <horizontal_fov>1.5</horizontal_fov>
+              <image>
+                <width>640</width>
+                <height>480</height>
+                <format>R8G8B8</format>
+              </image>
+              <clip>
+                <near>0.1</near>
+                <far>10</far>
+              </clip>
+              <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.001</stddev>
+              </noise>
+            </camera>
+
+            <plugin name="${prefix}_robot_camera_plugin" filename="libAriacCameraPlugin.so">
+              <ros>
+                <namespace></namespace>
+              </ros>
+              <camera_type>rgbd</camera_type>
+              <camera_name>${prefix}_robot_camera</camera_name>
+              <frame_name>${prefix}_robot_camera_link</frame_name>
+            </plugin>
+          </sensor>
+        </xacro:if>
+      </gazebo>
+
+    </xacro:if>
 
   </xacro:macro>
 </robot>

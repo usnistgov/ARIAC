@@ -1,7 +1,7 @@
-# Welcome to ARIAC2023!
+# Welcome to ARIAC2024
 
-[![Documentation Status](https://readthedocs.org/projects/ariac/badge/?version=latest)](https://ariac.readthedocs.io/en/latest/?badge=latest) ![Build Status](https://github.com/usnistgov/ARIAC/actions/workflows/build_ariac.yml/badge.svg)  ![License](https://img.shields.io/badge/License-NIST-blue) 
+[![ARIAC documentation](https://github.com/usnistgov/ARIAC_docs/actions/workflows/ARIAC_docs.yaml/badge.svg)](https://github.com/usnistgov/ARIAC_docs/actions/workflows/ARIAC_docs.yaml)
 
-[Official documentation](https://ariac.readthedocs.io/en/latest/)
+[Link to documentation on pages.nist.gov](https://pages.nist.gov/ARIAC_docs/en/latest/index.html)
 
-![Environment](docs/images/environment.png)
+![ARIAC 2024 Environment](resource/environment_2024.png)

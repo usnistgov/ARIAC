@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ariac_gui</name>
-  <version>0.0.0</version>
-  <description>Gui for creating trial configurations</description>
-  <maintainer email="joseph.fernandez@nist.gov">jfernandez</maintainer>
-  <license>ARIAC</license>
+  <version>2024.1.0</version>
+  <description>GUI for creating trial configurations</description>
+  <maintainer email="joseph.fernandez@nist.gov">Joseph Fernandez</maintainer>
+  <license>NIST</license>
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>ariac_msgs</exec_depend>

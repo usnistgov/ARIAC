@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
-from rclpy.node import Node
+import yaml
 
-from geometry_msgs.msg import TransformStamped
+from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor
+
+from geometry_msgs.msg import TransformStamped, Pose
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
 class TFBroadcaster(Node):
@@ -10,8 +13,13 @@ class TFBroadcaster(Node):
         super().__init__(name)
         self.tf_static_broadcaster = StaticTransformBroadcaster(self)
         self.transforms = []
+
+        self.declare_parameter('trial_config_path', '',
+                               ParameterDescriptor(description='Path of the current trial\'s configuration yaml file'))
+        
+        path = self.get_parameter('trial_config_path').get_parameter_value().string_value
     
-    def generate_transform(self, parent_frame, child_frame, initial_pose):
+    def generate_transform(self, parent_frame, child_frame, initial_pose: Pose):
         t = TransformStamped()
 
         t.header.stamp = self.get_clock().now().to_msg()

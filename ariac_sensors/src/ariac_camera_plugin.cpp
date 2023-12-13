@@ -99,7 +99,7 @@ void AriacCameraPlugin::Load(gazebo::sensors::SensorPtr _sensor, sdf::ElementPtr
 
   impl_->frame_name_ = gazebo_ros::SensorFrameID(*_sensor, *_sdf);
 
-  impl_->publish_sensor_data_ = true;
+  impl_->publish_sensor_data_ = false;
   impl_->sensor_health_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Sensors>("/ariac/sensor_health", 10, 
     std::bind(&AriacCameraPlugin::SensorHealthCallback, this, std::placeholders::_1));
 

@@ -7,15 +7,15 @@
     <link name="kit_tray_link">
       <inertial>
         <pose>0 0 -0.005 0 0 0</pose>
-        
-        <mass>2.25</mass>
-        
-        <ixx>0.05078</ixx>
-        <ixy>0</ixy>
-        <ixz>0</ixz>
-        <iyy>0.02713</iyy>
-        <iyz>0</iyz>
-        <izz>0.07787</izz>
+        <mass>5.34</mass>
+        <inertia>
+          <ixx>0.12026</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.06424</iyy>
+          <iyz>0</iyz>
+          <izz>0.18442</izz>
+        </inertia>
       </inertial>
 
       <visual name="base">

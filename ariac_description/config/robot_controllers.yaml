@@ -30,6 +30,12 @@ controller_manager:
     agv4_controller:
       type: velocity_controllers/JointGroupVelocityController
 
+    floor_robot_static_controller:
+      type: ariac_controllers/StaticController
+    
+    ceiling_robot_static_controller:
+      type: ariac_controllers/StaticController
+
 
 floor_robot_controller:
   ros__parameters:
@@ -174,3 +180,28 @@ agv4_controller:
     state_interfaces:
       - position
 
+
+floor_robot_static_controller:
+  ros__parameters:
+    joints:
+      - linear_actuator_joint
+      - floor_shoulder_pan_joint
+      - floor_shoulder_lift_joint
+      - floor_elbow_joint
+      - floor_wrist_1_joint
+      - floor_wrist_2_joint
+      - floor_wrist_3_joint
+
+
+ceiling_robot_static_controller:
+  ros__parameters:
+    joints:
+      - gantry_x_axis_joint
+      - gantry_y_axis_joint
+      - gantry_rotation_joint
+      - ceiling_shoulder_pan_joint
+      - ceiling_shoulder_lift_joint
+      - ceiling_elbow_joint
+      - ceiling_wrist_1_joint
+      - ceiling_wrist_2_joint
+      - ceiling_wrist_3_joint

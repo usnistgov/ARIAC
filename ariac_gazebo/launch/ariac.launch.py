@@ -1,5 +1,6 @@
 import os
 import yaml
+import xacro
 import rclpy.logging
 from launch import LaunchDescription
 from launch.actions import (
@@ -24,18 +25,11 @@ def launch_setup(context, *args, **kwargs):
     world_file_name = 'ariac.world'
     world_path = os.path.join(pkg_share, 'worlds', world_file_name)
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution([FindPackageShare("ariac_description"), "urdf/ariac_robots", "ariac_robots.urdf.xacro"]),
-            " "
-        ]
-    )
-
     trial_name = LaunchConfiguration("trial_name").perform(context)
     trial_config_path = os.path.join(pkg_share, 'config', 'trials', trial_name + ".yaml")
 
+    dev_mode = LaunchConfiguration("dev_mode")
+    
     if not os.path.exists(trial_config_path):
         rclpy.logging.get_logger('Launch File').fatal(
             f"Trial configuration '{trial_name}' not found in {pkg_share}/config/trials/")
@@ -54,6 +48,34 @@ def launch_setup(context, *args, **kwargs):
         rclpy.logging.get_logger('Launch File').fatal(
             f"Sensor configuration '{sensor_config}.yaml' not found in {competitor_pkg_share}/config/")
         exit()
+
+    # Robot Cameras
+    with open(user_config_path, "r") as stream:
+        try:
+            sensor_config = yaml.safe_load(stream)
+        except yaml.YAMLError:
+            rclpy.logging.get_logger('Launch File').fatal("Unable to read sensor configuration")
+            exit()
+
+    urdf = os.path.join(get_package_share_directory('ariac_description'), 'urdf/ariac_robots', 'ariac_robots.urdf.xacro')
+
+    xacro_args = {}
+
+    if 'robot_cameras' in sensor_config.keys():
+        try:
+            if sensor_config['robot_cameras']['floor_robot_camera']['active']:
+                xacro_args.update({'floor_robot_camera_active_arg': 'true'})
+                xacro_args.update({'floor_robot_camera_type_arg': sensor_config['robot_cameras']['floor_robot_camera']['type']})
+
+            if sensor_config['robot_cameras']['ceiling_robot_camera']['active']:
+                xacro_args.update({'ceiling_robot_camera_active_arg': 'true'})
+                xacro_args.update({'ceiling_robot_camera_type_arg': sensor_config['robot_cameras']['ceiling_robot_camera']['type']})
+        except KeyError:
+            rclpy.logging.get_logger('Launch File').error("Unable to parse sensor configuration")
+    
+    doc = xacro.process_file(urdf, mappings=xacro_args)
+
+    robot_description_content = doc.toprettyxml(indent='  ')
 
     # Gazebo node
     gazebo = IncludeLaunchDescription(
@@ -83,6 +105,7 @@ def launch_setup(context, *args, **kwargs):
         output='screen',
         parameters=[
             {"use_sim_time": True},
+            {'trial_config_path': trial_config_path},
         ]
     )
 
@@ -95,6 +118,7 @@ def launch_setup(context, *args, **kwargs):
             {'robot_description': robot_description_content},
             {'trial_config_path': trial_config_path},
             {'user_config_path': user_config_path},
+            {'development_mode': dev_mode},
             {"use_sim_time": True},
         ],
     )
@@ -128,14 +152,16 @@ def launch_setup(context, *args, **kwargs):
         'agv2_controller',
         'agv3_controller',
         'agv4_controller',
+        'floor_robot_static_controller',
+        'ceiling_robot_static_controller',
     ]
 
     controller_spawner_nodes = []
     for controller in controller_names:
-        if controller == 'joint_state_broadcaster' or controller.count('agv') > 0:
+        if controller == 'joint_state_broadcaster' or controller.count('agv') > 0 or controller.count('static') > 0:
             args = [controller]
         else:
-            args = [controller, '--stopped']
+            args = [controller, '--inactive']
 
         controller_spawner_nodes.append(
             Node(
@@ -204,12 +230,14 @@ def generate_launch_description():
     )
 
     declared_arguments.append(
-        DeclareLaunchArgument(
-            "competitor_pkg", default_value="test_competitor",
-            description="name of competitor package"))
+        DeclareLaunchArgument("competitor_pkg", default_value="test_competitor", description="name of competitor package"))
 
     declared_arguments.append(
         DeclareLaunchArgument("sensor_config", default_value="sensors", description="name of user configuration file")
+    )
+
+    declared_arguments.append(
+        DeclareLaunchArgument("dev_mode", default_value="false", description="run simulation in dev mode")
     )
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>test_competitor</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <version>2024.1.0</version>
+  <description>Example competitor package for the ARIAC simulation</description>
   <maintainer email="justin.albrecht@nist.gov">justin</maintainer>
-  <license>TODO: License declaration</license>
+  <license>NIST</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
@@ -13,10 +13,12 @@
   <depend>std_msgs</depend>
   <depend>ariac_msgs</depend>
   <depend>shape_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>geometry_msgs</depend>
   <depend>moveit_msgs</depend>
-
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <depend>tf2_geometry_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>orocos_kdl_vendor</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

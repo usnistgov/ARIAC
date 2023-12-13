@@ -24,7 +24,7 @@ def main():
             print(exc)
     
     try:
-        sensors = data['sensors']
+        sensors = data['static_sensors']
     except (TypeError, KeyError):
         sensor_tf_broadcaster.get_logger().warn("No sensors found in config")
         sensors = []
@@ -46,9 +46,7 @@ def main():
     try:
         rclpy.spin(sensor_tf_broadcaster)
     except KeyboardInterrupt:
-        pass
-
-    rclpy.shutdown()
+        sensor_tf_broadcaster.destroy_node()
 
 
 if __name__ == '__main__':

@@ -25,6 +25,13 @@ class SpawnParams:
             return ''
         
         return entity_xml
+    
+    def set_xml_from_file_path(self):
+        try:
+            f = open(self.file_path, 'r')
+            self.xml = f.read()
+        except IOError:
+            return
 
 
 class RobotSpawnParams(SpawnParams):
@@ -66,12 +73,6 @@ class SensorSpawnParams(SpawnParams):
             plugin.set('name', str(self.name + "_ros_plugin"))
             plugin.find('camera_name').text = self.name
             plugin.find('frame_name').text = self.name + "_frame"
-
-        # scoring_sensors = ['agv_tray_sensor', 'assembly_station_sensor']
-        # if self.sensor_type in scoring_sensors:
-        #     plugin = xml.find('model').find('link').find('sensor').find('plugin')
-        #     plugin.set('name', str(self.name + "_ros_plugin"))
-        #     plugin.find('sensor_num').text = self.name[-1]
 
         self.xml = ET.tostring(xml, encoding="unicode")
 

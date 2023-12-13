@@ -1,0 +1,59 @@
+joint_limits:
+  linear_actuator_joint:
+    has_acceleration_limits: true
+    max_acceleration: 0.5
+  floor_shoulder_pan_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  floor_shoulder_lift_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  floor_elbow_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  floor_wrist_1_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  floor_wrist_2_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  floor_wrist_3_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  floor_gripper_joint:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 0.5
+  gantry_x_axis_joint:
+    has_acceleration_limits: true
+    max_acceleration: 0.5
+  gantry_y_axis_joint:
+    has_acceleration_limits: true
+    max_acceleration: 0.5
+  gantry_rotation_joint:
+    has_acceleration_limits: true
+    max_acceleration: 0.5
+  ceiling_shoulder_pan_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  ceiling_shoulder_lift_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  ceiling_elbow_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  ceiling_wrist_1_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  ceiling_wrist_2_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  ceiling_wrist_3_joint:
+    has_acceleration_limits: true
+    max_acceleration: 5.0
+  ceiling_gripper_joint:
+    has_velocity_limits: true
+    max_velocity: 1.0
+    has_acceleration_limits: true
+    max_acceleration: 0.5

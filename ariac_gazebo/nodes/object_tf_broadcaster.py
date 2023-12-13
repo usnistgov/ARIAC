@@ -8,7 +8,7 @@ import rclpy
 from ament_index_python.packages import get_package_share_directory
 
 from ariac_gazebo.tf_broadcaster import TFBroadcaster
-from ariac_gazebo.utilities import pose_info
+from ariac_gazebo.utilities import pose_info, convert_pi_string_to_float
 
 def main():
     rclpy.init()
@@ -17,17 +17,25 @@ def main():
 
     objects_tf_broadcaster.generate_transform("world", "map", pose_info([0, 0, 0], [0, 0, 0]))
     # objects_tf_broadcaster.generate_transform("map", "odom", pose_info([0, 0, 0], [0, 0, 0]))
-    config = os.path.join(get_package_share_directory('ariac_gazebo'), 'config', "object_poses.yaml")
+    object_poses_path = os.path.join(get_package_share_directory('ariac_gazebo'), 'config', "object_poses.yaml")
 
-    with open(config, "r") as stream:
+    trial_path = objects_tf_broadcaster.get_parameter('trial_config_path').get_parameter_value().string_value
+
+    with open(object_poses_path, "r") as stream:
         try:
-            data = yaml.safe_load(stream)
+            object_poses = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    with open(trial_path, "r") as stream:
+        try:
+            trial_config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
     
     # Generate static transforms for bins
     try:
-        bins = data['bins']
+        bins = object_poses['bins']
     except KeyError:
         objects_tf_broadcaster.get_logger().warn("No bins found in config")
 
@@ -41,7 +49,7 @@ def main():
 
     # Generate static transforms for assembly_stations
     try:
-        stations = data['assembly_stations']
+        stations = object_poses['assembly_stations']
     except KeyError:
         objects_tf_broadcaster.get_logger().warn("No assembly_stations found in config")
 
@@ -50,9 +58,18 @@ def main():
             stations[station_name]["table"]['pose']['xyz'], 
             stations[station_name]["table"]['pose']['rpy'])
 
+        try:
+            insert_rotations = trial_config['assembly_inserts']
+            yaw = convert_pi_string_to_float(insert_rotations[station_name])
+        except KeyError:
+            yaw = 0
+
+        rpy = stations[station_name]["insert"]['pose']['rpy']
+        rpy[2] = yaw
+
         insert_pose = pose_info(
             stations[station_name]["insert"]['pose']['xyz'], 
-            stations[station_name]["insert"]['pose']['rpy'])
+            rpy)
 
         table_frame_name = station_name + "_table_frame"
         insert_frame_name = station_name + "_insert_frame"
@@ -61,7 +78,7 @@ def main():
 
     # Generate static transforms for assembly_stations
     try:
-        stations = data['kit_tray_stations']
+        stations = object_poses['kit_tray_stations']
     except KeyError:
         objects_tf_broadcaster.get_logger().warn("No kit_tray_stations found in config")
 
@@ -94,7 +111,7 @@ def main():
 
     # Generate conveyor belt transforms
     try:
-        conveyor_belt_transforms = data['conveyor_belt']
+        conveyor_belt_transforms = object_poses['conveyor_belt']
     except KeyError:
         objects_tf_broadcaster.get_logger().warn("Conveyor belt not found in config")
     
@@ -118,9 +135,7 @@ def main():
     try:
         rclpy.spin(objects_tf_broadcaster)
     except KeyboardInterrupt:
-        pass
-
-    rclpy.shutdown()
+        objects_tf_broadcaster.destroy_node()
 
 if __name__ == '__main__':
     main()

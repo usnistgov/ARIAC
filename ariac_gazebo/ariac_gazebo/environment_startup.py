@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import os
 import math
 import yaml
 import xml.etree.ElementTree as ET
-from random import randint
+from random import shuffle
+from itertools import cycle, count
 
 import rclpy
 from rclpy.node import Node
@@ -11,7 +13,9 @@ from rcl_interfaces.msg import ParameterDescriptor
 
 from rclpy.qos import QoSProfile, DurabilityPolicy
 
-from ariac_gazebo.tf2_geometry_msgs import do_transform_pose
+from ament_index_python.packages import get_package_share_directory
+
+from tf2_geometry_msgs import do_transform_pose
 from ariac_gazebo.utilities import quaternion_from_euler, euler_from_quaternion, convert_pi_string_to_float
 
 from tf2_ros import TransformException
@@ -58,6 +62,17 @@ from ariac_gazebo.spawn_params import (
     TraySpawnParams)
 
 
+class bcolors:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
 class PartInfo:
     part_heights = {
         'battery': 0.04,
@@ -84,6 +99,8 @@ class EnvironmentStartup(Node):
                                ParameterDescriptor(description='Path of the current trial\'s configuration yaml file'))
         self.declare_parameter('user_config_path', '',
                                ParameterDescriptor(description='Path of the user\'s configuration yaml file'))
+        self.declare_parameter('development_mode', False,
+                               ParameterDescriptor(description='Whether to run the competition in development mode'))
 
         self.trial_config = self.read_yaml(
             self.get_parameter('trial_config_path').get_parameter_value().string_value)
@@ -91,8 +108,8 @@ class EnvironmentStartup(Node):
         self.user_config = self.read_yaml(
             self.get_parameter('user_config_path').get_parameter_value().string_value)
         
-
-
+        self.dev_mode = self.get_parameter('development_mode').get_parameter_value().bool_value
+        
         # Conveyor
         self.conveyor_spawn_rate = None
         self.conveyor_parts_to_spawn = []
@@ -100,6 +117,7 @@ class EnvironmentStartup(Node):
         self.conveyor_enabled = False
         self.conveyor_spawn_order_types = ['sequential', 'random']
         self.conveyor_width = 0.28
+        self.conveyor_part_counter = count()
 
         self.conveyor_status_sub = self.create_subscription(ConveyorBeltState,
                                                             '/ariac/conveyor_state', self.conveyor_status, 10)
@@ -125,13 +143,6 @@ class EnvironmentStartup(Node):
         self.trial_info_pub = self.create_publisher(
             Trial, '/ariac/trial_config', latching_qos)
 
-        # Create a subscriber for debugging purposes
-        # self.trial_config_sub = self.create_subscription(
-        #     Trial,
-        #     '/ariac/trial_config',
-        #     self.trial_config_callback,
-        #     10)
-
         # Create service client to spawn objects into gazebo
         self.spawn_client = self.create_client(SpawnEntity, '/spawn_entity')
 
@@ -142,16 +153,6 @@ class EnvironmentStartup(Node):
         # Setup TF listener
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
-
-
-    # def trial_config_callback(self, msg: Trial):
-    #     """Simple callback to print the trial name
-
-    #     Args:
-    #         msg (Trial): The trial config message
-    #     """
-    #     pass
-    #     # self.get_logger().info('Trial name: "%s"' % msg.trial_name)
         
         
     def parse_trial_file(self):
@@ -819,9 +820,9 @@ class EnvironmentStartup(Node):
 
     def spawn_sensors(self):
         try:
-            user_sensors = self.user_config['sensors']
+            user_sensors = self.user_config['static_sensors']
         except (TypeError, KeyError):
-            self.get_logger().warn("No sensors found in config")
+            self.get_logger().warn(bcolors.WARNING + "No sensors found in config" + bcolors.ENDC)
             user_sensors = []
 
         if not user_sensors:
@@ -837,6 +838,12 @@ class EnvironmentStartup(Node):
                 vis = user_sensors[sensor_name]['visualize_fov']
             else:
                 vis = False
+
+            if sensor_type == "advanced_logical_camera":
+                if not self.dev_mode:
+                    self.get_logger().error(bcolors.FAIL + f"Unable to spawn {sensor_name}." + bcolors.ENDC)
+                    self.get_logger().error(bcolors.FAIL + "Advanced Logical Cameras can only be used in development mode" + bcolors.ENDC)
+                    continue
 
             params = SensorSpawnParams(
                 sensor_name, sensor_type, visualize=vis, xyz=xyz, rpy=rpy)
@@ -894,6 +901,37 @@ class EnvironmentStartup(Node):
 
             self.spawn_entity(params)
 
+    def spawn_assembly_inserts(self):
+        rotations = {}
+        try:
+            insert_rotations = self.trial_config['assembly_inserts']
+            
+            for n in range(1,5):
+                rotations[f'as{n}'] = convert_pi_string_to_float(insert_rotations[f'as{n}'])
+        except (TypeError, KeyError):
+            self.get_logger().warn(bcolors.WARNING + "Unable to parse rotated assemble insert challenge" + bcolors.ENDC)
+            for n in range(1,5):
+                rotations[f'as{n}'] = 0.0
+
+        positions = {
+            'as1': [-7.7, 3.0, 1.011],
+            'as2': [-12.7, 3.0, 1.011],
+            'as3': [-7.7, -3.0, 1.011],
+            'as4': [-12.7, -3.0, 1.011],
+        }
+
+        sdf = os.path.join(get_package_share_directory('ariac_gazebo'), 'models', 'assembly_insert', 'model.sdf')
+        for n in range(1,5):
+            params = SpawnParams(
+                name=f'assembly_insert_{n}',
+                file_path=sdf,
+                xyz= positions[f'as{n}'],
+                rpy=[0, 0, rotations[f'as{n}']]
+            )
+
+            params.set_xml_from_file_path()
+
+            self.spawn_entity(params, wait=True)
 
     def spawn_kit_trays(self):
         possible_slots = [1, 2, 3, 4, 5, 6]
@@ -913,26 +951,26 @@ class EnvironmentStartup(Node):
             ids = self.trial_config["kitting_trays"]["tray_ids"]
             slots = self.trial_config["kitting_trays"]["slots"]
         except KeyError:
-            self.get_logger().warn("No kitting trays found in configuration")
+            self.get_logger().warn(bcolors.WARNING + "No kitting trays found in configuration" + bcolors.ENDC)
             return
 
         if len(ids) == 0 or len(slots) == 0:
-            self.get_logger().warn("No kitting trays found in configuration")
+            self.get_logger().warn(bcolors.WARNING + "No kitting trays found in configuration" + bcolors.ENDC)
             return
 
         if not (len(ids) == len(slots)):
-            self.get_logger().warn("Number of trays does not equal number of slots")
+            self.get_logger().warn(bcolors.WARNING + "Number of trays does not equal number of slots" + bcolors.ENDC)
             return
 
         for id, slot in zip(ids, slots):
             if not type(id) == int or not type(slot) == int:
-                self.get_logger().warn("Tray ids and slots must be integers")
+                self.get_logger().warn(bcolors.WARNING + "Tray ids and slots must be integers" + bcolors.ENDC)
                 return
             elif id not in possible_ids:
-                self.get_logger().warn("Tray id must be between 0 and 9")
+                self.get_logger().warn(bcolors.WARNING + "Tray id must be between 0 and 9" + bcolors.ENDC)
                 return
             elif slot not in possible_slots:
-                self.get_logger().warn("Tray slot must be between 1 and 6")
+                self.get_logger().warn(bcolors.WARNING + "Tray slot must be between 1 and 6" + bcolors.ENDC)
                 return
 
         # Calculate location of tables using tf
@@ -998,7 +1036,7 @@ class EnvironmentStartup(Node):
         try:
             bin_parts_config = self.trial_config["parts"]["bins"]
         except KeyError:
-            self.get_logger().warn("No bin parts found in configuration")
+            self.get_logger().warn(bcolors.WARNING + "No bin parts found in configuration" + bcolors.ENDC)
             return
 
         if not bin_parts_config:
@@ -1007,7 +1045,7 @@ class EnvironmentStartup(Node):
         part_count = 0
         for bin_name in bin_parts_config.keys():
             if not bin_name in possible_bins:
-                self.get_logger().warn(f"{bin_name} is not a valid bin name")
+                self.get_logger().warn(bcolors.WARNING + f"{bin_name} is not a valid bin name" + bcolors.ENDC)
                 continue
 
             try:
@@ -1031,30 +1069,27 @@ class EnvironmentStartup(Node):
                 try:
                     slots = part_info['slots']
                     if not type(slots) == list:
-                        self.get_logger().warn("slots parameter should be a list of integers")
+                        self.get_logger().warn(bcolors.WARNING + "slots parameter should be a list of integers" + bcolors.ENDC)
                         continue
                 except KeyError:
-                    self.get_logger().warn("Part slots are not specified")
+                    self.get_logger().warn(bcolors.WARNING + "Part slots are not specified" + bcolors.ENDC)
                     continue
 
                 # Spawn parts into slots
                 num_parts_in_bin = 0
                 for slot in slots:
                     if not slot in slot_info.keys():
-                        self.get_logger().warn(
-                            f"Slot {slot} is not a valid option")
+                        self.get_logger().warn(bcolors.WARNING + f"Slot {slot} is not a valid option" + bcolors.ENDC)
                         continue
                     elif not slot in available_slots:
-                        self.get_logger().warn(
-                            f"Slot {slot} is already occupied")
+                        self.get_logger().warn(bcolors.WARNING + f"Slot {slot} is already occupied" + bcolors.ENDC)
                         continue
 
                     num_parts_in_bin += 1
 
                     available_slots.remove(slot)
 
-                    part_name = part.type + "_" + part.color + \
-                        "_b" + str(part_count).zfill(2)
+                    part_name = part.type + "_" + part.color + "_b" + str(part_count).zfill(2)
                     part_count += 1
 
                     if part.flipped:
@@ -1079,14 +1114,12 @@ class EnvironmentStartup(Node):
 
                     world_pose = do_transform_pose(rel_pose, bin_transform)
 
-                    xyz = [world_pose.position.x,
-                           world_pose.position.y, world_pose.position.z]
+                    xyz = [world_pose.position.x, world_pose.position.y, world_pose.position.z]
                     rpy = euler_from_quaternion(world_pose.orientation)
 
-                    params = PartSpawnParams(
-                        part_name, part.type, part.color, xyz=xyz, rpy=rpy)
+                    params = PartSpawnParams(part_name, part.type, part.color, xyz=xyz, rpy=rpy)
 
-                    self.spawn_entity(params, wait=False)
+                    self.spawn_entity(params, wait=True)
 
                 bin_info.parts.append(
                     self.fill_part_lot_msg(part, num_parts_in_bin))
@@ -1118,11 +1151,8 @@ class EnvironmentStartup(Node):
 
     def spawn_conveyor_part(self):
         if self.conveyor_enabled:
-            if self.conveyor_spawn_order == 'sequential':
-                part_params = self.conveyor_parts_to_spawn.pop(0)
-            elif self.conveyor_spawn_order == 'random':
-                part_params = self.conveyor_parts_to_spawn.pop(
-                    randint(0, len(self.conveyor_parts_to_spawn) - 1))
+            part_params = next(self.conveyor_parts_to_spawn_cycle)
+            part_params.name = part_params.name[:part_params.name.find("_c") + 2] + str(next(self.conveyor_part_counter))
 
             self.spawn_entity(part_params, wait=False)
 
@@ -1151,13 +1181,12 @@ class EnvironmentStartup(Node):
         try:
             agv_parts = self.trial_config["parts"]["agvs"]
         except KeyError:
-            # self.get_logger().warn("No agv parts found in configuration")
             return
 
         part_count = 0
         for agv in agv_parts:
             if not agv in possible_agvs:
-                self.get_logger().warn(f"{agv} is not a valid agv name")
+                self.get_logger().warn(bcolors.WARNING + f"{agv} is not a valid agv name" + bcolors.ENDC)
                 continue
 
             # Spawn a kit tray onto the AGV
@@ -1185,11 +1214,10 @@ class EnvironmentStartup(Node):
                 try:
                     quadrant = part_info['quadrant']
                     if not quadrant in quadrant_info.keys():
-                        self.get_logger().warn(
-                            f"Quadrant {quadrant} is not an option")
+                        self.get_logger().warn(bcolors.WARNING + f"Quadrant {quadrant} is not an option" + bcolors.ENDC)
                         continue
                 except KeyError:
-                    self.get_logger().warn("Quadrant is not specified")
+                    self.get_logger().warn(bcolors.WARNING + "Quadrant is not specified" + bcolors.ENDC)
                     continue
 
                 available_quadrants.remove(quadrant)
@@ -1227,25 +1255,24 @@ class EnvironmentStartup(Node):
             if not active:
                 return False
         except KeyError:
-            self.get_logger().error("Active paramater not set in conveyor belt configuration")
+            self.get_logger().error(bcolors.FAIL + "Active paramater not set in conveyor belt configuration" + bcolors.ENDC)
             return False
 
         try:
             spawn_rate = conveyor_config['spawn_rate']
         except KeyError:
-            self.get_logger().error("Spawn rate paramater not set in conveyor belt configuration")
+            self.get_logger().error(bcolors.FAIL + "Spawn rate paramater not set in conveyor belt configuration" + bcolors.ENDC)
             return False
 
         try:
             self.spawn_rate = float(spawn_rate)
         except ValueError:
-            self.get_logger().error("Spawn rate paramater must be a number")
+            self.get_logger().error(bcolors.FAIL + "Spawn rate paramater must be a number" + bcolors.ENDC)
             return False
 
         # Get conveyor transform
         try:
-            conveyor_transform = self.tf_buffer.lookup_transform('world',
-                                                                 "conveyor_belt_part_spawn_frame", rclpy.time.Time())
+            conveyor_transform = self.tf_buffer.lookup_transform('world', "conveyor_belt_part_spawn_frame", rclpy.time.Time())
         except TransformException:
             return
 
@@ -1253,17 +1280,16 @@ class EnvironmentStartup(Node):
             if conveyor_config['order'] in self.conveyor_spawn_order_types:
                 self.conveyor_spawn_order = conveyor_config['order']
             else:
-                self.get_logger().error(
-                    f"Order paramater must be of type: {self.conveyor_spawn_order_types}")
+                self.get_logger().error(bcolors.FAIL + f"Order paramater must be of type: {self.conveyor_spawn_order_types}" + bcolors.ENDC)
                 return False
         except ValueError:
-            self.get_logger().error("Spawn rate paramater must be a number")
+            self.get_logger().error(bcolors.FAIL + "Spawn rate paramater must be a number" + bcolors.ENDC)
             return False
 
         try:
             parts = conveyor_config['parts_to_spawn']
         except KeyError:
-            self.get_logger().error("Parts to spawn not found in configuration")
+            self.get_logger().error(bcolors.FAIL + "Parts to spawn not found in configuration" + bcolors.ENDC)
             return False
 
         part_count = 0
@@ -1281,7 +1307,7 @@ class EnvironmentStartup(Node):
             try:
                 offset = part_info['offset']
                 if not -1 <= offset <= 1:
-                    self.get_logger().error("Offset must be in range [-1, 1]")
+                    self.get_logger().error(bcolors.FAIL + "Offset must be in range [-1, 1]" + bcolors.ENDC)
                     offset = 0
             except KeyError:
                 offset = 0
@@ -1321,6 +1347,11 @@ class EnvironmentStartup(Node):
 
                 self.conveyor_parts_to_spawn.append(PartSpawnParams(
                     part_name, part.type, part.color, xyz=xyz, rpy=rpy))
+ 
+                if self.conveyor_spawn_order == 'random':
+                    shuffle(self.conveyor_parts_to_spawn)
+
+                self.conveyor_parts_to_spawn_cycle = cycle(self.conveyor_parts_to_spawn)
 
         if len(self.conveyor_parts_to_spawn) > 0:
             # Create Spawn Timer
@@ -1361,13 +1392,13 @@ class EnvironmentStartup(Node):
             part.type = part_info['type']
             part.height = PartInfo.part_heights[part.type]
         except KeyError:
-            self.get_logger().warn("Part type is not specified")
+            self.get_logger().warn(bcolors.WARNING + "Part type is not specified" + bcolors.ENDC)
             return (False, part)
 
         try:
             part.color = part_info['color']
         except KeyError:
-            self.get_logger().warn("Part color is not specified")
+            self.get_logger().warn(bcolors.WARNING + "Part color is not specified" + bcolors.ENDC)
             return (False, part)
 
         try:
@@ -1378,19 +1409,17 @@ class EnvironmentStartup(Node):
         try:
             part.flipped = part_info['flipped']
             if not type(part.flipped) == bool:
-                self.get_logger().warn("flipped parameter should be either true or false")
+                self.get_logger().warn(bcolors.WARNING + "flipped parameter should be either true or false" + bcolors.ENDC)
                 part.flipped = False
         except KeyError:
             pass
 
         if not part.type in PartSpawnParams.part_types:
-            self.get_logger().warn(
-                f"{part_info['type']} is not a valid part type")
+            self.get_logger().warn(bcolors.WARNING + f"{part_info['type']} is not a valid part type" + bcolors.ENDC)
             return (False, part)
 
         if not part.color in PartSpawnParams.colors:
-            self.get_logger().warn(
-                f"{part_info['color']} is not a valid part color")
+            self.get_logger().warn(bcolors.WARNING + f"{part_info['color']} is not a valid part color" + bcolors.ENDC)
             return (False, part)
 
         return (True, part)
@@ -1400,7 +1429,7 @@ class EnvironmentStartup(Node):
             try:
                 return yaml.safe_load(stream)
             except yaml.YAMLError:
-                self.get_logger().error("Unable to read configuration file")
+                self.get_logger().error(bcolors.FAIL + "Unable to read configuration file" + bcolors.ENDC)
                 return {}
 
     def pause_physics(self):

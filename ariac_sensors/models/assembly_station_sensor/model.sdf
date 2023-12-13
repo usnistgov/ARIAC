@@ -4,14 +4,6 @@
     <static>true</static>
     <pose>0 0 0 0 1.5708 0</pose>
     <link name="sensor_base">
-      <!-- Visual for debugging -->
-      <!-- <visual name="sensor_visual">
-        <geometry>
-          <box>
-            <size>0.05 0.05 0.05</size>
-          </box>
-        </geometry>
-      </visual> -->
 
       <sensor name="assembly_station_sensor" type="logical_camera">
         <logical_camera>
@@ -25,12 +17,6 @@
         <always_on>true</always_on>
         <update_rate>1</update_rate>
 
-        <!-- <plugin name="assembly_station_sensor_plugin" filename="libAssemblyStationSensorPlugin.so">
-          <ros>
-            <namespace></namespace>
-          </ros>
-          <sensor_num>0</sensor_num>
-        </plugin> -->
       </sensor>
     </link>
   </model>

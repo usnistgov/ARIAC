@@ -8,7 +8,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
-find_package(gazebo REQUIRED)
+find_package(gazebo_ros REQUIRED)
 find_package(gazebo_ros_pkgs REQUIRED)
 find_package(nav2_bringup REQUIRED)
 find_package(nav2_controller REQUIRED)

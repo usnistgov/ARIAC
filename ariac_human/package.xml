@@ -2,13 +2,14 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ariac_human</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <version>2024.1.0</version>
+  <description>Definitions for the human in the ARIAC simulation</description>
   <maintainer email="justin.albrecht@nist.gov">justin</maintainer>
-  <license>TODO: License declaration</license>
+  <license>NIST</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-   <buildtool_depend>ament_cmake_python</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
   <depend>gazebo_ros_pkgs</depend>
   <depend>nav2_bringup</depend>
   <depend>nav2_controller</depend>

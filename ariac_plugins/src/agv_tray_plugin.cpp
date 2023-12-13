@@ -47,13 +47,15 @@ public:
   gazebo::transport::SubscriberPtr contact_sub_;
   gazebo::transport::NodePtr gznode_;
 
-
+  // Position of warehouse for agv_joint 
+  double warehouse_location_ = 17;
 
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr lock_tray_service_;
   rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr unlock_tray_service_;
 
   gazebo::physics::ModelPtr model_;
   gazebo::physics::JointPtr kit_tray_joint_;
+  gazebo::physics::JointPtr agv_joint_;
   gazebo::physics::JointPtr sensor_joint_;
   gazebo::physics::CollisionPtr model_collision_;
   std::map<std::string, gazebo::physics::CollisionPtr> collisions_;
@@ -111,6 +113,8 @@ void AGVTrayPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
   // Get gripper link
   std::string link_name = sdf->GetElement("agv_tray_link")->Get<std::string>();
   impl_->agv_tray_link_ = impl_->model_->GetLink(link_name);
+
+  impl_->agv_joint_ = model->GetJoint(impl_->agv_number_ + "_joint");
   
   std::string topic = "/gazebo/world/ariac_robots/" + link_name + "/bumper/contacts";
   impl_->contact_sub_ = impl_->gznode_->Subscribe(topic, &AGVTrayPlugin::OnContact, this);
@@ -164,6 +168,13 @@ void AGVTrayPlugin::OnUpdate()
     }
   }
 
+  // Unlock tray if agv is at the warehouse
+  if (abs(impl_->agv_joint_->Position(0) - impl_->warehouse_location_) < 0.3 && impl_->tray_attached_) {
+    // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "AGV in warehouse, unlocking tray");
+    impl_->DetachJoint();
+    impl_->locked_ = false;
+
+  }
 }
 
 void AGVTrayPlugin::OnContact(ConstContactsPtr& _msg){

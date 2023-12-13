@@ -2,11 +2,11 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ariac_plugins</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <version>2024.1.0</version>
+  <description>Gazebo/ROS2 plugins for the ARAIC competition</description>
   <maintainer email="justin.albrecht@nist.gov">justin albrecht</maintainer>
   <maintainer email="zeid.kootbally@nist.gov">zeid kootbally</maintainer>
-  <license>TODO: License declaration</license>
+  <license>NIST</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

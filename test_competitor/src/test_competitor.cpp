@@ -858,7 +858,7 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
   }
   if (!found_part)
   {
-    RCLCPP_ERROR(get_logger(), "Unable to locate part in the bins");
+    RCLCPP_INFO(get_logger(), "Unable to locate part in the bins");
     return false;
   }
 
@@ -932,7 +932,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
 {
   if (conveyor_parts_expected_.empty())
   {
-    RCLCPP_ERROR(get_logger(), "No parts expected on the conveyor");
+    RCLCPP_INFO(get_logger(), "No parts expected on the conveyor");
     return false;
   }
   for (auto parts : conveyor_parts_expected_){
@@ -941,7 +941,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
       break;
     }
     else if (parts == conveyor_parts_expected_.back()){
-      RCLCPP_ERROR(get_logger(), "Unable to locate part on the conveyor");
+      RCLCPP_INFO(get_logger(), "Unable to locate part on the conveyor");
       return false;
     }
   }

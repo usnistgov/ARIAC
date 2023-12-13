@@ -163,6 +163,8 @@ class GUI_CLASS(ctk.CTk):
         self.time_limit = ctk.StringVar()
         self.trial_name = ctk.StringVar()
         self.author = ctk.StringVar()
+        self.original_trial_name = ctk.StringVar()
+        self.original_trial_name.set("")
         self.time_limit.set('0')
         self.trial_name.set('')
         self.author.set('')
@@ -377,6 +379,7 @@ class GUI_CLASS(ctk.CTk):
             with open(file_to_open.name) as f:
                 yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
             self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+            self.original_trial_name.set(self.trial_name.get())
             self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
             self.load_through_file_flag = True
             self.file_name = file_to_open.name
@@ -2300,18 +2303,21 @@ class GUI_CLASS(ctk.CTk):
     
     def run_overwrite_window(self):
         overwrite_window = ctk.CTkToplevel()
-        overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.trial_name.get()}.yaml?")
+        overwrite_question_label = ctk.CTkLabel(overwrite_window, text=f"Would you like to overwrite {self.original_trial_name.get()}.yaml?")
         overwrite_question_label.grid(column = MIDDLE_COLUMN, row = 0)
-        overwrite_yes_button = ctk.CTkButton(overwrite_window, text="Yes", command = self.save_file)
+        overwrite_yes_button = ctk.CTkButton(overwrite_window, text="Yes", command = partial(self.save_file,True))
         overwrite_yes_button.grid(column = LEFT_COLUMN, row = 1)
         overwrite_no_button = ctk.CTkButton(overwrite_window, text="No", command = partial(self.choose_save_location, overwrite_window))
         overwrite_no_button.grid(column = RIGHT_COLUMN, row = 1)
         overwrite_window.mainloop()
     
-    def save_file(self):
+    def save_file(self, original_trial_name = False):
         self.build_file_dict()
         with open(self.file_name,'w') as f:
-            f.write(f"# Trial name: {self.trial_name.get()}.yaml\n")
+            if original_trial_name:
+                f.write(f"# Trial name: {self.original_trial_name.get()}.yaml\n")
+            else:
+                f.write(f"# Trial name: {self.trial_name.get()}.yaml\n")
             f.write("# ARIAC2024\n")
             f.write(f"# Author: {self.author.get()}\n")
             f.write(f"# {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n# ENVIRONMENT SETUP\n\n")

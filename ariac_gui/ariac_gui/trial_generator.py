@@ -195,6 +195,8 @@ class GUI_CLASS(ctk.CTk):
 
         # Assembly insert info
         self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
+        for i in range(len(self.assembly_insert_rotations)):
+            self.assembly_insert_rotations[i].trace_add('write', self.update_current_file_label)
 
         # Bin parts info
         self.current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
@@ -229,7 +231,10 @@ class GUI_CLASS(ctk.CTk):
         # Order structure
         self.order_counter = ctk.StringVar()
         self.order_counter.set('0')
+        self.kitting_order_counter = ctk.StringVar()
+        self.kitting_order_counter.set('0')
         self.used_ids = []
+        self.kitting_ids = []
         self.order_info = {}
         self.order_info["order_type"] = ctk.StringVar()
         self.order_info["priority"] = ctk.StringVar()
@@ -237,6 +242,7 @@ class GUI_CLASS(ctk.CTk):
         
         self.order_info["announcement"] = {}
         self.order_info["announcement"]["time_condition"] = ctk.StringVar()
+        self.order_info["announcement"]["time_condition"].trace_add('write',partial(require_num, self.order_info["announcement"]["time_condition"]))
         self.order_info["announcement"]["color"] = ctk.StringVar()
         self.order_info["announcement"]["type"] = ctk.StringVar()
         self.order_info["announcement"]["agv"] = ctk.StringVar()
@@ -441,8 +447,8 @@ class GUI_CLASS(ctk.CTk):
         self.current_orders = competition.competition["orders"]
         self.order_counter.set(str(len(self.current_orders)))
         if len(self.current_orders)>0:
-            if 'submission' not in CONDITION_TYPE:
-                CONDITION_TYPE.append('submission')
+            if 'submission_order' not in CONDITION_TYPE:
+                CONDITION_TYPE.append('submission_order')
         for order in self.current_orders:
             self.used_ids.append(order.id)
         
@@ -1144,6 +1150,9 @@ class GUI_CLASS(ctk.CTk):
 
     def delete_order(self, index):
         del self.current_orders[index]
+        if self.used_ids[index] in self.kitting_ids:
+            self.kitting_order_counter.set(str(int(self.kitting_order_counter.get())-1))
+            del self.kitting_ids[self.kitting_ids.index(self.used_ids[index])]
         del self.used_ids[index]
         self.order_counter.set(str(len(self.current_orders)))
         self.show_main_order_menu()
@@ -1632,9 +1641,13 @@ class GUI_CLASS(ctk.CTk):
         new_order = OrderMsg()
         if index==-1:
             self.used_ids.append(self.generate_order_id())
+            if self.order_info["order_type"].get()=="kitting":
+                self.kitting_order_counter.set(str(int(self.kitting_order_counter.get())+1))
+                self.kitting_ids.append(self.used_ids[-1])
             new_order.id = self.used_ids[-1]
         else:
             new_order.id = self.current_orders[index].id
+        
         new_order.type = ORDER_TYPES.index(self.order_info["order_type"].get())
         new_order.priority = True if self.order_info["priority"].get() == "1" else False
         if self.order_info["order_type"].get() == "kitting":
@@ -1659,8 +1672,8 @@ class GUI_CLASS(ctk.CTk):
         self.order_counter.set(str(len(self.used_ids)))
         self.reset_order()
         self.show_main_order_menu()
-        if 'submission' not in CONDITION_TYPE:
-            CONDITION_TYPE.append('submission')
+        if 'submission_order' not in CONDITION_TYPE:
+            CONDITION_TYPE.append('submission_order')
 
     def create_kitting_task_msg(self)->KittingTaskMsg:
         new_kitting_task = KittingTaskMsg()
@@ -1825,54 +1838,30 @@ class GUI_CLASS(ctk.CTk):
         self.grid_and_append_challenge_widget(self.add_dropped_part_button)
         self.grid_and_append_challenge_widget(self.add_robot_malfunction_button)
         self.grid_and_append_challenge_widget(self.add_sensor_blackout_button)
-        if len(self.current_orders)>0:
+        if len(self.kitting_ids)>0:
             self.grid_and_append_challenge_widget(self.add_faulty_part_button)
         self.grid_and_append_challenge_widget(self.add_human_button)
         index = 0
         if len(self.current_challenges)>0:
             self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame,text="Current challenges:"))
+        challenge_counter = {challenge:0 for challenge in CHALLENGE_TYPES}
         for challenge in self.current_challenges:
             challenge : ChallengeMsg
-
-            label_text = f"Type: {CHALLENGE_TYPES[challenge.type]} "
             if challenge.type == ChallengeMsg.FAULTY_PART:
-                faulty_part_challenge_quadrants = []
-                if challenge.faulty_part_challenge.quadrant1:
-                    faulty_part_challenge_quadrants.append(1)
-                if challenge.faulty_part_challenge.quadrant2:
-                    faulty_part_challenge_quadrants.append(2)
-                if challenge.faulty_part_challenge.quadrant3:
-                    faulty_part_challenge_quadrants.append(3)
-                if challenge.faulty_part_challenge.quadrant4:
-                    faulty_part_challenge_quadrants.append(4)
-                label_text+=f"\nOrder_id: {challenge.faulty_part_challenge.order_id}\nQuadrants: {faulty_part_challenge_quadrants}"
-            elif challenge.type == ChallengeMsg.DROPPED_PART:
-                label_text+=f"\nRobot: {challenge.dropped_part_challenge.robot}\nPart: {_part_color_str[challenge.dropped_part_challenge.part_to_drop.color]} {_part_type_str[challenge.dropped_part_challenge.part_to_drop.type]}"
-            elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
-                sensor_blackout_disabled_sensors = []
-                if challenge.sensor_blackout_challenge.sensors_to_disable.break_beam:
-                    sensor_blackout_disabled_sensors.append("break_beam")
-                if challenge.sensor_blackout_challenge.sensors_to_disable.proximity:
-                    sensor_blackout_disabled_sensors.append("proximity")
-                if challenge.sensor_blackout_challenge.sensors_to_disable.laser_profiler:
-                    sensor_blackout_disabled_sensors.append("laser_profiler")
-                if challenge.sensor_blackout_challenge.sensors_to_disable.lidar:
-                    sensor_blackout_disabled_sensors.append("lidar")
-                if challenge.sensor_blackout_challenge.sensors_to_disable.camera:
-                    sensor_blackout_disabled_sensors.append("camera")
-                if challenge.sensor_blackout_challenge.sensors_to_disable.logical_camera:
-                    sensor_blackout_disabled_sensors.append("logical_camera")
-                label_text+=f"\nDuration: {challenge.sensor_blackout_challenge.duration}\nSensors: {sensor_blackout_disabled_sensors}"
+                challenge_counter["faulty_part"]+=1
+                label_text=f"Faulty Part {challenge_counter['faulty_part']}"
             elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
-                disabled_robots = []
-                if challenge.robot_malfunction_challenge.robots_to_disable.floor_robot:
-                    disabled_robots.append("floor_robot")
-                if challenge.robot_malfunction_challenge.robots_to_disable.ceiling_robot:
-                    disabled_robots.append("ceiling_robot")
-                label_text+=f"\nDuration: {challenge.robot_malfunction_challenge.duration}\nRobots: {disabled_robots}"
+                challenge_counter["robot_malfunction"]+=1
+                label_text=f"Robot Malfunction {challenge_counter['robot_malfunction']}"
+            elif challenge.type == ChallengeMsg.DROPPED_PART:
+                challenge_counter["dropped_part"]+=1
+                label_text=f"Dropped Part {challenge_counter['dropped_part']}"
+            elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
+                challenge_counter["sensor_blackout"]+=1
+                label_text=f"Sensor Blackout {challenge_counter['sensor_blackout']}"
             else:
-                label_text+=f"\nBehavior: {BEHAVIORS[challenge.human_challenge.behavior]}"
-
+                challenge_counter["human"]+=1
+                label_text=f"Human Challenge {challenge_counter['human']}"
             challenge_label = ctk.CTkLabel(self.challenges_frame, text=label_text)
             challenge_label.grid(column = LEFT_COLUMN, row = self.current_challenges_row, pady=3)
             self.current_challenges_widgets.append(challenge_label)
@@ -2132,7 +2121,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_challenges[index] = new_challenge
     
     def reset_faulty_part_info(self):
-        self.faulty_part_info["order_id"].set("" if len(self.used_ids) == 0 else self.used_ids[0])
+        self.faulty_part_info["order_id"].set("" if len(self.kitting_ids) == 0 else self.kitting_ids[0])
         for variable in self.faulty_part_info["quadrants"]:
             variable.set('0')
 
@@ -2141,7 +2130,7 @@ class GUI_CLASS(ctk.CTk):
 
         submission_id_label = ctk.CTkLabel(self.challenges_frame, text="Select the submission id for the faulty part order")
         self.grid_and_append_challenge_widget(submission_id_label)
-        submission_id_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.faulty_part_info["order_id"],values=self.used_ids)
+        submission_id_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.faulty_part_info["order_id"],values=self.kitting_ids)
         self.grid_and_append_challenge_widget(submission_id_menu)
 
         quadrants_label = ctk.CTkLabel(self.challenges_frame, text="Select the quadrants for the faulty part challenge")
@@ -2380,9 +2369,11 @@ class GUI_CLASS(ctk.CTk):
             f.write(f"time_limit: {self.time_limit.get()}\n\n")
 
             if len(self.kitting_trays_dict)!=0:
+                f.write(f"# KITTING TRAYS\n")
                 kitting_trays_data = yaml.dump(self.kitting_trays_dict,sort_keys=False,Dumper=NoAliasDumper)
                 f.write(f"\n{kitting_trays_data}\n")
 
+            f.write("# ASSEMBLY INSERTS\n")
             assembly_inserts_data = yaml.dump(self.assembly_inserts_dict,sort_keys=False,Dumper=NoAliasDumper)
             f.write(f"\n{assembly_inserts_data}\n")
             
@@ -2408,16 +2399,19 @@ class GUI_CLASS(ctk.CTk):
                     parts_dict["parts"] = {}
                     parts_dict["parts"]["conveyor_belt"] = self.conveyor_parts_dict
             try:
+                f.write(f"# PARTS INFORMATION\n")
                 parts_data = yaml.dump(parts_dict,sort_keys=False,Dumper=NoAliasDumper)
                 f.write(f"\n{parts_data}\n")
             except:
                 pass
             
             if len(self.orders_dict)!=0:
+                f.write(f"# ORDERS INFORMATION\n")
                 orders_data = yaml.dump(self.orders_dict,sort_keys=False,Dumper=NoAliasDumper)
                 f.write(f"\n{orders_data}\n")
 
             if len(self.challenges_dict)!=0:
+                f.write(f"# CHALLENGES INFORMATION\n")
                 challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
                 f.write(f"\n{challenges_data}\n")
         self.destroy()
@@ -2430,7 +2424,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_file_frame.grid_rowconfigure(2, weight=1)
         self.current_file_frame.grid_columnconfigure(0, weight=1)
         self.current_file_frame.grid_columnconfigure(2, weight=1)
-        self.sub_frame = ctk.CTkScrollableFrame(self.current_file_frame,width = self.notebook.winfo_width()-30, height=self.notebook.winfo_height()-30)
+        self.sub_frame = ctk.CTkScrollableFrame(self.current_file_frame,width = 700, height=550)
         self.sub_frame.grid(column = 1, row = 1)
         self.current_file_label = ctk.CTkLabel(self.sub_frame, text="", justify="left", font=("UbuntuMono-RI",15))
         self.current_file_label.grid()
@@ -2450,9 +2444,11 @@ class GUI_CLASS(ctk.CTk):
         new_label += f"time_limit: {self.time_limit.get()}\n\n"
 
         if len(self.kitting_trays_dict)!=0:
+            new_label += f"# KITTING TRAYS\n"
             kitting_trays_data = yaml.dump(self.kitting_trays_dict,sort_keys=False,Dumper=NoAliasDumper)
             new_label += f"\n{kitting_trays_data}\n"
 
+        new_label += f"# ASSEMBLY INSERTS\n"
         assembly_inserts_data = yaml.dump(self.assembly_inserts_dict,sort_keys=False,Dumper=NoAliasDumper)
         new_label += f"\n{assembly_inserts_data}\n"
         
@@ -2478,16 +2474,19 @@ class GUI_CLASS(ctk.CTk):
                 parts_dict["parts"] = {}
                 parts_dict["parts"]["conveyor_belt"] = self.conveyor_parts_dict
         try:
+            new_label += f"# PARTS INFORMATION\n"
             parts_data = yaml.dump(parts_dict,sort_keys=False,Dumper=NoAliasDumper)
             new_label += f"\n{parts_data}\n"
         except:
             pass
         
         if len(self.orders_dict)!=0:
+            new_label += f"# ORDERS INFORMATION\n"
             orders_data = yaml.dump(self.orders_dict,sort_keys=False,Dumper=NoAliasDumper)
             new_label += f"\n{orders_data}\n"
 
         if len(self.challenges_dict)!=0:
+            new_label += f"# CHALLENGES INFORMATION\n"
             challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
             new_label += f"\n{challenges_data}\n"
         self.sub_frame.configure(width = self.notebook.winfo_width()-30, height=self.notebook.winfo_height()-50)

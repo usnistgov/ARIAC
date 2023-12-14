@@ -262,7 +262,7 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["combined_task"]["station"] = ctk.StringVar()
         self.order_info["combined_task"]["parts"] = []
         self.order_counter.trace_add('write', self.update_current_file_label)
-
+        
         self.reset_order()
         
         for var in self.order_info["assembly_task"]["agv_numbers"]:
@@ -365,7 +365,6 @@ class GUI_CLASS(ctk.CTk):
         self.add_current_file_to_frame()
 
         self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)        
-
         self._build_assembly_parts_pose_direction()
 
         # Challenge trace_add functions
@@ -376,6 +375,7 @@ class GUI_CLASS(ctk.CTk):
         for robot in ROBOTS:
             self.robot_malfunction_info[robot].trace_add('write', self.enable_disable_robot_malfunction_save)
         self.open_initial_window()
+        self.order_info["assembly_task"]["station"].trace_add('write',self.show_correct_assembly_agvs)
     
     # =======================================================
     #            Load gui from a previous file
@@ -1293,7 +1293,7 @@ class GUI_CLASS(ctk.CTk):
         for widget in self.current_order_part_widgets:
             widget.grid_forget()
         self.current_order_part_widgets.clear()
-        current_row = max(self.left_row_index,self.right_row_index)+1
+        current_row = max(self.left_row_index,self.right_row_index,20)+1
         index = 0
         if self.order_info["order_type"].get() == "kitting":
             if len(self.order_info["kitting_task"]["parts"])>0:
@@ -1469,17 +1469,29 @@ class GUI_CLASS(ctk.CTk):
         self.save_order_button.configure(state=NORMAL)
         window.destroy()
     
-    def show_assembly_menu(self):
-        self.order_info["order_type"].set("assembly")
+    def show_correct_assembly_agvs(self,_,__,___):
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
         self.current_left_order_widgets.clear()
+        self.left_row_index = 1
+
+        station_label = ctk.CTkLabel(self.orders_frame,text="Select the assembly station for the assembly order")
+        self.grid_left_column(station_label)
+        self.current_left_order_widgets.append(station_label)
+
+        station_menu = ctk.CTkOptionMenu(self.orders_frame,variable=self.order_info["assembly_task"]["station"], values = ASSEMBLY_STATIONS)
+        self.grid_left_column(station_menu)
+        self.current_left_order_widgets.append(station_menu)
 
         agv_number_label = ctk.CTkLabel(self.orders_frame,text="Select the agvs for the assembly order")
         self.grid_left_column(agv_number_label)
         self.current_left_order_widgets.append(agv_number_label)
 
-        for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
+        indeces = [1,3] if self.order_info["assembly_task"]["station"].get() in ["as2","as4"] else [0,2]
+        for i in range(4):
+            if i not in indeces:
+                self.order_info["assembly_task"]["agv_numbers"][i].set("0")
+        for i in indeces:
             check_box = ctk.CTkCheckBox(self.orders_frame,
                                         text=f"AGV {i+1}",
                                         variable=self.order_info["assembly_task"]["agv_numbers"][i],
@@ -1490,17 +1502,17 @@ class GUI_CLASS(ctk.CTk):
             self.grid_left_column(check_box)
             self.current_left_order_widgets.append(check_box)
 
-        station_label = ctk.CTkLabel(self.orders_frame,text="Select the assembly station for the assembly order")
-        self.grid_left_column(station_label)
-        self.current_left_order_widgets.append(station_label)
-
-        station_menu = ctk.CTkOptionMenu(self.orders_frame,variable=self.order_info["assembly_task"]["station"], values = ASSEMBLY_STATIONS)
-        self.grid_left_column(station_menu)
-        self.current_left_order_widgets.append(station_menu)
-
         add_part_assembly_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_assembly_part)
         self.grid_left_column(add_part_assembly_task)
         self.current_left_order_widgets.append(add_part_assembly_task)
+
+    def show_assembly_menu(self):
+        self.order_info["order_type"].set("assembly")
+        for widget in self.current_left_order_widgets:
+            widget.grid_forget()
+        self.current_left_order_widgets.clear()
+
+        self.show_correct_assembly_agvs(1,1,1)
 
         self.cancel_order_button.configure(text="Cancel assembly order")
         self.activate_assembly_save(1,1,1)

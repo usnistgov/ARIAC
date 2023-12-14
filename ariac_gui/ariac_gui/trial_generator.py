@@ -285,15 +285,12 @@ class GUI_CLASS(ctk.CTk):
         self.dropped_part_info["robot"] = ctk.StringVar()
         self.dropped_part_info["type"] = ctk.StringVar()
         self.dropped_part_info["color"] = ctk.StringVar()
-        self.dropped_part_info["drop_after"] = ctk.StringVar()
-        self.dropped_part_info["drop_after"].trace_add('write', partial(require_int, self.dropped_part_info["drop_after"]))
-        self.dropped_part_info["delay"] = ctk.StringVar()
-        self.dropped_part_info["delay"].trace_add('write', partial(require_num, self.dropped_part_info["delay"]))
+        self.dropped_part_info["drop_after"] = ctk.IntVar()
+        self.dropped_part_info["delay"] = ctk.DoubleVar()
 
         # Robot malfunction challenge variables
         self.robot_malfunction_info = {}
-        self.robot_malfunction_info["duration"] = ctk.StringVar()
-        self.robot_malfunction_info["duration"].trace_add('write', partial(require_num, self.robot_malfunction_info["duration"]))
+        self.robot_malfunction_info["duration"] = ctk.DoubleVar()
         self.robot_malfunction_info["floor_robot"] = ctk.StringVar()
         self.robot_malfunction_info["ceiling_robot"] = ctk.StringVar()
 
@@ -454,7 +451,11 @@ class GUI_CLASS(ctk.CTk):
             if 'submission_order' not in CONDITION_TYPE:
                 CONDITION_TYPE.append('submission_order')
         for order in self.current_orders:
+            order:OrderMsg
             self.used_ids.append(order.id)
+            if order.type == 0:
+                self.kitting_ids.append(order.id)
+        self.kitting_order_counter.set(str(len(self.kitting_ids)))
         
         self.current_challenges = competition.competition["challenges"]
         self.challenges_counter.set(str(len(self.current_challenges)))
@@ -909,7 +910,7 @@ class GUI_CLASS(ctk.CTk):
         conveyor_active_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Conveyor active",variable=self.conveyor_setup_vals["active"], onvalue="1", offvalue="0", height=1, width=20, state=tk.DISABLED)
         conveyor_active_cb.pack(pady=5)
         self.present_conveyor_widgets.append(conveyor_active_cb)
-        spawn_rate_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"current spawn rate (seconds): {self.conveyor_setup_vals['spawn_rate'].get()}")
+        spawn_rate_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"Current spawn rate (seconds): {self.conveyor_setup_vals['spawn_rate'].get()}")
         spawn_rate_label.pack()
         spawn_rate_slider = ctk.CTkSlider(self.conveyor_parts_frame, state=tk.DISABLED,variable=self.conveyor_setup_vals["spawn_rate"],from_=1, to=10, number_of_steps=9, orientation="horizontal")
         spawn_rate_slider.pack()
@@ -972,7 +973,7 @@ class GUI_CLASS(ctk.CTk):
         self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
 
     def update_spawn_rate_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
-        label.configure(text=f"current spawn rate (seconds): {value.get()}")
+        label.configure(text=f"Current spawn rate (seconds): {value.get()}")
 
     def activate_deactivate_menu(self,_,__,___):
         if self.has_parts.get()=="1":
@@ -1901,6 +1902,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_challenges_widgets.append(widget)
 
     def show_main_challenges_menu(self, _,__,___):
+        self.reset_all_challenges()
         self.clear_challenges_menu()
 
         self.grid_and_append_challenge_widget(self.add_dropped_part_button)
@@ -1986,8 +1988,8 @@ class GUI_CLASS(ctk.CTk):
         self.dropped_part_info["robot"].set(ROBOTS[0])
         self.dropped_part_info["color"].set(PART_COLORS[0])
         self.dropped_part_info["type"].set(PART_TYPES[0])
-        self.dropped_part_info["drop_after"].set("0")
-        self.dropped_part_info["delay"].set("0.0")
+        self.dropped_part_info["drop_after"].set(0)
+        self.dropped_part_info["delay"].set(0.0)
     
     def add_dropped_part_challenge(self, dropped_part_challenge = None, index = -1):
         self.clear_challenges_menu()
@@ -2007,23 +2009,26 @@ class GUI_CLASS(ctk.CTk):
         type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["type"],values=PART_TYPES)
         self.grid_and_append_challenge_widget(type_menu)
 
-        drop_after_label = CTkLabel(self.challenges_frame, text="Select the part number to drop after")
+        drop_after_label = CTkLabel(self.challenges_frame, text=f"Current part number to drop after: {self.dropped_part_info['drop_after'].get()}")
         self.grid_and_append_challenge_widget(drop_after_label)
-        drop_after_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["drop_after"])
-        self.grid_and_append_challenge_widget(drop_after_entry)
-        tip= ToolTip(drop_after_entry,msg="Part drops after the nth part is pick up", delay=0.2)
+        drop_after_slider = CTkSlider(self.challenges_frame,variable=self.dropped_part_info['drop_after'],from_=0, to=4, number_of_steps=4, orientation="horizontal")
+        self.grid_and_append_challenge_widget(drop_after_slider)
+        tip= ToolTip(drop_after_slider,msg="Part drops after the nth part is pick up", delay=0.2)
 
-        delay_label = CTkLabel(self.challenges_frame, text="Select the time to drop after")
+        delay_label = ctk.CTkLabel(self.challenges_frame,text=f"Current time to drop after (seconds): {self.dropped_part_info['delay'].get()}")
         self.grid_and_append_challenge_widget(delay_label)
-        delay_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["delay"])
-        self.grid_and_append_challenge_widget(delay_entry)
+        delay_slider = ctk.CTkSlider(self.challenges_frame,variable=self.dropped_part_info['delay'],from_=0.0, to=5.0, number_of_steps=10, orientation="horizontal")
+        self.grid_and_append_challenge_widget(delay_slider)
+
+        self.dropped_part_info['drop_after'].trace_add('write', partial(self.update_drop_after_label, drop_after_label))
+        self.dropped_part_info['delay'].trace_add('write', partial(self.update_delay_label, delay_label))
 
         if dropped_part_challenge!=None:
             self.dropped_part_info["robot"].set(dropped_part_challenge.robot)
             self.dropped_part_info["color"].set(_part_color_str[dropped_part_challenge.part_to_drop.color])
             self.dropped_part_info["type"].set(_part_type_str[dropped_part_challenge.part_to_drop.type])
-            self.dropped_part_info["drop_after"].set(dropped_part_challenge.drop_after_num)
-            self.dropped_part_info["delay"].set(dropped_part_challenge.drop_after_time)
+            self.dropped_part_info["drop_after"].set(int(dropped_part_challenge.drop_after_num))
+            self.dropped_part_info["delay"].set(float(dropped_part_challenge.drop_after_time))
         
         self.challenge_error_label.configure(text="")
         self.challenge_error_label.grid(pady=3,row=40,column=MIDDLE_COLUMN)
@@ -2033,7 +2038,13 @@ class GUI_CLASS(ctk.CTk):
         self.current_challenges_widgets.append(self.cancel_challenge_button)
         self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
-    
+
+    def update_drop_after_label(self,label : ctk.CTkLabel,_,__,___):
+        label.configure(text=f"Current part number to drop after: {self.dropped_part_info['drop_after'].get()}")
+
+    def update_delay_label(self,label : ctk.CTkLabel,_,__,___):
+        label.configure(text=f"Current time to drop after (seconds): {self.dropped_part_info['delay'].get()}")
+
     def save_dropped_part_challenge(self,index):
         new_challenge = ChallengeMsg()
         new_challenge.type = 1
@@ -2050,17 +2061,17 @@ class GUI_CLASS(ctk.CTk):
             self.current_challenges[index] = new_challenge
 
     def reset_robot_malfunction_info(self):
-        self.robot_malfunction_info["duration"].set('0.0')
+        self.robot_malfunction_info["duration"].set(5.0)
         self.robot_malfunction_info["floor_robot"].set('0')
         self.robot_malfunction_info["ceiling_robot"].set('0')
     
     def add_robot_malfunction_challenge(self, robot_malfunction_challenge = None, index = -1):
         self.clear_challenges_menu()
 
-        duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the robot malfunction")
+        duration_label = ctk.CTkLabel(self.challenges_frame,text=f"Current duration for the robot malfunction challenge: {self.robot_malfunction_info['duration'].get()}")
         self.grid_and_append_challenge_widget(duration_label)
-        duration_menu = ctk.CTkEntry(self.challenges_frame, textvariable=self.robot_malfunction_info["duration"])
-        self.grid_and_append_challenge_widget(duration_menu)
+        duration_slider = ctk.CTkSlider(self.challenges_frame,variable=self.robot_malfunction_info['duration'],from_=5.0, to=60.0, number_of_steps=11, orientation="horizontal")
+        self.grid_and_append_challenge_widget(duration_slider)
 
         robots_label = ctk.CTkLabel(self.challenges_frame, text="Select the robot or robots you would like to malfunction")
         self.grid_and_append_challenge_widget(robots_label)
@@ -2071,10 +2082,12 @@ class GUI_CLASS(ctk.CTk):
         self.show_challenges_condition_menu()
 
         if robot_malfunction_challenge != None:
-            self.robot_malfunction_info["duration"].set(str(robot_malfunction_challenge.duration))
+            self.robot_malfunction_info["duration"].set(float(robot_malfunction_challenge.duration))
             self.robot_malfunction_info["floor_robot"].set("1" if robot_malfunction_challenge.robots_to_disable.floor_robot else "0")
             self.robot_malfunction_info["ceiling_robot"].set("1" if robot_malfunction_challenge.robots_to_disable.ceiling_robot else "0")
             self.set_challenge_condition_info_to_existing(robot_malfunction_challenge.condition)
+
+        self.robot_malfunction_info["duration"].trace_add('write',partial(self.update_duration_label, duration_label))
 
         self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction", index))
         self.enable_disable_robot_malfunction_save(1,1,1)
@@ -2083,6 +2096,9 @@ class GUI_CLASS(ctk.CTk):
         self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
+    def update_duration_label(self,label : ctk.CTkLabel,_,__,___):
+        label.configure(text=f"Current duration for the robot malfunction challenge: {self.robot_malfunction_info['duration'].get()}")
+
     def enable_disable_robot_malfunction_save(self,_,__,___):
         if [self.robot_malfunction_info[robot].get() for robot in ROBOTS].count("0")==len(ROBOTS):
             self.challenge_error_label.configure(text="To save the robot malfunction challenge, you must select at least one of the robots")
@@ -2330,7 +2346,7 @@ class GUI_CLASS(ctk.CTk):
                     dropped_part_dict["dropped_part"]["robot"] = challenge.dropped_part_challenge.robot
                     dropped_part_dict["dropped_part"]["type"] = _part_type_str[challenge.dropped_part_challenge.part_to_drop.type]
                     dropped_part_dict["dropped_part"]["color"] = _part_color_str[challenge.dropped_part_challenge.part_to_drop.color]
-                    dropped_part_dict["dropped_part"]["drop_after"] = challenge.dropped_part_challenge.drop_after_num
+                    dropped_part_dict["dropped_part"]["drop_after"] = int(challenge.dropped_part_challenge.drop_after_num)
                     dropped_part_dict["dropped_part"]["delay"] = challenge.dropped_part_challenge.drop_after_time
                     self.challenges_dict["challenges"].append(dropped_part_dict)
 

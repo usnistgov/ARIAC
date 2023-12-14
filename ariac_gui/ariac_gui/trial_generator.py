@@ -1577,6 +1577,10 @@ class GUI_CLASS(ctk.CTk):
                 msg = "To save, you need at least one part"
             else:
                 msg="No issue. You can save now"
+            for part in self.order_info["kitting_task"]["parts"]:
+                    part:KittingPartMsg
+                    if _part_color_str[part.part.color]+" "+_part_type_str[part.part.type] not in self.all_present_parts:
+                        msg+=f"\nWARNING: {_part_color_str[part.part.color]+' '+_part_type_str[part.part.type]} not found in bins or conveyor"
         elif self.order_info["order_type"].get() == "assembly":
             if len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4 and len(self.order_info["assembly_task"]["parts"])<1:
                 msg="To save, you need at least one part and one agv selected"

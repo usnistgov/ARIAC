@@ -411,7 +411,7 @@ def build_pose(x,y,z,q : Quaternion)->Pose:
     p.orientation = q
     return p
 
-def require_num(val, _, __, ___):
+def require_num(val, time_limit,_, __, ___):
     """Makes sure a tkinter stringvar is numerical and has no more than one decimal point"""
     perFlag=0
     tempStr=val.get()
@@ -425,6 +425,11 @@ def require_num(val, _, __, ___):
             elif tempStr[i]=='.':
                 tempStr=tempStr[:i]+tempStr[i+1:]
                 break
+    try:
+        if float(tempStr)>=float(time_limit.get()):
+            tempStr = str(float(time_limit.get())-1)
+    except:
+        pass
     val.set(tempStr)
 
 def require_int(val, _, __, ___):

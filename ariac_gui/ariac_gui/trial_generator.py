@@ -6,6 +6,7 @@ except:
     quit()    
 from tkinter import *
 import tkinter as tk
+from tktooltip import ToolTip
 from tkinter import ttk, filedialog
 from functools import partial
 from PIL import Image  # needed for images in gui
@@ -192,7 +193,8 @@ class GUI_CLASS(ctk.CTk):
         self.kitting_tray_selections = [ctk.StringVar() for _ in range(6)]
         for i in range(len(self.kitting_tray_selections)):
             self.kitting_tray_selections[i].trace_add('write', self.update_current_file_label)
-
+            self.kitting_tray_selections[i].trace_add('write', self.update_available_kitting_trays)
+        self.available_kitting_trays = []
         # Assembly insert info
         self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
         for i in range(len(self.assembly_insert_rotations)):
@@ -207,6 +209,7 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_counter.trace_add('write', self.update_current_file_label)
 
         # Conveyor parts info
+        self.first_has_part_press = True
         self.current_conveyor_parts = []
         self.conveyor_parts = []
         self.conveyor_parts_counter = ctk.StringVar()
@@ -406,6 +409,7 @@ class GUI_CLASS(ctk.CTk):
             self.load_through_file_flag = True
             self.file_name = file_to_open.name
             self.update_current_file_label(1,1,1)
+            self.update_available_kitting_trays(1,1,1)
             self.open_main_window()
         except:
             try:
@@ -561,6 +565,19 @@ class GUI_CLASS(ctk.CTk):
         kitting_tray_canvas.create_window((280,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
         kitting_tray_canvas.grid(row = 3,column = MIDDLE_COLUMN, sticky = "we")
 
+    def update_available_kitting_trays(self,_,__,___):
+        self.available_kitting_trays.clear()
+        for i in range(len(self.kitting_tray_selections)):
+            tray = self.kitting_tray_selections[i].get()
+            if tray != "":
+                self.available_kitting_trays.append(str(tray))
+        self.available_kitting_trays = sorted(self.available_kitting_trays)
+        try:
+            self.reset_order()
+            self.show_main_order_menu()
+        except:
+            pass
+    
     def kitting_trays_to_dict(self):
         self.kitting_trays_dict = {}
         slots = []
@@ -886,7 +903,7 @@ class GUI_CLASS(ctk.CTk):
         trial_has_parts_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Trial has conveyor parts",variable=self.has_parts, onvalue="1", offvalue="0", height=1, width=20)
         trial_has_parts_cb.pack(pady=5)
         self.conveyor_setup_vals = {"active":ctk.StringVar(),"spawn_rate":ctk.IntVar(),"order":ctk.StringVar()}
-        self.conveyor_setup_vals["active"].set('1')
+        self.conveyor_setup_vals["active"].set('0')
         self.conveyor_setup_vals['spawn_rate'].set(1)
         self.conveyor_setup_vals["order"].set(CONVEYOR_ORDERS[0])
         conveyor_active_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Conveyor active",variable=self.conveyor_setup_vals["active"], onvalue="1", offvalue="0", height=1, width=20, state=tk.DISABLED)
@@ -964,6 +981,9 @@ class GUI_CLASS(ctk.CTk):
         else:
             for widget in self.present_conveyor_widgets:
                 widget.configure(state=tk.DISABLED)
+        if self.first_has_part_press:
+            self.first_has_part_press = False
+            self.conveyor_setup_vals["active"].set("1")
     
     def add_conveyor_parts(self, index = -1):
         add_parts_conveyor_window = ctk.CTkToplevel()
@@ -1067,16 +1087,24 @@ class GUI_CLASS(ctk.CTk):
         self.add_kitting_order_button = ctk.CTkButton(self.orders_frame, text="Add kitting order", command=self.add_kitting_order)
         self.add_assembly_order_button = ctk.CTkButton(self.orders_frame, text="Add assembly order", command=self.add_assembly_order)
         self.add_combined_order_button = ctk.CTkButton(self.orders_frame, text="Add combined order", command=self.add_combined_order)
+        ToolTip(self.add_kitting_order_button, msg = self.update_kitting_order_hover_msg, delay=0.2)
 
         self.show_main_order_menu()
 
-        self.save_error_message = ctk.CTkLabel(self.orders_frame, text="", justify="center")
         self.save_order_button = ctk.CTkButton(self.orders_frame,text="Save order", command=self.save_order)
+        ToolTip(self.save_order_button,msg=self.save_order_hover_message, delay=0.2)
         self.cancel_order_button = ctk.CTkButton(self.orders_frame,text="Cancel order", command=self.show_main_order_menu)
 
         # trace_add functions
         self.order_info["announcement_type"].trace_add('write', self.show_correct_announcement_menu)
     
+    def update_kitting_order_hover_msg(self):
+        if len(self.available_kitting_trays)>0:
+            msg = "Only trays that have been selected in the kitting trays menu are available for kitting orders"
+        else:
+            msg = "At least one kitting tray must be selected in the kitting trays menu before making a kitting order"
+        return msg
+
     def show_main_order_menu(self):
         
         if self.temp_order_hold != None:
@@ -1084,6 +1112,11 @@ class GUI_CLASS(ctk.CTk):
             self.temp_order_hold = None
         
         self.clear_order_menu()
+
+        if len(self.available_kitting_trays) == 0:
+            self.add_kitting_order_button.configure(state=DISABLED)
+        else:
+            self.add_kitting_order_button.configure(state=NORMAL)
 
         self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1, pady=10)
         self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2, pady=10)
@@ -1105,6 +1138,9 @@ class GUI_CLASS(ctk.CTk):
             self.current_left_order_widgets.append(temp_order_label)
 
             edit_order_button = ctk.CTkButton(self.orders_frame, text="Edit order", command=partial(self.edit_order, i))
+            if len(self.available_kitting_trays) == 0 and self.current_orders[i].type == 0:
+                ToolTip(edit_order_button,msg="There are no kitting trays available. Unable to edit any kitting orders", delay=0.2)
+                edit_order_button.configure(state=DISABLED)
             edit_order_button.grid(column=MIDDLE_COLUMN, row=current_row+i, padx=10)
             self.current_main_order_widgets.append(edit_order_button)
 
@@ -1140,7 +1176,10 @@ class GUI_CLASS(ctk.CTk):
         
         if order.type == 0:
             self.order_info["kitting_task"]["agv_number"].set(str(order.kitting_task.agv_number))
-            self.order_info["kitting_task"]["tray_id"].set(str(order.kitting_task.tray_id))
+            if str(order.kitting_task.tray_id) in self.available_kitting_trays:
+                self.order_info["kitting_task"]["tray_id"].set(str(order.kitting_task.tray_id))
+            else:
+                self.order_info["kitting_task"]["tray_id"].set(self.available_kitting_trays[0])
             self.order_info["kitting_task"]["parts"] = order.kitting_task.parts
 
         elif order.type == 1:
@@ -1189,11 +1228,9 @@ class GUI_CLASS(ctk.CTk):
         self.priority_cb = ctk.CTkCheckBox(self.orders_frame,text="Priority",variable=self.order_info["priority"], onvalue="1", offvalue="0", height=1, width=20)
         self.priority_cb.grid(column=MIDDLE_COLUMN, row=1)
         self.current_main_order_widgets.append(self.priority_cb)
-        self.save_error_message.grid(column=LEFT_COLUMN, columnspan = 3, row=max(self.left_row_index,self.right_row_index)+1)
-        self.current_main_order_widgets.append(self.save_error_message)
-        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
+        self.save_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+1)
         self.current_main_order_widgets.append(self.save_order_button)
-        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+3)
+        self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=max(self.left_row_index,self.right_row_index)+2)
         self.current_main_order_widgets.append(self.cancel_order_button)
 
         self.announcement_type_label = ctk.CTkLabel(self.orders_frame, text = "Select the type of announcement:")
@@ -1235,7 +1272,7 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["priority"].set('0')
 
         self.order_info["kitting_task"]["agv_number"].set(AGV_OPTIONS[0])
-        self.order_info["kitting_task"]["tray_id"].set(TRAY_IDS[0])
+        self.order_info["kitting_task"]["tray_id"].set("" if len(self.available_kitting_trays)==0 else self.available_kitting_trays[0])
         self.order_info["kitting_task"]["parts"] = []
 
         for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
@@ -1357,14 +1394,13 @@ class GUI_CLASS(ctk.CTk):
                     index+=1
                     current_row+=1
         
-        self.save_error_message.grid_forget()
-        self.save_error_message.grid(column = LEFT_COLUMN, columnspan=3, row=current_row, pady=10)
-        current_row+=1
         self.save_order_button.grid_forget()
         self.save_order_button.grid(column = MIDDLE_COLUMN, row=current_row, pady=5)
+        self.current_main_order_widgets.append(self.save_order_button)
         current_row+=1
         self.cancel_order_button.grid_forget()
         self.cancel_order_button.grid(column = MIDDLE_COLUMN, row=current_row, pady=5)
+        self.current_main_order_widgets.append(self.cancel_order_button)
     
     def remove_order_part(self, task, index):
         if task == "kitting_task":
@@ -1374,7 +1410,6 @@ class GUI_CLASS(ctk.CTk):
         del self.order_info[task]["parts"][index]
         if len(self.order_info[task]["parts"])<1 and task!="assembly_task":
             self.save_order_button.configure(state=DISABLED)
-            self.save_error_message.configure(text="To save, you need at least one part")
         if task=="assembly_task":
             self.activate_assembly_save(1,1,1)
         self.move_order_widgets()
@@ -1406,7 +1441,7 @@ class GUI_CLASS(ctk.CTk):
         self.grid_left_column(tray_id_label)
         self.current_left_order_widgets.append(tray_id_label)
 
-        tray_id_menu = ctk.CTkOptionMenu(self.orders_frame,variable=self.order_info["kitting_task"]["tray_id"], values = TRAY_IDS)
+        tray_id_menu = ctk.CTkOptionMenu(self.orders_frame,variable=self.order_info["kitting_task"]["tray_id"], values = self.available_kitting_trays)
         self.grid_left_column(tray_id_menu)
         self.current_left_order_widgets.append(tray_id_menu)
 
@@ -1415,10 +1450,8 @@ class GUI_CLASS(ctk.CTk):
         self.current_left_order_widgets.append(self.add_part_kitting_task_button)
         self.cancel_order_button.configure(text="Cancel kitting order")
         if len(self.order_info["kitting_task"]["parts"]) == 0:
-            self.save_error_message.configure(text="To save, you need at least one part")
             self.save_order_button.configure(text="Save kitting order", state=DISABLED)
         else:
-            self.save_error_message.configure(text="")
             self.save_order_button.configure(state=NORMAL)
     
     def add_kitting_part(self, kitting_part = None, index = -1):
@@ -1469,7 +1502,6 @@ class GUI_CLASS(ctk.CTk):
         if len(self.order_info["kitting_task"]["parts"])>=4:
             self.add_part_kitting_task_button.grid_forget()
         self.move_order_widgets()
-        self.save_error_message.configure(text="")
         self.save_order_button.configure(state=NORMAL)
         window.destroy()
     
@@ -1522,20 +1554,41 @@ class GUI_CLASS(ctk.CTk):
         self.activate_assembly_save(1,1,1)
     
     def activate_assembly_save(self,_,__,___):
-        self.save_order_button.configure(text="Save assembly order")
-        if len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4 and len(self.order_info["assembly_task"]["parts"])<1:
-            self.save_error_message.configure(text="To save, you need at least one part and one agv selected")
-            self.save_order_button.configure(state=DISABLED)
-        elif len(self.order_info["assembly_task"]["parts"])<1:
-            self.save_error_message.configure(text="To save, you need at least one part")
-            self.save_order_button.configure(state=DISABLED)
-        elif len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4:
-            self.save_error_message.configure(text="To save, you need at least one agv selected")
-            self.save_order_button.configure(state=DISABLED)
-        else:
-            self.save_error_message.configure(text="")
-            self.save_order_button.configure(state=NORMAL)
+        try:
+            self.save_order_button.configure(text="Save assembly order")
+            if len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4 and len(self.order_info["assembly_task"]["parts"])<1:
+                self.save_order_button.configure(state=DISABLED)
+            elif len(self.order_info["assembly_task"]["parts"])<1:
+                self.save_order_button.configure(state=DISABLED)
+            elif len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4:
+                self.save_order_button.configure(state=DISABLED)
+            else:
+                self.save_order_button.configure(state=NORMAL)
+        except:
+            pass
     
+    def save_order_hover_message(self):
+        msg = ""
+        if self.order_info["order_type"].get() == "kitting":
+            if len(self.order_info["kitting_task"]["parts"])<1:
+                msg = "To save, you need at least one part"
+            else:
+                msg="No issue. You can save now"
+        elif self.order_info["order_type"].get() == "assembly":
+            if len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4 and len(self.order_info["assembly_task"]["parts"])<1:
+                msg="To save, you need at least one part and one agv selected"
+            elif len(self.order_info["assembly_task"]["parts"])<1:
+                msg="To save, you need at least one part"
+            elif len([1 for i in range(4) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="0"]) == 4:
+                msg="To save, you need at least one agv selected"
+            else:
+                msg="No issue. You can save now"
+        else:
+            if len(self.order_info["combined_task"]["parts"])<1:
+                msg="To save, you need at least one part"
+            else:
+                msg="No issue. You can save now"
+        return msg
     def add_assembly_part(self, assembly_part = None, index = -1):
         add_a_part_wind = ctk.CTkToplevel()
 
@@ -1597,7 +1650,6 @@ class GUI_CLASS(ctk.CTk):
 
         self.cancel_order_button.configure(text="Cancel combined order")
         if len(self.order_info["assembly_task"]["parts"]) == 0:
-            self.save_error_message.configure(text="To save, you need at least one part")
             self.save_order_button.configure(text="Save combined order", state=DISABLED)
         else:
             self.save_order_button.configure(state=NORMAL)
@@ -1959,6 +2011,7 @@ class GUI_CLASS(ctk.CTk):
         self.grid_and_append_challenge_widget(drop_after_label)
         drop_after_entry = CTkEntry(self.challenges_frame, textvariable=self.dropped_part_info["drop_after"])
         self.grid_and_append_challenge_widget(drop_after_entry)
+        tip= ToolTip(drop_after_entry,msg="Part drops after the nth part is pick up", delay=0.2)
 
         delay_label = CTkLabel(self.challenges_frame, text="Select the time to drop after")
         self.grid_and_append_challenge_widget(delay_label)

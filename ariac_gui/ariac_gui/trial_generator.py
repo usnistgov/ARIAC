@@ -936,10 +936,10 @@ class GUI_CLASS(ctk.CTk):
         for e in self.current_conveyor_canvas_elements:
             canvas.delete(e)
         self.current_conveyor_canvas_elements.clear()
-        image_coordinates = [(25,10+(75*i)) for i in range(10)]
-        num_parts_coordinates = [(65,10+(75*i)) for i in range(10)]
-        remove_button_coordinates = [(200,30+(75*i)) for i in range(10)]
-        edit_button_coordinates = [(350,30+(75*i)) for i in range(10)]
+        image_coordinates = [(160,10+(75*i)) for i in range(10)]
+        num_parts_coordinates = [(200,10+(75*i)) for i in range(10)]
+        remove_button_coordinates = [(360,30+(75*i)) for i in range(10)]
+        edit_button_coordinates = [(560,30+(75*i)) for i in range(10)]
         flipped_label_coordinates = [(coord[0]+30, coord[1]+30) for coord in image_coordinates]
         image_labels = []
         num_parts_labels = []
@@ -1246,7 +1246,7 @@ class GUI_CLASS(ctk.CTk):
     
     def grid_left_column(self, widget, pady=7):
         widget.grid(column = LEFT_COLUMN, row = self.left_row_index, pady=pady)
-        self.left_row_index+=1
+        self.left_row_index+=2
         
     def grid_right_column(self, widget, pady=7):
         widget.grid(column = RIGHT_COLUMN, row = self.right_row_index, pady=pady)
@@ -1446,7 +1446,8 @@ class GUI_CLASS(ctk.CTk):
         self.current_left_order_widgets.append(tray_id_menu)
 
         self.add_part_kitting_task_button = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_kitting_part)
-        self.grid_left_column(self.add_part_kitting_task_button)
+        if len(self.order_info["kitting_task"]["parts"])<4:
+            self.grid_left_column(self.add_part_kitting_task_button)
         self.current_left_order_widgets.append(self.add_part_kitting_task_button)
         self.cancel_order_button.configure(text="Cancel kitting order")
         if len(self.order_info["kitting_task"]["parts"]) == 0:
@@ -1588,6 +1589,10 @@ class GUI_CLASS(ctk.CTk):
                 msg="To save, you need at least one part"
             else:
                 msg="No issue. You can save now"
+            for part in self.order_info["combined_task"]["parts"]:
+                    part:AssemblyPartMsg
+                    if _part_color_str[part.part.color]+" "+_part_type_str[part.part.type] not in self.all_present_parts:
+                        msg+=f"\nWARNING: {_part_color_str[part.part.color]+' '+_part_type_str[part.part.type]} not found in bins or conveyor"
         return msg
     def add_assembly_part(self, assembly_part = None, index = -1):
         add_a_part_wind = ctk.CTkToplevel()
@@ -1649,7 +1654,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_left_order_widgets.append(add_part_combined_task)
 
         self.cancel_order_button.configure(text="Cancel combined order")
-        if len(self.order_info["assembly_task"]["parts"]) == 0:
+        if len(self.order_info["combined_task"]["parts"]) == 0:
             self.save_order_button.configure(text="Save combined order", state=DISABLED)
         else:
             self.save_order_button.configure(state=NORMAL)

@@ -1070,7 +1070,7 @@ class GUI_CLASS(ctk.CTk):
 
         self.show_main_order_menu()
 
-        self.save_error_message = ctk.CTkLabel(self.orders_frame, text="")
+        self.save_error_message = ctk.CTkLabel(self.orders_frame, text="", justify="center")
         self.save_order_button = ctk.CTkButton(self.orders_frame,text="Save order", command=self.save_order)
         self.cancel_order_button = ctk.CTkButton(self.orders_frame,text="Cancel order", command=self.show_main_order_menu)
 
@@ -1092,8 +1092,12 @@ class GUI_CLASS(ctk.CTk):
         self.current_main_order_widgets.append(self.add_kitting_order_button)
         self.current_main_order_widgets.append(self.add_assembly_order_button)
         self.current_main_order_widgets.append(self.add_combined_order_button)
+        
+        menu_table_split = ctk.CTkLabel(self.orders_frame, justify="center",text="===========================================  Current Orders  ===========================================")
+        menu_table_split.grid(column=LEFT_COLUMN,columnspan=3, row=4, pady=10)
+        self.current_main_order_widgets.append(menu_table_split)
 
-        current_row = 4
+        current_row = 5
         for i in range(len(self.current_orders)):
             temp_order_label = ctk.CTkLabel(self.orders_frame,
                                             text=f"Order {i}. ID: {self.current_orders[i].id}\nType {ORDER_TYPES[self.current_orders[i].type]}")
@@ -1487,7 +1491,7 @@ class GUI_CLASS(ctk.CTk):
         self.grid_left_column(agv_number_label)
         self.current_left_order_widgets.append(agv_number_label)
 
-        indeces = [1,3] if self.order_info["assembly_task"]["station"].get() in ["as2","as4"] else [0,2]
+        indeces = [0,1] if self.order_info["assembly_task"]["station"].get() in ["as1","as2"] else [2,3]
         for i in range(4):
             if i not in indeces:
                 self.order_info["assembly_task"]["agv_numbers"][i].set("0")
@@ -2438,7 +2442,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_file_frame.grid_columnconfigure(2, weight=1)
         self.sub_frame = ctk.CTkScrollableFrame(self.current_file_frame,width = 700, height=550)
         self.sub_frame.grid(column = 1, row = 1)
-        self.current_file_label = ctk.CTkLabel(self.sub_frame, text="", justify="left", font=("UbuntuMono-RI",15))
+        self.current_file_label = ctk.CTkLabel(self.sub_frame, text="", justify="left", font=("UbuntuMono",15))
         self.current_file_label.grid()
         self.update_current_file_label(1,1,1)
     

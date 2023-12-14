@@ -4,8 +4,7 @@ import math
 from math import pi
 
 
-from geometry_msgs.msg import Quaternion, Pose, PoseStamped, Vector3
-import PyKDL
+from geometry_msgs.msg import Quaternion,PoseStamped, Vector3
 from ariac_msgs.msg import (
     Part as PartMsg,
     PartLot as PartLotMsg,

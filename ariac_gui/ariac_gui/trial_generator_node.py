@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import rclpy
-# from ariac_gui.newGui import *
+
 from ariac_gui.trial_generator import GUI_CLASS
 
 
@@ -23,15 +23,6 @@ def main(args=None):
     main_gui = GUI_CLASS()
     main_gui.mainloop()
     print("finished_node")
-    # minimal_publisher = MinimalPublisher()
-
-    # rclpy.spin(minimal_publisher)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    # minimal_publisher.destroy_node()
-    # rclpy.shutdown()
 
 
 if __name__ == '__main__':

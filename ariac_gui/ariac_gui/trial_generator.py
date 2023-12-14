@@ -1406,7 +1406,10 @@ class GUI_CLASS(ctk.CTk):
         del self.order_info[task]["parts"][index]
         if len(self.order_info[task]["parts"])<1 and task!="assembly_task":
             self.save_order_button.configure(state=DISABLED)
+        if task=="combined_task":
+            self.add_part_combined_task.configure(state=NORMAL)
         if task=="assembly_task":
+            self.add_part_assembly_task.configure(state=NORMAL)
             self.activate_assembly_save(1,1,1)
         self.move_order_widgets()
 
@@ -1535,9 +1538,9 @@ class GUI_CLASS(ctk.CTk):
             self.grid_left_column(check_box)
             self.current_left_order_widgets.append(check_box)
 
-        add_part_assembly_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_assembly_part)
-        self.grid_left_column(add_part_assembly_task)
-        self.current_left_order_widgets.append(add_part_assembly_task)
+        self.add_part_assembly_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_assembly_part)
+        self.grid_left_column(self.add_part_assembly_task)
+        self.current_left_order_widgets.append(self.add_part_assembly_task)
 
     def show_assembly_menu(self):
         self.order_info["order_type"].set("assembly")
@@ -1630,6 +1633,8 @@ class GUI_CLASS(ctk.CTk):
             self.order_info["assembly_task"]["parts"].append(new_assembly_part)
         else:
             self.order_info["assembly_task"]["parts"][index] = new_assembly_part
+        if len(self.order_info["assembly_task"]["parts"])>3:
+            self.add_part_assembly_task.configure(state=DISABLED)
         self.move_order_widgets()
         self.activate_assembly_save(1,1,1)
         window.destroy()
@@ -1648,9 +1653,9 @@ class GUI_CLASS(ctk.CTk):
         self.grid_left_column(station_menu)
         self.current_left_order_widgets.append(station_menu)
 
-        add_part_combined_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_combined_part)
-        self.grid_left_column(add_part_combined_task)
-        self.current_left_order_widgets.append(add_part_combined_task)
+        self.add_part_combined_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_combined_part)
+        self.grid_left_column(self.add_part_combined_task)
+        self.current_left_order_widgets.append(self.add_part_combined_task)
 
         self.cancel_order_button.configure(text="Cancel combined order")
         if len(self.order_info["combined_task"]["parts"]) == 0:
@@ -1660,14 +1665,14 @@ class GUI_CLASS(ctk.CTk):
     
     def add_combined_part(self, combined_part = None, index = -1):
         add_c_part_wind = ctk.CTkToplevel()
-
+        available_part_types = self.part_types_available()
         c_part_dict = {}
         c_part_dict["color"] = ctk.StringVar()
         c_part_dict["pType"] = ctk.StringVar()
 
         if combined_part==None:
             c_part_dict["color"].set(PART_COLORS[0])
-            c_part_dict["pType"].set(PART_TYPES[0])
+            c_part_dict["pType"].set(available_part_types[0])
         else:
             c_part_dict["color"].set(_part_color_str[combined_part.part.color].lower())
             c_part_dict["pType"].set(_part_type_str[combined_part.part.type].lower())
@@ -1678,7 +1683,7 @@ class GUI_CLASS(ctk.CTk):
         color_menu.pack()
         type_label = ctk.CTkLabel(add_c_part_wind, text="Select the type for the combined part")
         type_label.pack()
-        type_menu = ctk.CTkOptionMenu(add_c_part_wind, variable=c_part_dict["pType"],values=PART_TYPES)
+        type_menu = ctk.CTkOptionMenu(add_c_part_wind, variable=c_part_dict["pType"],values=available_part_types)
         type_menu.pack()
 
         save_button = ctk.CTkButton(add_c_part_wind, text="Save combined part", command=partial(self.save_combined_part, c_part_dict, add_c_part_wind, index))
@@ -1698,9 +1703,18 @@ class GUI_CLASS(ctk.CTk):
             self.order_info["combined_task"]["parts"].append(new_combined_part)
         else:
             self.order_info["combined_task"]["parts"][index] = new_combined_part
+        if len(self.order_info["combined_task"]["parts"])>3:
+            self.add_part_combined_task.configure(state=DISABLED)
         self.move_order_widgets()
         self.save_order_button.configure(state=NORMAL)
         window.destroy()
+
+    def part_types_available(self):
+        available_part_types = [t for t in PART_TYPES]
+        task = "assembly_task" if self.order_info["order_type"].get()=="assembly" else "combined_task"
+        for part in self.order_info[task]["parts"]:
+            available_part_types.remove(_part_type_str[part.part.type].lower())
+        return available_part_types
 
     def clear_order_menu(self):
         for widget_list in [self.current_left_order_widgets,self.current_right_order_widgets, self.current_main_order_widgets, self.current_order_part_widgets]:

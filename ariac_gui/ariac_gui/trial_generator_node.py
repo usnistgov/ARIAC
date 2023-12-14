@@ -23,6 +23,7 @@ def main(args=None):
     main_gui = GUI_CLASS()
     main_gui.mainloop()
     print("finished_node")
+    rclpy.shutdown()
 
 
 if __name__ == '__main__':

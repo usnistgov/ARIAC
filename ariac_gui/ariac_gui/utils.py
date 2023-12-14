@@ -1,13 +1,7 @@
-import math
-from typing import List, Tuple
-
-
 from math import pi
 
-from numpy import negative
 
-from geometry_msgs.msg import Quaternion, Pose, PoseStamped, Vector3
-import PyKDL
+from geometry_msgs.msg import PoseStamped, Vector3
 from ariac_msgs.msg import (
     Part as PartMsg,
     PartLot as PartLotMsg,
@@ -366,50 +360,6 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
     return CompetitionClass(time_limit, tray_ids, slots, assembly_insert_rotations, bin_parts, current_bin_parts, 
                             conveyor_active, spawn_rate, conveyor_order,
                             conveyor_parts, current_conveyor_parts, orders, challenges)
-
-
-
-def rpy_from_quaternion(q: Quaternion) -> Tuple[float, float, float]:
-    ''' 
-    Use KDL to convert a quaternion to euler angles roll, pitch, yaw.
-    Args:
-        q (Quaternion): quaternion to convert
-    Returns:
-        Tuple[float, float, float]: roll, pitch, yaw
-    '''
-    
-    R = PyKDL.Rotation.Quaternion(q.x, q.y, q.z, q.w)
-    return R.GetRPY()
-
-def quaternion_from_euler(roll: float, pitch: float, yaw: float) -> Quaternion:
-    cy = math.cos(yaw * 0.5)
-    sy = math.sin(yaw * 0.5)
-    cp = math.cos(pitch * 0.5)
-    sp = math.sin(pitch * 0.5)
-    cr = math.cos(roll * 0.5)
-    sr = math.sin(roll * 0.5)
-
-    q = [0] * 4
-    q[0] = cy * cp * cr + sy * sp * sr
-    q[1] = cy * cp * sr - sy * sp * cr
-    q[2] = sy * cp * sr + cy * sp * cr
-    q[3] = sy * cp * cr - cy * sp * sr
-
-    q_msg = Quaternion()
-    q_msg.w = q[0]
-    q_msg.x = q[1]
-    q_msg.y = q[2]
-    q_msg.z = q[3]
-
-    return q_msg
-
-def build_pose(x,y,z,q : Quaternion)->Pose:
-    p = Pose()
-    p.position.x = x
-    p.position.y = y
-    p.position.z = z
-    p.orientation = q
-    return p
 
 def require_num(val, time_limit,_, __, ___):
     """Makes sure a tkinter stringvar is numerical and has no more than one decimal point"""

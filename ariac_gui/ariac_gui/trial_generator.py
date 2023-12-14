@@ -35,7 +35,7 @@ from ariac_msgs.msg import (
 )
 from geometry_msgs.msg import PoseStamped, Vector3
 from ament_index_python.packages import get_package_share_directory, get_package_prefix
-from ariac_gui.utils import (build_competition_from_file, quaternion_from_euler, require_int, 
+from ariac_gui.utils import (build_competition_from_file, 
                              require_num, 
                              BinPart, 
                              ConveyorPart,
@@ -469,7 +469,6 @@ class GUI_CLASS(ctk.CTk):
         regulator_pose.pose.position.x = 0.175
         regulator_pose.pose.position.y = -0.233
         regulator_pose.pose.position.z = 0.215
-        regulator_pose.pose.orientation = quaternion_from_euler(pi/2,0,-pi/2)
         _assembly_part_poses["REGULATOR"] = regulator_pose
         regulator_install_direction = Vector3()
         regulator_install_direction.x = 0
@@ -481,7 +480,6 @@ class GUI_CLASS(ctk.CTk):
         battery_pose.pose.position.x = -0.15
         battery_pose.pose.position.y = 0.035
         battery_pose.pose.position.z = 0.043
-        battery_pose.pose.orientation = quaternion_from_euler(0,0,pi/2)
         _assembly_part_poses["BATTERY"] = battery_pose
         battery_install_direction = Vector3()
         battery_install_direction.x = 0
@@ -493,7 +491,6 @@ class GUI_CLASS(ctk.CTk):
         pump_pose.pose.position.x = 0.14
         pump_pose.pose.position.y = 0.0
         pump_pose.pose.position.z = 0.02
-        pump_pose.pose.orientation = quaternion_from_euler(0,0,-pi/2)
         _assembly_part_poses["PUMP"] = pump_pose
         pump_install_direction = Vector3()
         pump_install_direction.x = 0
@@ -505,7 +502,6 @@ class GUI_CLASS(ctk.CTk):
         sensor_pose.pose.position.x = -0.1
         sensor_pose.pose.position.y = 0.395
         sensor_pose.pose.position.z = 0.045
-        sensor_pose.pose.orientation = quaternion_from_euler(0,0,-pi/2)
         _assembly_part_poses["SENSOR"] = sensor_pose
         sensor_install_direction = Vector3()
         sensor_install_direction.x = 0
@@ -1600,6 +1596,9 @@ class GUI_CLASS(ctk.CTk):
         a_part_dict = {}
         a_part_dict["color"] = ctk.StringVar()
         a_part_dict["pType"] = ctk.StringVar()
+        a_part_dict["agv"] = ctk.StringVar()
+        a_part_dict["quadrant"] = ctk.StringVar()
+        a_part_dict["rotation"] = ctk.DoubleVar()
         if assembly_part==None:
             a_part_dict["color"].set(PART_COLORS[0])
             a_part_dict["pType"].set(PART_TYPES[0])

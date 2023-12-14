@@ -1542,6 +1542,9 @@ class GUI_CLASS(ctk.CTk):
         self.grid_left_column(self.add_part_assembly_task)
         self.current_left_order_widgets.append(self.add_part_assembly_task)
 
+        if len(self.order_info["assembly_task"]["parts"])>3:
+            self.add_part_assembly_task.configure(state=DISABLED)
+
     def show_assembly_menu(self):
         self.order_info["order_type"].set("assembly")
         for widget in self.current_left_order_widgets:
@@ -1593,8 +1596,10 @@ class GUI_CLASS(ctk.CTk):
                     if _part_color_str[part.part.color]+" "+_part_type_str[part.part.type] not in self.all_present_parts:
                         msg+=f"\nWARNING: {_part_color_str[part.part.color]+' '+_part_type_str[part.part.type]} not found in bins or conveyor"
         return msg
+    
     def add_assembly_part(self, assembly_part = None, index = -1):
         add_a_part_wind = ctk.CTkToplevel()
+        available_part_types = self.part_types_available()
 
         a_part_dict = {}
         a_part_dict["color"] = ctk.StringVar()
@@ -1604,7 +1609,7 @@ class GUI_CLASS(ctk.CTk):
         a_part_dict["rotation"] = ctk.DoubleVar()
         if assembly_part==None:
             a_part_dict["color"].set(PART_COLORS[0])
-            a_part_dict["pType"].set(PART_TYPES[0])
+            a_part_dict["pType"].set(available_part_types[0])
         else:
             a_part_dict["color"].set(_part_color_str[assembly_part.part.color].lower())
             a_part_dict["pType"].set(_part_type_str[assembly_part.part.type].lower())
@@ -1615,7 +1620,7 @@ class GUI_CLASS(ctk.CTk):
         color_menu.pack()
         type_label = ctk.CTkLabel(add_a_part_wind, text="Select the type for the assembly part")
         type_label.pack()
-        type_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["pType"],values=PART_TYPES)
+        type_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["pType"],values=available_part_types)
         type_menu.pack()
 
         save_button = ctk.CTkButton(add_a_part_wind, text="Save assembly part", command=partial(self.save_assembly_part, a_part_dict, add_a_part_wind, index))
@@ -1656,6 +1661,8 @@ class GUI_CLASS(ctk.CTk):
         self.add_part_combined_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_combined_part)
         self.grid_left_column(self.add_part_combined_task)
         self.current_left_order_widgets.append(self.add_part_combined_task)
+        if len(self.order_info["combined_task"]["parts"])>3:
+            self.add_part_combined_task.configure(state=DISABLED)
 
         self.cancel_order_button.configure(text="Cancel combined order")
         if len(self.order_info["combined_task"]["parts"]) == 0:

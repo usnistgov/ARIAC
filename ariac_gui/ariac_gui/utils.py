@@ -59,6 +59,15 @@ class ConveyorPart():
         self.offset = offset
         self.flipped = flipped
 
+class AGVPart():
+    def __init__(self,color, pType, agv, quadrant, rotation):
+        part = PartMsg()
+        part.color = _part_color_ints[color.upper()]
+        part.type = _part_type_ints[pType.upper()]
+        self.agv = agv
+        self.quadrant = quadrant
+        self.rotation = rotation
+
 class CompetitionClass():
     def __init__(self, time_limit, tray_ids, slots, assembly_insert_rotations, bin_dict, current_bin_parts, conveyor_active, spawn_rate, conveyor_order,
                  conveyor_parts_to_spawn, current_conveyor_parts, orders, challenges):
@@ -403,7 +412,7 @@ def require_num(val, time_limit,_, __, ___):
                 tempStr=tempStr[:i]+tempStr[i+1:]
                 break
     try:
-        if float(tempStr)>=float(time_limit.get()):
+        if float(tempStr)>=float(time_limit.get()) and int(time_limit.get())>0:
             tempStr = str(float(time_limit.get())-1)
     except:
         pass

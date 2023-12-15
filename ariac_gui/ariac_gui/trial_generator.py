@@ -39,6 +39,7 @@ from ariac_gui.utils import (build_competition_from_file,
                              require_num, 
                              BinPart, 
                              ConveyorPart,
+                             AGVPart,
                              CompetitionClass,
                              SLIDER_STR, 
                              SLIDER_VALUES, 
@@ -199,7 +200,7 @@ class GUI_CLASS(ctk.CTk):
         self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
         for i in range(len(self.assembly_insert_rotations)):
             self.assembly_insert_rotations[i].trace_add('write', self.update_current_file_label)
-
+        
         # Bin parts info
         self.current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
         self.bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
@@ -226,6 +227,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_main_order_widgets = []
         self.current_order_part_widgets = []
         self.temp_order_hold = None
+        self.available_assembly_agvs = []
 
         # Order row indeces
         self.left_row_index = 1
@@ -260,6 +262,7 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["assembly_task"]["agv_numbers"] = [ctk.StringVar() for _ in range(4)]
         self.order_info["assembly_task"]["station"] = ctk.StringVar()
         self.order_info["assembly_task"]["parts"] = []
+        self.order_info["agv_parts"] = []
 
         self.order_info["combined_task"] = {}
         self.order_info["combined_task"]["station"] = ctk.StringVar()
@@ -270,8 +273,10 @@ class GUI_CLASS(ctk.CTk):
         
         for var in self.order_info["assembly_task"]["agv_numbers"]:
             var.trace_add('write', self.activate_assembly_save)
+            var.trace_add('write', self.update_available_agvs)
 
         self.current_orders = []
+        self.current_agv_parts = []
 
         # Challenges widgets
         self.current_challenges_widgets = []
@@ -1278,6 +1283,7 @@ class GUI_CLASS(ctk.CTk):
 
         self.order_info["combined_task"]["station"].set(ASSEMBLY_STATIONS[0])
         self.order_info["combined_task"]["parts"] = []
+        self.order_info["agv_parts"] = []
     
     def show_correct_announcement_menu(self,_,__,___):
         self.right_row_index = 3
@@ -1522,7 +1528,7 @@ class GUI_CLASS(ctk.CTk):
         agv_number_label = ctk.CTkLabel(self.orders_frame,text="Select the agvs for the assembly order")
         self.grid_left_column(agv_number_label)
         self.current_left_order_widgets.append(agv_number_label)
-
+        self.available_assembly_agvs.clear()
         indeces = [0,1] if self.order_info["assembly_task"]["station"].get() in ["as1","as2"] else [2,3]
         for i in range(4):
             if i not in indeces:
@@ -1537,11 +1543,13 @@ class GUI_CLASS(ctk.CTk):
                                         width=20)
             self.grid_left_column(check_box)
             self.current_left_order_widgets.append(check_box)
+            if len(self.available_quadrants[f"agv_{i+1}"])>0:
+                self.available_assembly_agvs.append(str(i+1))
 
         self.add_part_assembly_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_assembly_part)
         self.grid_left_column(self.add_part_assembly_task)
         self.current_left_order_widgets.append(self.add_part_assembly_task)
-
+        self.update_available_agvs(1,1,1)
         if len(self.order_info["assembly_task"]["parts"])>3:
             self.add_part_assembly_task.configure(state=DISABLED)
 
@@ -1601,6 +1609,23 @@ class GUI_CLASS(ctk.CTk):
                         msg+=f"\nWARNING: {_part_color_str[part.part.color]+' '+_part_type_str[part.part.type]} not found in bins or conveyor"
         return msg
     
+    def update_available_agvs(self,_,__,___):
+        self.available_assembly_agvs.clear()
+        for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
+            if self.order_info["assembly_task"]["agv_numbers"][i].get()=="1":
+                self.available_assembly_agvs.append(str(i+1))
+        try:
+            if len(self.available_assembly_agvs)==0:
+                self.add_part_assembly_task.configure(state=DISABLED)
+            else:
+                if len(self.order_info["assembly_task"]["parts"])>3:
+                    self.add_part_assembly_task.configure(state=DISABLED)
+                else:
+                    self.add_part_assembly_task.configure(state=NORMAL)
+        except:
+            pass
+
+
     def add_assembly_part(self, assembly_part = None, index = -1):
         add_a_part_wind = ctk.CTkToplevel()
         available_part_types = self.part_types_available()
@@ -1611,9 +1636,13 @@ class GUI_CLASS(ctk.CTk):
         a_part_dict["agv"] = ctk.StringVar()
         a_part_dict["quadrant"] = ctk.StringVar()
         a_part_dict["rotation"] = ctk.DoubleVar()
+        
         if assembly_part==None:
             a_part_dict["color"].set(PART_COLORS[0])
             a_part_dict["pType"].set(available_part_types[0])
+            a_part_dict["agv"].set(self.available_assembly_agvs[0])
+            a_part_dict["quadrant"].set(str(self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"][0]))
+            a_part_dict["rotation"].set(0.0)
         else:
             a_part_dict["color"].set(_part_color_str[assembly_part.part.color].lower())
             a_part_dict["pType"].set(_part_type_str[assembly_part.part.type].lower())
@@ -1626,11 +1655,32 @@ class GUI_CLASS(ctk.CTk):
         type_label.pack()
         type_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["pType"],values=available_part_types)
         type_menu.pack()
+        agv_label = ctk.CTkLabel(add_a_part_wind, text="Select the agv to put the part on")
+        agv_label.pack()
+        agv_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["agv"], values=self.available_assembly_agvs)
+        agv_menu.pack()
+        quadrant_label = ctk.CTkLabel(add_a_part_wind, text="Select a quadrant on the agv")
+        quadrant_label.pack()
+        quadrant_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["quadrant"], values=[str(v) for v in self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"]])
+        quadrant_menu.pack()
+        label_text = f"Current rotation value: {a_part_dict['rotation'].get()}"
+        rotation_label = ctk.CTkLabel(add_a_part_wind, text=label_text)
+        rotation_label.pack()
+        rotation_slider = ctk.CTkSlider(add_a_part_wind, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=a_part_dict['rotation'], orientation="horizontal")
+        rotation_slider.pack()
+        a_part_dict['rotation'].trace_add('write', partial(self.nearest_slider_value,a_part_dict['rotation'], rotation_slider,rotation_label))
+
+        a_part_dict["agv"].trace_add('write',partial(self.update_agv_quadrant_assembly,a_part_dict["agv"], a_part_dict["quadrant"],quadrant_menu))
 
         save_button = ctk.CTkButton(add_a_part_wind, text="Save assembly part", command=partial(self.save_assembly_part, a_part_dict, add_a_part_wind, index))
         save_button.pack(pady = 10)
         add_a_part_wind.mainloop()
 
+    def update_agv_quadrant_assembly(self, selected_agv,quadrant_var, quadrant_menu,_,__,___):
+        agv_str = selected_agv.get()
+        quadrant_var.set(str(self.available_quadrants[f"agv_{agv_str}"][0]))
+        quadrant_menu.configure(values = [str(v) for v in self.available_quadrants[f"agv_{agv_str}"]])
+    
     def save_assembly_part(self, a_part_dict, window, index):
         new_assembly_part = AssemblyPartMsg()
 
@@ -1644,6 +1694,8 @@ class GUI_CLASS(ctk.CTk):
             self.order_info["assembly_task"]["parts"][index] = new_assembly_part
         if len(self.order_info["assembly_task"]["parts"])>3:
             self.add_part_assembly_task.configure(state=DISABLED)
+        self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(int(a_part_dict["quadrant"].get()))
+        self.order_info["agv_parts"].append(AGVPart(a_part_dict["color"].get(),a_part_dict["pType"].get(),a_part_dict["agv"].get(),a_part_dict["quadrant"].get(),a_part_dict["rotation"].get()))
         self.move_order_widgets()
         self.activate_assembly_save(1,1,1)
         window.destroy()
@@ -2624,6 +2676,7 @@ class GUI_CLASS(ctk.CTk):
             new_label += f"\n{challenges_data}\n"
         self.sub_frame.configure(width = self.notebook.winfo_width()-30, height=self.notebook.winfo_height()-50)
         self.current_file_label.configure(text=new_label)
+
     # =======================================================
     #               General Gui Functions
     # =======================================================

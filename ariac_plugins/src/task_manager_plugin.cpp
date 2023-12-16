@@ -332,6 +332,8 @@ namespace ariac_plugins
         int ComputeMaxScoreKittingTask(int expected_number_of_parts);
         int ComputeMaxScoreAssemblyTask(int expected_number_of_parts);
         int ComputeMaxScoreCombinedTask(int expected_number_of_parts);
+        void DisplayTaskManagerInfo(std::string message, bool once = false);
+
 
         /*!< Message to write in the log file. */
         std::string log_message_ = "";
@@ -347,9 +349,16 @@ namespace ariac_plugins
         impl_->ros_node_.reset();
     }
 
+    void TaskManagerPluginPrivate::DisplayTaskManagerInfo(std::string message, bool once)
+    {
+        if (once)
+            RCLCPP_INFO_STREAM_ONCE(ros_node_->get_logger(), "\033[1;31m" << message << "\033[0m");
+        else
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), "\033[1;31m" << message << "\033[0m");
+    }
 
     //==============================================================================
-    int ComputeMaxScoreKittingTask(int expected_number_of_parts){
+    int TaskManagerPluginPrivate::ComputeMaxScoreKittingTask(int expected_number_of_parts){
         unsigned correct_part_tray_score = 3;
         unsigned quadrants_score = 3 * expected_number_of_parts;
         unsigned bonus_score = expected_number_of_parts;
@@ -358,14 +367,14 @@ namespace ariac_plugins
 
 
     //==============================================================================
-    int ComputeMaxScoreAssemblyTask(int expected_number_of_parts){
+    int TaskManagerPluginPrivate::ComputeMaxScoreAssemblyTask(int expected_number_of_parts){
         unsigned slots_score = 3 * expected_number_of_parts;
         unsigned bonus_score = 4 * expected_number_of_parts;
         return slots_score + bonus_score;
     }
 
     //==============================================================================
-    int ComputeMaxScoreCombinedTask(int expected_number_of_parts){
+    int TaskManagerPluginPrivate::ComputeMaxScoreCombinedTask(int expected_number_of_parts){
         unsigned slots_score = 5 * expected_number_of_parts;
         unsigned bonus_score = 4 * expected_number_of_parts;
         return slots_score + bonus_score;
@@ -485,7 +494,9 @@ namespace ariac_plugins
 
         impl_->request_pub_ = impl_->gznode_->Advertise<gazebo::msgs::Request>("~/request");
 
-        RCLCPP_INFO(impl_->ros_node_->get_logger(), "Starting ARIAC 2023");
+
+        impl_->DisplayTaskManagerInfo("Starting ARIAC 2024");
+
 
         // Get QoS profiles
         const gazebo_ros::QoS &qos = impl_->ros_node_->get_qos();
@@ -733,6 +744,7 @@ namespace ariac_plugins
                 {
                     auto order_message = BuildOrderMsg(order);
                     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Announcing order");
+                    impl_->DisplayTaskManagerInfo("Announcing order");
                     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "\n" << *order);
 
                     impl_->order_pub_->publish(order_message);
@@ -818,15 +830,17 @@ namespace ariac_plugins
     {
         if (!impl_->time_based_orders_.empty())
         {
+            impl_->DisplayTaskManagerInfo("Process temporal orders...", true);
             ProcessTemporalOrders();
         }
-        // TODO: Implement on part placement and on submission orders
         if (!impl_->on_part_placement_orders_.empty())
         {
+            impl_->DisplayTaskManagerInfo("Process part placement orders...", true);
             ProcessOnPartPlacementOrders();
         }
         if (!impl_->on_order_submission_orders_.empty())
         {
+            impl_->DisplayTaskManagerInfo("Process submission orders...", true);
             ProcessOnSubmissionOrders();
         }
     }
@@ -1201,6 +1215,7 @@ namespace ariac_plugins
     void TaskManagerPlugin::OnUpdate()
     {
         std::lock_guard<std::mutex> lock(impl_->lock_);
+        
         auto current_sim_time = impl_->world_->SimTime();
 
         // if the competition has ended, disable all sensors and robots
@@ -1213,7 +1228,8 @@ namespace ariac_plugins
 
         if (impl_->total_orders_ == 0 && impl_->current_state_ == ariac_msgs::msg::CompetitionState::STARTED)
         {
-            RCLCPP_INFO_STREAM_ONCE(impl_->ros_node_->get_logger(), "All orders have been announced.");
+            // RCLCPP_INFO_STREAM_ONCE(impl_->ros_node_->get_logger(), "All orders have been announced.");
+            impl_->DisplayTaskManagerInfo("All orders have been announced.", true);
             impl_->current_state_ = ariac_msgs::msg::CompetitionState::ORDER_ANNOUNCEMENTS_DONE;
         }
 
@@ -1236,7 +1252,7 @@ namespace ariac_plugins
             // Now competitors can call this service to start the competition
             impl_->start_competition_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>("/ariac/start_competition", std::bind(&TaskManagerPlugin::StartCompetitionServiceCallback, this, std::placeholders::_1, std::placeholders::_2));
 
-            RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "You can now start the competition!");
+            impl_->DisplayTaskManagerInfo("You can now start the competition!");
             impl_->current_state_ = ariac_msgs::msg::CompetitionState::READY;
 
             // Create the end competition service
@@ -1316,6 +1332,7 @@ namespace ariac_plugins
             impl_->StoreStationParts(4, impl_->assembly_station_images_[4]);
 
             ProcessEndSafeZonePenalty();
+            // impl_->DisplayTaskManagerInfo("Processing orders...", true);
             ProcessOrdersToAnnounce();
             ProcessChallengesToAnnounce();
             ProcessInProgressSensorBlackouts();
@@ -1397,7 +1414,9 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPlugin::OnTrialCallback(const ariac_msgs::msg::Trial::SharedPtr _msg)
     {
+        
         std::lock_guard<std::mutex> scoped_lock(impl_->lock_);
+        impl_->DisplayTaskManagerInfo("OnTrialCallback");
         // RCLCPP_FATAL_STREAM(impl_->ros_node_->get_logger(), "------Time limit: " << _msg->time_limit);
         // RCLCPP_FATAL_STREAM(impl_->ros_node_->get_logger(), "------Trial name: " << _msg->trial_name);
         impl_->time_limit_ = _msg->time_limit;
@@ -1405,7 +1424,7 @@ namespace ariac_plugins
 
         // Create a file for the trial scores
         impl_->ariac_log_folder_ = _msg->log_folder_path; // path to the log folder
-
+        impl_->DisplayTaskManagerInfo("Log folder: " + impl_->ariac_log_folder_);
 
         // Store orders to be processed later
         std::vector<std::shared_ptr<ariac_msgs::msg::OrderCondition>>
@@ -1419,9 +1438,9 @@ namespace ariac_plugins
 
         // This attribute is used to keep track of the total number of orders
         impl_->total_orders_ = impl_->time_based_orders_.size() + impl_->on_part_placement_orders_.size() + impl_->on_order_submission_orders_.size();
-        // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of temporal orders: " << impl_->time_based_orders_.size());
-        // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of part place orders: " << impl_->on_part_placement_orders_.size());
-        // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of submission orders: " << impl_->on_order_submission_orders_.size());
+        RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of temporal orders: " << impl_->time_based_orders_.size());
+        RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of part place orders: " << impl_->on_part_placement_orders_.size());
+        RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of submission orders: " << impl_->on_order_submission_orders_.size());
 
         // Store challenges to be processed later
         if (_msg->challenges.size() > 0)

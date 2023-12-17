@@ -507,8 +507,9 @@ namespace ariac_plugins
             std::bind(&TaskManagerPlugin::OnUpdate, this));
 
         // Init subscribers
+        auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable();
         impl_->trial_config_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Trial>(
-            "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", rclcpp::QoS(1)),
+            "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", qos_profile),
             std::bind(&TaskManagerPlugin::OnTrialCallback, this, std::placeholders::_1));
 
         impl_->agv1_status_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::AGVStatus>(

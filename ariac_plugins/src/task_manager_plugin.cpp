@@ -281,12 +281,13 @@ namespace ariac_plugins
         /*!< Print details of the score for a combined task. */
         void PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score);
         /*!< Print details of the score for a kitting task. */
-        void PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score);
+        void PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score, int expected_number_of_parts);
         /*!< Print details of the score for the trial. */
         void PrintTrialScore(
             std::shared_ptr<ariac_common::Order> kitting_order,
             std::shared_ptr<ariac_common::Order> assembly_order,
             std::shared_ptr<ariac_common::Order> combined_order);
+        void PrintTrialSummary();
 
         /**
          * @brief Retrieve the tray information from the message and store it in the agv_parts_ map.
@@ -332,7 +333,8 @@ namespace ariac_plugins
         int ComputeMaxScoreKittingTask(int expected_number_of_parts);
         int ComputeMaxScoreAssemblyTask(int expected_number_of_parts);
         int ComputeMaxScoreCombinedTask(int expected_number_of_parts);
-        void DisplayTaskManagerInfo(std::string message, bool once = false);
+        void DisplayTaskManagerInfo(std::string message, bool once = false, std::string color="red");
+        std::string LogOutput(std::string message, std::string color="red");
 
 
         /*!< Message to write in the log file. */
@@ -349,12 +351,60 @@ namespace ariac_plugins
         impl_->ros_node_.reset();
     }
 
-    void TaskManagerPluginPrivate::DisplayTaskManagerInfo(std::string message, bool once)
-    {
-        if (once)
-            RCLCPP_INFO_STREAM_ONCE(ros_node_->get_logger(), "\033[1;31m" << message << "\033[0m");
+    //==============================================================================
+    std::string TaskManagerPluginPrivate::LogOutput(std::string message, std::string color){
+        std::string color_code = "";
+
+        if (color == "red")
+            color_code = "\033[1;31m";
+        else if (color == "green")
+            color_code = "\033[1;32m";
+        else if (color == "yellow")
+            color_code = "\033[1;33m";
+        else if (color == "blue")
+            color_code = "\033[1;34m";
+        else if (color == "magenta")
+            color_code = "\033[1;35m";
+        else if (color == "cyan")
+            color_code = "\033[1;36m";
+        else if (color == "white")
+            color_code = "\033[1;37m";
         else
-            RCLCPP_INFO_STREAM(ros_node_->get_logger(), "\033[1;31m" << message << "\033[0m");
+            color_code = "\033[1;31m";
+        
+        auto output = color_code + message + "\033[0m";
+        return output;
+    }
+
+
+    void TaskManagerPluginPrivate::DisplayTaskManagerInfo(std::string message, bool once, std::string color)
+    {
+        std::string color_code = "";
+
+        if (color == "red")
+            color_code = "\033[1;31m";
+        else if (color == "green")
+            color_code = "\033[1;32m";
+        else if (color == "yellow")
+            color_code = "\033[1;33m";
+        else if (color == "blue")
+            color_code = "\033[1;34m";
+        else if (color == "magenta")
+            color_code = "\033[1;35m";
+        else if (color == "cyan")
+            color_code = "\033[1;36m";
+        else if (color == "white")
+            color_code = "\033[1;37m";
+        else
+            color_code = "\033[1;31m";
+        
+        message = color_code + message + "\033[0m";
+
+
+        if (once)
+            RCLCPP_INFO_STREAM_ONCE(ros_node_->get_logger(), message);
+        else
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), message);
     }
 
     //==============================================================================
@@ -744,7 +794,7 @@ namespace ariac_plugins
                 if (impl_->elapsed_time_ >= order->GetAnnouncementTime() && !order->IsAnnounced())
                 {
                     auto order_message = BuildOrderMsg(order);
-                    RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Announcing order");
+                    // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Announcing order");
                     impl_->DisplayTaskManagerInfo("Announcing order");
                     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "\n" << *order);
 
@@ -831,17 +881,17 @@ namespace ariac_plugins
     {
         if (!impl_->time_based_orders_.empty())
         {
-            impl_->DisplayTaskManagerInfo("Process temporal orders...", true);
+            // impl_->DisplayTaskManagerInfo("Process temporal orders...", true);
             ProcessTemporalOrders();
         }
         if (!impl_->on_part_placement_orders_.empty())
         {
-            impl_->DisplayTaskManagerInfo("Process part placement orders...", true);
+            // impl_->DisplayTaskManagerInfo("Process part placement orders...", true);
             ProcessOnPartPlacementOrders();
         }
         if (!impl_->on_order_submission_orders_.empty())
         {
-            impl_->DisplayTaskManagerInfo("Process submission orders...", true);
+            // impl_->DisplayTaskManagerInfo("Process submission orders...", true);
             ProcessOnSubmissionOrders();
         }
     }
@@ -1417,7 +1467,7 @@ namespace ariac_plugins
     {
         
         std::lock_guard<std::mutex> scoped_lock(impl_->lock_);
-        impl_->DisplayTaskManagerInfo("OnTrialCallback");
+        // impl_->DisplayTaskManagerInfo("OnTrialCallback");
         // RCLCPP_FATAL_STREAM(impl_->ros_node_->get_logger(), "------Time limit: " << _msg->time_limit);
         // RCLCPP_FATAL_STREAM(impl_->ros_node_->get_logger(), "------Trial name: " << _msg->trial_name);
         impl_->time_limit_ = _msg->time_limit;
@@ -1425,7 +1475,7 @@ namespace ariac_plugins
 
         // Create a file for the trial scores
         impl_->ariac_log_folder_ = _msg->log_folder_path; // path to the log folder
-        impl_->DisplayTaskManagerInfo("Log folder: " + impl_->ariac_log_folder_);
+        // impl_->DisplayTaskManagerInfo("Log folder: " + impl_->ariac_log_folder_);
 
         // Store orders to be processed later
         std::vector<std::shared_ptr<ariac_msgs::msg::OrderCondition>>
@@ -1991,12 +2041,12 @@ namespace ariac_plugins
         // Sum quadrant scores
         total_quadrants_score = quadrant_scores[1] + quadrant_scores[2] + quadrant_scores[3] + quadrant_scores[4];
 
-        std::cout << "Quadrant 1 score: " << quadrant_scores[1] << std::endl;
-        std::cout << "Quadrant 2 score: " << quadrant_scores[2] << std::endl;
-        std::cout << "Quadrant 3 score: " << quadrant_scores[3] << std::endl;
-        std::cout << "Quadrant 4 score: " << quadrant_scores[4] << std::endl;
-        std::cout << "Expected number of parts: " << expected_number_of_parts << std::endl;
-        std::cout << "Total quadrant score: " << total_quadrants_score << std::endl;
+        // std::cout << "Quadrant 1 score: " << quadrant_scores[1] << std::endl;
+        // std::cout << "Quadrant 2 score: " << quadrant_scores[2] << std::endl;
+        // std::cout << "Quadrant 3 score: " << quadrant_scores[3] << std::endl;
+        // std::cout << "Quadrant 4 score: " << quadrant_scores[4] << std::endl;
+        // std::cout << "Expected number of parts: " << expected_number_of_parts << std::endl;
+        // std::cout << "Total quadrant score: " << total_quadrants_score << std::endl;
 
         // Compute bonus
         if (total_quadrants_score == 3 * expected_number_of_parts)
@@ -2030,7 +2080,13 @@ namespace ariac_plugins
         // Set the kitting score for this order
         _order->SetKittingScore(kitting_score);
 
-        PrintKittingScore(kitting_score);
+        std::string output = "";
+        output += LogOutput("\n========================================\n", "yellow");
+        output += LogOutput("Order Submitted\n", "yellow");
+        output += LogOutput("========================================\n", "yellow");
+        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+
+        PrintKittingScore(kitting_score, expected_number_of_parts);
 
         // Clear the AGV of parts and kit tray
         for (std::string name: models_on_agv_[kitting_task->GetAgvNumber()]) {
@@ -2064,7 +2120,7 @@ namespace ariac_plugins
     }
 
     //==============================================================================
-    void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score)
+    void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score, int expected_number_of_parts)
     {
 
         // Get the number of parts expected in this order
@@ -2073,14 +2129,24 @@ namespace ariac_plugins
         
 
         std::string output = "";
-        output += "\n========================================\n";
-        output += "Order: " + kitting_score->GetOrderId() + "\n";
-        output += "Type: Kitting\n";
-        output += "AGV: " + std::to_string(kitting_score->GetAGV()) + "\n";
-        output += "Tray score: " + std::to_string(kitting_score->GetTrayScore()) + "\n";
-        kitting_score->GetDestinationScore() == 1 ? output += "Correct destination: Yes\n" : output += "Correct destination: No\n";
-        output += "Bonus: " + std::to_string(kitting_score->GetBonus()) + "\n";
-        output += "Score: " + std::to_string(kitting_score->GetScore()) + "\n";
+        // output += LogOutput("\n========================================\n", "yellow");
+        // output += LogOutput("Order Submitted\n", "yellow");
+        // output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("\n\t-Order ID: ", "green") + kitting_score->GetOrderId() + "\n";
+        output += LogOutput("\t-Order type: ", "green") + "Kitting\n";
+        output += LogOutput("\t-AGV: ", "green") + std::to_string(kitting_score->GetAGV()) + "\n";
+        output += LogOutput("\t-Tray score: ", "green") + std::to_string(kitting_score->GetTrayScore()) + "\n";
+        if (kitting_score->GetDestinationScore() == 1)
+            output += LogOutput("\t-Correct destination? ", "green") + "yes\n";
+        else
+            output += LogOutput("\t-Correct destination? ", "green") + "no\n";
+        output += LogOutput("\t-Bonus: ", "green") + std::to_string(kitting_score->GetBonus()) + "\n";
+        output += LogOutput("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(expected_number_of_parts)) + "\n";
+        output += LogOutput("\t-Actual score: ", "green") + std::to_string(kitting_score->GetScore()) + "\n";
+        output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("Quadrants Summary\n", "yellow");
+        output += LogOutput("========================================\n", "yellow");
+
 
         auto quadrant1 = kitting_score->GetQuadrant1();
         auto quadrant2 = kitting_score->GetQuadrant2();
@@ -2089,47 +2155,99 @@ namespace ariac_plugins
 
         if (quadrant1 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 1\n";
-            output += "Quadrant score: " + std::to_string(quadrant1->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant1->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant1->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant1->GetIsFaulty() ? output += "Faulty part: Yes\n" : output += "Faulty part: No\n";
-            quadrant1->GetIsFlipped() ? output += "Flipped part: Yes\n" : output += "Flipped part: No\n";
+            output += LogOutput("\t-Quadrant: ", "green") + "1\n";
+            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant1->GetScore()) + "\n";
+            if (quadrant1->GetIsCorrectPartType())
+                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
+
+            if (quadrant1->GetIsCorrectPartColor())
+                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+
+            if (quadrant1->GetIsFaulty())
+                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+
+            if (quadrant1->GetIsFlipped())
+                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
         }
         if (quadrant2 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 2\n";
-            output += "Quadrant score: " + std::to_string(quadrant2->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant2->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant2->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant2->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            quadrant2->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
+            output += LogOutput("\t-Quadrant: ", "green") + "2\n";
+            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant2->GetScore()) + "\n";
+            if (quadrant2->GetIsCorrectPartType())
+                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
+
+            if (quadrant2->GetIsCorrectPartColor())
+                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+
+            if (quadrant2->GetIsFaulty())
+                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+
+            if (quadrant2->GetIsFlipped())
+                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
         }
         if (quadrant3 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 3\n";
-            output += "Quadrant score: " + std::to_string(quadrant3->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant3->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant3->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant3->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            quadrant3->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
+            output += LogOutput("\t-Quadrant: ", "green") + "3\n";
+            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant3->GetScore()) + "\n";
+            if (quadrant3->GetIsCorrectPartType())
+                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
+
+            if (quadrant3->GetIsCorrectPartColor())
+                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+
+            if (quadrant3->GetIsFaulty())
+                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+
+            if (quadrant3->GetIsFlipped())
+                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
         }
         if (quadrant4 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 4\n";
-            output += "Quadrant score: " + std::to_string(quadrant4->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant4->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant4->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant4->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            quadrant4->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
+            output += LogOutput("\t-Quadrant: ", "green") + "4\n";
+            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant4->GetScore()) + "\n";
+            if (quadrant4->GetIsCorrectPartType())
+                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
+
+            if (quadrant4->GetIsCorrectPartColor())
+                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+
+            if (quadrant4->GetIsFaulty())
+                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+
+            if (quadrant4->GetIsFlipped())
+                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
+            else
+                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
@@ -2389,7 +2507,7 @@ namespace ariac_plugins
             output += "----------------------------------------\n";
         }
 
-        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
         log_message_ += output;
     }
 
@@ -2470,7 +2588,7 @@ namespace ariac_plugins
             output += "----------------------------------------\n";
         }
 
-        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
         log_message_ += output;
     }
 
@@ -2627,10 +2745,8 @@ namespace ariac_plugins
                     else if (order_product.GetPart().GetType() == ariac_msgs::msg::Part::PUMP)
                     {
                         pump_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, is_faulty);
-                    }// auto number_of_products = kitting_order->GetKittingTask()->GetProducts().size();
-            // auto number_of_products = assembly_order->GetAssemblyTask()->GetProducts().size();
-            // auto number_of_products = combined_order->GetCombinedTask()->GetProducts().size();
-            // output += "Max Score: " + ComputeMaxScoreCombinedTask() + "\n";
+                    }
+
                     else if (order_product.GetPart().GetType() == ariac_msgs::msg::Part::REGULATOR)
                     {
                         regulator_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, is_faulty);
@@ -2765,7 +2881,47 @@ namespace ariac_plugins
         return true;
     }
     //==============================================================================
-    void TaskManagerPlugin::ComputeTrialScore()
+    // void TaskManagerPlugin::ComputeTrialScore()
+    // {
+    //     std::shared_ptr<ariac_common::KittingScore> kitting_score = nullptr;
+    //     std::shared_ptr<ariac_common::AssemblyScore> assembly_score = nullptr;
+    //     std::shared_ptr<ariac_common::CombinedScore> combined_score = nullptr;
+
+    //     std::shared_ptr<ariac_common::Order> kitting_order = nullptr;
+    //     std::shared_ptr<ariac_common::Order> assembly_order = nullptr;
+    //     std::shared_ptr<ariac_common::Order> combined_order = nullptr;
+
+    //     //vector of 
+
+    //     for (auto &order : impl_->all_orders_)
+    //     {
+    //         if (order->GetKittingScore())
+    //         {
+    //             kitting_order = order;
+    //             kitting_score = order->GetKittingScore();
+    //             impl_->trial_score_ += kitting_score->GetScore();
+    //         }
+
+    //         if (order->GetAssemblyScore())
+    //         {
+    //             assembly_order = order;
+    //             assembly_score = order->GetAssemblyScore();
+    //             impl_->trial_score_ += assembly_score->GetScore();
+    //         }
+
+    //         if (order->GetCombinedScore())
+    //         {
+    //             combined_order = order;
+    //             combined_score = order->GetCombinedScore();
+    //             impl_->trial_score_ += combined_score->GetScore();
+    //         }
+    //     }
+
+    //     impl_->PrintTrialScore(kitting_order, assembly_order, combined_order);
+    // }
+
+    //==============================================================================
+    void TaskManagerPluginPrivate::PrintTrialSummary()
     {
         std::shared_ptr<ariac_common::KittingScore> kitting_score = nullptr;
         std::shared_ptr<ariac_common::AssemblyScore> assembly_score = nullptr;
@@ -2775,32 +2931,119 @@ namespace ariac_plugins
         std::shared_ptr<ariac_common::Order> assembly_order = nullptr;
         std::shared_ptr<ariac_common::Order> combined_order = nullptr;
 
-        for (auto &order : impl_->all_orders_)
+        double kitting_submitted_time = 0.0;
+        double assembly_submitted_time = 0.0;
+        double combined_submitted_time = 0.0;
+
+        double kitting_completion_time = 0.0;
+        double assembly_completion_time = 0.0;
+        double combined_completion_time = 0.0;
+
+        // First parsing of the orders to compute the score for the whole trial
+        for (auto &order : all_orders_)
+        {
+            if (order->GetKittingScore())
+                trial_score_ += order->GetKittingScore()->GetScore();
+            if (order->GetAssemblyScore())
+                trial_score_ += order->GetAssemblyScore()->GetScore();
+            if (order->GetCombinedScore())
+                trial_score_ += order->GetCombinedScore()->GetScore();
+        }
+
+        // Second parsing of the orders to compute the completion time for the whole trial
+        // vector of doubles
+        std::vector<double> completion_times;
+        double max_score = 0;
+        for (auto &order : all_orders_)
         {
             if (order->GetKittingScore())
             {
                 kitting_order = order;
                 kitting_score = order->GetKittingScore();
-                impl_->trial_score_ += kitting_score->GetScore();
+                kitting_submitted_time = kitting_order->GetSubmittedTime();
+                kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
+                completion_times.push_back(kitting_completion_time);
+                max_score += ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size());
             }
-
             if (order->GetAssemblyScore())
             {
                 assembly_order = order;
                 assembly_score = order->GetAssemblyScore();
-                impl_->trial_score_ += assembly_score->GetScore();
+                assembly_submitted_time = assembly_order->GetSubmittedTime();
+                assembly_completion_time = assembly_submitted_time - assembly_order->GetAnnouncedTime();
+                completion_times.push_back(assembly_completion_time);
+                max_score += ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size());
             }
-
             if (order->GetCombinedScore())
             {
                 combined_order = order;
                 combined_score = order->GetCombinedScore();
-                impl_->trial_score_ += combined_score->GetScore();
+                combined_submitted_time = combined_order->GetSubmittedTime();
+                combined_completion_time = combined_submitted_time - combined_order->GetAnnouncedTime();
+                completion_times.push_back(combined_completion_time);
+                max_score += ComputeMaxScoreCombinedTask(combined_order->GetCombinedTask()->GetProducts().size());
             }
         }
+        // Get the max completion time
+        auto trial_completion_time = *std::max_element(completion_times.begin(), completion_times.end());
 
-        impl_->PrintTrialScore(kitting_order, assembly_order, combined_order);
+
+    
+        std::string output = "\n\n\n\n";
+        output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("Trial Summary\n", "yellow");
+        output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("Trial file: ", "green") + trial_name_ + "\n";
+        if (time_limit_> 0)
+            output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        else
+            output += LogOutput("Trial time limit: ", "green") + "No time limit\n";
+        // output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        output += LogOutput("Completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
+        output += LogOutput("Max score: ", "green") + std::to_string(max_score) + "\n";
+        output += LogOutput("Actual score: ", "green") + std::to_string((int)trial_score_) + "\n";
+        output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("Orders Summary\n", "yellow");
+        output += LogOutput("========================================\n", "yellow");
+
+        // Third parsing of the orders to display the resume of the trial
+
+        for (auto &order : all_orders_)
+        {
+            if (order->GetKittingScore())
+            {
+                kitting_order = order;
+                kitting_submitted_time = kitting_order->GetSubmittedTime();
+                kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
+                output += LogOutput("Order ID: ", "green") + kitting_order->GetId() + "\n";
+                output += LogOutput("\t-Order type: ", "green") + "Kitting\n";
+                output += LogOutput("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+                output += LogOutput("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+                output += LogOutput("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+                output += LogOutput("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
+                output += LogOutput("\t-Actual score: ", "green") + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
+            }
+            // if (order->GetAssemblyScore())
+            // {
+            //     assembly_order = order;
+            //     assembly_score = order->GetAssemblyScore();
+            //     assembly_submitted_time = assembly_order->GetSubmittedTime();
+            //     assembly_completion_time = assembly_submitted_time - assembly_order->GetAnnouncedTime();
+            //     completion_times.push_back(assembly_completion_time);
+            // }
+            // if (order->GetCombinedScore())
+            // {
+            //     combined_order = order;
+            //     combined_score = order->GetCombinedScore();
+            //     combined_submitted_time = combined_order->GetSubmittedTime();
+            //     combined_completion_time = combined_submitted_time - combined_order->GetAnnouncedTime();
+            //     completion_times.push_back(combined_completion_time);
+            // }
+        }
+        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        log_message_ += output;
     }
+
 
     //==============================================================================
     void TaskManagerPluginPrivate::PrintTrialScore(
@@ -2815,6 +3058,7 @@ namespace ariac_plugins
         double kitting_completion_time = 0.0;
         double assembly_completion_time = 0.0;
         double combined_completion_time = 0.0;
+
 
         if (kitting_order != nullptr)
         {
@@ -2835,57 +3079,60 @@ namespace ariac_plugins
         }
 
         auto trial_completion_time = std::max({kitting_submitted_time, assembly_submitted_time, combined_submitted_time});
-
+        // auto trial_max_score = ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size()) + ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size()) + ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size());
 
         // auto number_of_products = kitting_order->GetKittingTask()->GetProducts().size();
             // auto number_of_products = assembly_order->GetAssemblyTask()->GetProducts().size();
             // auto number_of_products = combined_order->GetCombinedTask()->GetProducts().size();
             // output += "Max Score: " + ComputeMaxScoreCombinedTask() + "\n";
 
-        std::string output = "";
-        output += "\n\n\n\n========================================\n";
-        output += "END OF TRIAL\n";
-        output += "========================================\n";
-        output += "Trial file: " + trial_name_ + "\n";
-        output += "Trial time limit: " + std::to_string(time_limit_) + "\n";
-        output += "Trial completion time: " + std::to_string(trial_completion_time) + "\n";
-        output += "Trial score: " + std::to_string((int)trial_score_) + "\n";
-        output += "========================================\n";
-        output += "ORDERS\n";
+        std::string output = "\n\n\n\n";
+        output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("END OF TRIAL\n", "yellow");
+        output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("Trial file: ", "green") + trial_name_ + "\n";
+        if (time_limit_> 0)
+            output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        else
+            output += LogOutput("Trial time limit: ", "green") + "No time limit\n";
+        // output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        output += LogOutput("Trial completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
+        output += LogOutput("Trial score: ", "green") + std::to_string((int)trial_score_) + "\n";
+        output += LogOutput("========================================\n", "yellow");
+        output += LogOutput("Orders\n", "yellow");
+        output += LogOutput("========================================\n", "yellow");
 
         if (kitting_order != nullptr)
         {
-            output += "========================================\n";
-            output += "Kitting: " + kitting_order->GetId() + "\n";
-            output += "Announcement time: " + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
-            output += "Submission time: " + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
-            output += "Completion time: " + std::to_string(kitting_completion_time) + "\n";
-            output += "Max Score: " + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
-            output += "Current Score: " + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
+            output += LogOutput("Order ID: ", "green") + kitting_order->GetId() + "\n";
+            output += LogOutput("\t-Order Type: ", "green") + "Kitting\n";
+            output += LogOutput("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+            output += LogOutput("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+            output += LogOutput("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+            output += LogOutput("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
+            output += LogOutput("\t-Actual Order Score: ", "green") + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
         }
 
         if (assembly_order != nullptr)
         {
-            output += "========================================\n";
-            output += "Assembly: " + assembly_order->GetId() + "\n";
-            output += "Announcement time: " + std::to_string(assembly_order->GetAnnouncedTime()) + "\n";
-            output += "Submission time: " + std::to_string(assembly_order->GetSubmittedTime()) + "\n";
-            output += "Completion time: " + std::to_string(assembly_completion_time) + "\n";
-            output += "Max Score: " + std::to_string(ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size())) + "\n";
-            output += "Current Score: " + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
-            
+            output += LogOutput("Order ID: ", "green") + assembly_order->GetId() + "\n";
+            output += LogOutput("\t-Order Type: ", "green") + "Assembly\n";
+            output += LogOutput("\t-Announcement time: ", "green") + std::to_string(assembly_order->GetAnnouncedTime()) + "\n";
+            output += LogOutput("\t-Submission time: ", "green") + std::to_string(assembly_order->GetSubmittedTime()) + "\n";
+            output += LogOutput("\t-Completion time: ", "green") + std::to_string(assembly_completion_time) + "\n";
+            output += LogOutput("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size())) + "\n";
+            output += LogOutput("\t-Actual Order Score: ", "green") + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
         }
 
         if (combined_order != nullptr)
         {
-            output += "========================================\n";
-            output += "Combined: " + combined_order->GetId() + "\n";
-            output += "Announcement time: " + std::to_string(combined_order->GetAnnouncedTime()) + "\n";
-            output += "Submission time: " + std::to_string(combined_order->GetSubmittedTime()) + "\n";
-            output += "Completion time: " + std::to_string(combined_completion_time) + "\n";
-            output += "Max Score: " + std::to_string(ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size())) + "\n";
-            output += "Current Score: " + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
-            
+            output += LogOutput("Order ID: ", "green") + combined_order->GetId() + "\n";
+            output += LogOutput("\t-Order Type: ", "green") + "Combined\n";
+            output += LogOutput("\t-Announcement time: ", "green") + std::to_string(combined_order->GetAnnouncedTime()) + "\n";
+            output += LogOutput("\t-Submission time: ", "green") + std::to_string(combined_order->GetSubmittedTime()) + "\n";
+            output += LogOutput("\t-Completion time: ", "green") + std::to_string(combined_completion_time) + "\n";
+            output += LogOutput("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size())) + "\n";
+            output += LogOutput("\t-Actual Order Score: ", "green") + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
@@ -2962,7 +3209,8 @@ namespace ariac_plugins
         response->message = "Competition ended successfully!";
 
         // Display the trial score
-        ComputeTrialScore();
+        // ComputeTrialScore();
+        impl_->PrintTrialSummary();
 
         return true;
     }

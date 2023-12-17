@@ -327,8 +327,7 @@ namespace ariac_common
                                         const KittingPart &obj)
         {
             out << "   ------" << std::endl;
-            out << "   Part: " << obj.part_ << std::endl;
-            out << "   Quadrant: " << obj.quadrant_;
+            out << "   Part: " << obj.part_ << "\tQuadrant: " << obj.quadrant_;
             return out;
         }
 
@@ -536,18 +535,18 @@ namespace ariac_common
         friend std::ostream &operator<<(std::ostream &out,
                                         const KittingTask &obj)
         {
-            out << "   Kitting Task" << std::endl;
-            out << "   ================" << std::endl;
+            // out << "   Kitting Task" << std::endl;
+            // out << "   ================" << std::endl;
 
-            out << "   AGV: " << obj.agv_number_ << std::endl;
-            out << "   Tray ID: " << obj.tray_id_ << std::endl;
+            out << "AGV: " << obj.agv_number_ << std::endl;
+            out << "Tray ID: " << obj.tray_id_ << std::endl;
 
             // Destination
-            out << "   Destination: " << ConvertDestinationToString(obj.destination_, obj.agv_number_) << std::endl;
+            out << "Destination: " << ConvertDestinationToString(obj.destination_, obj.agv_number_) << std::endl;
 
             // Products
-            out << "   ================" << std::endl;
-            out << "   Products: " << std::endl;
+            // out << "   ================" << std::endl;
+            out << "Products: " << std::endl;
             for (const auto &product : obj.products_)
             {
                 out << product << std::endl;
@@ -1617,7 +1616,7 @@ namespace ariac_common
                                         const Order &obj)
         {
             out << "=================" << std::endl;
-            out << "Announcing Order " << obj.id_ << std::endl;
+            out << "Order ID: " << obj.id_ << std::endl;
             out << "=================" << std::endl;
             if (obj.type_ == ariac_msgs::msg::Order::KITTING)
                 out << "Type: Kitting" << std::endl;

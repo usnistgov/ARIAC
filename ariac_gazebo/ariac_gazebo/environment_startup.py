@@ -231,7 +231,7 @@ class EnvironmentStartup(Node):
                 self.get_logger().fatal("Unable to find ariac_logs directory")
                 return
 
-            self.trial_log_folder = parent_folder + message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%I_%M_%S") + "/"
+            self.trial_log_folder = parent_folder + message.trial_name.split('.')[0] + "_" + time.strftime("%Y_%m_%d_%H_%M_%S") + "/"
 
             # ariac_msgs/msg/Trial.msg: log_folder_path
             message.log_folder_path = self.trial_log_folder
@@ -250,7 +250,7 @@ class EnvironmentStartup(Node):
             self.get_logger().fatal("Unable to create log folder")
 
         self.get_logger().info(bcolors.OKCYAN + "ARIAC logs for this trial can be found at:" + bcolors.ENDC)
-        self.get_logger().info(bcolors.OKCYAN + '  ' + self.trial_log_folder + bcolors.ENDC)
+        self.get_logger().info(bcolors.OKCYAN + self.trial_log_folder + bcolors.ENDC)
 
         # publish to topic /ariac/trial_config
         self.trial_info_pub.publish(message)

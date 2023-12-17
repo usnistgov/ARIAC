@@ -277,11 +277,12 @@ namespace ariac_plugins
 
         //============== Score Displays =================
         /*!< Print details of the score for an assembly task. */
-        void PrintAssemblyScore(std::shared_ptr<ariac_common::AssemblyScore> assembly_score);
+        void PrintAssemblyScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
         /*!< Print details of the score for a combined task. */
         void PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score);
         /*!< Print details of the score for a kitting task. */
-        void PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score, int expected_number_of_parts);
+        // void PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score, int expected_number_of_parts, std::string& output);
+        void PrintKittingScore(std::shared_ptr<ariac_common::Order> _order, bool _summary=false);
         /*!< Print details of the score for the trial. */
         void PrintTrialScore(
             std::shared_ptr<ariac_common::Order> kitting_order,
@@ -334,17 +335,20 @@ namespace ariac_plugins
         int ComputeMaxScoreAssemblyTask(int expected_number_of_parts);
         int ComputeMaxScoreCombinedTask(int expected_number_of_parts);
         void DisplayTaskManagerInfo(std::string message, bool once = false, std::string color="red");
-        std::string LogOutput(std::string message, std::string color="red");
+        std::string TerminalDisplay(std::string message, std::string color="red");
+        void TrialLogOutput(std::string label, std::string result="");
 
 
         /*!< Message to write in the log file. */
         std::string log_message_ = "";
     };
+
     //==============================================================================
     TaskManagerPlugin::TaskManagerPlugin()
         : impl_(std::make_unique<TaskManagerPluginPrivate>())
     {
     }
+
     //==============================================================================
     TaskManagerPlugin::~TaskManagerPlugin()
     {
@@ -352,7 +356,13 @@ namespace ariac_plugins
     }
 
     //==============================================================================
-    std::string TaskManagerPluginPrivate::LogOutput(std::string message, std::string color){
+    void TaskManagerPluginPrivate::TrialLogOutput(std::string label, std::string result){
+        log_message_ += label + result;
+    }
+
+
+    //==============================================================================
+    std::string TaskManagerPluginPrivate::TerminalDisplay(std::string message, std::string color){
         std::string color_code = "";
 
         if (color == "red")
@@ -373,6 +383,9 @@ namespace ariac_plugins
             color_code = "\033[1;31m";
         
         auto output = color_code + message + "\033[0m";
+
+        // log_message_ += message;
+        
         return output;
     }
 
@@ -434,32 +447,18 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPluginPrivate::WriteToAriacLogFile()
     {
-        // Get the environment variable INSIDE_DOCKER
-        auto inside_docker = std::getenv("INSIDE_DOCKER");
-
-        // compare inside_docker to "ok"
-        if (inside_docker == NULL)
-        {
-            // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "INSIDE_DOCKER environment variable not set");
-            return;
-        }
-
-
-        // remove .yaml from trial name
-        if (trial_name_.length() > 5)
-        {
-            trial_name_.erase(trial_name_.length() - 5);
-        }
-
+        // impl_->ariac_log_folder_
         // Create a file name with the trial name
-        std::string file_name = trial_name_ + ".txt";
-        auto log_file_path = ariac_log_folder_ + file_name;
-
+        std::string file_name = "trial_log.txt";
+        auto log_file_path = ariac_log_folder_ +  file_name;
+        // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
         // Open the log file
-        RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
+        DisplayTaskManagerInfo("Log file generated at: ");
+        DisplayTaskManagerInfo(log_file_path);
         auto log_file = std::ofstream(log_file_path);
         // Write to log file
         log_file << log_message_;
+        
         // Close the log file
         log_file.close();
     }
@@ -1489,9 +1488,9 @@ namespace ariac_plugins
 
         // This attribute is used to keep track of the total number of orders
         impl_->total_orders_ = impl_->time_based_orders_.size() + impl_->on_part_placement_orders_.size() + impl_->on_order_submission_orders_.size();
-        RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of temporal orders: " << impl_->time_based_orders_.size());
-        RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of part place orders: " << impl_->on_part_placement_orders_.size());
-        RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of submission orders: " << impl_->on_order_submission_orders_.size());
+        // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of temporal orders: " << impl_->time_based_orders_.size());
+        // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of part place orders: " << impl_->on_part_placement_orders_.size());
+        // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Number of submission orders: " << impl_->on_order_submission_orders_.size());
 
         // Store challenges to be processed later
         if (_msg->challenges.size() > 0)
@@ -2080,13 +2079,18 @@ namespace ariac_plugins
         // Set the kitting score for this order
         _order->SetKittingScore(kitting_score);
 
-        std::string output = "";
-        output += LogOutput("\n========================================\n", "yellow");
-        output += LogOutput("Order Submitted\n", "yellow");
-        output += LogOutput("========================================\n", "yellow");
-        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        // std::string output = "";
+        // output += TerminalDisplay("\n========================================\n", "yellow");
+        // output += TerminalDisplay("Order Submitted\n", "yellow");
+        // output += TerminalDisplay("========================================\n", "yellow");
+        // TrialLogOutput("\n========================================\n");
+        // TrialLogOutput("Order Submitted\n");
+        // TrialLogOutput("========================================\n");
 
-        PrintKittingScore(kitting_score, expected_number_of_parts);
+        // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+
+        // PrintKittingScore(kitting_score, expected_number_of_parts, output);
+        PrintKittingScore(_order);
 
         // Clear the AGV of parts and kit tray
         for (std::string name: models_on_agv_[kitting_task->GetAgvNumber()]) {
@@ -2120,32 +2124,84 @@ namespace ariac_plugins
     }
 
     //==============================================================================
-    void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score, int expected_number_of_parts)
+    void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::Order> _order, bool _summary)
     {
+        auto kitting_score = _order->GetKittingScore();
+        auto kitting_task = _order->GetKittingTask();
+        auto expected_number_of_parts = kitting_task->GetProducts().size();
+        // order priority
+        auto order_priority = _order->IsPriority();
 
+        // Get the order that was submitted
+        auto kitting_order = _order;
+        auto kitting_submitted_time = kitting_order->GetSubmittedTime();
+        auto kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
         // Get the number of parts expected in this order
         // This is used to compute the max score for this order
         auto order_id = kitting_score->GetOrderId();
         
-
         std::string output = "";
-        // output += LogOutput("\n========================================\n", "yellow");
-        // output += LogOutput("Order Submitted\n", "yellow");
-        // output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("\n\t-Order ID: ", "green") + kitting_score->GetOrderId() + "\n";
-        output += LogOutput("\t-Order type: ", "green") + "Kitting\n";
-        output += LogOutput("\t-AGV: ", "green") + std::to_string(kitting_score->GetAGV()) + "\n";
-        output += LogOutput("\t-Tray score: ", "green") + std::to_string(kitting_score->GetTrayScore()) + "\n";
-        if (kitting_score->GetDestinationScore() == 1)
-            output += LogOutput("\t-Correct destination? ", "green") + "yes\n";
+
+    
+        output += TerminalDisplay("\n========================================\n", "yellow");
+        output += TerminalDisplay("Order Submitted\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+    
+    
+
+        output += TerminalDisplay("-Order ID: ", "green") + kitting_score->GetOrderId() + "\n";
+        output += TerminalDisplay("\t-Type: ", "green") + "Kitting\n";
+        if (order_priority)
+            output += TerminalDisplay("\t-Priority: ", "green") + "High\n";
         else
-            output += LogOutput("\t-Correct destination? ", "green") + "no\n";
-        output += LogOutput("\t-Bonus: ", "green") + std::to_string(kitting_score->GetBonus()) + "\n";
-        output += LogOutput("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(expected_number_of_parts)) + "\n";
-        output += LogOutput("\t-Actual score: ", "green") + std::to_string(kitting_score->GetScore()) + "\n";
-        output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("Quadrants Summary\n", "yellow");
-        output += LogOutput("========================================\n", "yellow");
+            output += TerminalDisplay("\t-Priority: ", "green") + "Regular\n";
+
+        output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+        output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+        output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+                
+        output += TerminalDisplay("\t-AGV: ", "green") + std::to_string(kitting_score->GetAGV()) + "\n";
+        output += TerminalDisplay("\t-Tray score: ", "green") + std::to_string(kitting_score->GetTrayScore()) + "\n";
+        if (kitting_score->GetDestinationScore() == 1)
+            output += TerminalDisplay("\t-Correct destination? ", "green") + "Yes\n";
+        else
+            output += TerminalDisplay("\t-Correct destination? ", "green") + "No\n";
+        output += TerminalDisplay("\t-Bonus: ", "green") + std::to_string(kitting_score->GetBonus()) + "\n";
+        output += TerminalDisplay("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(expected_number_of_parts)) + "\n";
+        output += TerminalDisplay("\t-Actual score: ", "green") + std::to_string(kitting_score->GetScore()) + "\n";
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        output += TerminalDisplay("\tQuadrants Summary\n", "yellow");
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        
+
+        // ----------------------------------------
+        // Log the trial summary
+        // ----------------------------------------
+
+        if (_summary){
+            TrialLogOutput("-Order ID: ", kitting_score->GetOrderId() + "\n");
+            TrialLogOutput("\t-Type: ", "Kitting\n");
+            if (order_priority)
+                        TrialLogOutput("\t-Priority: ", "High\n");
+            else
+                output += TerminalDisplay("\t-Priority: ", "Regular\n");
+            TrialLogOutput("\t-Announcement time: ", std::to_string(kitting_order->GetAnnouncedTime()) + "\n");
+            TrialLogOutput("\t-Submission time: ", std::to_string(kitting_order->GetSubmittedTime()) + "\n");
+            TrialLogOutput("\t-Completion time: ", std::to_string(kitting_completion_time) + "\n");
+            TrialLogOutput("\t-AGV: ", std::to_string(kitting_score->GetAGV()) + "\n");
+            TrialLogOutput("\t-Tray score: ", std::to_string(kitting_score->GetTrayScore()) + "\n");
+            if (kitting_score->GetDestinationScore() == 1)
+                TrialLogOutput("\t-Correct destination? ", "Yes\n");
+            else
+                TrialLogOutput("\t-Correct destination? ", "No\n");
+            TrialLogOutput("\t-Bonus: ", std::to_string(kitting_score->GetBonus()) + "\n");
+            TrialLogOutput("\t-Max score: ", std::to_string(ComputeMaxScoreKittingTask(expected_number_of_parts)) + "\n");
+            TrialLogOutput("\t-Actual score: ", std::to_string(kitting_score->GetScore()) + "\n");
+            TrialLogOutput("\t-----------------------\n");
+            TrialLogOutput("\tQuadrants Summary\n");
+            TrialLogOutput("\t-----------------------\n");
+        }
+        
 
 
         auto quadrant1 = kitting_score->GetQuadrant1();
@@ -2155,103 +2211,217 @@ namespace ariac_plugins
 
         if (quadrant1 != nullptr)
         {
-            output += LogOutput("\t-Quadrant: ", "green") + "1\n";
-            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant1->GetScore()) + "\n";
+            
+            output += TerminalDisplay("\t-Quadrant: ", "green") + "1\n";
+            output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant1->GetScore()) + "\n";
             if (quadrant1->GetIsCorrectPartType())
-                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
+                output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
             else
-                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
+                output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
 
             if (quadrant1->GetIsCorrectPartColor())
-                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
+                output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
             else
-                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+                output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
 
             if (quadrant1->GetIsFaulty())
-                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
+                output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
             else
-                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+                output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
 
             if (quadrant1->GetIsFlipped())
-                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
+                output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
             else
-                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
+                output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+        
+
+
+            // Write in the log file
+            if (_summary){
+                TrialLogOutput("\t-Quadrant: ", "1\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant1->GetScore()) + "\n");
+                
+                if (quadrant1->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant1->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant1->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant1->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
         if (quadrant2 != nullptr)
         {
-            output += LogOutput("\t-Quadrant: ", "green") + "2\n";
-            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant2->GetScore()) + "\n";
-            if (quadrant2->GetIsCorrectPartType())
-                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
 
-            if (quadrant2->GetIsCorrectPartColor())
-                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+                output += TerminalDisplay("\t-Quadrant: ", "green") + "2\n";
+                output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant2->GetScore()) + "\n";
+                if (quadrant2->GetIsCorrectPartType())
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
 
-            if (quadrant2->GetIsFaulty())
-                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+                if (quadrant2->GetIsCorrectPartColor())
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
 
-            if (quadrant2->GetIsFlipped())
-                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
+                if (quadrant2->GetIsFaulty())
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
+
+                if (quadrant2->GetIsFlipped())
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+            
+
+            // Write in the log file
+            if (_summary){
+                TrialLogOutput("\t-Quadrant: ", "2\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant2->GetScore()) + "\n");
+                
+                if (quadrant2->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant2->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant2->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant2->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
         if (quadrant3 != nullptr)
         {
-            output += LogOutput("\t-Quadrant: ", "green") + "3\n";
-            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant3->GetScore()) + "\n";
-            if (quadrant3->GetIsCorrectPartType())
-                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
+     
+                output += TerminalDisplay("\t-Quadrant: ", "green") + "3\n";
+                output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant3->GetScore()) + "\n";
+                if (quadrant3->GetIsCorrectPartType())
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
 
-            if (quadrant3->GetIsCorrectPartColor())
-                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+                if (quadrant3->GetIsCorrectPartColor())
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
 
-            if (quadrant3->GetIsFaulty())
-                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+                if (quadrant3->GetIsFaulty())
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
 
-            if (quadrant3->GetIsFlipped())
-                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
+                if (quadrant3->GetIsFlipped())
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+            
+
+            // Write in the log file
+            if (_summary){
+                TrialLogOutput("\t-Quadrant: ", "3\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant3->GetScore()) + "\n");
+                
+                if (quadrant3->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant3->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant3->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant3->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
         if (quadrant4 != nullptr)
         {
-            output += LogOutput("\t-Quadrant: ", "green") + "4\n";
-            output += LogOutput("\t-Score: ", "green") + std::to_string(quadrant4->GetScore()) + "\n";
-            if (quadrant4->GetIsCorrectPartType())
-                output += LogOutput("\t-Correct part type? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Correct part type? ", "green") + "no\n";
+                output += TerminalDisplay("\t-Quadrant: ", "green") + "4\n";
+                output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant4->GetScore()) + "\n";
+                if (quadrant4->GetIsCorrectPartType())
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
 
-            if (quadrant4->GetIsCorrectPartColor())
-                output += LogOutput("\t-Correct part color? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Correct part color? ", "green") + "no\n";
+                if (quadrant4->GetIsCorrectPartColor())
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
 
-            if (quadrant4->GetIsFaulty())
-                output += LogOutput("\t-Faulty part? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Faulty part? ", "green") + "no\n";
+                if (quadrant4->GetIsFaulty())
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
 
-            if (quadrant4->GetIsFlipped())
-                output += LogOutput("\t-Flipped part? ", "green") + "yes\n";
-            else
-                output += LogOutput("\t-Flipped part? ", "green") + "no\n";
+                if (quadrant4->GetIsFlipped())
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+
+
+            // Write in the log file
+            if (_summary){
+                TrialLogOutput("\t-Quadrant: ", "4\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant4->GetScore()) + "\n");
+                
+                if (quadrant4->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant4->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant4->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant4->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
 
-        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        if (!_summary){
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        }
+        // log_message_ += output;
     }
 
     //==============================================================================
@@ -2431,13 +2601,56 @@ namespace ariac_plugins
         _order->SetAssemblyScore(assembly_score);
 
         // Display the score in the terminal
-        PrintAssemblyScore(assembly_score);
+        PrintAssemblyScore(_order);
     }
 
     //==============================================================================
-    void TaskManagerPluginPrivate::PrintAssemblyScore(std::shared_ptr<ariac_common::AssemblyScore> assembly_score)
+    void TaskManagerPluginPrivate::PrintAssemblyScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false)
     {
+        auto assembly_score = _order->GetAssemblyScore();
+        auto assembly_task = _order->GetAssemblyTask();
+        // order priority
+        auto order_priority = _order->IsPriority();
+
+
         std::string output = "";
+
+    
+        output += TerminalDisplay("\n========================================\n", "yellow");
+        output += TerminalDisplay("Order Submitted\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+    
+    
+
+        output += TerminalDisplay("-Order ID: ", "green") + assembly_score->GetOrderId() + "\n";
+        output += TerminalDisplay("\t-Type: ", "green") + "Assembly\n";
+        if (order_priority)
+            output += TerminalDisplay("\t-Priority: ", "green") + "High\n";
+        else
+            output += TerminalDisplay("\t-Priority: ", "green") + "Regular\n";
+
+        output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+        output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+        output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+                
+        output += TerminalDisplay("\t-AGV: ", "green") + std::to_string(kitting_score->GetAGV()) + "\n";
+        output += TerminalDisplay("\t-Tray score: ", "green") + std::to_string(kitting_score->GetTrayScore()) + "\n";
+        if (kitting_score->GetDestinationScore() == 1)
+            output += TerminalDisplay("\t-Correct destination? ", "green") + "Yes\n";
+        else
+            output += TerminalDisplay("\t-Correct destination? ", "green") + "No\n";
+        output += TerminalDisplay("\t-Bonus: ", "green") + std::to_string(kitting_score->GetBonus()) + "\n";
+        output += TerminalDisplay("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(expected_number_of_parts)) + "\n";
+        output += TerminalDisplay("\t-Actual score: ", "green") + std::to_string(kitting_score->GetScore()) + "\n";
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        output += TerminalDisplay("\tQuadrants Summary\n", "yellow");
+        output += TerminalDisplay("\t-----------------------\n", "yellow");   
+        
+
+
+
+
+
         output += "\n========================================\n";
         output += "Order: " + assembly_score->GetOrderId() + "\n";
         output += "Type: Assembly\n";
@@ -2508,7 +2721,7 @@ namespace ariac_plugins
         }
 
         // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        // log_message_ += output;
     }
 
     //==============================================================================
@@ -2589,7 +2802,7 @@ namespace ariac_plugins
         }
 
         // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        // log_message_ += output;
     }
 
     //==============================================================================
@@ -2988,49 +3201,72 @@ namespace ariac_plugins
         auto trial_completion_time = *std::max_element(completion_times.begin(), completion_times.end());
 
 
-    
-        std::string output = "\n\n\n\n";
-        output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("Trial Summary\n", "yellow");
-        output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("Trial file: ", "green") + trial_name_ + "\n";
+        // ----------------------------------------
+        // Display the trial summary in the terminal
+        // ----------------------------------------
+        std::string output = "\n";
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Trial Summary\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Trial file: ", "green") + trial_name_ + "\n";
         if (time_limit_> 0)
-            output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+            output += TerminalDisplay("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
         else
-            output += LogOutput("Trial time limit: ", "green") + "No time limit\n";
-        // output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
-        output += LogOutput("Completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
-        output += LogOutput("Max score: ", "green") + std::to_string(max_score) + "\n";
-        output += LogOutput("Actual score: ", "green") + std::to_string((int)trial_score_) + "\n";
-        output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("Orders Summary\n", "yellow");
-        output += LogOutput("========================================\n", "yellow");
+            output += TerminalDisplay("Trial time limit: ", "green") + "No time limit\n";
+        output += TerminalDisplay("Completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
+        output += TerminalDisplay("Max score: ", "green") + std::to_string(max_score) + "\n";
+        output += TerminalDisplay("Actual score: ", "green") + std::to_string((int)trial_score_) + "\n";
+        // output += TerminalDisplay("========================================\n", "yellow");
+        // output += TerminalDisplay("Orders Summary\n", "yellow");
+        // output += TerminalDisplay("========================================\n", "yellow");
+
+        // ----------------------------------------
+        // Log the trial summary
+        // ----------------------------------------
+        TrialLogOutput("========================================\n");
+        TrialLogOutput("Trial Summary\n");
+        TrialLogOutput("========================================\n");
+        TrialLogOutput("Trial file: ", trial_name_ + "\n");
+        if (time_limit_> 0)
+            TrialLogOutput("Trial time limit: ", std::to_string(time_limit_) + "\n");
+        else
+            TrialLogOutput("Trial time limit: ", "No time limit\n");
+        TrialLogOutput("Completion time: ", std::to_string(trial_completion_time) + "\n");
+        TrialLogOutput("Max score: ", std::to_string(max_score) + "\n");
+        TrialLogOutput("Actual score: ", std::to_string((int)trial_score_) + "\n");
+        TrialLogOutput("========================================\n");
+        TrialLogOutput("Orders Summary\n");
+        TrialLogOutput("========================================\n");
+
+
+
 
         // Third parsing of the orders to display the resume of the trial
-
         for (auto &order : all_orders_)
         {
             if (order->GetKittingScore())
             {
-                kitting_order = order;
-                kitting_submitted_time = kitting_order->GetSubmittedTime();
-                kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
-                output += LogOutput("Order ID: ", "green") + kitting_order->GetId() + "\n";
-                output += LogOutput("\t-Order type: ", "green") + "Kitting\n";
-                output += LogOutput("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
-                output += LogOutput("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
-                output += LogOutput("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
-                output += LogOutput("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
-                output += LogOutput("\t-Actual score: ", "green") + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
+                PrintKittingScore(order, true);
+                // kitting_order = order;
+                // kitting_submitted_time = kitting_order->GetSubmittedTime();
+                // kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
+                // output += TerminalDisplay("Order ID: ", "green") + kitting_order->GetId() + "\n";
+                // output += TerminalDisplay("\t-Order type: ", "green") + "Kitting\n";
+                // output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+                // output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+                // output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+                // output += TerminalDisplay("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
+                // output += TerminalDisplay("\t-Actual score: ", "green") + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
             }
-            // if (order->GetAssemblyScore())
-            // {
-            //     assembly_order = order;
-            //     assembly_score = order->GetAssemblyScore();
-            //     assembly_submitted_time = assembly_order->GetSubmittedTime();
-            //     assembly_completion_time = assembly_submitted_time - assembly_order->GetAnnouncedTime();
-            //     completion_times.push_back(assembly_completion_time);
-            // }
+            if (order->GetAssemblyScore())
+            {
+                PrintAssemblyScore(order, true);
+                // assembly_order = order;
+                // assembly_score = order->GetAssemblyScore();
+                // assembly_submitted_time = assembly_order->GetSubmittedTime();
+                // assembly_completion_time = assembly_submitted_time - assembly_order->GetAnnouncedTime();
+                // completion_times.push_back(assembly_completion_time);
+            }
             // if (order->GetCombinedScore())
             // {
             //     combined_order = order;
@@ -3041,7 +3277,8 @@ namespace ariac_plugins
             // }
         }
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        // log_message_ += output;
+        WriteToAriacLogFile();
     }
 
 
@@ -3087,56 +3324,56 @@ namespace ariac_plugins
             // output += "Max Score: " + ComputeMaxScoreCombinedTask() + "\n";
 
         std::string output = "\n\n\n\n";
-        output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("END OF TRIAL\n", "yellow");
-        output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("Trial file: ", "green") + trial_name_ + "\n";
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("END OF TRIAL\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Trial file: ", "green") + trial_name_ + "\n";
         if (time_limit_> 0)
-            output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+            output += TerminalDisplay("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
         else
-            output += LogOutput("Trial time limit: ", "green") + "No time limit\n";
-        // output += LogOutput("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
-        output += LogOutput("Trial completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
-        output += LogOutput("Trial score: ", "green") + std::to_string((int)trial_score_) + "\n";
-        output += LogOutput("========================================\n", "yellow");
-        output += LogOutput("Orders\n", "yellow");
-        output += LogOutput("========================================\n", "yellow");
+            output += TerminalDisplay("Trial time limit: ", "green") + "No time limit\n";
+        // output += TerminalDisplay("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        output += TerminalDisplay("Trial completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
+        output += TerminalDisplay("Trial score: ", "green") + std::to_string((int)trial_score_) + "\n";
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Orders\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
 
         if (kitting_order != nullptr)
         {
-            output += LogOutput("Order ID: ", "green") + kitting_order->GetId() + "\n";
-            output += LogOutput("\t-Order Type: ", "green") + "Kitting\n";
-            output += LogOutput("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
-            output += LogOutput("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
-            output += LogOutput("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
-            output += LogOutput("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
-            output += LogOutput("\t-Actual Order Score: ", "green") + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
+            output += TerminalDisplay("Order ID: ", "green") + kitting_order->GetId() + "\n";
+            output += TerminalDisplay("\t-Order Type: ", "green") + "Kitting\n";
+            output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+            output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+            output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+            output += TerminalDisplay("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
+            output += TerminalDisplay("\t-Actual Order Score: ", "green") + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
         }
 
         if (assembly_order != nullptr)
         {
-            output += LogOutput("Order ID: ", "green") + assembly_order->GetId() + "\n";
-            output += LogOutput("\t-Order Type: ", "green") + "Assembly\n";
-            output += LogOutput("\t-Announcement time: ", "green") + std::to_string(assembly_order->GetAnnouncedTime()) + "\n";
-            output += LogOutput("\t-Submission time: ", "green") + std::to_string(assembly_order->GetSubmittedTime()) + "\n";
-            output += LogOutput("\t-Completion time: ", "green") + std::to_string(assembly_completion_time) + "\n";
-            output += LogOutput("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size())) + "\n";
-            output += LogOutput("\t-Actual Order Score: ", "green") + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
+            output += TerminalDisplay("Order ID: ", "green") + assembly_order->GetId() + "\n";
+            output += TerminalDisplay("\t-Order Type: ", "green") + "Assembly\n";
+            output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(assembly_order->GetAnnouncedTime()) + "\n";
+            output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(assembly_order->GetSubmittedTime()) + "\n";
+            output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(assembly_completion_time) + "\n";
+            output += TerminalDisplay("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size())) + "\n";
+            output += TerminalDisplay("\t-Actual Order Score: ", "green") + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
         }
 
         if (combined_order != nullptr)
         {
-            output += LogOutput("Order ID: ", "green") + combined_order->GetId() + "\n";
-            output += LogOutput("\t-Order Type: ", "green") + "Combined\n";
-            output += LogOutput("\t-Announcement time: ", "green") + std::to_string(combined_order->GetAnnouncedTime()) + "\n";
-            output += LogOutput("\t-Submission time: ", "green") + std::to_string(combined_order->GetSubmittedTime()) + "\n";
-            output += LogOutput("\t-Completion time: ", "green") + std::to_string(combined_completion_time) + "\n";
-            output += LogOutput("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size())) + "\n";
-            output += LogOutput("\t-Actual Order Score: ", "green") + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
+            output += TerminalDisplay("Order ID: ", "green") + combined_order->GetId() + "\n";
+            output += TerminalDisplay("\t-Order Type: ", "green") + "Combined\n";
+            output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(combined_order->GetAnnouncedTime()) + "\n";
+            output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(combined_order->GetSubmittedTime()) + "\n";
+            output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(combined_completion_time) + "\n";
+            output += TerminalDisplay("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size())) + "\n";
+            output += TerminalDisplay("\t-Actual Order Score: ", "green") + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        // log_message_ += output;
         WriteToAriacLogFile();
         // WriteToLog();
     }

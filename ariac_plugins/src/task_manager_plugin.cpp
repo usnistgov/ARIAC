@@ -276,13 +276,13 @@ namespace ariac_plugins
         void Station4SensorCallback(ConstLogicalCameraImagePtr &_msg);
 
         //============== Score Displays =================
+        /*!< Print details of the score for a kitting task. */
+        void PrintKittingScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
         /*!< Print details of the score for an assembly task. */
         void PrintAssemblyScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
         /*!< Print details of the score for a combined task. */
         void PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score);
-        /*!< Print details of the score for a kitting task. */
-        // void PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score, int expected_number_of_parts, std::string& output);
-        void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output, bool _terminal_display)
+        
 
         /*!< Print details of the score for the trial. */
         void PrintTrialScore(
@@ -2599,7 +2599,7 @@ namespace ariac_plugins
         // Set the score for this assembly task
         _order->SetAssemblyScore(assembly_score);
 
-        // Display the score in the terminal
+        // Display the score in the terminal only
         PrintAssemblyScore(_order, false, true);
     }
 
@@ -2643,7 +2643,7 @@ namespace ariac_plugins
         //----------------------------------------
         // Log outputs
         //----------------------------------------
-        if (_terminal_display){
+        if (_log_output){
             TrialLogOutput("-Order ID: ", assembly_score->GetOrderId() + "\n");
             TrialLogOutput("\t-Type: ", "Assembly\n");
              if (order_priority)
@@ -2692,7 +2692,7 @@ namespace ariac_plugins
             //----------------------------------------
             // Log outputs
             //----------------------------------------
-            if (_terminal_display){
+            if (_log_output){
                 TrialLogOutput("\t-Part: ", "[" + battery_type + "," + battery_color + "]\n");
                 TrialLogOutput("\t\t-Part score: ", std::to_string(battery->GetScore()) + "\n");
                 TrialLogOutput("\t\t-Correct type: ", "Yes\n");
@@ -2737,7 +2737,7 @@ namespace ariac_plugins
         //----------------------------------------
             // Log outputs
             //----------------------------------------
-            if (_terminal_display){
+            if (_log_output){
                 TrialLogOutput("\t-Part: ", "[" + pump_type + "," + pump_color + "]\n");
                 TrialLogOutput("\t\t-Part score: ", std::to_string(pump->GetScore()) + "\n");
                 TrialLogOutput("\t\t-Correct type: ", "Yes\n");
@@ -2784,7 +2784,7 @@ namespace ariac_plugins
             //----------------------------------------
             // Log outputs
             //----------------------------------------
-            if (_terminal_display){
+            if (_log_output){
                 TrialLogOutput("\t-Part: ", "[" + regulator_type + "," + regulator_color + "]\n");
                 TrialLogOutput("\t\t-Part score: ", std::to_string(regulator->GetScore()) + "\n");
                 TrialLogOutput("\t\t-Correct type: ", "Yes\n");
@@ -2829,7 +2829,7 @@ namespace ariac_plugins
             //----------------------------------------
             // Log outputs
             //----------------------------------------
-            if (_terminal_display){
+            if (_log_output){
                 TrialLogOutput("\t-Part: ", "[" + sensor_type + "," + sensor_color + "]\n");
                 TrialLogOutput("\t\t-Part score: ", std::to_string(sensor->GetScore()) + "\n");
                 TrialLogOutput("\t\t-Correct type: ", "Yes\n");
@@ -3347,9 +3347,9 @@ namespace ariac_plugins
         output += TerminalDisplay("Completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
         output += TerminalDisplay("Max score: ", "green") + std::to_string(max_score) + "\n";
         output += TerminalDisplay("Actual score: ", "green") + std::to_string((int)trial_score_) + "\n";
-        output += TerminalDisplay("========================================\n", "yellow");
-        output += TerminalDisplay("Orders Summary\n", "yellow");
-        output += TerminalDisplay("========================================\n", "yellow");
+        // output += TerminalDisplay("========================================\n", "yellow");
+        // output += TerminalDisplay("Orders Summary\n", "yellow");
+        // output += TerminalDisplay("========================================\n", "yellow");
 
         // ----------------------------------------
         // Log the trial summary
@@ -3377,11 +3377,12 @@ namespace ariac_plugins
         {
             if (order->GetKittingScore())
             {
-                PrintKittingScore(order, true, true);
+                PrintKittingScore(order, true, false);
             }
             if (order->GetAssemblyScore())
             {
-                PrintAssemblyScore(order, true, true);
+                // Only log the result (no terminal display)
+                PrintAssemblyScore(order, true, false);
             }
             // if (order->GetCombinedScore())
             // {

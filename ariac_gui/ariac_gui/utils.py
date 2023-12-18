@@ -38,7 +38,7 @@ SENSORS = ["break_beam", "proximity", "laser_profiler", "lidar", "camera", "logi
 ROBOTS = ["floor_robot", "ceiling_robot"]
 BEHAVIORS = ["antagonistic","indifferent","helpful"]
 CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction","human"]
-
+AGV_LIST = [f"agv{i}" for i in range(1,5)]
 class BinPart():
     def __init__(self,color = "green", pType = "battery", rotation = "", flipped = ""):
         self.part= PartMsg()
@@ -61,15 +61,15 @@ class ConveyorPart():
 
 class AGVPart():
     def __init__(self,color, pType, agv, quadrant, rotation):
-        part = PartMsg()
-        part.color = _part_color_ints[color.upper()]
-        part.type = _part_type_ints[pType.upper()]
+        self.part = PartMsg()
+        self.part.color = _part_color_ints[color.upper()]
+        self.part.type = _part_type_ints[pType.upper()]
         self.agv = agv
         self.quadrant = quadrant
         self.rotation = rotation
 
 class CompetitionClass():
-    def __init__(self, time_limit, tray_ids, slots, assembly_insert_rotations, bin_dict, current_bin_parts, conveyor_active, spawn_rate, conveyor_order,
+    def __init__(self, time_limit, tray_ids, slots, assembly_insert_rotations, agv_parts, bin_dict, current_bin_parts, conveyor_active, spawn_rate, conveyor_order,
                  conveyor_parts_to_spawn, current_conveyor_parts, orders, challenges):
         self.competition = {}
 
@@ -80,6 +80,8 @@ class CompetitionClass():
         self.competition["kitting_trays"]["slots"] = slots
 
         self.competition["assembly_insert_rotations"] = assembly_insert_rotations
+
+        self.competition["agv_parts"] = agv_parts
 
         self.competition["current_bin_parts"] = current_bin_parts
         self.competition["bin_parts"] = bin_dict
@@ -176,6 +178,14 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
     except:
         pass
     
+    agv_parts = []
+    try:
+        for agv in yaml_dict["parts"]["agvs"].keys():
+            for part in yaml_dict["parts"]["agvs"][agv]["parts"]:
+                agv_parts.append(AGVPart(part["color"],part["type"],str(AGV_LIST.index(agv)+1),part["quadrant"],part["rotation"]))
+    except:
+        pass
+
     try:
         conveyor_active = "1" if yaml_dict["parts"]["conveyor_belt"]["active"] else "0"
         spawn_rate = str(yaml_dict["parts"]["conveyor_belt"]["spawn_rate"])
@@ -369,7 +379,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
             challenges.append(new_challenge)
 
 
-    return CompetitionClass(time_limit, tray_ids, slots, assembly_insert_rotations, bin_parts, current_bin_parts, 
+    return CompetitionClass(time_limit, tray_ids, slots, assembly_insert_rotations, agv_parts, bin_parts, current_bin_parts, 
                             conveyor_active, spawn_rate, conveyor_order,
                             conveyor_parts, current_conveyor_parts, orders, challenges)
 

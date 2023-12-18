@@ -56,6 +56,39 @@ namespace ariac_common
     class KittingScore;
     class ScoredAssemblyPart;
 
+
+
+    //==============================================================================
+    /**
+     * @brief Helper function to display information in the terminal
+    */
+    std::string static TerminalDisplay(std::string message, std::string color){
+        std::string color_code = "";
+
+        if (color == "red")
+            color_code = "\033[1;31m";
+        else if (color == "green")
+            color_code = "\033[1;32m";
+        else if (color == "yellow")
+            color_code = "\033[1;33m";
+        else if (color == "blue")
+            color_code = "\033[1;34m";
+        else if (color == "magenta")
+            color_code = "\033[1;35m";
+        else if (color == "cyan")
+            color_code = "\033[1;36m";
+        else if (color == "white")
+            color_code = "\033[1;37m";
+        else
+            color_code = "\033[1;31m";
+        
+        auto output = color_code + message + "\033[0m";
+
+        // log_message_ += message;
+        
+        return output;
+    }
+
     //==============================================================================
     /**
      * @brief Helper function to convert a part type to a string
@@ -438,16 +471,16 @@ namespace ariac_common
         friend std::ostream &operator<<(std::ostream &out,
                                         const AssemblyTask &obj)
         {
-            out << "   Assembly Task" << std::endl;
-            out << "   ================" << std::endl;
+            // out << "   Assembly Task" << std::endl;
+            // out << "   ================" << std::endl;
 
             if (obj.agv_numbers_.size() == 1)
-                out << "   AGV: [" << obj.agv_numbers_[0] << "]" << std::endl;
+                out << "AGV: [" << obj.agv_numbers_[0] << "]" << std::endl;
             else
             {
                 int counter = obj.agv_numbers_.size();
 
-                out << "   AGV: [";
+                out << "AGV: [";
                 for (auto agv_number : obj.agv_numbers_)
                 {
                     counter--;
@@ -464,7 +497,7 @@ namespace ariac_common
 
             // Products
             out << "   ================" << std::endl;
-            out << "   Products: " << std::endl;
+            out << "   Products " << std::endl;
             for (const auto &product : obj.products_)
             {
                 out << product << std::endl;
@@ -545,8 +578,8 @@ namespace ariac_common
             out << "Destination: " << ConvertDestinationToString(obj.destination_, obj.agv_number_) << std::endl;
 
             // Products
-            // out << "   ================" << std::endl;
-            out << "Products: " << std::endl;
+            out << "    ================" << std::endl;
+            out << "    Products " << std::endl;
             for (const auto &product : obj.products_)
             {
                 out << product << std::endl;
@@ -651,7 +684,7 @@ namespace ariac_common
 
             // Products
             out << "   ================" << std::endl;
-            out << "   Products: " << std::endl;
+            out << "   Products " << std::endl;
             for (const auto &product : obj.products_)
             {
                 out << product << std::endl;

@@ -281,7 +281,8 @@ namespace ariac_plugins
         /*!< Print details of the score for an assembly task. */
         void PrintAssemblyScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
         /*!< Print details of the score for a combined task. */
-        void PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score);
+        void PrintCombinedScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
+
         
 
         /*!< Print details of the score for the trial. */
@@ -794,8 +795,27 @@ namespace ariac_plugins
                 if (impl_->elapsed_time_ >= order->GetAnnouncementTime() && !order->IsAnnounced())
                 {
                     auto order_message = BuildOrderMsg(order);
+                    // std::string output="";
                     // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Announcing order");
                     impl_->DisplayTaskManagerInfo("Announcing order");
+                    
+                    // output += TerminalDisplay("========================================\n", "yellow");
+                    // output += TerminalDisplay("Announcing Order\n", "yellow");
+                    // output += TerminalDisplay("========================================\n", "yellow");
+                    // output += TerminalDisplay("Order ID: ", "green") + order->GetId() + "\n";
+
+                    // if (order->GetId() == 0)
+                    //     output += TerminalDisplay("Type: ", "green") +  "Kitting\n";
+                    // else if (order->GetId() == 1)
+                    //     output += TerminalDisplay("Type: ", "green") +  "Assembly\n";
+                    // else if (order->GetId() == 2)
+                    //     output += TerminalDisplay("Type: ", "green") +  "Combined\n";
+
+
+                    // //  + kitting_score->GetOrderId() + "\n"
+
+                    // auto order_id = order->GetId();
+
                     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "\n" << *order);
 
                     impl_->order_pub_->publish(order_message);
@@ -2681,6 +2701,295 @@ namespace ariac_plugins
             else
                 output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
 
+            if (battery->GetIsFaulty())
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "No\n";
+
+            if (battery->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
+            
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + battery_type + "," + battery_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(battery->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (battery->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (battery->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (battery->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n");
+            }
+        }
+        if (pump != nullptr)
+        {
+            auto pump_type = ariac_common::ConvertPartTypeToString(pump->GetPart().GetType());
+            auto pump_color = ariac_common::ConvertPartColorToString(pump->GetPart().GetColor());
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + pump_type + "," + pump_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(pump->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (pump->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (pump->GetIsFaulty())
+                TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+            else
+                TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+            if (pump->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
+        
+        //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + pump_type + "," + pump_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(pump->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (pump->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (pump->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (pump->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n");
+            }
+        
+        
+        }
+        if (regulator != nullptr)
+        {
+            auto regulator_type = ariac_common::ConvertPartTypeToString(regulator->GetPart().GetType());
+            auto regulator_color = ariac_common::ConvertPartColorToString(regulator->GetPart().GetColor());
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + regulator_type + "," + regulator_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(regulator->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (regulator->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (regulator->GetIsFaulty())
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "No\n";
+
+            if (regulator->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
+        
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + regulator_type + "," + regulator_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(regulator->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (regulator->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (regulator->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (regulator->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n");
+            }
+        }
+        if (sensor != nullptr)
+        {
+            auto sensor_type = ariac_common::ConvertPartTypeToString(sensor->GetPart().GetType());
+            auto sensor_color = ariac_common::ConvertPartColorToString(sensor->GetPart().GetColor());
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + sensor_type + "," + sensor_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(sensor->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (sensor->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (sensor->GetIsFaulty())
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "No\n";
+
+            if (sensor->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
+       
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + sensor_type + "," + sensor_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(sensor->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (sensor->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (sensor->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (sensor->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n");
+            }
+        }
+
+        if (_terminal_display){
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        }
+        // log_message_ += output;
+    }
+
+    //==============================================================================
+    void TaskManagerPluginPrivate::PrintCombinedScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output, bool _terminal_display){
+
+        std::string output = "";
+
+        auto combined_score = _order->GetCombinedScore();
+        auto combined_task = _order->GetCombinedTask();
+        // order priority
+        auto order_priority = _order->IsPriority();
+        auto combined_completion_time = _order->GetSubmittedTime() - _order->GetAnnouncedTime();
+
+        output += TerminalDisplay("\n========================================\n", "yellow");
+        output += TerminalDisplay("Order Submitted\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+
+        output += TerminalDisplay("-Order ID: ", "green") + combined_score->GetOrderId() + "\n";
+        output += TerminalDisplay("\t-Type: ", "green") + "Combined\n";
+
+        if (order_priority)
+            output += TerminalDisplay("\t-Priority: ", "green") + "High\n";
+        else
+            output += TerminalDisplay("\t-Priority: ", "green") + "Regular\n";
+
+        output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(_order->GetAnnouncedTime()) + "\n";
+        output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(_order->GetSubmittedTime()) + "\n";
+        output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(combined_completion_time) + "\n";
+        output += TerminalDisplay("\t-Station: ", "green") + std::to_string(combined_score->GetStation()) + "\n";
+        output += TerminalDisplay("\t-Bonus: ", "green") + std::to_string(combined_score->GetBonus()) + "\n";
+        output += TerminalDisplay("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreCombinedTask(_order->GetCombinedTask()->GetProducts().size())) + "\n";
+        output += TerminalDisplay("\t-Actual score: ", "green") + std::to_string(combined_score->GetScore()) + "\n";
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        output += TerminalDisplay("\tParts Summary\n", "yellow");
+        output += TerminalDisplay("\t-----------------------\n", "yellow"); 
+
+        //----------------------------------------
+        // Log outputs
+        //----------------------------------------
+        if (_log_output){
+            TrialLogOutput("-Order ID: ", combined_score->GetOrderId() + "\n");
+            TrialLogOutput("\t-Type: ", "Combined\n");
+             if (order_priority)
+                TrialLogOutput("\t-Priority: ", "High\n");
+            else
+                TrialLogOutput("\t-Priority: ", "Regular\n");
+
+            TrialLogOutput("\t-Announcement time: ", std::to_string(_order->GetAnnouncedTime()) + "\n");
+            TrialLogOutput("\t-Submission time: ", std::to_string(_order->GetSubmittedTime()) + "\n");
+            TrialLogOutput("\t-Completion time: ", std::to_string(combined_completion_time) + "\n");
+            TrialLogOutput("\t-Station: ", std::to_string(combined_score->GetStation()) + "\n");
+            TrialLogOutput("\t-Bonus: ", std::to_string(combined_score->GetBonus()) + "\n");
+            TrialLogOutput("\t-Max score: ", std::to_string(ComputeMaxScoreCombinedTask(_order->GetCombinedTask()->GetProducts().size())) + "\n");
+            TrialLogOutput("\t-Actual score: ", std::to_string(combined_score->GetScore()) + "\n");
+            TrialLogOutput("\t-----------------------\n");
+            TrialLogOutput("\tParts Summary\n");
+            TrialLogOutput("\t-----------------------\n");
+        }
+
+        auto battery = combined_score->GetBatteryPtr();
+        auto pump = combined_score->GetPumpPtr();
+        auto regulator = combined_score->GetRegulatorPtr();
+        auto sensor = combined_score->GetSensorPtr();
+
+        if (battery != nullptr)
+        {
+            auto battery_type = ariac_common::ConvertPartTypeToString(battery->GetPart().GetType());
+            auto battery_color = ariac_common::ConvertPartColorToString(battery->GetPart().GetColor());
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + battery_type + "," + battery_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(battery->GetScore()) + "\n";
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (battery->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
             if (battery->GetCorrectPose())
                 output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
             else
@@ -2852,85 +3161,67 @@ namespace ariac_plugins
         if (_terminal_display){
             RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
         }
-        // log_message_ += output;
-    }
-
-    //==============================================================================
-    void TaskManagerPluginPrivate::PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score)
-    {
-        std::string output = "";
-        output += "\n========================================\n";
-        output += "Order: " + combined_score->GetOrderId() + "\n";
-        output += "Type: Combined\n";
-        output += "Station: " + std::to_string(combined_score->GetStation()) + "\n";
-        output += "Bonus: " + std::to_string(combined_score->GetBonus()) + "\n";        
-        output += "Current Score: " + std::to_string(combined_score->GetScore()) + "\n";
-
-        auto battery = combined_score->GetBatteryPtr();
-        auto pump = combined_score->GetPumpPtr();
-        auto regulator = combined_score->GetRegulatorPtr();
-        auto sensor = combined_score->GetSensorPtr();
-        if (battery != nullptr)
-        {
-            auto battery_type = ariac_common::ConvertPartTypeToString(battery->GetPart().GetType());
-            auto battery_color = ariac_common::ConvertPartColorToString(battery->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + battery_type + "," + battery_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            battery->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            battery->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            battery->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(battery->GetScore()) + "\n";
-        }
-        if (pump != nullptr)
-        {
-            auto pump_type = ariac_common::ConvertPartTypeToString(pump->GetPart().GetType());
-            auto pump_color = ariac_common::ConvertPartColorToString(pump->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + pump_type + "," + pump_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            pump->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            pump->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            pump->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(pump->GetScore()) + "\n";
-        }
-        if (regulator != nullptr)
-        {
-            auto regulator_type = ariac_common::ConvertPartTypeToString(regulator->GetPart().GetType());
-            auto regulator_color = ariac_common::ConvertPartColorToString(regulator->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + regulator_type + "," + regulator_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            regulator->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            regulator->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            regulator->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(regulator->GetScore()) + "\n";
-        }
-        if (sensor != nullptr)
-        {
-            auto sensor_type = ariac_common::ConvertPartTypeToString(sensor->GetPart().GetType());
-            auto sensor_color = ariac_common::ConvertPartColorToString(sensor->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + sensor_type + "," + sensor_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            sensor->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            sensor->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            sensor->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(sensor->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-        }
+        // if (battery != nullptr)
+        // {
+        //     auto battery_type = ariac_common::ConvertPartTypeToString(battery->GetPart().GetType());
+        //     auto battery_color = ariac_common::ConvertPartColorToString(battery->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + battery_type + "," + battery_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     battery->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     battery->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     battery->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(battery->GetScore()) + "\n";
+        // }
+        // if (pump != nullptr)
+        // {
+        //     auto pump_type = ariac_common::ConvertPartTypeToString(pump->GetPart().GetType());
+        //     auto pump_color = ariac_common::ConvertPartColorToString(pump->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + pump_type + "," + pump_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     pump->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     pump->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     pump->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(pump->GetScore()) + "\n";
+        // }
+        // if (regulator != nullptr)
+        // {
+        //     auto regulator_type = ariac_common::ConvertPartTypeToString(regulator->GetPart().GetType());
+        //     auto regulator_color = ariac_common::ConvertPartColorToString(regulator->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + regulator_type + "," + regulator_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     regulator->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     regulator->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     regulator->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(regulator->GetScore()) + "\n";
+        // }
+        // if (sensor != nullptr)
+        // {
+        //     auto sensor_type = ariac_common::ConvertPartTypeToString(sensor->GetPart().GetType());
+        //     auto sensor_color = ariac_common::ConvertPartColorToString(sensor->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + sensor_type + "," + sensor_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     sensor->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     sensor->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     sensor->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(sensor->GetScore()) + "\n";
+        //     output += "----------------------------------------\n";
+        // }
 
         // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
         // log_message_ += output;
@@ -3130,7 +3421,7 @@ namespace ariac_plugins
         _order->SetCombinedScore(combined_score);
 
         // Display the score in the terminal
-        PrintCombinedScore(combined_score);
+        PrintCombinedScore(_order);
     }
 
     // ==================================== //
@@ -3384,14 +3675,11 @@ namespace ariac_plugins
                 // Only log the result (no terminal display)
                 PrintAssemblyScore(order, true, false);
             }
-            // if (order->GetCombinedScore())
-            // {
-            //     combined_order = order;
-            //     combined_score = order->GetCombinedScore();
-            //     combined_submitted_time = combined_order->GetSubmittedTime();
-            //     combined_completion_time = combined_submitted_time - combined_order->GetAnnouncedTime();
-            //     completion_times.push_back(combined_completion_time);
-            // }
+            if (order->GetCombinedScore())
+            {
+                // Only log the result (no terminal display)
+                PrintCombinedScore(order, true, false);
+            }
         }
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
         // log_message_ += output;

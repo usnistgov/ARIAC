@@ -20,7 +20,6 @@ from datetime import datetime
 from ariac_msgs.msg import (
     Part as PartMsg,
     OrderCondition as OrderMsg,
-    AssemblyPart as AssemblyPartMsg,
     KittingPart as KittingPartMsg,
     KittingTask as KittingTaskMsg,
     AssemblyTask as AssemblyTaskMsg,
@@ -40,6 +39,7 @@ from ariac_gui.utils import (build_competition_from_file,
                              BinPart, 
                              ConveyorPart,
                              AGVPart,
+                             AssemblyPart,
                              CompetitionClass,
                              SLIDER_STR, 
                              SLIDER_VALUES, 
@@ -189,6 +189,7 @@ class GUI_CLASS(ctk.CTk):
         self.available_quadrants = {f"agv_{i}":[j for j in range(1,5)] for i in range(1,5)}
         self.all_present_parts = []
         self.needed_kitting_trays = [0 for _ in range(4)]
+        self.original_agv_parts_dict = {}
 
         # Kitting tray info
         self.kitting_tray_selections = [ctk.StringVar() for _ in range(6)]
@@ -196,6 +197,7 @@ class GUI_CLASS(ctk.CTk):
             self.kitting_tray_selections[i].trace_add('write', self.update_current_file_label)
             self.kitting_tray_selections[i].trace_add('write', self.update_available_kitting_trays)
         self.available_kitting_trays = []
+
         # Assembly insert info
         self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
         for i in range(len(self.assembly_insert_rotations)):
@@ -258,11 +260,12 @@ class GUI_CLASS(ctk.CTk):
         self.order_info["kitting_task"]["tray_id"] = ctk.StringVar()
         self.order_info["kitting_task"]["parts"] = []
 
+        self.assembly_orders_have_been_changed = False
+
         self.order_info["assembly_task"] = {}
         self.order_info["assembly_task"]["agv_numbers"] = [ctk.StringVar() for _ in range(4)]
         self.order_info["assembly_task"]["station"] = ctk.StringVar()
         self.order_info["assembly_task"]["parts"] = []
-        self.order_info["agv_parts"] = []
 
         self.order_info["combined_task"] = {}
         self.order_info["combined_task"]["station"] = ctk.StringVar()
@@ -276,8 +279,6 @@ class GUI_CLASS(ctk.CTk):
             var.trace_add('write', self.update_available_agvs)
 
         self.current_orders = []
-        self.current_agv_parts = []
-        self.assembly_agv_parts = []
 
         # Challenges widgets
         self.current_challenges_widgets = []
@@ -402,23 +403,34 @@ class GUI_CLASS(ctk.CTk):
 
     def _load_file(self):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location,title='Open ARIAC configuration',)
-        try:
-            with open(file_to_open.name) as f:
-                yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-            self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-            self.original_trial_name.set(self.trial_name.get())
-            self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-            self.load_through_file_flag = True
-            self.file_name = file_to_open.name
-            self.update_current_file_label(1,1,1)
-            self.update_available_kitting_trays(1,1,1)
-            self.open_main_window()
-        except:
-            try:
-                if file_to_open.name != None:
-                    print("Unable to open or parse file")
-            except:
-                pass
+        with open(file_to_open.name) as f:
+            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+        self.original_trial_name.set(self.trial_name.get())
+        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        self.load_through_file_flag = True
+        self.file_name = file_to_open.name
+        self.update_current_file_label(1,1,1)
+        self.update_available_kitting_trays(1,1,1)
+        self.open_main_window()
+        
+        # try:
+        #     with open(file_to_open.name) as f:
+        #         yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+        #     self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+        #     self.original_trial_name.set(self.trial_name.get())
+        #     self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+        #     self.load_through_file_flag = True
+        #     self.file_name = file_to_open.name
+        #     self.update_current_file_label(1,1,1)
+        #     self.update_available_kitting_trays(1,1,1)
+        #     self.open_main_window()
+        # except:
+        #     try:
+        #         if file_to_open.name != None:
+        #             print("Unable to open or parse file")
+        #     except:
+        #         pass
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.save_file_button.configure(command=self.run_overwrite_window)
@@ -430,7 +442,8 @@ class GUI_CLASS(ctk.CTk):
         for i in range(len(competition.competition["assembly_insert_rotations"])):
             self.assembly_insert_rotations[i].set(competition.competition["assembly_insert_rotations"][i])
 
-        self.current_agv_parts = competition.competition["agv_parts"]
+        self.original_agv_parts_dict = competition.competition["agv_dict"]
+        print(self.original_agv_parts_dict)
 
         self.bin_parts = competition.competition["bin_parts"]
         self.current_bin_parts = competition.competition["current_bin_parts"]
@@ -460,8 +473,13 @@ class GUI_CLASS(ctk.CTk):
         for order in self.current_orders:
             order:OrderMsg
             self.used_ids.append(order.id)
-            if order.type == 0:
+            if order.type == OrderMsg.KITTING:
                 self.kitting_ids.append(order.id)
+            elif order.type == OrderMsg.ASSEMBLY:
+                for part in order.assembly_task.parts:
+                    part : AssemblyPart
+                    self.available_quadrants[f"agv_{part.agv}"].remove(int(part.quadrant))
+                    print(self.available_quadrants)
         self.kitting_order_counter.set(str(len(self.kitting_ids)))
         
         self.current_challenges = competition.competition["challenges"]
@@ -619,24 +637,34 @@ class GUI_CLASS(ctk.CTk):
     # =======================================================
     
     def agv_parts_to_dict(self):
-        self.agv_parts_dict = {}
-        parts_on_agv = {f"agv{i}":[part for part in self.current_agv_parts if part.agv==str(i)] for i in range(1,5)}
-        print(parts_on_agv)
-        if len(self.current_agv_parts)==0:
-            return
-        for agv_key in parts_on_agv.keys():
-            if len(parts_on_agv[agv_key])>0:
-                self.agv_parts_dict[agv_key]={}
-                self.agv_parts_dict[agv_key]["tray_id"] = 0
-                self.agv_parts_dict[agv_key]["parts"] = []
-                for part in parts_on_agv[agv_key]:
-                    part : AGVPart
-                    temp_dict = {}
-                    temp_dict["type"] = _part_type_str[part.part.type].lower()
-                    temp_dict["color"] = _part_color_str[part.part.color].lower()
-                    temp_dict["quadrant"] = int(part.quadrant)
-                    temp_dict["rotation"] = str(part.rotation)
-                    self.agv_parts_dict[agv_key]["parts"].append(temp_dict)
+        if not self.assembly_orders_have_been_changed:
+            self.agv_parts_dict = self.original_agv_parts_dict
+        else:
+            self.agv_parts_dict = {}
+            parts_found_flag = False
+            parts_on_agv = {f"agv{i}":[] for i in range(1,5)}
+            for order in self.current_orders:
+                order:OrderMsg
+                if order.type == OrderMsg.ASSEMBLY:
+                    for part in order.assembly_task.parts:
+                        part : AssemblyPart
+                        parts_found_flag = True
+                        parts_on_agv[f"agv{part.agv}"].append(part)
+            if not parts_found_flag:
+                return
+            for agv_key in parts_on_agv.keys():
+                if len(parts_on_agv[agv_key])>0:
+                    self.agv_parts_dict[agv_key]={}
+                    self.agv_parts_dict[agv_key]["tray_id"] = 0
+                    self.agv_parts_dict[agv_key]["parts"] = []
+                    for part in parts_on_agv[agv_key]:
+                        part : AGVPart
+                        temp_dict = {}
+                        temp_dict["type"] = _part_type_str[part.part.type].lower()
+                        temp_dict["color"] = _part_color_str[part.part.color].lower()
+                        temp_dict["quadrant"] = int(part.quadrant)
+                        temp_dict["rotation"] = str(part.rotation)
+                        self.agv_parts_dict[agv_key]["parts"].append(temp_dict)
 
              
 
@@ -1257,7 +1285,6 @@ class GUI_CLASS(ctk.CTk):
 
         self.order_info["combined_task"]["station"].set(ASSEMBLY_STATIONS[0])
         self.order_info["combined_task"]["parts"] = []
-        self.order_info["agv_parts"] = []
     
     def show_correct_announcement_menu(self,_,__,___):
         self.right_row_index = 3
@@ -1339,7 +1366,6 @@ class GUI_CLASS(ctk.CTk):
                 current_row+=1
                 for part_i in range(len(self.order_info["assembly_task"]["parts"])):
                     part = self.order_info["assembly_task"]["parts"][part_i]
-                    part:AssemblyPartMsg
                     part_label = ctk.CTkLabel(self.orders_frame, text=f"{_part_color_str[part.part.color]} {_part_type_str[part.part.type]}")
                     part_label.grid(row = current_row, column = LEFT_COLUMN)
                     self.current_order_part_widgets.append(part_label)
@@ -1358,7 +1384,6 @@ class GUI_CLASS(ctk.CTk):
                 self.current_order_part_widgets.append(current_parts_label)
                 current_row+=1
                 for part in self.order_info["combined_task"]["parts"]:
-                    part:AssemblyPartMsg
                     part_label = ctk.CTkLabel(self.orders_frame, text=f"{_part_color_str[part.part.color]} {_part_type_str[part.part.type]}")
                     part_label.grid(row = current_row, column = LEFT_COLUMN)
                     self.current_order_part_widgets.append(part_label)
@@ -1506,20 +1531,21 @@ class GUI_CLASS(ctk.CTk):
         self.available_assembly_agvs.clear()
         indeces = [0,1] if self.order_info["assembly_task"]["station"].get() in ["as1","as2"] else [2,3]
         for i in range(4):
-            if i not in indeces:
+            if i not in indeces or len(self.available_quadrants[f"agv_{i+1}"])==0:
                 self.order_info["assembly_task"]["agv_numbers"][i].set("0")
         for i in indeces:
-            check_box = ctk.CTkCheckBox(self.orders_frame,
-                                        text=f"AGV {i+1}",
-                                        variable=self.order_info["assembly_task"]["agv_numbers"][i],
-                                        offvalue="0",
-                                        onvalue="1",
-                                        height=1, 
-                                        width=20)
-            self.grid_left_column(check_box)
-            self.current_left_order_widgets.append(check_box)
             if len(self.available_quadrants[f"agv_{i+1}"])>0:
-                self.available_assembly_agvs.append(str(i+1))
+                check_box = ctk.CTkCheckBox(self.orders_frame,
+                                            text=f"AGV {i+1}",
+                                            variable=self.order_info["assembly_task"]["agv_numbers"][i],
+                                            offvalue="0",
+                                            onvalue="1",
+                                            height=1, 
+                                            width=20)
+                self.grid_left_column(check_box)
+                self.current_left_order_widgets.append(check_box)
+                if len(self.available_quadrants[f"agv_{i+1}"])>0:
+                    self.available_assembly_agvs.append(str(i+1))
 
         self.add_part_assembly_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_assembly_part)
         self.grid_left_column(self.add_part_assembly_task)
@@ -1579,7 +1605,6 @@ class GUI_CLASS(ctk.CTk):
             else:
                 msg="No issue. You can save now"
             for part in self.order_info["combined_task"]["parts"]:
-                    part:AssemblyPartMsg
                     if _part_color_str[part.part.color]+" "+_part_type_str[part.part.type] not in self.all_present_parts:
                         msg+=f"\nWARNING: {_part_color_str[part.part.color]+' '+_part_type_str[part.part.type]} not found in bins or conveyor"
         return msg
@@ -1604,7 +1629,7 @@ class GUI_CLASS(ctk.CTk):
     def add_assembly_part(self, assembly_part = None, index = -1):
         add_a_part_wind = ctk.CTkToplevel()
         available_part_types = self.part_types_available()
-
+        edit_flag = False
         a_part_dict = {}
         a_part_dict["color"] = ctk.StringVar()
         a_part_dict["pType"] = ctk.StringVar()
@@ -1621,6 +1646,13 @@ class GUI_CLASS(ctk.CTk):
         else:
             a_part_dict["color"].set(_part_color_str[assembly_part.part.color].lower())
             a_part_dict["pType"].set(_part_type_str[assembly_part.part.type].lower())
+            self.available_quadrants[f"agv_{str(assembly_part.agv)}"].append(str(assembly_part.quadrant))
+            self.available_quadrants[f"agv_{str(assembly_part.agv)}"] = [str(val) for val in sorted([int(val) for val in self.available_quadrants[f"agv_{str(assembly_part.agv)}"]])]
+            a_part_dict["agv"].set(str(assembly_part.agv))
+            a_part_dict["quadrant"].set(str(assembly_part.quadrant))
+            a_part_dict["rotation"].set(float(assembly_part.rotation))
+            edit_flag = True
+                
 
         color_label = ctk.CTkLabel(add_a_part_wind, text="Select the color for the assembly part")
         color_label.pack()
@@ -1636,9 +1668,9 @@ class GUI_CLASS(ctk.CTk):
         agv_menu.pack()
         quadrant_label = ctk.CTkLabel(add_a_part_wind, text="Select a quadrant on the agv")
         quadrant_label.pack()
-        quadrant_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["quadrant"], values=[str(v) for v in self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"]])
+        quadrant_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["quadrant"], values=sorted([str(v) for v in self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"]]))
         quadrant_menu.pack()
-        label_text = f"Current rotation value: {a_part_dict['rotation'].get()}"
+        label_text = f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(a_part_dict['rotation'].get())]}"
         rotation_label = ctk.CTkLabel(add_a_part_wind, text=label_text)
         rotation_label.pack()
         rotation_slider = ctk.CTkSlider(add_a_part_wind, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=a_part_dict['rotation'], orientation="horizontal")
@@ -1647,31 +1679,32 @@ class GUI_CLASS(ctk.CTk):
 
         a_part_dict["agv"].trace_add('write',partial(self.update_agv_quadrant_assembly,a_part_dict["agv"], a_part_dict["quadrant"],quadrant_menu))
 
-        save_button = ctk.CTkButton(add_a_part_wind, text="Save assembly part", command=partial(self.save_assembly_part, a_part_dict, add_a_part_wind, index))
+        save_button = ctk.CTkButton(add_a_part_wind, text="Save assembly part", command=partial(self.save_assembly_part, a_part_dict, add_a_part_wind, index, assembly_part.agv, assembly_part.quadrant) if edit_flag else partial(self.save_assembly_part, a_part_dict, add_a_part_wind, index))
         save_button.pack(pady = 10)
+        cancel_button = ctk.CTkButton(add_a_part_wind, text="Cancel", command=partial(self.cancel_assembly_part,assembly_part.quadrant, assembly_part.agv, add_a_part_wind) if edit_flag else add_a_part_wind.destroy)
+        cancel_button.pack(pady=10)
         add_a_part_wind.mainloop()
+
+    def cancel_assembly_part(self, current_quadrant, current_agv, window):
+        self.available_quadrants[f"agv_{str(current_agv)}"].remove(str(current_quadrant))
+        window.destroy()
 
     def update_agv_quadrant_assembly(self, selected_agv,quadrant_var, quadrant_menu,_,__,___):
         agv_str = selected_agv.get()
         quadrant_var.set(str(self.available_quadrants[f"agv_{agv_str}"][0]))
         quadrant_menu.configure(values = [str(v) for v in self.available_quadrants[f"agv_{agv_str}"]])
     
-    def save_assembly_part(self, a_part_dict, window, index):
-        new_assembly_part = AssemblyPartMsg()
-
-        new_assembly_part.part.color = _part_color_ints[a_part_dict["color"].get().upper()]
-        new_assembly_part.part.type = _part_type_ints[a_part_dict["pType"].get().upper()]
-        new_assembly_part.assembled_pose = _assembly_part_poses[a_part_dict["pType"].get().upper()]
-        new_assembly_part.install_direction = _assembly_part_install_directions[a_part_dict["pType"].get().upper()]
+    def save_assembly_part(self, a_part_dict, window, index, original_agv = None, original_quadrant = None):
+        new_assembly_part = AssemblyPart(a_part_dict["color"].get(),a_part_dict["pType"].get(),a_part_dict["agv"].get(),a_part_dict["quadrant"].get(),a_part_dict["rotation"].get())
         if index == -1:
             self.order_info["assembly_task"]["parts"].append(new_assembly_part)
+            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(int(a_part_dict["quadrant"].get()))
         else:
             self.order_info["assembly_task"]["parts"][index] = new_assembly_part
+            self.available_quadrants[f"agv_{original_agv}"].remove(a_part_dict["quadrant"].get())
+            self.available_quadrants[f"agv_{str(original_agv)}"] = [str(val) for val in sorted([int(val) for val in self.available_quadrants[f"agv_{str(original_agv)}"]])]
         if len(self.order_info["assembly_task"]["parts"])>3:
             self.add_part_assembly_task.configure(state=DISABLED)
-        self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(int(a_part_dict["quadrant"].get()))
-        self.order_info["agv_parts"].append(AGVPart(a_part_dict["color"].get(),a_part_dict["pType"].get(),a_part_dict["agv"].get(),a_part_dict["quadrant"].get(),SLIDER_STR[SLIDER_VALUES.index(a_part_dict["rotation"].get())]))
-        self.current_agv_parts.append(AGVPart(a_part_dict["color"].get(),a_part_dict["pType"].get(),a_part_dict["agv"].get(),a_part_dict["quadrant"].get(),SLIDER_STR[SLIDER_VALUES.index(a_part_dict["rotation"].get())]))
         self.move_order_widgets()
         self.activate_assembly_save(1,1,1)
         window.destroy()
@@ -1730,14 +1763,10 @@ class GUI_CLASS(ctk.CTk):
         add_c_part_wind.mainloop()
 
     def save_combined_part(self, c_part_dict, window, index):
-        new_combined_part = AssemblyPartMsg()
-        new_part = PartMsg()
-        new_part.color = _part_color_ints[c_part_dict["color"].get().upper()]
-        new_part.type = _part_type_ints[c_part_dict["pType"].get().upper()]
+        new_combined_part = PartMsg()
+        new_combined_part.color = _part_color_ints[c_part_dict["color"].get().upper()]
+        new_combined_part.type = _part_type_ints[c_part_dict["pType"].get().upper()]
         
-        new_combined_part.part = new_part
-        new_combined_part.assembled_pose = _assembly_part_poses[c_part_dict["pType"].get().upper()]
-        new_combined_part.install_direction = _assembly_part_install_directions[c_part_dict["pType"].get().upper()]
         if index == -1:
             self.order_info["combined_task"]["parts"].append(new_combined_part)
         else:
@@ -1778,6 +1807,7 @@ class GUI_CLASS(ctk.CTk):
         if self.order_info["order_type"].get() == "kitting":
             new_order.kitting_task = self.create_kitting_task_msg()
         elif self.order_info["order_type"].get() == "assembly":
+            self.assembly_orders_have_been_changed = True
             new_order.assembly_task = self.create_assembly_task_msg()
         else:
             new_order.combined_task = self.create_combined_task_msg()
@@ -1792,10 +1822,8 @@ class GUI_CLASS(ctk.CTk):
             new_order.condition.submission_condition.order_id = self.order_info["announcement"]["submission_id"].get()
         if index == -1:
             self.current_orders.append(new_order)
-            self.assembly_agv_parts.append(self.order_info["agv_parts"])
         else:
             self.current_orders[index] = new_order
-            self.assembly_agv_parts[index] = self.order_info["agv_parts"]
         self.order_counter.set(str(len(self.used_ids)))
         self.reset_order()
         self.show_main_order_menu()
@@ -1854,7 +1882,6 @@ class GUI_CLASS(ctk.CTk):
                     temp_order_dict["assembly_task"]["station"] = order.assembly_task.station
                     temp_order_dict["assembly_task"]["products"] = []
                     for part in order.assembly_task.parts:
-                        part : AssemblyPartMsg
                         temp_assembly_part_dict = {}
                         temp_assembly_part_dict["type"] = _part_type_str[part.part.type].lower()
                         temp_assembly_part_dict["color"] = _part_color_str[part.part.color].lower()
@@ -1866,7 +1893,6 @@ class GUI_CLASS(ctk.CTk):
                     temp_order_dict["combined_task"]["station"] = order.combined_task.station
                     temp_order_dict["combined_task"]["products"] = []
                     for part in order.combined_task.parts:
-                        part : AssemblyPartMsg
                         temp_combined_part_dict = {}
                         temp_combined_part_dict["type"] = _part_type_str[part.part.type].lower()
                         temp_combined_part_dict["color"] = _part_color_str[part.part.color].lower()
@@ -2539,7 +2565,6 @@ class GUI_CLASS(ctk.CTk):
             f.write("# ASSEMBLY INSERTS\n")
             assembly_inserts_data = yaml.dump(self.assembly_inserts_dict,sort_keys=False,Dumper=NoAliasDumper)
             f.write(f"\n{assembly_inserts_data}\n")
-            print(self.agv_parts_dict)
             if len(self.agv_parts_dict)!=0:
                 try:
                     parts_dict["parts"]["agvs"] = self.agv_parts_dict

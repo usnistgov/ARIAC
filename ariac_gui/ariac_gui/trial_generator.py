@@ -47,9 +47,11 @@ from ariac_gui.utils import (build_competition_from_file,
 
 FRAMEWIDTH=700
 FRAMEHEIGHT=900
-LEFT_COLUMN=1
-MIDDLE_COLUMN = 2
-RIGHT_COLUMN = 3
+FAR_LEFT_COLUMN = 1
+LEFT_COLUMN=2
+MIDDLE_COLUMN = 3
+RIGHT_COLUMN = 4
+FAR_RIGHT_COLUMN = 5
 COLUMN_LIST = [LEFT_COLUMN, MIDDLE_COLUMN, RIGHT_COLUMN]
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']
@@ -132,7 +134,7 @@ class GUI_CLASS(ctk.CTk):
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(100, weight=1)
         self.grid_columnconfigure(0, weight=1)
-        self.grid_columnconfigure(4, weight=1)
+        self.grid_columnconfigure(6, weight=1)
 
         s = ttk.Style()
         s.theme_use('clam')
@@ -303,7 +305,7 @@ class GUI_CLASS(ctk.CTk):
 
         # Sensor blackout challenge variables
         self.sensor_blackout_info = {}
-        self.sensor_blackout_info["duration"] = ctk.StringVar()
+        self.sensor_blackout_info["duration"] = ctk.DoubleVar()
         self.sensor_blackout_info["sensors_to_disable"] = {SENSORS[i]:ctk.StringVar() for i in range(len(SENSORS))}
 
         # Faulty part challenge variables
@@ -391,8 +393,8 @@ class GUI_CLASS(ctk.CTk):
         self.load_file_button.grid_forget()
         self.new_file_button.grid_forget()
         self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
-        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
-
+        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN)
+        
     def open_initial_window(self):
         self.initial_label = ctk.CTkLabel(self, text="Would you like to open an existing file or create a new one?")
         self.initial_label.grid(column = LEFT_COLUMN, row = 1, columnspan = 3, pady = 85, padx=75)
@@ -403,34 +405,23 @@ class GUI_CLASS(ctk.CTk):
 
     def _load_file(self):
         file_to_open=filedialog.askopenfile("r", filetypes =[('Yaml Files', '*.yaml')], initialdir=self.trials_file_location,title='Open ARIAC configuration',)
-        with open(file_to_open.name) as f:
-            yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-        self.original_trial_name.set(self.trial_name.get())
-        self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-        self.load_through_file_flag = True
-        self.file_name = file_to_open.name
-        self.update_current_file_label(1,1,1)
-        self.update_available_kitting_trays(1,1,1)
-        self.open_main_window()
-        
-        # try:
-        #     with open(file_to_open.name) as f:
-        #         yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
-        #     self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
-        #     self.original_trial_name.set(self.trial_name.get())
-        #     self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
-        #     self.load_through_file_flag = True
-        #     self.file_name = file_to_open.name
-        #     self.update_current_file_label(1,1,1)
-        #     self.update_available_kitting_trays(1,1,1)
-        #     self.open_main_window()
-        # except:
-        #     try:
-        #         if file_to_open.name != None:
-        #             print("Unable to open or parse file")
-        #     except:
-        #         pass
+        try:
+            with open(file_to_open.name) as f:
+                yaml_dict = yaml.load(f, Loader=yaml.SafeLoader)
+            self.trial_name.set(file_to_open.name.split("/")[-1].replace(".yaml",""))
+            self.original_trial_name.set(self.trial_name.get())
+            self._load_options_from_competition_class(build_competition_from_file(yaml_dict))
+            self.load_through_file_flag = True
+            self.file_name = file_to_open.name
+            self.update_current_file_label(1,1,1)
+            self.update_available_kitting_trays(1,1,1)
+            self.open_main_window()
+        except:
+            try:
+                if file_to_open.name != None:
+                    print("Unable to open or parse file")
+            except:
+                pass
 
     def _load_options_from_competition_class(self, competition: CompetitionClass):
         self.save_file_button.configure(command=self.run_overwrite_window)
@@ -443,7 +434,6 @@ class GUI_CLASS(ctk.CTk):
             self.assembly_insert_rotations[i].set(competition.competition["assembly_insert_rotations"][i])
 
         self.original_agv_parts_dict = competition.competition["agv_dict"]
-        print(self.original_agv_parts_dict)
 
         self.bin_parts = competition.competition["bin_parts"]
         self.current_bin_parts = competition.competition["current_bin_parts"]
@@ -479,7 +469,6 @@ class GUI_CLASS(ctk.CTk):
                 for part in order.assembly_task.parts:
                     part : AssemblyPart
                     self.available_quadrants[f"agv_{part.agv}"].remove(int(part.quadrant))
-                    print(self.available_quadrants)
         self.kitting_order_counter.set(str(len(self.kitting_ids)))
         
         self.current_challenges = competition.competition["challenges"]
@@ -558,7 +547,7 @@ class GUI_CLASS(ctk.CTk):
         self.kitting_tray_frame.grid_rowconfigure(0, weight=1)
         self.kitting_tray_frame.grid_rowconfigure(100, weight=1)
         self.kitting_tray_frame.grid_columnconfigure(0, weight=1)
-        self.kitting_tray_frame.grid_columnconfigure(4, weight=1)
+        self.kitting_tray_frame.grid_columnconfigure(6, weight=1)
         tray_label = ctk.CTkLabel(self.kitting_tray_frame,text="Select the tray ids for each slot")
         tray_label.grid(row=1, column = MIDDLE_COLUMN)
         kitting_tray_canvas = Canvas(self.kitting_tray_frame, height=400)
@@ -618,7 +607,7 @@ class GUI_CLASS(ctk.CTk):
         self.assembly_inserts_frame.grid_rowconfigure(0, weight=1)
         self.assembly_inserts_frame.grid_rowconfigure(100, weight=1)
         self.assembly_inserts_frame.grid_columnconfigure(0, weight=1)
-        self.assembly_inserts_frame.grid_columnconfigure(4, weight=1)
+        self.assembly_inserts_frame.grid_columnconfigure(6, weight=1)
         for i in range(len(ASSEMBLY_STATIONS)):
             label_text = f"{ASSEMBLY_STATIONS[i]} rotation value: {SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())]}"
             station_label = ctk.CTkLabel(self.assembly_inserts_frame, text=label_text)
@@ -675,7 +664,7 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_frame.grid_rowconfigure(0, weight=1)
         self.bin_parts_frame.grid_rowconfigure(100, weight=1)
         self.bin_parts_frame.grid_columnconfigure(0, weight=1)
-        self.bin_parts_frame.grid_columnconfigure(4, weight=1)
+        self.bin_parts_frame.grid_columnconfigure(6, weight=1)
         bin_selection = ctk.StringVar()
         bin_selection.set(ALL_BINS[0])
         bin_label = ctk.CTkLabel(self.bin_parts_frame,text="Select the bin you would like to add parts to:")
@@ -814,7 +803,7 @@ class GUI_CLASS(ctk.CTk):
         add_parts_bin_window.grid_rowconfigure(0, weight=1)
         add_parts_bin_window.grid_rowconfigure(100, weight=1)
         add_parts_bin_window.grid_columnconfigure(0, weight=1)
-        add_parts_bin_window.grid_columnconfigure(4, weight=1)
+        add_parts_bin_window.grid_columnconfigure(6, weight=1)
         add_parts_bin_window.geometry("400x450 + 700 + 300")
         for i in range(9):
             slot_widgets.append(ctk.CTkCheckBox(add_parts_bin_window,text=f"Slot {i+1}", variable=slot_values[i], onvalue=str(i), offvalue="-1", height=1, width=20))
@@ -1085,7 +1074,7 @@ class GUI_CLASS(ctk.CTk):
         self.orders_frame.grid_rowconfigure(0, weight=1)
         self.orders_frame.grid_rowconfigure(100, weight=1)
         self.orders_frame.grid_columnconfigure(0, weight=1)
-        self.orders_frame.grid_columnconfigure(4, weight=1)
+        self.orders_frame.grid_columnconfigure(6, weight=1)
 
         self.add_kitting_order_button = ctk.CTkButton(self.orders_frame, text="Add kitting order", command=self.add_kitting_order)
         self.add_assembly_order_button = ctk.CTkButton(self.orders_frame, text="Add assembly order", command=self.add_assembly_order)
@@ -1114,6 +1103,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_orders[self.temp_order_hold[1]] = copy(self.temp_order_hold[0])
             self.temp_order_hold = None
         
+        self.reset_order()
         self.clear_order_menu()
 
         if len(self.available_kitting_trays) == 0:
@@ -1121,36 +1111,71 @@ class GUI_CLASS(ctk.CTk):
         else:
             self.add_kitting_order_button.configure(state=NORMAL)
 
-        self.add_kitting_order_button.grid(column=MIDDLE_COLUMN, row=1, pady=10)
-        self.add_assembly_order_button.grid(column=MIDDLE_COLUMN, row=2, pady=10)
-        self.add_combined_order_button.grid(column=MIDDLE_COLUMN, row=3, pady=10)
+        self.add_kitting_order_button.grid(column=FAR_LEFT_COLUMN, columnspan = 5, row=1, pady=10)
+        self.add_assembly_order_button.grid(column=FAR_LEFT_COLUMN, columnspan = 5, row=2, pady=10)
+        self.add_combined_order_button.grid(column=FAR_LEFT_COLUMN, columnspan = 5, row=3, pady=10)
 
         self.current_main_order_widgets.append(self.add_kitting_order_button)
         self.current_main_order_widgets.append(self.add_assembly_order_button)
         self.current_main_order_widgets.append(self.add_combined_order_button)
         
-        menu_table_split = ctk.CTkLabel(self.orders_frame, justify="center",text="===========================================  Current Orders  ===========================================")
-        menu_table_split.grid(column=LEFT_COLUMN,columnspan=3, row=4, pady=10)
-        self.current_main_order_widgets.append(menu_table_split)
+        # menu_table_split = ctk.CTkLabel(self.orders_frame, justify="center",text="===========================================  Current Orders  ===========================================")
+        # menu_table_split.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=4, pady=10)
+        # self.current_main_order_widgets.append(menu_table_split)
+        table_sep = ttk.Separator(self.orders_frame,orient='horizontal')
+        table_sep.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=4, pady=10, sticky = "we")
+        self.current_main_order_widgets.append(table_sep)
 
-        current_row = 5
+        id_table_header = ctk.CTkLabel(self.orders_frame,text="ID")
+        id_table_header.grid(column=FAR_LEFT_COLUMN, row=5,pady=3)
+        self.current_main_order_widgets.append(id_table_header)
+        type_table_header = ctk.CTkLabel(self.orders_frame,text="Type")
+        type_table_header.grid(column=LEFT_COLUMN, row=5,pady=3)
+        self.current_main_order_widgets.append(type_table_header)
+        num_table_header = ctk.CTkLabel(self.orders_frame,text="# Parts")
+        num_table_header.grid(column=MIDDLE_COLUMN, row=5,pady=3)
+        self.current_main_order_widgets.append(num_table_header)
+        table_sep = ttk.Separator(self.orders_frame,orient='horizontal')
+        table_sep.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=6, pady=10, sticky = "we")
+        self.current_main_order_widgets.append(table_sep)
+        current_row = 7
         for i in range(len(self.current_orders)):
-            temp_order_label = ctk.CTkLabel(self.orders_frame,
-                                            text=f"Order {i}. ID: {self.current_orders[i].id}\nType {ORDER_TYPES[self.current_orders[i].type]}")
-            temp_order_label.grid(column = LEFT_COLUMN, row = current_row+i)
-            self.current_left_order_widgets.append(temp_order_label)
+            temp_order_id_label = ctk.CTkLabel(self.orders_frame,
+                                            text=str(self.current_orders[i].id))
+            temp_order_id_label.grid(column = FAR_LEFT_COLUMN, row = current_row,padx=15)
+            self.current_left_order_widgets.append(temp_order_id_label)
+
+            temp_order_type_label = ctk.CTkLabel(self.orders_frame,
+                                            text=str(ORDER_TYPES[self.current_orders[i].type]))
+            temp_order_type_label.grid(column = LEFT_COLUMN, row = current_row,padx=15)
+            self.current_left_order_widgets.append(temp_order_type_label)
+
+            num_parts = 0
+            if self.current_orders[i].type == OrderMsg.KITTING:
+                num_parts = len(self.current_orders[i].kitting_task.parts)
+            elif self.current_orders[i].type == OrderMsg.ASSEMBLY:
+                num_parts = len(self.current_orders[i].assembly_task.parts)
+            else:
+                num_parts = len(self.current_orders[i].combined_task.parts)
+            temp_order_num_parts_label = ctk.CTkLabel(self.orders_frame,
+                                            text=str(num_parts))
+            temp_order_num_parts_label.grid(column = MIDDLE_COLUMN, row = current_row,padx=15)
+            self.current_left_order_widgets.append(temp_order_num_parts_label)
 
             edit_order_button = ctk.CTkButton(self.orders_frame, text="Edit order", command=partial(self.edit_order, i))
             if len(self.available_kitting_trays) == 0 and self.current_orders[i].type == 0:
                 ToolTip(edit_order_button,msg="There are no kitting trays available. Unable to edit any kitting orders", delay=0.2)
                 edit_order_button.configure(state=DISABLED)
-            edit_order_button.grid(column=MIDDLE_COLUMN, row=current_row+i, padx=10)
+            edit_order_button.grid(column=RIGHT_COLUMN, row=current_row,padx=15)
             self.current_main_order_widgets.append(edit_order_button)
 
             delete_order_button = ctk.CTkButton(self.orders_frame, text = "Delete order", command=partial(self.delete_order, i))
-            delete_order_button.grid(column = RIGHT_COLUMN, row = current_row+i)
+            delete_order_button.grid(column = FAR_RIGHT_COLUMN, row = current_row,padx=15)
             self.current_right_order_widgets.append(delete_order_button)
-    
+            table_sep = ttk.Separator(self.orders_frame,orient='horizontal')
+            table_sep.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=current_row+1, pady=10, sticky = "we")
+            self.current_main_order_widgets.append(table_sep)
+            current_row+=2
     def edit_order(self, index : int):
         self.temp_order_hold = (deepcopy(self.current_orders[index]),index)
         self.set_order_variables_to_current_order(self.current_orders[index])
@@ -1531,21 +1556,20 @@ class GUI_CLASS(ctk.CTk):
         self.available_assembly_agvs.clear()
         indeces = [0,1] if self.order_info["assembly_task"]["station"].get() in ["as1","as2"] else [2,3]
         for i in range(4):
-            if i not in indeces or len(self.available_quadrants[f"agv_{i+1}"])==0:
+            if i not in indeces:
                 self.order_info["assembly_task"]["agv_numbers"][i].set("0")
         for i in indeces:
+            check_box = ctk.CTkCheckBox(self.orders_frame,
+                                        text=f"AGV {i+1}",
+                                        variable=self.order_info["assembly_task"]["agv_numbers"][i],
+                                        offvalue="0",
+                                        onvalue="1",
+                                        height=1, 
+                                        width=20)
+            self.grid_left_column(check_box)
+            self.current_left_order_widgets.append(check_box)
             if len(self.available_quadrants[f"agv_{i+1}"])>0:
-                check_box = ctk.CTkCheckBox(self.orders_frame,
-                                            text=f"AGV {i+1}",
-                                            variable=self.order_info["assembly_task"]["agv_numbers"][i],
-                                            offvalue="0",
-                                            onvalue="1",
-                                            height=1, 
-                                            width=20)
-                self.grid_left_column(check_box)
-                self.current_left_order_widgets.append(check_box)
-                if len(self.available_quadrants[f"agv_{i+1}"])>0:
-                    self.available_assembly_agvs.append(str(i+1))
+                self.available_assembly_agvs.append(str(i+1))
 
         self.add_part_assembly_task = ctk.CTkButton(self.orders_frame, text="Add part", command=self.add_assembly_part)
         self.grid_left_column(self.add_part_assembly_task)
@@ -1612,7 +1636,7 @@ class GUI_CLASS(ctk.CTk):
     def update_available_agvs(self,_,__,___):
         self.available_assembly_agvs.clear()
         for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
-            if self.order_info["assembly_task"]["agv_numbers"][i].get()=="1":
+            if self.order_info["assembly_task"]["agv_numbers"][i].get()=="1" and len(self.available_quadrants[f"agv_{i+1}"])!=0:
                 self.available_assembly_agvs.append(str(i+1))
         try:
             if len(self.available_assembly_agvs)==0:
@@ -1909,7 +1933,7 @@ class GUI_CLASS(ctk.CTk):
         self.challenges_frame.grid_rowconfigure(0, weight=1)
         self.challenges_frame.grid_rowconfigure(100, weight=1)
         self.challenges_frame.grid_columnconfigure(0, weight=1)
-        self.challenges_frame.grid_columnconfigure(4, weight=1)
+        self.challenges_frame.grid_columnconfigure(6, weight=1)
         self.add_dropped_part_button = ctk.CTkButton(self.challenges_frame, text="Add dropped part challenge", command=self.add_dropped_part_challenge)
         self.add_robot_malfunction_button = ctk.CTkButton(self.challenges_frame, text="Add robot malfunction challenge", command=self.add_robot_malfunction_challenge)
         self.add_sensor_blackout_button = ctk.CTkButton(self.challenges_frame, text="Add sensor blackout challenge", command=self.add_sensor_blackout_challenge)
@@ -2172,7 +2196,7 @@ class GUI_CLASS(ctk.CTk):
             self.robot_malfunction_info["ceiling_robot"].set("1" if robot_malfunction_challenge.robots_to_disable.ceiling_robot else "0")
             self.set_challenge_condition_info_to_existing(robot_malfunction_challenge.condition)
 
-        self.robot_malfunction_info["duration"].trace_add('write',partial(self.update_duration_label, duration_label))
+        self.robot_malfunction_info["duration"].trace_add('write',partial(self.update_rm_duration_label, duration_label))
 
         self.save_challenge_button.configure(text="Save robot malfunction challenge", command=partial(self.save_challenge, "robot_malfunction", index))
         self.enable_disable_robot_malfunction_save(1,1,1)
@@ -2181,7 +2205,7 @@ class GUI_CLASS(ctk.CTk):
         self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
     
-    def update_duration_label(self,label : ctk.CTkLabel,_,__,___):
+    def update_rm_duration_label(self,label : ctk.CTkLabel,_,__,___):
         label.configure(text=f"Current duration for the robot malfunction challenge: {self.robot_malfunction_info['duration'].get()}")
 
     def enable_disable_robot_malfunction_save(self,_,__,___):
@@ -2224,21 +2248,23 @@ class GUI_CLASS(ctk.CTk):
     def add_sensor_blackout_challenge(self, sensor_blackout_challenge = None, index = -1):
         self.clear_challenges_menu()
 
-        duration_label = ctk.CTkLabel(self.challenges_frame, text="Enter the duration for the sensor blackout")
+        duration_label = ctk.CTkLabel(self.challenges_frame,text=f"Current duration for the sensor blackout challenge: {self.sensor_blackout_info['duration'].get()}")
         self.grid_and_append_challenge_widget(duration_label)
-        duration_menu = ctk.CTkEntry(self.challenges_frame, textvariable=self.sensor_blackout_info["duration"])
-        self.grid_and_append_challenge_widget(duration_menu)
+        duration_slider = ctk.CTkSlider(self.challenges_frame,variable=self.sensor_blackout_info['duration'],from_=5.0, to=60.0, number_of_steps=11, orientation="horizontal")
+        self.grid_and_append_challenge_widget(duration_slider)
 
         sensors_label = ctk.CTkLabel(self.challenges_frame, text="Select the sensors for the sensor blackout")
         self.grid_and_append_challenge_widget(sensors_label)
         for i in range(len(self.sensor_blackout_info["sensors_to_disable"])):
             sensor_cb = ctk.CTkCheckBox(self.challenges_frame,text=SENSORS[i],variable=self.sensor_blackout_info["sensors_to_disable"][SENSORS[i]], onvalue="1", offvalue="0", height=1, width=20)
-            self.grid_and_append_challenge_widget(sensor_cb)
+            sensor_cb.grid(column = MIDDLE_COLUMN, row = self.current_challenges_row, pady = 5,sticky=NW, ipadx=15)
+            self.current_challenges_row+=1
+            self.current_challenges_widgets.append(sensor_cb)
         
         self.show_challenges_condition_menu()
 
         if sensor_blackout_challenge != None:
-            self.sensor_blackout_info["duration"].set(str(sensor_blackout_challenge.duration))
+            self.sensor_blackout_info["duration"].set(float(sensor_blackout_challenge.duration))
             self.sensor_blackout_info["sensors_to_disable"]["break_beam"].set("1" if sensor_blackout_challenge.sensors_to_disable.break_beam else "0")
             self.sensor_blackout_info["sensors_to_disable"]["proximity"].set("1" if sensor_blackout_challenge.sensors_to_disable.proximity else "0")
             self.sensor_blackout_info["sensors_to_disable"]["laser_profiler"].set("1" if sensor_blackout_challenge.sensors_to_disable.laser_profiler else "0")
@@ -2247,12 +2273,17 @@ class GUI_CLASS(ctk.CTk):
             self.sensor_blackout_info["sensors_to_disable"]["logical_camera"].set("1" if sensor_blackout_challenge.sensors_to_disable.logical_camera else "0")
             self.set_challenge_condition_info_to_existing(sensor_blackout_challenge.condition)
 
+        self.sensor_blackout_info["duration"].trace_add('write',partial(self.update_sb_duration_label, duration_label))
+
         self.save_challenge_button.configure(text="Save sensor blackout challenge", command=partial(self.save_challenge, "sensor_blackout", index))
         self.enable_disable_sensor_blackout_save(1,1,1)
         self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
         self.current_challenges_widgets.append(self.cancel_challenge_button)
         self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
         self.current_challenges_widgets.append(self.save_challenge_button)
+    
+    def update_sb_duration_label(self,label : ctk.CTkLabel,_,__,___):
+        label.configure(text=f"Current duration for the sensor blackout challenge: {self.sensor_blackout_info['duration'].get()}")
     
     def enable_disable_sensor_blackout_save(self, _, __, ___):
         if [self.sensor_blackout_info["sensors_to_disable"][sensor].get() for sensor in SENSORS].count("0") == len(SENSORS):
@@ -2677,7 +2708,8 @@ class GUI_CLASS(ctk.CTk):
             new_label += f"# CHALLENGES INFORMATION\n"
             challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
             new_label += f"\n{challenges_data}\n"
-        self.sub_frame.configure(width = self.notebook.winfo_width()-30, height=self.notebook.winfo_height()-50)
+        if self.notebook.winfo_width()>1:
+            self.sub_frame.configure(width = self.notebook.winfo_width()-30, height=self.notebook.winfo_height()-50)
         self.current_file_label.configure(text=new_label)
 
     # =======================================================

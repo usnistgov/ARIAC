@@ -64,15 +64,6 @@ class ConveyorPart():
         self.offset = offset
         self.flipped = flipped
 
-class AGVPart():
-    def __init__(self,color, pType, agv, quadrant, rotation):
-        self.part = PartMsg()
-        self.part.color = _part_color_ints[color.upper()]
-        self.part.type = _part_type_ints[pType.upper()]
-        self.agv = agv
-        self.quadrant = quadrant
-        self.rotation = rotation
-
 class AssemblyPart():
     def __init__(self,color, pType, agv, quadrant,rotation):
         self.part = PartMsg()

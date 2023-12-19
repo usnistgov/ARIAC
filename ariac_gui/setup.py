@@ -18,7 +18,7 @@ setup(
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='jfernandez',
-    maintainer_email='jothomas0615@gmail.com',
+    maintainer_email='joseph.fernandez@nist.gov',
     description='For testing ros 2',
     license='ARIAC',
     entry_points={

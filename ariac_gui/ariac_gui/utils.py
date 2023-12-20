@@ -260,11 +260,9 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
                 new_order.combined_task.station = order["combined_task"]["station"]
                 combined_parts = []
                 for part in order["combined_task"]["products"]:
-                    combined_part = AssemblyPartMsg()
-                    combined_part.part.color = _part_color_ints[part["color"].upper()]
-                    combined_part.part.type = _part_type_ints[part["type"].upper()]
-                    combined_part.assembled_pose = _assembly_part_poses[part["type"].upper()]
-                    combined_part.install_direction = _assembly_part_install_directions[part["type"].upper()]
+                    combined_part = PartMsg()
+                    combined_part.color = _part_color_ints[part["color"].upper()]
+                    combined_part.type = _part_type_ints[part["type"].upper()]
                     combined_parts.append(combined_part)
                 new_order.combined_task.parts = combined_parts
             

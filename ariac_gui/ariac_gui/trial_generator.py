@@ -441,7 +441,7 @@ class GUI_CLASS(ctk.CTk):
             for slot in range(9):
                 if self.current_bin_parts[f"bin{bin_number}"][slot]!="":
                     self.all_present_parts.append(_part_color_str[self.bin_parts[f"bin{bin_number}"][slot].part.color]+" "+_part_type_str[self.bin_parts[f"bin{bin_number}"][slot].part.type])
-        self.bin_parts_counter.set(str(len([1 for part in self.current_bin_parts if part !=""])))
+        self.bin_parts_counter.set(str(sum([sum([1 for part in self.current_bin_parts[key] if part!=""]) for key in self.current_bin_parts.keys()])))
 
         if len(competition.competition["conveyor_belt"]["parts_to_spawn"])>0:
             self.has_parts.set("1")
@@ -528,7 +528,7 @@ class GUI_CLASS(ctk.CTk):
     #            Configuration Setup Functions
     # =======================================================
     def add_setup_widgets_to_frame(self):
-        time_limit_label = ctk.CTkLabel(self.setup_frame, text="Enter the time limit (-1 for no time limit and up to 400):")
+        time_limit_label = ctk.CTkLabel(self.setup_frame, text="Enter the time limit (-1 for no time limit):")
         time_limit_label.pack()
         time_limit_entry = ctk.CTkEntry(self.setup_frame, textvariable=self.time_limit)
         time_limit_entry.pack()
@@ -557,8 +557,8 @@ class GUI_CLASS(ctk.CTk):
         kitting_tray_canvas.create_rectangle(200, 10, 360, 310, 
                                 outline = "black", fill = "#f6f6f6",
                                 width = 2)
-        menu_coordinates = [(95,60),(95,160),(95,260),(285,60),(285,160),(285,260)]
-        label_coordinates = [(20,60),(20,160),(20,260),(210,60),(210,160),(210,260)]
+        menu_coordinates = [(95,75),(95,175),(95,275),(285,75),(285,175),(285,275)]
+        label_coordinates = [(coord[0],coord[1]-35) for coord in menu_coordinates]
         
         for i in self.kitting_tray_selections:i.set(KITTING_TRAY_OPTIONS[0])
         tray_menus = [ctk.CTkOptionMenu(self.kitting_tray_frame,
@@ -568,9 +568,10 @@ class GUI_CLASS(ctk.CTk):
                                         text_color="black",
                                         button_color="#d3d3d3",
                                         button_hover_color="#9e9e9e",
-                                        anchor='center') for i in range(6)]
+                                        anchor='center',
+                                        width=50) for i in range(6)]
         for i in range(6):
-            kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"{i+1}:"))
+            kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"Slot {i+1}:",bg_color="#f6f6f6"))
             kitting_tray_canvas.create_window(menu_coordinates[i], window = tray_menus[i])
         kitting_tray_canvas.create_window((90,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_1"))
         kitting_tray_canvas.create_window((280,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
@@ -689,12 +690,20 @@ class GUI_CLASS(ctk.CTk):
         self.show_grid(bin_selection,bin_parts_canvas,self.bin_parts_frame)
         bin_parts_canvas.grid(column = MIDDLE_COLUMN, sticky = "we", row=3)
         add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection))
-        add_multiple_parts_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 15)
+        add_multiple_parts_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 5)
+        clear_bin_button = ctk.CTkButton(self.bin_parts_frame, text="Clear bin", command = partial(self.clear_bin, bin_selection))
+        clear_bin_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 5)
         flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
         flipped_meaning_label.grid(column = MIDDLE_COLUMN, columnspan = 2,pady = 10)
         bin_selection.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
         bin_selection.trace_add('write',partial(self.update_map,bin_map_canvas, bin_selection))
         self.bin_parts_counter.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
+
+    def clear_bin(self, bin_selection):
+        current_bin = bin_selection.get()
+        self.current_bin_parts[current_bin]=["" for _ in range(9)]
+        self.bin_parts[current_bin] = [BinPart() for _ in range(9)]
+        self.bin_parts_counter.set(str(sum([sum([1 for part in self.current_bin_parts[key] if part!=""]) for key in self.current_bin_parts.keys()])))
 
     def show_map(self,canvas:Canvas, bin_selection):
         bin_coordinates = {"bin8":[2,2,47,47],
@@ -833,15 +842,15 @@ class GUI_CLASS(ctk.CTk):
         add_parts_bin_window.grid_rowconfigure(100, weight=1)
         add_parts_bin_window.grid_columnconfigure(0, weight=1)
         add_parts_bin_window.grid_columnconfigure(6, weight=1)
-        add_parts_bin_window.geometry("400x450 + 700 + 300")
+        add_parts_bin_window.geometry("500x450 + 700 + 300")
         for i in range(9):
             slot_widgets.append(ctk.CTkCheckBox(add_parts_bin_window,text=f"Slot {i+1}", variable=slot_values[i], onvalue=str(i), offvalue="-1", height=1, width=20))
-            slot_widgets[-1].grid(row = i//3+1, column=COLUMN_LIST[i%3])
+            slot_widgets[-1].grid(row = i//3+1, column=COLUMN_LIST[i%3], pady=3)
         bin_vals = {}
         select_all_button = ctk.CTkButton(add_parts_bin_window, text="Select all slots", command=partial(self.set_all_slots_on, slot_values))
-        select_all_button.grid(column = MIDDLE_COLUMN)
+        select_all_button.grid(column = LEFT_COLUMN, row=4, pady=10)
         deselect_all_button = ctk.CTkButton(add_parts_bin_window, text="Deselect all slots", command=partial(self.set_all_slots_off, slot_values))
-        deselect_all_button.grid(column = MIDDLE_COLUMN)
+        deselect_all_button.grid(column = RIGHT_COLUMN, row=4, pady=10)
         bin_vals["color"] = ctk.StringVar()
         bin_vals["color"].set(PART_COLORS[0])
         bin_vals["pType"] = ctk.StringVar()
@@ -1147,10 +1156,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_main_order_widgets.append(self.add_kitting_order_button)
         self.current_main_order_widgets.append(self.add_assembly_order_button)
         self.current_main_order_widgets.append(self.add_combined_order_button)
-        
-        # menu_table_split = ctk.CTkLabel(self.orders_frame, justify="center",text="===========================================  Current Orders  ===========================================")
-        # menu_table_split.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=4, pady=10)
-        # self.current_main_order_widgets.append(menu_table_split)
+    
         table_sep = ttk.Separator(self.orders_frame,orient='horizontal')
         table_sep.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=4, pady=10, sticky = "we")
         self.current_main_order_widgets.append(table_sep)
@@ -1368,21 +1374,35 @@ class GUI_CLASS(ctk.CTk):
             widget.grid_forget()
 
         self.current_right_order_widgets.clear()
+        color_label = ctk.CTkLabel(self.orders_frame, text = "Select the color of the part")
+        self.grid_right_column(color_label)
+        self.current_right_order_widgets.append(color_label)
         color_menu = ctk.CTkOptionMenu(self.orders_frame, variable=self.order_info["announcement"]["color"],values=PART_COLORS)
         self.grid_right_column(color_menu)
         self.current_right_order_widgets.append(color_menu)
+
+        type_label = ctk.CTkLabel(self.orders_frame, text = "Select the type of part")
+        self.grid_right_column(type_label)
+        self.current_right_order_widgets.append(type_label)
         type_menu = ctk.CTkOptionMenu(self.orders_frame, variable=self.order_info["announcement"]["type"],values=PART_TYPES)
         self.grid_right_column(type_menu)
         self.current_right_order_widgets.append(type_menu)
-        quadrant_menu = ctk.CTkOptionMenu(self.orders_frame, variable=self.order_info["announcement"]["agv"], values=AGV_OPTIONS)
-        self.grid_right_column(quadrant_menu)
-        self.current_right_order_widgets.append(quadrant_menu)
+
+        agv_label = ctk.CTkLabel(self.orders_frame, text = "Select the agv for the part")
+        self.grid_right_column(agv_label)
+        self.current_right_order_widgets.append(agv_label)
+        agv_menu = ctk.CTkOptionMenu(self.orders_frame, variable=self.order_info["announcement"]["agv"], values=AGV_OPTIONS)
+        self.grid_right_column(agv_menu)
+        self.current_right_order_widgets.append(agv_menu)
     
     def show_submission_announcement_menu(self):
         for widget in self.current_right_order_widgets:
             widget.grid_forget()
             
         self.current_right_order_widgets.clear()
+        id_label = ctk.CTkLabel(self.orders_frame, text="Select the order id")
+        self.grid_right_column(id_label)
+        self.current_right_order_widgets.append(id_label)
         id_menu = ctk.CTkOptionMenu(self.orders_frame, variable=self.order_info["announcement"]["submission_id"],values=self.used_ids)
         self.grid_right_column(id_menu)
         self.current_right_order_widgets.append(id_menu)
@@ -1438,7 +1458,7 @@ class GUI_CLASS(ctk.CTk):
                 self.current_order_part_widgets.append(current_parts_label)
                 current_row+=1
                 for part in self.order_info["combined_task"]["parts"]:
-                    part_label = ctk.CTkLabel(self.orders_frame, text=f"{_part_color_str[part.part.color]} {_part_type_str[part.part.type]}")
+                    part_label = ctk.CTkLabel(self.orders_frame, text=f"{_part_color_str[part.color]} {_part_type_str[part.type]}")
                     part_label.grid(row = current_row, column = LEFT_COLUMN)
                     self.current_order_part_widgets.append(part_label)
                     edit_part_button = ctk.CTkButton(self.orders_frame, text="Edit part", command=partial(self.add_combined_part,part, index))
@@ -1658,8 +1678,8 @@ class GUI_CLASS(ctk.CTk):
             else:
                 msg="No issue. You can save now"
             for part in self.order_info["combined_task"]["parts"]:
-                    if _part_color_str[part.part.color]+" "+_part_type_str[part.part.type] not in self.all_present_parts:
-                        msg+=f"\nWARNING: {_part_color_str[part.part.color]+' '+_part_type_str[part.part.type]} not found in bins or conveyor"
+                    if _part_color_str[part.color]+" "+_part_type_str[part.type] not in self.all_present_parts:
+                        msg+=f"\nWARNING: {_part_color_str[part.color]+' '+_part_type_str[part.type]} not found in bins or conveyor"
         return msg
     
     def update_available_agvs(self,_,__,___):
@@ -1834,7 +1854,10 @@ class GUI_CLASS(ctk.CTk):
         available_part_types = [t for t in PART_TYPES]
         task = "assembly_task" if self.order_info["order_type"].get()=="assembly" else "combined_task"
         for part in self.order_info[task]["parts"]:
-            available_part_types.remove(_part_type_str[part.part.type].lower())
+            if task=="assembly_task":
+                available_part_types.remove(_part_type_str[part.part.type].lower())
+            else:
+                available_part_types.remove(_part_type_str[part.type].lower())
         return available_part_types
 
     def clear_order_menu(self):
@@ -1947,10 +1970,10 @@ class GUI_CLASS(ctk.CTk):
                     temp_order_dict["combined_task"]["products"] = []
                     for part in order.combined_task.parts:
                         temp_combined_part_dict = {}
-                        temp_combined_part_dict["type"] = _part_type_str[part.part.type].lower()
-                        temp_combined_part_dict["color"] = _part_color_str[part.part.color].lower()
-                        for key in _assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()].keys():
-                            temp_combined_part_dict[key] = copy(_assembly_part_pose_and_direction_dicts[_part_type_str[part.part.type].upper()][key])
+                        temp_combined_part_dict["type"] = _part_type_str[part.type].lower()
+                        temp_combined_part_dict["color"] = _part_color_str[part.color].lower()
+                        for key in _assembly_part_pose_and_direction_dicts[_part_type_str[part.type].upper()].keys():
+                            temp_combined_part_dict[key] = copy(_assembly_part_pose_and_direction_dicts[_part_type_str[part.type].upper()][key])
                         temp_order_dict["combined_task"]["products"].append(temp_combined_part_dict)
                 self.orders_dict["orders"].append(temp_order_dict)
     
@@ -2674,10 +2697,18 @@ class GUI_CLASS(ctk.CTk):
         self.current_file_frame.grid_columnconfigure(2, weight=1)
         self.sub_frame = ctk.CTkScrollableFrame(self.current_file_frame,width = 700, height=550)
         self.sub_frame.grid(column = 1, row = 1)
+        self.sub_frame.bind_all("<Button-4>", self.mouse_wheel_up)
+        self.sub_frame.bind_all("<Button-5>", self.mouse_wheel_down)
         self.current_file_label = ctk.CTkLabel(self.sub_frame, text="", justify="left", font=("UbuntuMono",15))
         self.current_file_label.grid()
         self.update_current_file_label(1,1,1)
+
+    def mouse_wheel_up(self, event):
+        self.sub_frame._parent_canvas.yview_scroll(int(-2), "units")
     
+    def mouse_wheel_down(self, event):
+        self.sub_frame._parent_canvas.yview_scroll(int(2), "units")
+
     def update_current_file_label(self,_,__,___):
         try:
             self.current_file_label.configure("")

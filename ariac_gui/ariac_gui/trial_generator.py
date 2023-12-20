@@ -718,7 +718,7 @@ class GUI_CLASS(ctk.CTk):
         bin_selection.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
         bin_selection.trace_add('write',partial(self.update_map,bin_map_canvas, bin_selection))
         self.bin_parts_counter.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
-
+        self.bin_parts_counter.trace_add('write',partial(self.update_map,bin_map_canvas, bin_selection))
     def clear_bin(self, bin_selection):
         current_bin = bin_selection.get()
         self.current_bin_parts[current_bin]=["" for _ in range(9)]
@@ -734,6 +734,12 @@ class GUI_CLASS(ctk.CTk):
                            "bin4":[207,2,250,47],
                            "bin2":[152,57,197,102],
                            "bin1":[207,57,252,102]}
+        part_coordinates = {key:[] for key in bin_coordinates.keys()}
+        for key in bin_coordinates.keys():
+            starting_x = bin_coordinates[key][0]
+            starting_y = bin_coordinates[key][1]
+            for i in range(9):
+                part_coordinates[key].append((starting_x+(i%3+1)*11,starting_y+(i//3+1)*11))
         for key in bin_coordinates.keys():
             self.current_bin_map_canvas_elements.append(canvas.create_rectangle(bin_coordinates[key][0],
                                                                                 bin_coordinates[key][1],
@@ -742,6 +748,19 @@ class GUI_CLASS(ctk.CTk):
                                                                                 outline="black",
                                                                                 fill = ("#60c6f1" if key==bin_selection.get() else "white"),
                                                                                 width = 2))
+            for slot in range(9):
+                if self.current_bin_parts[key][slot]!="":
+                    image_label = ctk.CTkLabel(self.bin_parts_frame,
+                                               image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[key][slot]].rotate(self.bin_parts[key][slot].rotation*180/pi),
+                                                                  size=(10,10)),
+                                               text="",
+                                               bg_color=("#60c6f1" if key==bin_selection.get() else "white"),
+                                               height=0)
+                    self.current_bin_map_canvas_elements.append(canvas.create_window(part_coordinates[key][slot],
+                                                                                     window=image_label))
+
+    def nothing_function(self):
+        pass
 
     def update_map(self, canvas:Canvas, bin_selection,_,__,___):
         for i in self.current_bin_map_canvas_elements:

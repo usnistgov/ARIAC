@@ -759,8 +759,6 @@ class GUI_CLASS(ctk.CTk):
                     self.current_bin_map_canvas_elements.append(canvas.create_window(part_coordinates[key][slot],
                                                                                      window=image_label))
 
-    def nothing_function(self):
-        pass
 
     def update_map(self, canvas:Canvas, bin_selection,_,__,___):
         for i in self.current_bin_map_canvas_elements:
@@ -985,19 +983,32 @@ class GUI_CLASS(ctk.CTk):
         self.main_conveyor_menu_widgets.append(conveyor_order_label)
         conveyor_order_menu = ctk.CTkOptionMenu(self.conveyor_parts_frame, variable=self.conveyor_setup_vals["order"],values=CONVEYOR_ORDERS,state=tk.DISABLED)
         self.main_conveyor_menu_widgets.append(conveyor_order_menu)
-        add_parts_button = ctk.CTkButton(self.conveyor_parts_frame,text="Add part lot", command=partial(self.add_conveyor_parts), state=tk.DISABLED)
-        self.main_conveyor_menu_widgets.append(add_parts_button)
+        self.add_conveyor_parts_button = ctk.CTkButton(self.conveyor_parts_frame,text="Add part lot", command=partial(self.add_conveyor_parts), state=tk.DISABLED)
+        self.main_conveyor_menu_widgets.append(self.add_conveyor_parts_button)
+        ToolTip(self.add_conveyor_parts_button, msg = self.add_conveyor_parts_hover_message, delay=0.2)
         current_parts_label = ctk.CTkLabel(self.conveyor_parts_frame, text="Parts on conveyor belt:")
         self.main_conveyor_menu_widgets.append(current_parts_label)
-        self.conveyor_canvas_frame = ctk.CTkScrollableFrame(self.conveyor_parts_frame,width = 700, height=250)
-        self.conveyor_canvas = Canvas(self.conveyor_canvas_frame, height=1000)
-        
-        self.conveyor_canvas.configure(scrollregion=self.conveyor_canvas_frame.grid_bbox())
-        self.main_conveyor_menu_widgets.append(self.conveyor_canvas_frame)
+        self.conveyor_canvas = Canvas(self.conveyor_parts_frame, height=300)
+        self.main_conveyor_menu_widgets.append(self.conveyor_canvas)
         self.conveyor_setup_vals["spawn_rate"].trace_add('write',partial(self.update_spawn_rate_slider,self.conveyor_setup_vals["spawn_rate"],spawn_rate_label))
         self.has_parts.trace_add('write', self.activate_deactivate_menu)
         self.conveyor_parts_counter.trace_add('write',partial(self.show_current_parts,self.conveyor_canvas))
+        self.conveyor_parts_counter.trace_add('write',self.activate_deactivate_part_button)
     
+    def activate_deactivate_part_button(self,_,__,___):
+        if len(self.current_conveyor_parts)<4:
+            self.add_conveyor_parts_button.configure(state=NORMAL)
+        else:
+            self.add_conveyor_parts_button.configure(state=DISABLED)
+    
+    def add_conveyor_parts_hover_message(self)->str:
+        msg=""
+        if len(self.current_conveyor_parts)<4:
+            msg = f"You can add up to {4-len(self.current_conveyor_parts)} more parts to the conveyor belt"
+        else:
+            msg = "You have reached the maximum amount of parts on the conveyor belt"
+        return msg
+
     def show_current_parts(self,canvas : tk.Canvas,_,__,___):
         for e in self.current_conveyor_canvas_elements:
             canvas.delete(e)

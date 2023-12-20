@@ -223,6 +223,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_conveyor_canvas_elements = []
         self.has_parts = ctk.StringVar()
         self.has_parts.set('0')
+        self.main_conveyor_menu_widgets = []
         self.conveyor_parts_counter.trace_add('write', self.update_current_file_label)
 
         # Order widgets
@@ -789,7 +790,7 @@ class GUI_CLASS(ctk.CTk):
         type_label.pack()
         type_menu = ctk.CTkOptionMenu(add_part_bin_window, variable=bin_vals["pType"],values=PART_TYPES)
         type_menu.pack()
-        rotation_label = ctk.CTkLabel(add_part_bin_window, text=f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(bin_vals['rotation'].get())]}")
+        rotation_label = ctk.CTkLabel(add_part_bin_window, text=f"Rotation value: {SLIDER_STR[SLIDER_VALUES.index(bin_vals['rotation'].get())]}")
         rotation_label.pack()
         rotation_slider = ctk.CTkSlider(add_part_bin_window, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=bin_vals["rotation"], orientation="horizontal")
         rotation_slider.pack(pady=5)
@@ -867,7 +868,7 @@ class GUI_CLASS(ctk.CTk):
         type_label.grid(column=MIDDLE_COLUMN)
         type_menu = ctk.CTkOptionMenu(add_parts_bin_window, variable=bin_vals["pType"],values=PART_TYPES)
         type_menu.grid(column=MIDDLE_COLUMN)
-        rotation_label = ctk.CTkLabel(add_parts_bin_window, text=f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(bin_vals['rotation'].get())]}")
+        rotation_label = ctk.CTkLabel(add_parts_bin_window, text=f"Rotation value: {SLIDER_STR[SLIDER_VALUES.index(bin_vals['rotation'].get())]}")
         rotation_label.grid(column=MIDDLE_COLUMN)
         rotation_slider = ctk.CTkSlider(add_parts_bin_window, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=bin_vals["rotation"], orientation="horizontal")
         rotation_slider.grid(column=MIDDLE_COLUMN, pady = 5)
@@ -937,30 +938,23 @@ class GUI_CLASS(ctk.CTk):
         self.conveyor_setup_vals['spawn_rate'].set(1)
         self.conveyor_setup_vals["order"].set(CONVEYOR_ORDERS[0])
         conveyor_active_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Conveyor active",variable=self.conveyor_setup_vals["active"], onvalue="1", offvalue="0", height=1, width=20, state=tk.DISABLED)
-        conveyor_active_cb.pack(pady=5)
-        self.present_conveyor_widgets.append(conveyor_active_cb)
-        spawn_rate_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"Current spawn rate (seconds): {self.conveyor_setup_vals['spawn_rate'].get()}")
-        spawn_rate_label.pack()
+        self.main_conveyor_menu_widgets.append(conveyor_active_cb)
+        spawn_rate_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"Spawn rate (seconds): {self.conveyor_setup_vals['spawn_rate'].get()}")
+        self.main_conveyor_menu_widgets.append(spawn_rate_label)
         spawn_rate_slider = ctk.CTkSlider(self.conveyor_parts_frame, state=tk.DISABLED,variable=self.conveyor_setup_vals["spawn_rate"],from_=1, to=10, number_of_steps=9, orientation="horizontal")
-        spawn_rate_slider.pack()
-        self.present_conveyor_widgets.append(spawn_rate_slider)
+        self.main_conveyor_menu_widgets.append(spawn_rate_slider)
         conveyor_order_label = ctk.CTkLabel(self.conveyor_parts_frame,text=f"Select the conveyor order:")
-        conveyor_order_label.pack()
+        self.main_conveyor_menu_widgets.append(conveyor_order_label)
         conveyor_order_menu = ctk.CTkOptionMenu(self.conveyor_parts_frame, variable=self.conveyor_setup_vals["order"],values=CONVEYOR_ORDERS,state=tk.DISABLED)
-        conveyor_order_menu.pack()
-        self.present_conveyor_widgets.append(conveyor_order_menu)
+        self.main_conveyor_menu_widgets.append(conveyor_order_menu)
         add_parts_button = ctk.CTkButton(self.conveyor_parts_frame,text="Add parts", command=partial(self.add_conveyor_parts), state=tk.DISABLED)
-        add_parts_button.pack(pady=10)
-        current_parts_label = ctk.CTkLabel(self.conveyor_parts_frame, text="Current parts on conveyor belt:")
-        current_parts_label.pack()
-        conveyor_canvas = Canvas(self.conveyor_parts_frame)
-        conveyor_canvas.pack(fill = BOTH, expand = 1)
-        flipped_meaning_label = ctk.CTkLabel(self.conveyor_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
-        flipped_meaning_label.pack(pady=10)
-        self.present_conveyor_widgets.append(add_parts_button)
+        self.main_conveyor_menu_widgets.append(add_parts_button)
+        current_parts_label = ctk.CTkLabel(self.conveyor_parts_frame, text="Parts on conveyor belt:")
+        self.main_conveyor_menu_widgets.append(current_parts_label)
+        self.conveyor_canvas = Canvas(self.conveyor_parts_frame)
         self.conveyor_setup_vals["spawn_rate"].trace_add('write',partial(self.update_spawn_rate_slider,self.conveyor_setup_vals["spawn_rate"],spawn_rate_label))
         self.has_parts.trace_add('write', self.activate_deactivate_menu)
-        self.conveyor_parts_counter.trace_add('write',partial(self.show_current_parts,conveyor_canvas))
+        self.conveyor_parts_counter.trace_add('write',partial(self.show_current_parts,self.conveyor_canvas))
     
     def show_current_parts(self,canvas : tk.Canvas,_,__,___):
         for e in self.current_conveyor_canvas_elements:
@@ -1002,18 +996,37 @@ class GUI_CLASS(ctk.CTk):
         self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
 
     def update_spawn_rate_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
-        label.configure(text=f"Current spawn rate (seconds): {value.get()}")
+        label.configure(text=f"Spawn rate (seconds): {value.get()}")
 
     def activate_deactivate_menu(self,_,__,___):
-        if self.has_parts.get()=="1":
-            for widget in self.present_conveyor_widgets:
-                widget.configure(state=tk.NORMAL)
-        else:
-            for widget in self.present_conveyor_widgets:
-                widget.configure(state=tk.DISABLED)
         if self.first_has_part_press:
             self.first_has_part_press = False
             self.conveyor_setup_vals["active"].set("1")
+        if self.has_parts.get()=="1":
+            for widget in self.main_conveyor_menu_widgets:
+                widget.pack(pady=3)
+                self.present_conveyor_widgets.append(widget)
+            if self.has_parts.get()=="1":
+                for widget in self.present_conveyor_widgets:
+                    try:
+                        widget.configure(state=tk.NORMAL)
+                    except:
+                        pass
+            else:
+                for widget in self.present_conveyor_widgets:
+                    try:
+                        widget.configure(state=tk.DISABLED)
+                    except:
+                        pass
+            self.conveyor_canvas.pack(fill = BOTH, expand = 1)
+            flipped_meaning_label = ctk.CTkLabel(self.conveyor_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
+            flipped_meaning_label.pack(pady=10)
+            self.present_conveyor_widgets.append(flipped_meaning_label)
+        else:
+            for widget in self.present_conveyor_widgets:
+                widget.pack_forget()
+            self.present_conveyor_widgets.clear()
+            self.conveyor_canvas.pack_forget()
     
     def add_conveyor_parts(self, index = -1):
         add_parts_conveyor_window = ctk.CTkToplevel()
@@ -1044,17 +1057,17 @@ class GUI_CLASS(ctk.CTk):
         color_menu.pack()
         type_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["pType"],values=PART_TYPES)
         type_menu.pack()
-        num_parts_label = ctk.CTkLabel(add_parts_conveyor_window,text=f"Current number of parts: {conveyor_part_vals['num_parts'].get()}")
+        num_parts_label = ctk.CTkLabel(add_parts_conveyor_window,text=f"Number of parts: {conveyor_part_vals['num_parts'].get()}")
         num_parts_label.pack()
         num_parts_slider = ctk.CTkSlider(add_parts_conveyor_window,variable=conveyor_part_vals["num_parts"],from_=1, to=10, number_of_steps=9, orientation="horizontal")
         num_parts_slider.pack()
         conveyor_part_vals["num_parts"].trace_add('write', partial(self.update_num_parts_slider, conveyor_part_vals["num_parts"], num_parts_label))
-        offset_label = ctk.CTkLabel(add_parts_conveyor_window,text=f"Current offset: {conveyor_part_vals['offset'].get()}")
+        offset_label = ctk.CTkLabel(add_parts_conveyor_window,text=f"Offset: {conveyor_part_vals['offset'].get()}")
         offset_label.pack()
         offset_slider = ctk.CTkSlider(add_parts_conveyor_window,variable=conveyor_part_vals["offset"],from_=-1, to=1, number_of_steps=40, orientation="horizontal")
         offset_slider.pack()
         conveyor_part_vals["offset"].trace_add('write', partial(self.update_offset_slider, conveyor_part_vals["offset"], offset_label))
-        rotation_label = ctk.CTkLabel(add_parts_conveyor_window, text=f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(conveyor_part_vals['rotation'].get())]}")
+        rotation_label = ctk.CTkLabel(add_parts_conveyor_window, text=f"Rotation value: {SLIDER_STR[SLIDER_VALUES.index(conveyor_part_vals['rotation'].get())]}")
         rotation_label.pack()
         rotation_slider = ctk.CTkSlider(add_parts_conveyor_window, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=conveyor_part_vals["rotation"], orientation="horizontal")
         rotation_slider.pack(pady=5)
@@ -1067,11 +1080,11 @@ class GUI_CLASS(ctk.CTk):
         save_button.pack()
     
     def update_num_parts_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
-        label.configure(text=f"Current number of parts: {value.get()}")
+        label.configure(text=f"Number of parts: {value.get()}")
 
     def update_offset_slider(self, value : ctk.DoubleVar, label : ctk.CTkLabel,_,__,___):
         value.set(round(value.get(),3))
-        label.configure(text=f"Current offset: {value.get()}")
+        label.configure(text=f"Offset: {value.get()}")
     
     def save_conveyor_parts(self, window:ctk.CTkToplevel, conveyor_part_vals, index):
         color = conveyor_part_vals["color"].get()
@@ -1415,7 +1428,7 @@ class GUI_CLASS(ctk.CTk):
         index = 0
         if self.order_info["order_type"].get() == "kitting":
             if len(self.order_info["kitting_task"]["parts"])>0:
-                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Current kitting parts:")
+                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Kitting parts:")
                 current_parts_label.grid(row = current_row, column = MIDDLE_COLUMN)
                 self.current_order_part_widgets.append(current_parts_label)
                 current_row+=1
@@ -1434,7 +1447,7 @@ class GUI_CLASS(ctk.CTk):
                     current_row+=1
         elif self.order_info["order_type"].get()=="assembly":
             if len(self.order_info["assembly_task"]["parts"])>0:
-                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Current assembly parts:")
+                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Assembly parts:")
                 current_parts_label.grid(row = current_row, column = MIDDLE_COLUMN)
                 self.current_order_part_widgets.append(current_parts_label)
                 current_row+=1
@@ -1453,7 +1466,7 @@ class GUI_CLASS(ctk.CTk):
                     current_row+=1
         else:
             if len(self.order_info["combined_task"]["parts"])>0:
-                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Current combined parts:")
+                current_parts_label = ctk.CTkLabel(self.orders_frame, text="Combined parts:")
                 current_parts_label.grid(row = current_row, column = MIDDLE_COLUMN)
                 self.current_order_part_widgets.append(current_parts_label)
                 current_row+=1
@@ -1743,7 +1756,7 @@ class GUI_CLASS(ctk.CTk):
         quadrant_label.pack()
         quadrant_menu = ctk.CTkOptionMenu(add_a_part_wind, variable=a_part_dict["quadrant"], values=sorted([str(v) for v in self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"]]))
         quadrant_menu.pack()
-        label_text = f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(a_part_dict['rotation'].get())]}"
+        label_text = f"Rotation value: {SLIDER_STR[SLIDER_VALUES.index(a_part_dict['rotation'].get())]}"
         rotation_label = ctk.CTkLabel(add_a_part_wind, text=label_text)
         rotation_label.pack()
         rotation_slider = ctk.CTkSlider(add_a_part_wind, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=a_part_dict['rotation'], orientation="horizontal")
@@ -2074,7 +2087,7 @@ class GUI_CLASS(ctk.CTk):
         self.grid_and_append_challenge_widget(self.add_human_button)
         index = 0
         if len(self.current_challenges)>0:
-            self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame,text="Current challenges:"))
+            self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame,text="Challenges:"))
         challenge_counter = {challenge:0 for challenge in CHALLENGE_TYPES}
         for challenge in self.current_challenges:
             challenge : ChallengeMsg
@@ -2170,13 +2183,13 @@ class GUI_CLASS(ctk.CTk):
         type_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.dropped_part_info["type"],values=PART_TYPES)
         self.grid_and_append_challenge_widget(type_menu)
 
-        drop_after_label = CTkLabel(self.challenges_frame, text=f"Current part number to drop after: {self.dropped_part_info['drop_after'].get()}")
+        drop_after_label = CTkLabel(self.challenges_frame, text=f"Part number to drop after: {self.dropped_part_info['drop_after'].get()}")
         self.grid_and_append_challenge_widget(drop_after_label)
         drop_after_slider = CTkSlider(self.challenges_frame,variable=self.dropped_part_info['drop_after'],from_=0, to=4, number_of_steps=4, orientation="horizontal")
         self.grid_and_append_challenge_widget(drop_after_slider)
         tip= ToolTip(drop_after_slider,msg="Part drops after the nth part is pick up", delay=0.2)
 
-        delay_label = ctk.CTkLabel(self.challenges_frame,text=f"Current time to drop after (seconds): {self.dropped_part_info['delay'].get()}")
+        delay_label = ctk.CTkLabel(self.challenges_frame,text=f"Time to drop after (seconds): {self.dropped_part_info['delay'].get()}")
         self.grid_and_append_challenge_widget(delay_label)
         delay_slider = ctk.CTkSlider(self.challenges_frame,variable=self.dropped_part_info['delay'],from_=0.0, to=5.0, number_of_steps=10, orientation="horizontal")
         self.grid_and_append_challenge_widget(delay_slider)
@@ -2201,10 +2214,10 @@ class GUI_CLASS(ctk.CTk):
         self.current_challenges_widgets.append(self.save_challenge_button)
 
     def update_drop_after_label(self,label : ctk.CTkLabel,_,__,___):
-        label.configure(text=f"Current part number to drop after: {self.dropped_part_info['drop_after'].get()}")
+        label.configure(text=f"Part number to drop after: {self.dropped_part_info['drop_after'].get()}")
 
     def update_delay_label(self,label : ctk.CTkLabel,_,__,___):
-        label.configure(text=f"Current time to drop after (seconds): {self.dropped_part_info['delay'].get()}")
+        label.configure(text=f"Time to drop after (seconds): {self.dropped_part_info['delay'].get()}")
 
     def save_dropped_part_challenge(self,index):
         new_challenge = ChallengeMsg()
@@ -2229,7 +2242,7 @@ class GUI_CLASS(ctk.CTk):
     def add_robot_malfunction_challenge(self, robot_malfunction_challenge = None, index = -1):
         self.clear_challenges_menu()
 
-        duration_label = ctk.CTkLabel(self.challenges_frame,text=f"Current duration for the robot malfunction challenge: {self.robot_malfunction_info['duration'].get()}")
+        duration_label = ctk.CTkLabel(self.challenges_frame,text=f"Duration for the robot malfunction challenge: {self.robot_malfunction_info['duration'].get()}")
         self.grid_and_append_challenge_widget(duration_label)
         duration_slider = ctk.CTkSlider(self.challenges_frame,variable=self.robot_malfunction_info['duration'],from_=5.0, to=60.0, number_of_steps=11, orientation="horizontal")
         self.grid_and_append_challenge_widget(duration_slider)
@@ -2258,7 +2271,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def update_rm_duration_label(self,label : ctk.CTkLabel,_,__,___):
-        label.configure(text=f"Current duration for the robot malfunction challenge: {self.robot_malfunction_info['duration'].get()}")
+        label.configure(text=f"Duration for the robot malfunction challenge: {self.robot_malfunction_info['duration'].get()}")
 
     def enable_disable_robot_malfunction_save(self,_,__,___):
         if [self.robot_malfunction_info[robot].get() for robot in ROBOTS].count("0")==len(ROBOTS):
@@ -2300,7 +2313,7 @@ class GUI_CLASS(ctk.CTk):
     def add_sensor_blackout_challenge(self, sensor_blackout_challenge = None, index = -1):
         self.clear_challenges_menu()
 
-        duration_label = ctk.CTkLabel(self.challenges_frame,text=f"Current duration for the sensor blackout challenge: {self.sensor_blackout_info['duration'].get()}")
+        duration_label = ctk.CTkLabel(self.challenges_frame,text=f"Duration for the sensor blackout challenge: {self.sensor_blackout_info['duration'].get()}")
         self.grid_and_append_challenge_widget(duration_label)
         duration_slider = ctk.CTkSlider(self.challenges_frame,variable=self.sensor_blackout_info['duration'],from_=5.0, to=60.0, number_of_steps=11, orientation="horizontal")
         self.grid_and_append_challenge_widget(duration_slider)
@@ -2335,7 +2348,7 @@ class GUI_CLASS(ctk.CTk):
         self.current_challenges_widgets.append(self.save_challenge_button)
     
     def update_sb_duration_label(self,label : ctk.CTkLabel,_,__,___):
-        label.configure(text=f"Current duration for the sensor blackout challenge: {self.sensor_blackout_info['duration'].get()}")
+        label.configure(text=f"Duration for the sensor blackout challenge: {self.sensor_blackout_info['duration'].get()}")
     
     def enable_disable_sensor_blackout_save(self, _, __, ___):
         if [self.sensor_blackout_info["sensors_to_disable"][sensor].get() for sensor in SENSORS].count("0") == len(SENSORS):
@@ -2778,7 +2791,7 @@ class GUI_CLASS(ctk.CTk):
     def nearest_slider_value(self,value,slider,label,_,__,___):
         newvalue = min(SLIDER_VALUES, key=lambda x:abs(x-float(value.get())))
         slider.set(newvalue)
-        label.configure(text=f"Current rotation value: {SLIDER_STR[SLIDER_VALUES.index(newvalue)]}")
+        label.configure(text=f"Rotation value: {SLIDER_STR[SLIDER_VALUES.index(newvalue)]}")
     
     def nearest_slider_value_assembly_inserts(self,value,slider,label,station,_,__,___):
         newvalue = min(SLIDER_VALUES, key=lambda x:abs(x-float(value.get())))

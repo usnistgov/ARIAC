@@ -1337,10 +1337,10 @@ class GUI_CLASS(ctk.CTk):
         elif order.type == 1:
             for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
                 self.order_info["assembly_task"]["agv_numbers"][i].set("1" if i+1 in order.assembly_task.agv_numbers else "0")
-            self.order_info["assembly_task"]["station"].set(ASSEMBLY_STATIONS[order.assembly_task.station])
+            self.order_info["assembly_task"]["station"].set(ASSEMBLY_STATIONS[order.assembly_task.station-1])
             self.order_info["assembly_task"]["parts"] = order.assembly_task.parts
         else:
-            self.order_info["combined_task"]["station"].set(ASSEMBLY_STATIONS[order.combined_task.station])
+            self.order_info["combined_task"]["station"].set(ASSEMBLY_STATIONS[order.combined_task.station-1])
             self.order_info["combined_task"]["parts"] = order.combined_task.parts
 
     def delete_order(self, index):
@@ -2011,13 +2011,13 @@ class GUI_CLASS(ctk.CTk):
         new_assembly_task = AssemblyTaskMsg()
         agv_numbers_list = [i+1 for i in range(len(self.order_info["assembly_task"]["agv_numbers"])) if self.order_info["assembly_task"]["agv_numbers"][i].get()=="1"]
         new_assembly_task.agv_numbers = agv_numbers_list
-        new_assembly_task.station = ASSEMBLY_STATIONS.index(self.order_info["assembly_task"]["station"].get())
+        new_assembly_task.station = ASSEMBLY_STATIONS.index(self.order_info["assembly_task"]["station"].get())+1
         new_assembly_task.parts = self.order_info["assembly_task"]["parts"]
         return new_assembly_task
 
     def create_combined_task_msg(self)->CombinedTaskMsg:
         new_combined_task = CombinedTaskMsg()
-        new_combined_task.station = ASSEMBLY_STATIONS.index(self.order_info["combined_task"]["station"].get())
+        new_combined_task.station = ASSEMBLY_STATIONS.index(self.order_info["combined_task"]["station"].get())+1
         new_combined_task.parts = self.order_info["combined_task"]["parts"]
         return new_combined_task
 
@@ -2048,7 +2048,7 @@ class GUI_CLASS(ctk.CTk):
                 elif order.type == 1:
                     temp_order_dict["assembly_task"] = {}
                     temp_order_dict["assembly_task"]["agv_number"] = [order.assembly_task.agv_numbers[i] for i in range(len(order.assembly_task.agv_numbers))]
-                    temp_order_dict["assembly_task"]["station"] = order.assembly_task.station
+                    temp_order_dict["assembly_task"]["station"] = ASSEMBLY_STATIONS[order.assembly_task.station-1]
                     temp_order_dict["assembly_task"]["products"] = []
                     for part in order.assembly_task.parts:
                         temp_assembly_part_dict = {}
@@ -2059,7 +2059,7 @@ class GUI_CLASS(ctk.CTk):
                         temp_order_dict["assembly_task"]["products"].append(temp_assembly_part_dict)
                 else:
                     temp_order_dict["combined_task"] = {}
-                    temp_order_dict["combined_task"]["station"] = order.combined_task.station
+                    temp_order_dict["combined_task"]["station"] = ASSEMBLY_STATIONS[order.combined_task.station-1]
                     temp_order_dict["combined_task"]["products"] = []
                     for part in order.combined_task.parts:
                         temp_combined_part_dict = {}

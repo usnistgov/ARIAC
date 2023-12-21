@@ -43,6 +43,7 @@ AGV_LIST = [f"agv{i}" for i in range(1,5)]
 DEFAULT_QUADRANTS = {[key for key in _part_type_ints.keys()][i]:str(i+1) for i in range(len(_part_type_ints))}
 FIRST_STATIONS_AGVS = ["1","2"]
 SECOND_STATIONS_AGVS = ["3","4"]
+ASSEMBLY_STATIONS=["as1","as2","as3","as4"]
 
 class BinPart():
     def __init__(self,color = "green", pType = "battery", rotation = "", flipped = ""):
@@ -243,7 +244,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
             
             if order["type"]=="assembly":
                 new_order.assembly_task.agv_numbers = order["assembly_task"]["agv_number"]
-                new_order.assembly_task.station = order["assembly_task"]["station"]
+                new_order.assembly_task.station = ASSEMBLY_STATIONS.index(order["assembly_task"]["station"])
                 assembly_parts = []
                 if order["assembly_task"]["station"] in ["as1","as2"]:
                     correct_agv = FIRST_STATIONS_AGVS[0]
@@ -257,7 +258,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
                 new_order.assembly_task.parts = assembly_parts
             
             if order["type"] == "combined":
-                new_order.combined_task.station = order["combined_task"]["station"]
+                new_order.combined_task.station = ASSEMBLY_STATIONS.index(order["combined_task"]["station"])
                 combined_parts = []
                 for part in order["combined_task"]["products"]:
                     combined_part = PartMsg()

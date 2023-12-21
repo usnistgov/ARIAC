@@ -1337,10 +1337,10 @@ class GUI_CLASS(ctk.CTk):
         elif order.type == 1:
             for i in range(len(self.order_info["assembly_task"]["agv_numbers"])):
                 self.order_info["assembly_task"]["agv_numbers"][i].set("1" if i+1 in order.assembly_task.agv_numbers else "0")
-            self.order_info["assembly_task"]["station"].set(order.assembly_task.station)
+            self.order_info["assembly_task"]["station"].set(ASSEMBLY_STATIONS[order.assembly_task.station])
             self.order_info["assembly_task"]["parts"] = order.assembly_task.parts
         else:
-            self.order_info["combined_task"]["station"].set(order.combined_task.station)
+            self.order_info["combined_task"]["station"].set(ASSEMBLY_STATIONS[order.combined_task.station])
             self.order_info["combined_task"]["parts"] = order.combined_task.parts
 
     def delete_order(self, index):

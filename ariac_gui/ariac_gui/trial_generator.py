@@ -441,7 +441,9 @@ class GUI_CLASS(ctk.CTk):
         
         for i in range(len(competition.competition["assembly_insert_rotations"])):
             self.assembly_insert_rotations[i].set(competition.competition["assembly_insert_rotations"][i])
-
+        if [self.assembly_insert_rotations[i].get() for i in range(4)].count(0.0)!=4:
+            self.activate_inserts_menu()
+            
         self.original_agv_parts_dict = competition.competition["agv_dict"]
 
         self.bin_parts = competition.competition["bin_parts"]
@@ -624,11 +626,8 @@ class GUI_CLASS(ctk.CTk):
             rotation_slider = ctk.CTkSlider(self.assembly_inserts_frame, from_=min(SLIDER_VALUES), to=max(SLIDER_VALUES),variable=self.assembly_insert_rotations[i], orientation="horizontal")
             self.assembly_inserts_widgets.append((station_label, rotation_slider))
             self.assembly_insert_rotations[i].trace_add('write', partial(self.nearest_slider_value_assembly_inserts,self.assembly_insert_rotations[i], rotation_slider,station_label, ASSEMBLY_STATIONS[i]))
-        if [self.assembly_insert_rotations[i].get() for i in range(4)].count("0.0"):
-            self.activate_inserts_menu_button = ctk.CTkButton(self.assembly_inserts_frame, text="All assembly insert rotations are set to 0.0.\nIf you would like to change this, press this button", command=self.activate_inserts_menu)
-            self.activate_inserts_menu_button.grid(row=1, column=1)
-        else:
-            self.activate_inserts_menu()
+        self.activate_inserts_menu_button = ctk.CTkButton(self.assembly_inserts_frame, text="All assembly insert rotations are set to 0.0.\nIf you would like to change this, press this button", command=self.activate_inserts_menu)
+        self.activate_inserts_menu_button.grid(row=1, column=1)
         
     def activate_inserts_menu(self):
         try:

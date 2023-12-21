@@ -3,7 +3,12 @@ try:
     from customtkinter import *
 except:
     print("ERROR: customtkinter not installed\nRun \"pip install customtkinter\" to fix this issue")
-    quit()    
+    quit()
+try:
+    from tktooltip import ToolTip
+except:
+    print("ERROR: tkinter-tooltip not installed\nRun \"pip install tkinter-tooltip\" to fix this issue")
+    quit()  
 from tkinter import *
 import tkinter as tk
 from tktooltip import ToolTip
@@ -1019,18 +1024,18 @@ class GUI_CLASS(ctk.CTk):
         for widget in self.current_conveyor_scrollable_elements:
             widget.grid_forget()
         self.current_conveyor_scrollable_elements.clear()
+        if len(self.current_conveyor_parts)>0:
+            image_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Image of part")
+            image_header.grid(column=FAR_LEFT_COLUMN, row = 1, padx=10)
+            self.current_conveyor_scrollable_elements.append(image_header)
 
-        image_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Image of part")
-        image_header.grid(column=FAR_LEFT_COLUMN, row = 1, padx=10)
-        self.current_conveyor_scrollable_elements.append(image_header)
+            num_parts_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Number of\nparts")
+            num_parts_header.grid(column=LEFT_COLUMN, row = 1, padx=10)
+            self.current_conveyor_scrollable_elements.append(num_parts_header)
 
-        num_parts_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Number of\nparts")
-        num_parts_header.grid(column=LEFT_COLUMN, row = 1, padx=10)
-        self.current_conveyor_scrollable_elements.append(num_parts_header)
-
-        flipped_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Flipped?")
-        flipped_header.grid(column=MIDDLE_COLUMN, row = 1, padx=10)
-        self.current_conveyor_scrollable_elements.append(flipped_header)
+            flipped_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Flipped?")
+            flipped_header.grid(column=MIDDLE_COLUMN, row = 1, padx=10)
+            self.current_conveyor_scrollable_elements.append(flipped_header)
 
         for i in range(len(self.current_conveyor_parts)):
             part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]

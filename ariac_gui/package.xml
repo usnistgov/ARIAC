@@ -6,7 +6,6 @@
   <description>GUI for creating trial configurations</description>
   <maintainer email="joseph.fernandez@nist.gov">Joseph Fernandez</maintainer>
   <license>NIST</license>
-  
   <exec_depend>rclpy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>ariac_msgs</exec_depend>

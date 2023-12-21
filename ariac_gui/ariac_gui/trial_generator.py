@@ -735,7 +735,7 @@ class GUI_CLASS(ctk.CTk):
                            "bin2":[152,107,197,152],
                            "bin1":[207,107,252,152]}
         part_coordinates = {key:[] for key in bin_coordinates.keys()}
-        bin_label_coordinates = {key:((bin_coordinates[key][0]+bin_coordinates[key][2])/2,35 if bin_coordinates[key][1] == 52 else 169) for key in bin_coordinates.keys()}
+        bin_label_coordinates = {key:((bin_coordinates[key][0]+bin_coordinates[key][2])//2,bin_coordinates[key][1]-17 if bin_coordinates[key][1] == 52 else bin_coordinates[key][3]+17) for key in bin_coordinates.keys()}
         for key in bin_coordinates.keys():
             starting_x = bin_coordinates[key][0]
             starting_y = bin_coordinates[key][1]
@@ -1010,7 +1010,7 @@ class GUI_CLASS(ctk.CTk):
     def add_conveyor_parts_hover_message(self)->str:
         msg=""
         if len(self.current_conveyor_parts)>0:
-            msg = f"{len(self.current_conveyor_parts)} have been placed on the conveyor belt"
+            msg = f"{len(self.current_conveyor_parts)} parts have been placed on the conveyor belt"
         else:
             msg = "No parts have been placed on the conveyor yet"
         return msg

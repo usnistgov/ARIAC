@@ -221,7 +221,7 @@ class GUI_CLASS(ctk.CTk):
         self.conveyor_parts_counter = ctk.StringVar()
         self.conveyor_parts_counter.set('0')
         self.present_conveyor_widgets = []
-        self.current_conveyor_canvas_elements = []
+        self.current_conveyor_scrollable_elements = []
         self.has_parts = ctk.StringVar()
         self.has_parts.set('0')
         self.has_parts.trace_add('write', self.update_current_file_label)
@@ -965,8 +965,12 @@ class GUI_CLASS(ctk.CTk):
     #               Conveyor Parts Functions
     # =======================================================
     def add_conveyor_parts_widgets_to_frame(self):
+        self.conveyor_parts_frame.grid_rowconfigure(0, weight=1)
+        self.conveyor_parts_frame.grid_rowconfigure(100, weight=1)
+        self.conveyor_parts_frame.grid_columnconfigure(0, weight=1)
+        self.conveyor_parts_frame.grid_columnconfigure(6, weight=1)
         trial_has_parts_cb = ctk.CTkCheckBox(self.conveyor_parts_frame,text="Trial has conveyor parts",variable=self.has_parts, onvalue="1", offvalue="0", height=1, width=20)
-        trial_has_parts_cb.pack(pady=5)
+        trial_has_parts_cb.grid(pady=5, column = MIDDLE_COLUMN)
         self.conveyor_setup_vals = {"active":ctk.StringVar(),"spawn_rate":ctk.IntVar(),"order":ctk.StringVar()}
         self.conveyor_setup_vals["active"].set('0')
         self.conveyor_setup_vals['spawn_rate'].set(1)
@@ -988,61 +992,68 @@ class GUI_CLASS(ctk.CTk):
         ToolTip(self.add_conveyor_parts_button, msg = self.add_conveyor_parts_hover_message, delay=0.2)
         current_parts_label = ctk.CTkLabel(self.conveyor_parts_frame, text="Parts on conveyor belt:")
         self.main_conveyor_menu_widgets.append(current_parts_label)
-        self.conveyor_canvas = Canvas(self.conveyor_parts_frame, height=300)
-        self.main_conveyor_menu_widgets.append(self.conveyor_canvas)
+
+        self.conveyor_sub_frame = ctk.CTkScrollableFrame(self.conveyor_parts_frame, width = 700, height=300)
+        self.conveyor_sub_frame.grid_rowconfigure(0, weight=1)
+        self.conveyor_sub_frame.grid_rowconfigure(100, weight=1)
+        self.conveyor_sub_frame.grid_columnconfigure(0, weight=1)
+        self.conveyor_sub_frame.grid_columnconfigure(6, weight=1)
+        
         self.conveyor_setup_vals["spawn_rate"].trace_add('write',partial(self.update_spawn_rate_slider,self.conveyor_setup_vals["spawn_rate"],spawn_rate_label))
         self.has_parts.trace_add('write', self.activate_deactivate_menu)
-        self.conveyor_parts_counter.trace_add('write',partial(self.show_current_parts,self.conveyor_canvas))
-        self.conveyor_parts_counter.trace_add('write',self.activate_deactivate_part_button)
-    
-    def activate_deactivate_part_button(self,_,__,___):
-        if len(self.current_conveyor_parts)<4:
-            self.add_conveyor_parts_button.configure(state=NORMAL)
-        else:
-            self.add_conveyor_parts_button.configure(state=DISABLED)
+        self.conveyor_parts_counter.trace_add('write',self.show_current_parts)    
     
     def add_conveyor_parts_hover_message(self)->str:
         msg=""
-        if len(self.current_conveyor_parts)<4:
-            msg = f"You can add up to {4-len(self.current_conveyor_parts)} more parts to the conveyor belt"
+        if len(self.current_conveyor_parts)>0:
+            msg = f"{len(self.current_conveyor_parts)} have been placed on the conveyor belt"
         else:
-            msg = "You have reached the maximum amount of parts on the conveyor belt"
+            msg = "No parts have been placed on the conveyor yet"
         return msg
 
-    def show_current_parts(self,canvas : tk.Canvas,_,__,___):
-        for e in self.current_conveyor_canvas_elements:
-            canvas.delete(e)
-        self.current_conveyor_canvas_elements.clear()
-        image_coordinates = [(160,10+(75*i)) for i in range(10)]
-        num_parts_coordinates = [(200,10+(75*i)) for i in range(10)]
-        remove_button_coordinates = [(360,30+(75*i)) for i in range(10)]
-        edit_button_coordinates = [(560,30+(75*i)) for i in range(10)]
-        flipped_label_coordinates = [(coord[0]+30, coord[1]+30) for coord in image_coordinates]
-        image_labels = []
-        num_parts_labels = []
-        remove_part_buttons = []
-        edit_part_buttons = []
-        current_flipped_labels = ["" for _ in range(len(flipped_label_coordinates))]
+    def show_current_parts(self,_,__,___):
+        for widget in self.current_conveyor_scrollable_elements:
+            widget.grid_forget()
+        self.current_conveyor_scrollable_elements.clear()
+
+        image_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Image of part")
+        image_header.grid(column=FAR_LEFT_COLUMN, row = 1, padx=10)
+        self.current_conveyor_scrollable_elements.append(image_header)
+
+        num_parts_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Number of\nparts")
+        num_parts_header.grid(column=LEFT_COLUMN, row = 1, padx=10)
+        self.current_conveyor_scrollable_elements.append(num_parts_header)
+
+        flipped_header = ctk.CTkLabel(self.conveyor_sub_frame,text="Flipped?")
+        flipped_header.grid(column=MIDDLE_COLUMN, row = 1, padx=10)
+        self.current_conveyor_scrollable_elements.append(flipped_header)
+
         for i in range(len(self.current_conveyor_parts)):
             part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]
-            image_labels.append(ctk.CTkLabel(self.conveyor_parts_frame,text="",
-            image=ctk.CTkImage(MENU_IMAGES[part].rotate(self.conveyor_parts[i].rotation*180/pi),size=(75,75))))
-            num_parts_labels.append(ctk.CTkLabel(self.conveyor_parts_frame,text=f"X {self.conveyor_parts[i].part_lot.quantity}"))
-            remove_part_buttons.append(ctk.CTkButton(self.conveyor_parts_frame,
-                                                     text="Remove part"+("s" if self.conveyor_parts[i].part_lot.quantity>1 else ""),
-                                                     command = partial(self.remove_conveyor_part,i)))
-            edit_part_buttons.append(ctk.CTkButton(self.conveyor_parts_frame, 
+            image_label = ctk.CTkLabel(self.conveyor_sub_frame,text="",
+                                       image=ctk.CTkImage(MENU_IMAGES[part].rotate(self.conveyor_parts[i].rotation*180/pi),size=(75,75)))
+            image_label.grid(column = FAR_LEFT_COLUMN, row = i+2,padx = 15)
+            self.current_conveyor_scrollable_elements.append(image_label)
+
+            num_parts_label = ctk.CTkLabel(self.conveyor_sub_frame,text=f"{self.conveyor_parts[i].part_lot.quantity}")
+            num_parts_label.grid(column = LEFT_COLUMN, row = i+2,padx = 15)
+            self.current_conveyor_scrollable_elements.append(num_parts_label)
+
+            flipped_label = ctk.CTkLabel(self.conveyor_sub_frame,text=("Y" if self.conveyor_parts[i].flipped == "1" else "N"))
+            flipped_label.grid(column = MIDDLE_COLUMN, row = i+2,padx = 15)
+            self.current_conveyor_scrollable_elements.append(flipped_label)
+
+            remove_part_button = ctk.CTkButton(self.conveyor_sub_frame,
+                                               text="Remove part"+("s" if self.conveyor_parts[i].part_lot.quantity>1 else ""),
+                                               command = partial(self.remove_conveyor_part,i))
+            remove_part_button.grid(column = RIGHT_COLUMN, row = i+2,padx = 15)
+            self.current_conveyor_scrollable_elements.append(remove_part_button)
+            
+            edit_part_button = ctk.CTkButton(self.conveyor_sub_frame, 
                                                    text="Edit part"+("s" if self.conveyor_parts[i].part_lot.quantity>1 else ""), 
-                                                   command=partial(self.add_conveyor_parts,i)))
-            if self.conveyor_parts[i].flipped=="1":
-                current_flipped_labels[i]=(ctk.CTkLabel(self.conveyor_parts_frame, text="F"))
-        for i in range(len(image_labels)):
-            self.current_conveyor_canvas_elements.append(canvas.create_window(image_coordinates[i], window = image_labels[i]))
-            self.current_conveyor_canvas_elements.append(canvas.create_window(num_parts_coordinates[i], window = num_parts_labels[i]))
-            self.current_conveyor_canvas_elements.append(canvas.create_window(remove_button_coordinates[i], window = remove_part_buttons[i]))
-            self.current_conveyor_canvas_elements.append(canvas.create_window(edit_button_coordinates[i], window = edit_part_buttons[i]))
-            if current_flipped_labels[i]!="":
-                self.current_conveyor_canvas_elements.append(canvas.create_window(flipped_label_coordinates[i], window=current_flipped_labels[i]))
+                                                   command=partial(self.add_conveyor_parts,i))
+            edit_part_button.grid(column = FAR_RIGHT_COLUMN, row = i+2,padx = 15)
+            self.current_conveyor_scrollable_elements.append(edit_part_button)
 
     def remove_conveyor_part(self, index):
         del self.conveyor_parts[index]
@@ -1053,12 +1064,14 @@ class GUI_CLASS(ctk.CTk):
         label.configure(text=f"Spawn rate (seconds): {value.get()}")
 
     def activate_deactivate_menu(self,_,__,___):
+        current_row = 1
         if self.first_has_part_press:
             self.first_has_part_press = False
             self.conveyor_setup_vals["active"].set("1")
         if self.has_parts.get()=="1":
             for widget in self.main_conveyor_menu_widgets:
-                widget.pack(pady=3)
+                current_row+=1
+                widget.grid(pady=3, row = current_row, column = MIDDLE_COLUMN)
                 self.present_conveyor_widgets.append(widget)
             if self.has_parts.get()=="1":
                 for widget in self.present_conveyor_widgets:
@@ -1072,15 +1085,12 @@ class GUI_CLASS(ctk.CTk):
                         widget.configure(state=tk.DISABLED)
                     except:
                         pass
-            self.conveyor_canvas.pack(fill = BOTH, expand = 1)
-            flipped_meaning_label = ctk.CTkLabel(self.conveyor_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
-            flipped_meaning_label.pack(pady=10)
-            self.present_conveyor_widgets.append(flipped_meaning_label)
+            self.conveyor_sub_frame.grid(row=current_row+1,column = MIDDLE_COLUMN)
         else:
             for widget in self.present_conveyor_widgets:
-                widget.pack_forget()
+                widget.grid_forget()
             self.present_conveyor_widgets.clear()
-            self.conveyor_canvas.pack_forget()
+            self.conveyor_sub_frame.grid_forget()
     
     def add_conveyor_parts(self, index = -1):
         add_parts_conveyor_window = ctk.CTkToplevel()
@@ -1106,9 +1116,12 @@ class GUI_CLASS(ctk.CTk):
             conveyor_part_vals["offset"].set(self.conveyor_parts[index].offset)
             conveyor_part_vals["rotation"].set(self.conveyor_parts[index].rotation)
             conveyor_part_vals["flipped"].set(self.conveyor_parts[index].flipped)
-
+        color_label = ctk.CTkLabel(add_parts_conveyor_window, text="Select the color of the part")
+        color_label.pack()
         color_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["color"],values=PART_COLORS)
         color_menu.pack()
+        type_label = ctk.CTkLabel(add_parts_conveyor_window, text="Select the type of part")
+        type_label.pack()
         type_menu = ctk.CTkOptionMenu(add_parts_conveyor_window, variable=conveyor_part_vals["pType"],values=PART_TYPES)
         type_menu.pack()
         num_parts_label = ctk.CTkLabel(add_parts_conveyor_window,text=f"Number of parts: {conveyor_part_vals['num_parts'].get()}")
@@ -2777,14 +2790,6 @@ class GUI_CLASS(ctk.CTk):
         self.current_file_label.grid()
         self.update_current_file_label(1,1,1)
 
-    def mouse_wheel_up_current_file(self, event):
-        if self.notebook.index("current") == 7:
-            self.sub_frame._parent_canvas.yview_scroll(int(-2), "units")
-    
-    def mouse_wheel_down_current_file(self, event):
-        if self.notebook.index("current") == 7:
-            self.sub_frame._parent_canvas.yview_scroll(int(2), "units")
-
     def update_current_file_label(self,_,__,___):
         try:
             self.current_file_label.configure("")
@@ -2873,6 +2878,18 @@ class GUI_CLASS(ctk.CTk):
         else:
             temp_announcement_dict["submission_condition"] = {"order_id":announcement.submission_condition.order_id}
         return temp_announcement_dict
+    
+    def mouse_wheel_up_current_file(self, event):
+        if self.notebook.index("current") == 7:
+            self.sub_frame._parent_canvas.yview_scroll(int(-2), "units")
+        elif self.notebook.index("current") == 4:
+            self.conveyor_sub_frame._parent_canvas.yview_scroll(int(-2), "units")
+    
+    def mouse_wheel_down_current_file(self, event):
+        if self.notebook.index("current") == 7:
+            self.sub_frame._parent_canvas.yview_scroll(int(2), "units")
+        elif self.notebook.index("current") == 4:
+            self.conveyor_sub_frame._parent_canvas.yview_scroll(int(2), "units")
 
 
 if __name__=="__main__":

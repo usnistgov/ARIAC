@@ -6,7 +6,7 @@ PART_COLORS=['green', 'red', 'purple','blue','orange']
 file_names = ["plus", 'NIST_logo']+[color+pType for color in PART_COLORS for pType in PART_TYPES]
 setup(
     name=package_name,
-    version='0.0.0',
+    version='2024.1.0',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',

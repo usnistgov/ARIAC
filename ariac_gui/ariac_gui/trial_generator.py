@@ -726,21 +726,25 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_counter.set(str(sum([sum([1 for part in self.current_bin_parts[key] if part!=""]) for key in self.current_bin_parts.keys()])))
 
     def show_map(self,canvas:Canvas, bin_selection):
-        bin_coordinates = {"bin8":[2,2,47,47],
-                           "bin7":[57,2,102,47],
-                           "bin5":[2,57,47,102],
-                           "bin6":[57,57,102,102],
-                           "bin3":[152,2,197,47],
-                           "bin4":[207,2,250,47],
-                           "bin2":[152,57,197,102],
-                           "bin1":[207,57,252,102]}
+        bin_coordinates = {"bin8":[2,52,47,97],
+                           "bin7":[57,52,102,97],
+                           "bin5":[2,107,47,152],
+                           "bin6":[57,107,102,152],
+                           "bin3":[152,52,197,97],
+                           "bin4":[207,52,250,97],
+                           "bin2":[152,107,197,152],
+                           "bin1":[207,107,252,152]}
         part_coordinates = {key:[] for key in bin_coordinates.keys()}
+        bin_label_coordinates = {key:((bin_coordinates[key][0]+bin_coordinates[key][2])/2,35 if bin_coordinates[key][1] == 52 else 169) for key in bin_coordinates.keys()}
         for key in bin_coordinates.keys():
             starting_x = bin_coordinates[key][0]
             starting_y = bin_coordinates[key][1]
             for i in range(9):
                 part_coordinates[key].append((starting_x+(i%3+1)*11,starting_y+(i//3+1)*11))
         for key in bin_coordinates.keys():
+            self.current_bin_map_canvas_elements.append(canvas.create_window(bin_label_coordinates[key],
+                                                                             window=ctk.CTkLabel(self.bin_parts_frame,
+                                                                                                 text=key)))
             self.current_bin_map_canvas_elements.append(canvas.create_rectangle(bin_coordinates[key][0],
                                                                                 bin_coordinates[key][1],
                                                                                 bin_coordinates[key][2],

@@ -74,6 +74,8 @@ namespace ariac_plugins
         double trial_score_;
         /*!< Time limit for the current trial. */
         double time_limit_;
+        /*!< Path to the log folder to save the trial scores. */
+        std::string ariac_log_folder_;
         /*!< Name of the trial file. */
         std::string trial_name_;
         /*< Health status for the break beam*/
@@ -274,17 +276,21 @@ namespace ariac_plugins
         void Station4SensorCallback(ConstLogicalCameraImagePtr &_msg);
 
         //============== Score Displays =================
-        /*!< Print details of the score for an assembly task. */
-        void PrintAssemblyScore(std::shared_ptr<ariac_common::AssemblyScore> assembly_score);
-        /*!< Print details of the score for a combined task. */
-        void PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score);
         /*!< Print details of the score for a kitting task. */
-        void PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score);
+        void PrintKittingScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
+        /*!< Print details of the score for an assembly task. */
+        void PrintAssemblyScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
+        /*!< Print details of the score for a combined task. */
+        void PrintCombinedScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output=false, bool _terminal_display=false);
+
+        
+
         /*!< Print details of the score for the trial. */
         void PrintTrialScore(
             std::shared_ptr<ariac_common::Order> kitting_order,
             std::shared_ptr<ariac_common::Order> assembly_order,
             std::shared_ptr<ariac_common::Order> combined_order);
+        void PrintTrialSummary();
 
         /**
          * @brief Retrieve the tray information from the message and store it in the agv_parts_ map.
@@ -324,55 +330,178 @@ namespace ariac_plugins
                                                    {"orange", ariac_msgs::msg::Part::ORANGE},
                                                    {"purple", ariac_msgs::msg::Part::PURPLE}};
 
-        void WriteToLog();
+        //============== Helper Functions =================
+        /*!< Helper function to write out a log file for the current trial. */
+        void WriteToAriacLogFile();
+        int ComputeMaxScoreKittingTask(int expected_number_of_parts);
+        int ComputeMaxScoreAssemblyTask(int expected_number_of_parts);
+        int ComputeMaxScoreCombinedTask(int expected_number_of_parts);
+        void DisplayTaskManagerInfo(std::string message, bool once = false, std::string color="red");
+        std::string TerminalDisplay(std::string message, std::string color="red");
+        void TrialLogOutput(std::string label, std::string result="");
+
+
+        /*!< Message to write in the log file. */
         std::string log_message_ = "";
     };
+
     //==============================================================================
     TaskManagerPlugin::TaskManagerPlugin()
         : impl_(std::make_unique<TaskManagerPluginPrivate>())
     {
     }
+
     //==============================================================================
     TaskManagerPlugin::~TaskManagerPlugin()
     {
         impl_->ros_node_.reset();
     }
 
-    void TaskManagerPluginPrivate::WriteToLog()
+    //==============================================================================
+    void TaskManagerPluginPrivate::TrialLogOutput(std::string label, std::string result){
+        log_message_ += label + result;
+    }
+
+
+    //==============================================================================
+    std::string TaskManagerPluginPrivate::TerminalDisplay(std::string message, std::string color){
+        std::string color_code = "";
+
+        if (color == "red")
+            color_code = "\033[1;31m";
+        else if (color == "green")
+            color_code = "\033[1;32m";
+        else if (color == "yellow")
+            color_code = "\033[1;33m";
+        else if (color == "blue")
+            color_code = "\033[1;34m";
+        else if (color == "magenta")
+            color_code = "\033[1;35m";
+        else if (color == "cyan")
+            color_code = "\033[1;36m";
+        else if (color == "white")
+            color_code = "\033[1;37m";
+        else
+            color_code = "\033[1;31m";
+        
+        auto output = color_code + message + "\033[0m";
+
+        // log_message_ += message;
+        
+        return output;
+    }
+
+
+    void TaskManagerPluginPrivate::DisplayTaskManagerInfo(std::string message, bool once, std::string color)
     {
-        // Get the environment variable INSIDE_DOCKER
-        auto inside_docker = std::getenv("INSIDE_DOCKER");
+        std::string color_code = "";
 
-        // compare inside_docker to "ok"
-        if (inside_docker == NULL)
-        {
-            // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "INSIDE_DOCKER environment variable not set");
-            return;
-        }
+        if (color == "red")
+            color_code = "\033[1;31m";
+        else if (color == "green")
+            color_code = "\033[1;32m";
+        else if (color == "yellow")
+            color_code = "\033[1;33m";
+        else if (color == "blue")
+            color_code = "\033[1;34m";
+        else if (color == "magenta")
+            color_code = "\033[1;35m";
+        else if (color == "cyan")
+            color_code = "\033[1;36m";
+        else if (color == "white")
+            color_code = "\033[1;37m";
+        else
+            color_code = "\033[1;31m";
+        
+        message = color_code + message + "\033[0m";
 
-        // Create a folder
-        std::string folder_path = "/home/ubuntu/logs/";
-        std::string command = "mkdir -p " + folder_path;
-        system(command.c_str());
 
-        // remove .yaml from trial name
-        if (trial_name_.length() > 5)
-        {
-            trial_name_.erase(trial_name_.length() - 5);
-        }
+        if (once)
+            RCLCPP_INFO_STREAM_ONCE(ros_node_->get_logger(), message);
+        else
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), message);
+    }
 
+    //==============================================================================
+    int TaskManagerPluginPrivate::ComputeMaxScoreKittingTask(int expected_number_of_parts){
+        unsigned correct_part_tray_score = 3;
+        unsigned quadrants_score = 3 * expected_number_of_parts;
+        unsigned bonus_score = expected_number_of_parts;
+        return correct_part_tray_score + quadrants_score + bonus_score;
+    }
+
+
+    //==============================================================================
+    int TaskManagerPluginPrivate::ComputeMaxScoreAssemblyTask(int expected_number_of_parts){
+        unsigned slots_score = 3 * expected_number_of_parts;
+        unsigned bonus_score = 4 * expected_number_of_parts;
+        return slots_score + bonus_score;
+    }
+
+    //==============================================================================
+    int TaskManagerPluginPrivate::ComputeMaxScoreCombinedTask(int expected_number_of_parts){
+        unsigned slots_score = 5 * expected_number_of_parts;
+        unsigned bonus_score = 4 * expected_number_of_parts;
+        return slots_score + bonus_score;
+    }
+
+
+    //==============================================================================
+    void TaskManagerPluginPrivate::WriteToAriacLogFile()
+    {
+        // impl_->ariac_log_folder_
         // Create a file name with the trial name
-        std::string file_name = trial_name_ + ".txt";
-        auto log_file_path = folder_path + file_name;
-
+        std::string file_name = "trial_log.txt";
+        auto log_file_path = ariac_log_folder_ +  file_name;
+        // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
         // Open the log file
-        RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
+        DisplayTaskManagerInfo("Log file generated at: ");
+        DisplayTaskManagerInfo(log_file_path);
         auto log_file = std::ofstream(log_file_path);
         // Write to log file
         log_file << log_message_;
+        
         // Close the log file
         log_file.close();
     }
+
+
+    // OLD code from ARIAC2023
+    // void TaskManagerPluginPrivate::WriteToLog()
+    // {
+    //     // Get the environment variable INSIDE_DOCKER
+    //     auto inside_docker = std::getenv("INSIDE_DOCKER");
+
+    //     // compare inside_docker to "ok"
+    //     if (inside_docker == NULL)
+    //     {
+    //         // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "INSIDE_DOCKER environment variable not set");
+    //         return;
+    //     }
+
+    //     // Create a folder
+    //     std::string folder_path = "/home/ubuntu/logs/";
+    //     std::string command = "mkdir -p " + folder_path;
+    //     system(command.c_str());
+
+    //     // remove .yaml from trial name
+    //     if (trial_name_.length() > 5)
+    //     {
+    //         trial_name_.erase(trial_name_.length() - 5);
+    //     }
+
+    //     // Create a file name with the trial name
+    //     std::string file_name = trial_name_ + ".txt";
+    //     auto log_file_path = folder_path + file_name;
+
+    //     // Open the log file
+    //     RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
+    //     auto log_file = std::ofstream(log_file_path);
+    //     // Write to log file
+    //     log_file << log_message_;
+    //     // Close the log file
+    //     log_file.close();
+    // }
 
     //==============================================================================
     void
@@ -416,7 +545,9 @@ namespace ariac_plugins
 
         impl_->request_pub_ = impl_->gznode_->Advertise<gazebo::msgs::Request>("~/request");
 
-        RCLCPP_INFO(impl_->ros_node_->get_logger(), "Starting ARIAC 2023");
+
+        impl_->DisplayTaskManagerInfo("Starting ARIAC 2024");
+
 
         // Get QoS profiles
         const gazebo_ros::QoS &qos = impl_->ros_node_->get_qos();
@@ -427,8 +558,9 @@ namespace ariac_plugins
             std::bind(&TaskManagerPlugin::OnUpdate, this));
 
         // Init subscribers
+        auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable();
         impl_->trial_config_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Trial>(
-            "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", rclcpp::QoS(1)),
+            "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", qos_profile),
             std::bind(&TaskManagerPlugin::OnTrialCallback, this, std::placeholders::_1));
 
         impl_->agv1_status_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::AGVStatus>(
@@ -477,6 +609,8 @@ namespace ariac_plugins
         impl_->safe_zone_penalty_duration_ = 15.0;
         // Init safe zone penalty grace period
         impl_->ceiling_robot_grace_period_ = 10.0;
+        // Init path to the ariac log folder
+        impl_->ariac_log_folder_ = "";
         // Init elapsed time
         impl_->elapsed_time_ = 0.0;
         double publish_rate = 10;
@@ -661,7 +795,27 @@ namespace ariac_plugins
                 if (impl_->elapsed_time_ >= order->GetAnnouncementTime() && !order->IsAnnounced())
                 {
                     auto order_message = BuildOrderMsg(order);
-                    RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Announcing order");
+                    // std::string output="";
+                    // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Announcing order");
+                    impl_->DisplayTaskManagerInfo("Announcing order");
+                    
+                    // output += TerminalDisplay("========================================\n", "yellow");
+                    // output += TerminalDisplay("Announcing Order\n", "yellow");
+                    // output += TerminalDisplay("========================================\n", "yellow");
+                    // output += TerminalDisplay("Order ID: ", "green") + order->GetId() + "\n";
+
+                    // if (order->GetId() == 0)
+                    //     output += TerminalDisplay("Type: ", "green") +  "Kitting\n";
+                    // else if (order->GetId() == 1)
+                    //     output += TerminalDisplay("Type: ", "green") +  "Assembly\n";
+                    // else if (order->GetId() == 2)
+                    //     output += TerminalDisplay("Type: ", "green") +  "Combined\n";
+
+
+                    // //  + kitting_score->GetOrderId() + "\n"
+
+                    // auto order_id = order->GetId();
+
                     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "\n" << *order);
 
                     impl_->order_pub_->publish(order_message);
@@ -747,15 +901,17 @@ namespace ariac_plugins
     {
         if (!impl_->time_based_orders_.empty())
         {
+            // impl_->DisplayTaskManagerInfo("Process temporal orders...", true);
             ProcessTemporalOrders();
         }
-        // TODO: Implement on part placement and on submission orders
         if (!impl_->on_part_placement_orders_.empty())
         {
+            // impl_->DisplayTaskManagerInfo("Process part placement orders...", true);
             ProcessOnPartPlacementOrders();
         }
         if (!impl_->on_order_submission_orders_.empty())
         {
+            // impl_->DisplayTaskManagerInfo("Process submission orders...", true);
             ProcessOnSubmissionOrders();
         }
     }
@@ -1130,6 +1286,7 @@ namespace ariac_plugins
     void TaskManagerPlugin::OnUpdate()
     {
         std::lock_guard<std::mutex> lock(impl_->lock_);
+        
         auto current_sim_time = impl_->world_->SimTime();
 
         // if the competition has ended, disable all sensors and robots
@@ -1142,7 +1299,8 @@ namespace ariac_plugins
 
         if (impl_->total_orders_ == 0 && impl_->current_state_ == ariac_msgs::msg::CompetitionState::STARTED)
         {
-            RCLCPP_INFO_STREAM_ONCE(impl_->ros_node_->get_logger(), "All orders have been announced.");
+            // RCLCPP_INFO_STREAM_ONCE(impl_->ros_node_->get_logger(), "All orders have been announced.");
+            impl_->DisplayTaskManagerInfo("All orders have been announced.", true);
             impl_->current_state_ = ariac_msgs::msg::CompetitionState::ORDER_ANNOUNCEMENTS_DONE;
         }
 
@@ -1165,7 +1323,7 @@ namespace ariac_plugins
             // Now competitors can call this service to start the competition
             impl_->start_competition_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>("/ariac/start_competition", std::bind(&TaskManagerPlugin::StartCompetitionServiceCallback, this, std::placeholders::_1, std::placeholders::_2));
 
-            RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "You can now start the competition!");
+            impl_->DisplayTaskManagerInfo("You can now start the competition!");
             impl_->current_state_ = ariac_msgs::msg::CompetitionState::READY;
 
             // Create the end competition service
@@ -1245,6 +1403,7 @@ namespace ariac_plugins
             impl_->StoreStationParts(4, impl_->assembly_station_images_[4]);
 
             ProcessEndSafeZonePenalty();
+            // impl_->DisplayTaskManagerInfo("Processing orders...", true);
             ProcessOrdersToAnnounce();
             ProcessChallengesToAnnounce();
             ProcessInProgressSensorBlackouts();
@@ -1326,11 +1485,17 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPlugin::OnTrialCallback(const ariac_msgs::msg::Trial::SharedPtr _msg)
     {
+        
         std::lock_guard<std::mutex> scoped_lock(impl_->lock_);
+        // impl_->DisplayTaskManagerInfo("OnTrialCallback");
         // RCLCPP_FATAL_STREAM(impl_->ros_node_->get_logger(), "------Time limit: " << _msg->time_limit);
         // RCLCPP_FATAL_STREAM(impl_->ros_node_->get_logger(), "------Trial name: " << _msg->trial_name);
         impl_->time_limit_ = _msg->time_limit;
         impl_->trial_name_ = _msg->trial_name;
+
+        // Create a file for the trial scores
+        impl_->ariac_log_folder_ = _msg->log_folder_path; // path to the log folder
+        // impl_->DisplayTaskManagerInfo("Log folder: " + impl_->ariac_log_folder_);
 
         // Store orders to be processed later
         std::vector<std::shared_ptr<ariac_msgs::msg::OrderCondition>>
@@ -1896,12 +2061,12 @@ namespace ariac_plugins
         // Sum quadrant scores
         total_quadrants_score = quadrant_scores[1] + quadrant_scores[2] + quadrant_scores[3] + quadrant_scores[4];
 
-        std::cout << "Quadrant 1 score: " << quadrant_scores[1] << std::endl;
-        std::cout << "Quadrant 2 score: " << quadrant_scores[2] << std::endl;
-        std::cout << "Quadrant 3 score: " << quadrant_scores[3] << std::endl;
-        std::cout << "Quadrant 4 score: " << quadrant_scores[4] << std::endl;
-        std::cout << "Expected number of parts: " << expected_number_of_parts << std::endl;
-        std::cout << "Total quadrant score: " << total_quadrants_score << std::endl;
+        // std::cout << "Quadrant 1 score: " << quadrant_scores[1] << std::endl;
+        // std::cout << "Quadrant 2 score: " << quadrant_scores[2] << std::endl;
+        // std::cout << "Quadrant 3 score: " << quadrant_scores[3] << std::endl;
+        // std::cout << "Quadrant 4 score: " << quadrant_scores[4] << std::endl;
+        // std::cout << "Expected number of parts: " << expected_number_of_parts << std::endl;
+        // std::cout << "Total quadrant score: " << total_quadrants_score << std::endl;
 
         // Compute bonus
         if (total_quadrants_score == 3 * expected_number_of_parts)
@@ -1935,7 +2100,18 @@ namespace ariac_plugins
         // Set the kitting score for this order
         _order->SetKittingScore(kitting_score);
 
-        PrintKittingScore(kitting_score);
+        // std::string output = "";
+        // output += TerminalDisplay("\n========================================\n", "yellow");
+        // output += TerminalDisplay("Order Submitted\n", "yellow");
+        // output += TerminalDisplay("========================================\n", "yellow");
+        // TrialLogOutput("\n========================================\n");
+        // TrialLogOutput("Order Submitted\n");
+        // TrialLogOutput("========================================\n");
+
+        // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+
+        // PrintKittingScore(kitting_score, expected_number_of_parts, output);
+        PrintKittingScore(_order, false, true);
 
         // Clear the AGV of parts and kit tray
         for (std::string name: models_on_agv_[kitting_task->GetAgvNumber()]) {
@@ -1969,17 +2145,83 @@ namespace ariac_plugins
     }
 
     //==============================================================================
-    void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::KittingScore> kitting_score)
+    void TaskManagerPluginPrivate::PrintKittingScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output, bool _terminal_display)
     {
+        auto kitting_score = _order->GetKittingScore();
+        auto kitting_task = _order->GetKittingTask();
+        auto expected_number_of_parts = kitting_task->GetProducts().size();
+        // order priority
+        auto order_priority = _order->IsPriority();
+
+        // Get the order that was submitted
+        auto kitting_order = _order;
+        auto kitting_submitted_time = kitting_order->GetSubmittedTime();
+        auto kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
+        // Get the number of parts expected in this order
+        // This is used to compute the max score for this order
+        auto order_id = kitting_score->GetOrderId();
+        
         std::string output = "";
-        output += "\n========================================\n";
-        output += "Order: " + kitting_score->GetOrderId() + "\n";
-        output += "Type: Kitting\n";
-        output += "AGV: " + std::to_string(kitting_score->GetAGV()) + "\n";
-        output += "Tray score: " + std::to_string(kitting_score->GetTrayScore()) + "\n";
-        kitting_score->GetDestinationScore() == 1 ? output += "Correct destination: Yes\n" : output += "Correct destination: No\n";
-        output += "Bonus: " + std::to_string(kitting_score->GetBonus()) + "\n";
-        output += "Score: " + std::to_string(kitting_score->GetScore()) + "\n";
+
+    
+        output += TerminalDisplay("\n========================================\n", "yellow");
+        output += TerminalDisplay("Order Submitted\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+    
+    
+
+        output += TerminalDisplay("-Order ID: ", "green") + kitting_score->GetOrderId() + "\n";
+        output += TerminalDisplay("\t-Type: ", "green") + "Kitting\n";
+        if (order_priority)
+            output += TerminalDisplay("\t-Priority: ", "green") + "High\n";
+        else
+            output += TerminalDisplay("\t-Priority: ", "green") + "Regular\n";
+
+        output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+        output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+        output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+                
+        output += TerminalDisplay("\t-AGV: ", "green") + std::to_string(kitting_score->GetAGV()) + "\n";
+        output += TerminalDisplay("\t-Tray score: ", "green") + std::to_string(kitting_score->GetTrayScore()) + "\n";
+        if (kitting_score->GetDestinationScore() == 1)
+            output += TerminalDisplay("\t-Correct destination? ", "green") + "Yes\n";
+        else
+            output += TerminalDisplay("\t-Correct destination? ", "green") + "No\n";
+        output += TerminalDisplay("\t-Bonus: ", "green") + std::to_string(kitting_score->GetBonus()) + "\n";
+        output += TerminalDisplay("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(expected_number_of_parts)) + "\n";
+        output += TerminalDisplay("\t-Actual score: ", "green") + std::to_string(kitting_score->GetScore()) + "\n";
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        output += TerminalDisplay("\tQuadrants Summary\n", "yellow");
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        
+
+        // ----------------------------------------
+        // Log the trial summary
+        // ----------------------------------------
+
+        if (_log_output){
+            TrialLogOutput("-Order ID: ", kitting_score->GetOrderId() + "\n");
+            TrialLogOutput("\t-Type: ", "Kitting\n");
+            if (order_priority)
+                        TrialLogOutput("\t-Priority: ", "High\n");
+            else
+                output += TerminalDisplay("\t-Priority: ", "Regular\n");
+            TrialLogOutput("\t-Announcement time: ", std::to_string(kitting_order->GetAnnouncedTime()) + "\n");
+            TrialLogOutput("\t-Submission time: ", std::to_string(kitting_order->GetSubmittedTime()) + "\n");
+            TrialLogOutput("\t-Completion time: ", std::to_string(kitting_completion_time) + "\n");
+            TrialLogOutput("\t-AGV: ", std::to_string(kitting_score->GetAGV()) + "\n");
+            TrialLogOutput("\t-Tray score: ", std::to_string(kitting_score->GetTrayScore()) + "\n");
+            if (kitting_score->GetDestinationScore() == 1)
+                TrialLogOutput("\t-Correct destination? ", "Yes\n");
+            else
+                TrialLogOutput("\t-Correct destination? ", "No\n");
+            TrialLogOutput("\t-Bonus: ", std::to_string(kitting_score->GetBonus()) + "\n");
+            TrialLogOutput("\t-Max score: ", std::to_string(ComputeMaxScoreKittingTask(expected_number_of_parts)) + "\n");
+            TrialLogOutput("\t-Actual score: ", std::to_string(kitting_score->GetScore()) + "\n");
+            TrialLogOutput("\t-----------------------\n");
+            TrialLogOutput("\tQuadrants Summary\n");
+            TrialLogOutput("\t-----------------------\n");
+        }
 
         auto quadrant1 = kitting_score->GetQuadrant1();
         auto quadrant2 = kitting_score->GetQuadrant2();
@@ -1988,51 +2230,217 @@ namespace ariac_plugins
 
         if (quadrant1 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 1\n";
-            output += "Quadrant score: " + std::to_string(quadrant1->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant1->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant1->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant1->GetIsFaulty() ? output += "Faulty part: Yes\n" : output += "Faulty part: No\n";
-            quadrant1->GetIsFlipped() ? output += "Flipped part: Yes\n" : output += "Flipped part: No\n";
+            
+            output += TerminalDisplay("\t-Quadrant: ", "green") + "1\n";
+            output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant1->GetScore()) + "\n";
+            if (quadrant1->GetIsCorrectPartType())
+                output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
+
+            if (quadrant1->GetIsCorrectPartColor())
+                output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
+
+            if (quadrant1->GetIsFaulty())
+                output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
+
+            if (quadrant1->GetIsFlipped())
+                output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+        
+
+
+            // Write in the log file
+            if (_log_output){
+                TrialLogOutput("\t-Quadrant: ", "1\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant1->GetScore()) + "\n");
+                
+                if (quadrant1->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant1->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant1->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant1->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
         if (quadrant2 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 2\n";
-            output += "Quadrant score: " + std::to_string(quadrant2->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant2->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant2->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant2->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            quadrant2->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
+
+                output += TerminalDisplay("\t-Quadrant: ", "green") + "2\n";
+                output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant2->GetScore()) + "\n";
+                if (quadrant2->GetIsCorrectPartType())
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
+
+                if (quadrant2->GetIsCorrectPartColor())
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
+
+                if (quadrant2->GetIsFaulty())
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
+
+                if (quadrant2->GetIsFlipped())
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+            
+
+            // Write in the log file
+            if (_log_output){
+                TrialLogOutput("\t-Quadrant: ", "2\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant2->GetScore()) + "\n");
+                
+                if (quadrant2->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant2->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant2->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant2->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
         if (quadrant3 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 3\n";
-            output += "Quadrant score: " + std::to_string(quadrant3->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant3->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant3->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant3->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            quadrant3->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
+     
+                output += TerminalDisplay("\t-Quadrant: ", "green") + "3\n";
+                output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant3->GetScore()) + "\n";
+                if (quadrant3->GetIsCorrectPartType())
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
+
+                if (quadrant3->GetIsCorrectPartColor())
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
+
+                if (quadrant3->GetIsFaulty())
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
+
+                if (quadrant3->GetIsFlipped())
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+            
+
+            // Write in the log file
+            if (_log_output){
+                TrialLogOutput("\t-Quadrant: ", "3\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant3->GetScore()) + "\n");
+                
+                if (quadrant3->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant3->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant3->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant3->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
         if (quadrant4 != nullptr)
         {
-            output += "========================================\n";
-            output += "Quadrant: 4\n";
-            output += "Quadrant score: " + std::to_string(quadrant4->GetScore()) + "\n";
-            output += "----------------------------------------\n";
-            quadrant4->GetIsCorrectPartType() ? output += "Correct part type: Yes\n" : output += "Correct part type: No\n";
-            quadrant4->GetIsCorrectPartColor() ? output += "Correct part color: Yes\n" : output += "Correct part color: No\n";
-            quadrant4->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            quadrant4->GetIsFlipped() ? output += "Flipped: Yes\n" : output += "Flipped: No\n";
+                output += TerminalDisplay("\t-Quadrant: ", "green") + "4\n";
+                output += TerminalDisplay("\t\t-Score: ", "green") + std::to_string(quadrant4->GetScore()) + "\n";
+                if (quadrant4->GetIsCorrectPartType())
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part type? ", "green") + "No\n";
+
+                if (quadrant4->GetIsCorrectPartColor())
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Correct part color? ", "green") + "No\n";
+
+                if (quadrant4->GetIsFaulty())
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Faulty part? ", "green") + "No\n";
+
+                if (quadrant4->GetIsFlipped())
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "Yes\n";
+                else
+                    output += TerminalDisplay("\t\t-Flipped part? ", "green") + "No\n";
+
+
+            // Write in the log file
+            if (_log_output){
+                TrialLogOutput("\t-Quadrant: ", "4\n");
+                TrialLogOutput("\t\t-Score: ", std::to_string(quadrant4->GetScore()) + "\n");
+                
+                if (quadrant4->GetIsCorrectPartType())
+                    TrialLogOutput("\t\t-Correct part type? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part type? ", "No\n");
+
+                if (quadrant4->GetIsCorrectPartColor())
+                    TrialLogOutput("\t\t-Correct part color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct part color? ", "No\n");
+
+                if (quadrant4->GetIsFaulty())
+                    TrialLogOutput("\t\t-Faulty part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Faulty part? ", "No\n");
+
+                if (quadrant4->GetIsFlipped())
+                    TrialLogOutput("\t\t-Flipped part? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Flipped part? ", "No\n");
+            }
         }
 
-        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        if (_terminal_display){
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        }
+        // log_message_ += output;
     }
 
     //==============================================================================
@@ -2211,20 +2619,70 @@ namespace ariac_plugins
         // Set the score for this assembly task
         _order->SetAssemblyScore(assembly_score);
 
-        // Display the score in the terminal
-        PrintAssemblyScore(assembly_score);
+        // Display the score in the terminal only
+        PrintAssemblyScore(_order, false, true);
     }
 
     //==============================================================================
-    void TaskManagerPluginPrivate::PrintAssemblyScore(std::shared_ptr<ariac_common::AssemblyScore> assembly_score)
+    void TaskManagerPluginPrivate::PrintAssemblyScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output, bool _terminal_display)
     {
+        auto assembly_score = _order->GetAssemblyScore();
+        auto assembly_task = _order->GetAssemblyTask();
+        // order priority
+        auto order_priority = _order->IsPriority();
+        auto assembly_completion_time = _order->GetSubmittedTime() - _order->GetAnnouncedTime();
+
+
         std::string output = "";
-        output += "\n========================================\n";
-        output += "Order: " + assembly_score->GetOrderId() + "\n";
-        output += "Type: Assembly\n";
-        output += "Station: " + std::to_string(assembly_score->GetStation()) + "\n";
-        output += "Bonus: " + std::to_string(assembly_score->GetBonus()) + "\n";
-        output += "Score: " + std::to_string(assembly_score->GetScore()) + "\n";
+
+    
+        output += TerminalDisplay("\n========================================\n", "yellow");
+        output += TerminalDisplay("Order Submitted\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+    
+    
+
+        output += TerminalDisplay("-Order ID: ", "green") + assembly_score->GetOrderId() + "\n";
+        output += TerminalDisplay("\t-Type: ", "green") + "Assembly\n";
+        if (order_priority)
+            output += TerminalDisplay("\t-Priority: ", "green") + "High\n";
+        else
+            output += TerminalDisplay("\t-Priority: ", "green") + "Regular\n";
+
+        output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(_order->GetAnnouncedTime()) + "\n";
+        output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(_order->GetSubmittedTime()) + "\n";
+        output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(assembly_completion_time) + "\n";
+        output += TerminalDisplay("\t-Station: ", "green") + std::to_string(assembly_score->GetStation()) + "\n";
+        output += TerminalDisplay("\t-Bonus: ", "green") + std::to_string(assembly_score->GetBonus()) + "\n";
+        output += TerminalDisplay("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreAssemblyTask(_order->GetAssemblyTask()->GetProducts().size())) + "\n";
+        output += TerminalDisplay("\t-Actual score: ", "green") + std::to_string(assembly_score->GetScore()) + "\n";
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        output += TerminalDisplay("\tParts Summary\n", "yellow");
+        output += TerminalDisplay("\t-----------------------\n", "yellow"); 
+
+        //----------------------------------------
+        // Log outputs
+        //----------------------------------------
+        if (_log_output){
+            TrialLogOutput("-Order ID: ", assembly_score->GetOrderId() + "\n");
+            TrialLogOutput("\t-Type: ", "Assembly\n");
+             if (order_priority)
+                TrialLogOutput("\t-Priority: ", "High\n");
+            else
+                TrialLogOutput("\t-Priority: ", "Regular\n");
+
+            TrialLogOutput("\t-Announcement time: ", std::to_string(_order->GetAnnouncedTime()) + "\n");
+            TrialLogOutput("\t-Submission time: ", std::to_string(_order->GetSubmittedTime()) + "\n");
+            TrialLogOutput("\t-Completion time: ", std::to_string(assembly_completion_time) + "\n");
+            TrialLogOutput("\t-Station: ", std::to_string(assembly_score->GetStation()) + "\n");
+            TrialLogOutput("\t-Bonus: ", std::to_string(assembly_score->GetBonus()) + "\n");
+            TrialLogOutput("\t-Max score: ", std::to_string(ComputeMaxScoreAssemblyTask(_order->GetAssemblyTask()->GetProducts().size())) + "\n");
+            TrialLogOutput("\t-Actual score: ", std::to_string(assembly_score->GetScore()) + "\n");
+            TrialLogOutput("\t-----------------------\n");
+            TrialLogOutput("\tParts Summary\n");
+            TrialLogOutput("\t-----------------------\n");
+        }
+        
 
         auto battery = assembly_score->GetBatteryPtr();
         auto pump = assembly_score->GetPumpPtr();
@@ -2234,143 +2692,539 @@ namespace ariac_plugins
         {
             auto battery_type = ariac_common::ConvertPartTypeToString(battery->GetPart().GetType());
             auto battery_color = ariac_common::ConvertPartColorToString(battery->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + battery_type + "," + battery_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            battery->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            battery->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            output += "Position: " + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(battery->GetScore()) + "\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + battery_type + "," + battery_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(battery->GetScore()) + "\n";
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (battery->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (battery->GetIsFaulty())
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "No\n";
+
+            if (battery->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
+            
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + battery_type + "," + battery_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(battery->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (battery->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (battery->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (battery->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n");
+            }
         }
         if (pump != nullptr)
         {
             auto pump_type = ariac_common::ConvertPartTypeToString(pump->GetPart().GetType());
             auto pump_color = ariac_common::ConvertPartColorToString(pump->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + pump_type + "," + pump_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            pump->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            pump->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            output += "Position: " + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(pump->GetScore()) + "\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + pump_type + "," + pump_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(pump->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (pump->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (pump->GetIsFaulty())
+                TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+            else
+                TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+            if (pump->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
+        
+        //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + pump_type + "," + pump_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(pump->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (pump->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (pump->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (pump->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n");
+            }
+        
+        
         }
         if (regulator != nullptr)
         {
             auto regulator_type = ariac_common::ConvertPartTypeToString(regulator->GetPart().GetType());
             auto regulator_color = ariac_common::ConvertPartColorToString(regulator->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + regulator_type + "," + regulator_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            regulator->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            regulator->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            output += "Position: " + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(regulator->GetScore()) + "\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + regulator_type + "," + regulator_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(regulator->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (regulator->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (regulator->GetIsFaulty())
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "No\n";
+
+            if (regulator->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
+        
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + regulator_type + "," + regulator_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(regulator->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (regulator->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (regulator->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (regulator->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n");
+            }
         }
         if (sensor != nullptr)
         {
             auto sensor_type = ariac_common::ConvertPartTypeToString(sensor->GetPart().GetType());
             auto sensor_color = ariac_common::ConvertPartColorToString(sensor->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + sensor_type + "," + sensor_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            sensor->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            sensor->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            output += "Position: " + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(sensor->GetScore()) + "\n";
-            output += "----------------------------------------\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + sensor_type + "," + sensor_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(sensor->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (sensor->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (sensor->GetIsFaulty())
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Is faulty? ", "green") + "No\n";
+
+            if (sensor->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
+       
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + sensor_type + "," + sensor_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(sensor->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (sensor->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (sensor->GetIsFaulty())
+                    TrialLogOutput("\t\t-Is faulty? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Is faulty? ", "No\n");
+
+                if (sensor->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n");
+            }
         }
 
-        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        if (_terminal_display){
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        }
+        // log_message_ += output;
     }
 
     //==============================================================================
-    void TaskManagerPluginPrivate::PrintCombinedScore(std::shared_ptr<ariac_common::CombinedScore> combined_score)
-    {
+    void TaskManagerPluginPrivate::PrintCombinedScore(std::shared_ptr<ariac_common::Order> _order, bool _log_output, bool _terminal_display){
+
         std::string output = "";
-        output += "\n========================================\n";
-        output += "Order: " + combined_score->GetOrderId() + "\n";
-        output += "Type: Combined\n";
-        output += "Station: " + std::to_string(combined_score->GetStation()) + "\n";
-        output += "Bonus: " + std::to_string(combined_score->GetBonus()) + "\n";
-        output += "Score: " + std::to_string(combined_score->GetScore()) + "\n";
+
+        auto combined_score = _order->GetCombinedScore();
+        auto combined_task = _order->GetCombinedTask();
+        // order priority
+        auto order_priority = _order->IsPriority();
+        auto combined_completion_time = _order->GetSubmittedTime() - _order->GetAnnouncedTime();
+
+        output += TerminalDisplay("\n========================================\n", "yellow");
+        output += TerminalDisplay("Order Submitted\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+
+        output += TerminalDisplay("-Order ID: ", "green") + combined_score->GetOrderId() + "\n";
+        output += TerminalDisplay("\t-Type: ", "green") + "Combined\n";
+
+        if (order_priority)
+            output += TerminalDisplay("\t-Priority: ", "green") + "High\n";
+        else
+            output += TerminalDisplay("\t-Priority: ", "green") + "Regular\n";
+
+        output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(_order->GetAnnouncedTime()) + "\n";
+        output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(_order->GetSubmittedTime()) + "\n";
+        output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(combined_completion_time) + "\n";
+        output += TerminalDisplay("\t-Station: ", "green") + std::to_string(combined_score->GetStation()) + "\n";
+        output += TerminalDisplay("\t-Bonus: ", "green") + std::to_string(combined_score->GetBonus()) + "\n";
+        output += TerminalDisplay("\t-Max score: ", "green") + std::to_string(ComputeMaxScoreCombinedTask(_order->GetCombinedTask()->GetProducts().size())) + "\n";
+        output += TerminalDisplay("\t-Actual score: ", "green") + std::to_string(combined_score->GetScore()) + "\n";
+        output += TerminalDisplay("\t-----------------------\n", "yellow");
+        output += TerminalDisplay("\tParts Summary\n", "yellow");
+        output += TerminalDisplay("\t-----------------------\n", "yellow"); 
+
+        //----------------------------------------
+        // Log outputs
+        //----------------------------------------
+        if (_log_output){
+            TrialLogOutput("-Order ID: ", combined_score->GetOrderId() + "\n");
+            TrialLogOutput("\t-Type: ", "Combined\n");
+             if (order_priority)
+                TrialLogOutput("\t-Priority: ", "High\n");
+            else
+                TrialLogOutput("\t-Priority: ", "Regular\n");
+
+            TrialLogOutput("\t-Announcement time: ", std::to_string(_order->GetAnnouncedTime()) + "\n");
+            TrialLogOutput("\t-Submission time: ", std::to_string(_order->GetSubmittedTime()) + "\n");
+            TrialLogOutput("\t-Completion time: ", std::to_string(combined_completion_time) + "\n");
+            TrialLogOutput("\t-Station: ", std::to_string(combined_score->GetStation()) + "\n");
+            TrialLogOutput("\t-Bonus: ", std::to_string(combined_score->GetBonus()) + "\n");
+            TrialLogOutput("\t-Max score: ", std::to_string(ComputeMaxScoreCombinedTask(_order->GetCombinedTask()->GetProducts().size())) + "\n");
+            TrialLogOutput("\t-Actual score: ", std::to_string(combined_score->GetScore()) + "\n");
+            TrialLogOutput("\t-----------------------\n");
+            TrialLogOutput("\tParts Summary\n");
+            TrialLogOutput("\t-----------------------\n");
+        }
 
         auto battery = combined_score->GetBatteryPtr();
         auto pump = combined_score->GetPumpPtr();
         auto regulator = combined_score->GetRegulatorPtr();
         auto sensor = combined_score->GetSensorPtr();
+
         if (battery != nullptr)
         {
             auto battery_type = ariac_common::ConvertPartTypeToString(battery->GetPart().GetType());
             auto battery_color = ariac_common::ConvertPartColorToString(battery->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + battery_type + "," + battery_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            battery->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            battery->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            battery->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(battery->GetScore()) + "\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + battery_type + "," + battery_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(battery->GetScore()) + "\n";
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (battery->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (battery->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
+            
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + battery_type + "," + battery_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(battery->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (battery->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (battery->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n");
+            }
         }
         if (pump != nullptr)
         {
             auto pump_type = ariac_common::ConvertPartTypeToString(pump->GetPart().GetType());
             auto pump_color = ariac_common::ConvertPartColorToString(pump->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + pump_type + "," + pump_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            pump->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            pump->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            pump->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(pump->GetScore()) + "\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + pump_type + "," + pump_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(pump->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (pump->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (pump->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
+        
+        //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + pump_type + "," + pump_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(pump->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (pump->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (pump->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n");
+            }
+        
+        
         }
         if (regulator != nullptr)
         {
             auto regulator_type = ariac_common::ConvertPartTypeToString(regulator->GetPart().GetType());
             auto regulator_color = ariac_common::ConvertPartColorToString(regulator->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + regulator_type + "," + regulator_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            regulator->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            regulator->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            regulator->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(regulator->GetScore()) + "\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + regulator_type + "," + regulator_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(regulator->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (regulator->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (regulator->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
+        
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + regulator_type + "," + regulator_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(regulator->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (regulator->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (regulator->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n");
+            }
         }
         if (sensor != nullptr)
         {
             auto sensor_type = ariac_common::ConvertPartTypeToString(sensor->GetPart().GetType());
             auto sensor_color = ariac_common::ConvertPartColorToString(sensor->GetPart().GetColor());
-            output += "========================================\n";
-            output += "Part: [" + sensor_type + "," + sensor_color + "]\n";
-            output += "----------------------------------------\n";
-            output += "Type: Correct\n";
-            sensor->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
-            sensor->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
-            sensor->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
-            output += "Position: " + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
-            output += "Orientation: " + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
-            output += "Part score: " + std::to_string(sensor->GetScore()) + "\n";
-            output += "----------------------------------------\n";
+            output += TerminalDisplay("\t-Part: ", "green") + "[" + sensor_type + "," + sensor_color + "]\n";
+            output += TerminalDisplay("\t\t-Part score: ", "green") + std::to_string(sensor->GetScore()) + "\n";
+
+
+            output += TerminalDisplay("\t\t-Correct type: ", "green") + "Yes\n";
+
+            if (sensor->GetCorrectColor())
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct color? ", "green") + "No\n";
+
+            if (sensor->GetCorrectPose())
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "Yes\n";
+            else
+                output += TerminalDisplay("\t\t-Correct pose? ", "green") + "No\n";
+
+            output += TerminalDisplay("\t\t\t-Position: ", "green") + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
+            output += TerminalDisplay("\t\t\t-Orientation: ", "green") + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
+       
+            //----------------------------------------
+            // Log outputs
+            //----------------------------------------
+            if (_log_output){
+                TrialLogOutput("\t-Part: ", "[" + sensor_type + "," + sensor_color + "]\n");
+                TrialLogOutput("\t\t-Part score: ", std::to_string(sensor->GetScore()) + "\n");
+                TrialLogOutput("\t\t-Correct type: ", "Yes\n");
+
+                if (sensor->GetCorrectColor())
+                    TrialLogOutput("\t\t-Correct color? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct color? ", "No\n");
+
+                if (sensor->GetCorrectPose())
+                    TrialLogOutput("\t\t-Correct pose? ", "Yes\n");
+                else
+                    TrialLogOutput("\t\t-Correct pose? ", "No\n");
+
+                TrialLogOutput("\t\t\t-Position: ", std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n");
+                TrialLogOutput("\t\t\t-Orientation: ", std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n");
+            }
         }
 
-        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
+        if (_terminal_display){
+            RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        }
+        // if (battery != nullptr)
+        // {
+        //     auto battery_type = ariac_common::ConvertPartTypeToString(battery->GetPart().GetType());
+        //     auto battery_color = ariac_common::ConvertPartColorToString(battery->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + battery_type + "," + battery_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     battery->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     battery->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     battery->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(battery->GetPosition().x) + ", " + std::to_string(battery->GetPosition().y) + ", " + std::to_string(battery->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(battery->GetOrientation().x) + ", " + std::to_string(battery->GetOrientation().y) + ", " + std::to_string(battery->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(battery->GetScore()) + "\n";
+        // }
+        // if (pump != nullptr)
+        // {
+        //     auto pump_type = ariac_common::ConvertPartTypeToString(pump->GetPart().GetType());
+        //     auto pump_color = ariac_common::ConvertPartColorToString(pump->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + pump_type + "," + pump_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     pump->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     pump->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     pump->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(pump->GetPosition().x) + ", " + std::to_string(pump->GetPosition().y) + ", " + std::to_string(pump->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(pump->GetOrientation().x) + ", " + std::to_string(pump->GetOrientation().y) + ", " + std::to_string(pump->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(pump->GetScore()) + "\n";
+        // }
+        // if (regulator != nullptr)
+        // {
+        //     auto regulator_type = ariac_common::ConvertPartTypeToString(regulator->GetPart().GetType());
+        //     auto regulator_color = ariac_common::ConvertPartColorToString(regulator->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + regulator_type + "," + regulator_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     regulator->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     regulator->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     regulator->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(regulator->GetPosition().x) + ", " + std::to_string(regulator->GetPosition().y) + ", " + std::to_string(regulator->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(regulator->GetOrientation().x) + ", " + std::to_string(regulator->GetOrientation().y) + ", " + std::to_string(regulator->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(regulator->GetScore()) + "\n";
+        // }
+        // if (sensor != nullptr)
+        // {
+        //     auto sensor_type = ariac_common::ConvertPartTypeToString(sensor->GetPart().GetType());
+        //     auto sensor_color = ariac_common::ConvertPartColorToString(sensor->GetPart().GetColor());
+        //     output += "========================================\n";
+        //     output += "Part: [" + sensor_type + "," + sensor_color + "]\n";
+        //     output += "----------------------------------------\n";
+        //     output += "Type: Correct\n";
+        //     sensor->GetCorrectColor() ? output += "Color: Correct\n" : output += "Color: Incorrect\n";
+        //     sensor->GetCorrectPose() ? output += "Pose: Correct\n" : output += "Pose: Incorrect\n";
+        //     sensor->GetIsFaulty() ? output += "Faulty: Yes\n" : output += "Faulty: No\n";
+        //     output += "Position: " + std::to_string(sensor->GetPosition().x) + ", " + std::to_string(sensor->GetPosition().y) + ", " + std::to_string(sensor->GetPosition().z) + "\n";
+        //     output += "Orientation: " + std::to_string(sensor->GetOrientation().x) + ", " + std::to_string(sensor->GetOrientation().y) + ", " + std::to_string(sensor->GetOrientation().z) + "\n";
+        //     output += "Part score: " + std::to_string(sensor->GetScore()) + "\n";
+        //     output += "----------------------------------------\n";
+        // }
+
+        // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        // log_message_ += output;
     }
 
     //==============================================================================
@@ -2527,6 +3381,7 @@ namespace ariac_plugins
                     {
                         pump_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, is_faulty);
                     }
+
                     else if (order_product.GetPart().GetType() == ariac_msgs::msg::Part::REGULATOR)
                     {
                         regulator_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, is_faulty);
@@ -2566,7 +3421,7 @@ namespace ariac_plugins
         _order->SetCombinedScore(combined_score);
 
         // Display the score in the terminal
-        PrintCombinedScore(combined_score);
+        PrintCombinedScore(_order);
     }
 
     // ==================================== //
@@ -2661,7 +3516,47 @@ namespace ariac_plugins
         return true;
     }
     //==============================================================================
-    void TaskManagerPlugin::ComputeTrialScore()
+    // void TaskManagerPlugin::ComputeTrialScore()
+    // {
+    //     std::shared_ptr<ariac_common::KittingScore> kitting_score = nullptr;
+    //     std::shared_ptr<ariac_common::AssemblyScore> assembly_score = nullptr;
+    //     std::shared_ptr<ariac_common::CombinedScore> combined_score = nullptr;
+
+    //     std::shared_ptr<ariac_common::Order> kitting_order = nullptr;
+    //     std::shared_ptr<ariac_common::Order> assembly_order = nullptr;
+    //     std::shared_ptr<ariac_common::Order> combined_order = nullptr;
+
+    //     //vector of 
+
+    //     for (auto &order : impl_->all_orders_)
+    //     {
+    //         if (order->GetKittingScore())
+    //         {
+    //             kitting_order = order;
+    //             kitting_score = order->GetKittingScore();
+    //             impl_->trial_score_ += kitting_score->GetScore();
+    //         }
+
+    //         if (order->GetAssemblyScore())
+    //         {
+    //             assembly_order = order;
+    //             assembly_score = order->GetAssemblyScore();
+    //             impl_->trial_score_ += assembly_score->GetScore();
+    //         }
+
+    //         if (order->GetCombinedScore())
+    //         {
+    //             combined_order = order;
+    //             combined_score = order->GetCombinedScore();
+    //             impl_->trial_score_ += combined_score->GetScore();
+    //         }
+    //     }
+
+    //     impl_->PrintTrialScore(kitting_order, assembly_order, combined_order);
+    // }
+
+    //==============================================================================
+    void TaskManagerPluginPrivate::PrintTrialSummary()
     {
         std::shared_ptr<ariac_common::KittingScore> kitting_score = nullptr;
         std::shared_ptr<ariac_common::AssemblyScore> assembly_score = nullptr;
@@ -2671,32 +3566,126 @@ namespace ariac_plugins
         std::shared_ptr<ariac_common::Order> assembly_order = nullptr;
         std::shared_ptr<ariac_common::Order> combined_order = nullptr;
 
-        for (auto &order : impl_->all_orders_)
+        double kitting_submitted_time = 0.0;
+        double assembly_submitted_time = 0.0;
+        double combined_submitted_time = 0.0;
+
+        double kitting_completion_time = 0.0;
+        double assembly_completion_time = 0.0;
+        double combined_completion_time = 0.0;
+
+        // First parsing of the orders to compute the score for the whole trial
+        for (auto &order : all_orders_)
+        {
+            if (order->GetKittingScore())
+                trial_score_ += order->GetKittingScore()->GetScore();
+            if (order->GetAssemblyScore())
+                trial_score_ += order->GetAssemblyScore()->GetScore();
+            if (order->GetCombinedScore())
+                trial_score_ += order->GetCombinedScore()->GetScore();
+        }
+
+        // Second parsing of the orders to compute the completion time for the whole trial
+        // vector of doubles
+        std::vector<double> completion_times;
+        double max_score = 0;
+        for (auto &order : all_orders_)
         {
             if (order->GetKittingScore())
             {
                 kitting_order = order;
                 kitting_score = order->GetKittingScore();
-                impl_->trial_score_ += kitting_score->GetScore();
+                kitting_submitted_time = kitting_order->GetSubmittedTime();
+                kitting_completion_time = kitting_submitted_time - kitting_order->GetAnnouncedTime();
+                completion_times.push_back(kitting_completion_time);
+                max_score += ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size());
             }
-
             if (order->GetAssemblyScore())
             {
                 assembly_order = order;
                 assembly_score = order->GetAssemblyScore();
-                impl_->trial_score_ += assembly_score->GetScore();
+                assembly_submitted_time = assembly_order->GetSubmittedTime();
+                assembly_completion_time = assembly_submitted_time - assembly_order->GetAnnouncedTime();
+                completion_times.push_back(assembly_completion_time);
+                max_score += ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size());
             }
-
             if (order->GetCombinedScore())
             {
                 combined_order = order;
                 combined_score = order->GetCombinedScore();
-                impl_->trial_score_ += combined_score->GetScore();
+                combined_submitted_time = combined_order->GetSubmittedTime();
+                combined_completion_time = combined_submitted_time - combined_order->GetAnnouncedTime();
+                completion_times.push_back(combined_completion_time);
+                max_score += ComputeMaxScoreCombinedTask(combined_order->GetCombinedTask()->GetProducts().size());
             }
         }
+        // Get the max completion time
+        auto trial_completion_time = *std::max_element(completion_times.begin(), completion_times.end());
 
-        impl_->PrintTrialScore(kitting_order, assembly_order, combined_order);
+
+        // ----------------------------------------
+        // Display the trial summary in the terminal
+        // ----------------------------------------
+        std::string output = "\n";
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Trial Summary\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Trial file: ", "green") + trial_name_ + "\n";
+        if (time_limit_> 0)
+            output += TerminalDisplay("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        else
+            output += TerminalDisplay("Trial time limit: ", "green") + "No time limit\n";
+        output += TerminalDisplay("Completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
+        output += TerminalDisplay("Max score: ", "green") + std::to_string(max_score) + "\n";
+        output += TerminalDisplay("Actual score: ", "green") + std::to_string((int)trial_score_) + "\n";
+        // output += TerminalDisplay("========================================\n", "yellow");
+        // output += TerminalDisplay("Orders Summary\n", "yellow");
+        // output += TerminalDisplay("========================================\n", "yellow");
+
+        // ----------------------------------------
+        // Log the trial summary
+        // ----------------------------------------
+        TrialLogOutput("========================================\n");
+        TrialLogOutput("Trial Summary\n");
+        TrialLogOutput("========================================\n");
+        TrialLogOutput("Trial file: ", trial_name_ + "\n");
+        if (time_limit_> 0)
+            TrialLogOutput("Trial time limit: ", std::to_string(time_limit_) + "\n");
+        else
+            TrialLogOutput("Trial time limit: ", "No time limit\n");
+        TrialLogOutput("Completion time: ", std::to_string(trial_completion_time) + "\n");
+        TrialLogOutput("Max score: ", std::to_string(max_score) + "\n");
+        TrialLogOutput("Actual score: ", std::to_string((int)trial_score_) + "\n");
+        TrialLogOutput("========================================\n");
+        TrialLogOutput("Orders Summary\n");
+        TrialLogOutput("========================================\n");
+
+
+
+
+        // Third parsing of the orders to display a summary of the trial
+        for (auto &order : all_orders_)
+        {
+            if (order->GetKittingScore())
+            {
+                PrintKittingScore(order, true, false);
+            }
+            if (order->GetAssemblyScore())
+            {
+                // Only log the result (no terminal display)
+                PrintAssemblyScore(order, true, false);
+            }
+            if (order->GetCombinedScore())
+            {
+                // Only log the result (no terminal display)
+                PrintCombinedScore(order, true, false);
+            }
+        }
+        RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
+        // log_message_ += output;
+        WriteToAriacLogFile();
     }
+
 
     //==============================================================================
     void TaskManagerPluginPrivate::PrintTrialScore(
@@ -2711,6 +3700,7 @@ namespace ariac_plugins
         double kitting_completion_time = 0.0;
         double assembly_completion_time = 0.0;
         double combined_completion_time = 0.0;
+
 
         if (kitting_order != nullptr)
         {
@@ -2731,51 +3721,66 @@ namespace ariac_plugins
         }
 
         auto trial_completion_time = std::max({kitting_submitted_time, assembly_submitted_time, combined_submitted_time});
+        // auto trial_max_score = ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size()) + ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size()) + ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size());
 
-        std::string output = "";
-        output += "\n\n\n\n========================================\n";
-        output += "END OF TRIAL\n";
-        output += "========================================\n";
-        output += "Trial file: " + trial_name_ + "\n";
-        output += "Trial time limit: " + std::to_string(time_limit_) + "\n";
-        output += "Trial completion time: " + std::to_string(trial_completion_time) + "\n";
-        output += "Trial score: " + std::to_string((int)trial_score_) + "\n";
-        output += "========================================\n";
-        output += "ORDERS\n";
+        // auto number_of_products = kitting_order->GetKittingTask()->GetProducts().size();
+            // auto number_of_products = assembly_order->GetAssemblyTask()->GetProducts().size();
+            // auto number_of_products = combined_order->GetCombinedTask()->GetProducts().size();
+            // output += "Max Score: " + ComputeMaxScoreCombinedTask() + "\n";
+
+        std::string output = "\n\n\n\n";
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("END OF TRIAL\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Trial file: ", "green") + trial_name_ + "\n";
+        if (time_limit_> 0)
+            output += TerminalDisplay("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        else
+            output += TerminalDisplay("Trial time limit: ", "green") + "No time limit\n";
+        // output += TerminalDisplay("Trial time limit: ", "green") + std::to_string(time_limit_) + "\n";
+        output += TerminalDisplay("Trial completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
+        output += TerminalDisplay("Trial score: ", "green") + std::to_string((int)trial_score_) + "\n";
+        output += TerminalDisplay("========================================\n", "yellow");
+        output += TerminalDisplay("Orders\n", "yellow");
+        output += TerminalDisplay("========================================\n", "yellow");
 
         if (kitting_order != nullptr)
         {
-            output += "========================================\n";
-            output += "Kitting: " + kitting_order->GetId() + "\n";
-            output += "Announcement time: " + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
-            output += "Submission time: " + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
-            output += "Completion time: " + std::to_string(kitting_completion_time) + "\n";
-            output += "Score: " + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
+            output += TerminalDisplay("Order ID: ", "green") + kitting_order->GetId() + "\n";
+            output += TerminalDisplay("\t-Order Type: ", "green") + "Kitting\n";
+            output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(kitting_order->GetAnnouncedTime()) + "\n";
+            output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(kitting_order->GetSubmittedTime()) + "\n";
+            output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(kitting_completion_time) + "\n";
+            output += TerminalDisplay("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreKittingTask(kitting_order->GetKittingTask()->GetProducts().size())) + "\n";
+            output += TerminalDisplay("\t-Actual Order Score: ", "green") + std::to_string(kitting_order->GetKittingScore()->GetScore()) + "\n";
         }
 
         if (assembly_order != nullptr)
         {
-            output += "========================================\n";
-            output += "Assembly: " + assembly_order->GetId() + "\n";
-            output += "Announcement time: " + std::to_string(assembly_order->GetAnnouncedTime()) + "\n";
-            output += "Submission time: " + std::to_string(assembly_order->GetSubmittedTime()) + "\n";
-            output += "Completion time: " + std::to_string(assembly_completion_time) + "\n";
-            output += "Score: " + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
+            output += TerminalDisplay("Order ID: ", "green") + assembly_order->GetId() + "\n";
+            output += TerminalDisplay("\t-Order Type: ", "green") + "Assembly\n";
+            output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(assembly_order->GetAnnouncedTime()) + "\n";
+            output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(assembly_order->GetSubmittedTime()) + "\n";
+            output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(assembly_completion_time) + "\n";
+            output += TerminalDisplay("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreAssemblyTask(assembly_order->GetAssemblyTask()->GetProducts().size())) + "\n";
+            output += TerminalDisplay("\t-Actual Order Score: ", "green") + std::to_string(assembly_order->GetAssemblyScore()->GetScore()) + "\n";
         }
 
         if (combined_order != nullptr)
         {
-            output += "========================================\n";
-            output += "Combined: " + combined_order->GetId() + "\n";
-            output += "Announcement time: " + std::to_string(combined_order->GetAnnouncedTime()) + "\n";
-            output += "Submission time: " + std::to_string(combined_order->GetSubmittedTime()) + "\n";
-            output += "Completion time: " + std::to_string(combined_completion_time) + "\n";
-            output += "Score: " + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
+            output += TerminalDisplay("Order ID: ", "green") + combined_order->GetId() + "\n";
+            output += TerminalDisplay("\t-Order Type: ", "green") + "Combined\n";
+            output += TerminalDisplay("\t-Announcement time: ", "green") + std::to_string(combined_order->GetAnnouncedTime()) + "\n";
+            output += TerminalDisplay("\t-Submission time: ", "green") + std::to_string(combined_order->GetSubmittedTime()) + "\n";
+            output += TerminalDisplay("\t-Completion time: ", "green") + std::to_string(combined_completion_time) + "\n";
+            output += TerminalDisplay("\t-Max Order Score: ", "green") + std::to_string(ComputeMaxScoreCombinedTask(assembly_order->GetCombinedTask()->GetProducts().size())) + "\n";
+            output += TerminalDisplay("\t-Actual Order Score: ", "green") + std::to_string(combined_order->GetCombinedScore()->GetScore()) + "\n";
         }
 
         RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-        log_message_ += output;
-        WriteToLog();
+        // log_message_ += output;
+        WriteToAriacLogFile();
+        // WriteToLog();
     }
 
     //==============================================================================
@@ -2846,7 +3851,8 @@ namespace ariac_plugins
         response->message = "Competition ended successfully!";
 
         // Display the trial score
-        ComputeTrialScore();
+        // ComputeTrialScore();
+        impl_->PrintTrialSummary();
 
         return true;
     }

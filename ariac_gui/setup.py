@@ -3,7 +3,7 @@ from setuptools import setup
 package_name = 'ariac_gui'
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']
-file_names = ["plus", 'NIST_logo']+[color+pType for color in PART_COLORS for pType in PART_TYPES]
+file_names = ["plus", 'NIST_logo','assembly_station']+[color+pType for color in PART_COLORS for pType in PART_TYPES]
 setup(
     name=package_name,
     version='2024.1.0',

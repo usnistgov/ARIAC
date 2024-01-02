@@ -71,7 +71,7 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 
 # Menu images
 GUI_PACKAGE = get_package_share_directory('ariac_gui')
-MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
+MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
 
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
@@ -208,6 +208,7 @@ class GUI_CLASS(ctk.CTk):
         self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
         for i in range(len(self.assembly_insert_rotations)):
             self.assembly_insert_rotations[i].trace_add('write', self.update_current_file_label)
+            self.assembly_insert_rotations[i].trace_add('write', self.show_assembly_stations)
         self.assembly_inserts_widgets = []
         
         # Bin parts info
@@ -380,6 +381,17 @@ class GUI_CLASS(ctk.CTk):
         self.current_file_frame.pack(fill='both',expand=True)
         self.notebook.add(self.current_file_frame, text="Current File")
         self.add_current_file_to_frame()
+
+        self.map_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.map_frame.pack(fill='both',expand=True)
+        self.notebook.add(self.map_frame, text="Full Map")
+         # Map elements
+        self.map_canvas_bin_elements = []
+        self.map_canvas_conveyor_elements = []
+        self.map_canvas_assembly_station_elements = []
+        self.bin_parts_counter.trace_add('write',self.add_bin_parts_to_map)
+        self.conveyor_parts_counter.trace_add('write',self.show_hide_conveyor_parts)
+        self.add_map_to_frame()
 
         self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)        
         self._build_assembly_parts_pose_direction()
@@ -568,7 +580,7 @@ class GUI_CLASS(ctk.CTk):
         kitting_tray_canvas.create_rectangle(200, 10, 360, 310, 
                                 outline = "black", fill = "#f6f6f6",
                                 width = 2)
-        menu_coordinates = [(95,75),(95,175),(95,275),(285,75),(285,175),(285,275)]
+        menu_coordinates = [(95,275),(95,175),(95,75),(285,75),(285,175),(285,275)]
         label_coordinates = [(coord[0],coord[1]-35) for coord in menu_coordinates]
         
         for i in self.kitting_tray_selections:i.set(KITTING_TRAY_OPTIONS[0])
@@ -2861,6 +2873,149 @@ class GUI_CLASS(ctk.CTk):
             self.sub_frame.configure(width = self.notebook.winfo_width()-30, height=self.notebook.winfo_height()-50)
         self.current_file_label.configure(text=new_label)
 
+    
+    # =======================================================
+    #                       Map
+    # =======================================================
+    def add_map_to_frame(self):
+        self.map_canvas=Canvas(self.map_frame,width = 700, height=600)
+        self.show_conveyor_parts = ctk.StringVar()
+        self.show_conveyor_parts.set("0")
+        bin_coordinates = {"bin8":[50,290,125,365],
+                           "bin7":[135,290,210,365],
+                           "bin5":[50,375,125,450],
+                           "bin6":[135,375,210,450],
+                           "bin3":[490,290,565,365],
+                           "bin4":[575,290,650,365],
+                           "bin2":[490,375,565,450],
+                           "bin1":[575,375,650,450]}
+        self.bin_parts_map_coords = {key:[] for key in bin_coordinates.keys()}
+        for key in bin_coordinates.keys():
+            starting_x = bin_coordinates[key][0]
+            starting_y = bin_coordinates[key][1]
+            for i in range(9):
+                self.bin_parts_map_coords[key].append((starting_x+(i%3+1)*19,starting_y+(i//3+1)*19))
+        for key in bin_coordinates.keys():
+            self.map_canvas.create_rectangle(bin_coordinates[key][0],
+                                             bin_coordinates[key][1],
+                                             bin_coordinates[key][2],
+                                             bin_coordinates[key][3],
+                                             outline="black",
+                                             fill = "#60c6f1",
+                                             width = 2)
+        conveyor_coordinates = [2,500,698,590]
+        self.map_canvas.create_rectangle(conveyor_coordinates[0],
+                                         conveyor_coordinates[1],
+                                         conveyor_coordinates[2],
+                                         conveyor_coordinates[3],
+                                         outline="black",
+                                         fill = "#a4a4a0",
+                                         width = 2)
+        for i in range(conveyor_coordinates[0], conveyor_coordinates[2],40):
+            self.map_canvas.create_rectangle(conveyor_coordinates[0]+i,
+                                             conveyor_coordinates[1]+1,
+                                             conveyor_coordinates[0]+i+4,
+                                             conveyor_coordinates[3]-1,
+                                             fill = "#706b62",
+                                             width = 0)
+        
+        self.assembly_station_coords = {"as1":[520,125,620,200],
+                                   "as2":[520,25,620,100],
+                                   "as3":[80,125,180,200],
+                                   "as4":[80,25,180,100]}
+        for key in self.assembly_station_coords.keys():
+            self.map_canvas.create_rectangle(self.assembly_station_coords[key][0],
+                                             self.assembly_station_coords[key][1],
+                                             self.assembly_station_coords[key][2],
+                                             self.assembly_station_coords[key][3],
+                                             fill="#a26122",
+                                             width = 0)
+        self.map_canvas.pack()
+        show_conveyor_parts_cb = ctk.CTkCheckBox(self.map_frame,text="Show conveyor_parts",variable=self.show_conveyor_parts, onvalue="1", offvalue="0", height=1, width=20)
+        show_conveyor_parts_cb.pack(pady=5)
+        self.show_conveyor_parts.trace_add('write', self.show_hide_conveyor_parts)
+        self.show_assembly_stations(1,1,1)
+    
+    def add_bin_parts_to_map(self,_,__,___):
+        for element in self.map_canvas_bin_elements:
+            self.map_canvas.delete(element)
+        self.map_canvas_bin_elements.clear()
+        for key in self.bin_parts_map_coords.keys():
+            for slot in range(9):
+                if self.current_bin_parts[key][slot]!="":
+                    image_label = ctk.CTkLabel(self.map_frame,
+                                               image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[key][slot]].rotate(self.bin_parts[key][slot].rotation*180/pi),
+                                                                  size=(15,15)),
+                                               text="",
+                                               bg_color="#60c6f1",
+                                               height=0)
+                    self.map_canvas_bin_elements.append(self.map_canvas.create_window(self.bin_parts_map_coords[key][slot],
+                                                                                              window=image_label))
+    
+    def show_hide_conveyor_parts(self,_,__,___):
+        show_conveyor_parts = True if self.show_conveyor_parts.get()=="1" else False
+        self.show_conveyor_parts.set("0")
+        for element in self.map_canvas_conveyor_elements:
+            self.map_canvas.delete(element[0])
+        self.map_canvas_conveyor_elements.clear()
+
+        if show_conveyor_parts:
+            self.show_conveyor_parts.set("1")
+            self.add_conveyor_parts_to_map()
+            
+    def add_conveyor_parts_to_map(self):
+        self.conveyor_parts_image_labels = []
+        self.current_index = 0
+        self.label_index = 0
+        self.delay = 20
+        self.coordinates = [(i,545) for i in range(25,675,5)][::-1]
+        for i in range(len(self.current_conveyor_parts)):
+            part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]
+            for j in range(self.conveyor_parts[i].part_lot.quantity):
+                self.conveyor_parts_image_labels.append(ctk.CTkLabel(self.map_frame,text="",
+                                                        image=ctk.CTkImage(MENU_IMAGES[part].rotate(self.conveyor_parts[i].rotation*180/pi),size=(50,50)),
+                                                        bg_color="#a4a4a0"))
+        self.num_conveyor_labels = min(len(self.conveyor_parts_image_labels),4)
+        self.current_index_dict={label:0 for label in self.conveyor_parts_image_labels}
+        if len(self.conveyor_parts_image_labels)>0:
+            canvas_label=self.map_canvas.create_window(self.coordinates[self.current_index_dict[self.conveyor_parts_image_labels[self.label_index]]],window=self.conveyor_parts_image_labels[self.label_index])
+            self.current_labels = [(canvas_label,self.conveyor_parts_image_labels[self.label_index])]
+            self.current_index_dict[self.conveyor_parts_image_labels[self.label_index]] +=1
+            self.map_canvas.after(self.delay, self.move_conveyor)
+            self.map_canvas_conveyor_elements = self.current_labels
+
+    def move_conveyor(self):
+        list_changed = False
+        for i in range(len(self.current_labels)):
+            loop_i = i if not list_changed else i-1
+            self.map_canvas.coords(self.current_labels[loop_i][0], self.coordinates[self.current_index_dict[self.current_labels[loop_i][1]]])
+            self.current_index_dict[self.current_labels[loop_i][1]]+=1
+            current_index = self.current_index_dict[self.current_labels[loop_i][1]]
+            if current_index==len(self.coordinates)//self.num_conveyor_labels:
+                self.label_index=(self.label_index+1)%len(self.conveyor_parts_image_labels)
+                self.current_labels.append((self.map_canvas.create_window(self.coordinates[0], window=self.conveyor_parts_image_labels[self.label_index]),self.conveyor_parts_image_labels[self.label_index]))
+            if current_index>=len(self.coordinates):
+                list_changed = True
+                self.current_index_dict[self.current_labels[loop_i][1]] = 0
+                self.map_canvas.delete(self.current_labels[0][0])
+                del self.current_labels[0]
+        self.map_canvas_conveyor_elements = self.current_labels
+        if self.show_conveyor_parts.get()=="1":
+            self.map_canvas.after(self.delay, self.move_conveyor)
+    
+    def show_assembly_stations(self,_,__,___):
+        for element in self.map_canvas_assembly_station_elements:
+            self.map_canvas.delete(element)
+        self.map_canvas_assembly_station_elements.clear()
+        for i in range(1,5):
+            key=f"as{i}"
+            coord = ((self.assembly_station_coords[key][0]+self.assembly_station_coords[key][2])//2,
+                     (self.assembly_station_coords[key][1]+self.assembly_station_coords[key][3])//2)
+            self.map_canvas_assembly_station_elements.append(self.map_canvas.create_window(coord,
+                                                                                           window=ctk.CTkLabel(self.map_frame,
+                                                                                                               text="",
+                                                                                                               image=ctk.CTkImage(MENU_IMAGES["assembly_station"].rotate(self.assembly_insert_rotations[i-1].get()*180/pi),size=(50,50)),
+                                                                                                               bg_color="#a26122")))
     # =======================================================
     #               General Gui Functions
     # =======================================================

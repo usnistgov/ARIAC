@@ -1174,6 +1174,7 @@ class GUI_CLASS(ctk.CTk):
         label.configure(text=f"Offset: {value.get()}")
     
     def save_conveyor_parts(self, window:ctk.CTkToplevel, conveyor_part_vals, index):
+        self.show_conveyor_parts.set("0")
         color = conveyor_part_vals["color"].get()
         pType = conveyor_part_vals["pType"].get()
         for _ in range(int(conveyor_part_vals["num_parts"].get())):
@@ -2881,20 +2882,20 @@ class GUI_CLASS(ctk.CTk):
         self.map_canvas=Canvas(self.map_frame,width = 700, height=600)
         self.show_conveyor_parts = ctk.StringVar()
         self.show_conveyor_parts.set("0")
-        bin_coordinates = {"bin8":[50,290,125,365],
-                           "bin7":[135,290,210,365],
-                           "bin5":[50,375,125,450],
-                           "bin6":[135,375,210,450],
-                           "bin3":[490,290,565,365],
-                           "bin4":[575,290,650,365],
-                           "bin2":[490,375,565,450],
-                           "bin1":[575,375,650,450]}
+        bin_coordinates = {"bin8":[50,230,155,335],
+                           "bin7":[165,230,270,335],
+                           "bin5":[50,345,155,450],
+                           "bin6":[165,345,270,450],
+                           "bin3":[430,230,535,335],
+                           "bin4":[545,230,650,335],
+                           "bin2":[430,345,535,450],
+                           "bin1":[545,345,650,450]}
         self.bin_parts_map_coords = {key:[] for key in bin_coordinates.keys()}
         for key in bin_coordinates.keys():
             starting_x = bin_coordinates[key][0]
             starting_y = bin_coordinates[key][1]
             for i in range(9):
-                self.bin_parts_map_coords[key].append((starting_x+(i%3+1)*19,starting_y+(i//3+1)*19))
+                self.bin_parts_map_coords[key].append((starting_x+(i%3+1)*26,starting_y+(i//3+1)*26))
         for key in bin_coordinates.keys():
             self.map_canvas.create_rectangle(bin_coordinates[key][0],
                                              bin_coordinates[key][1],
@@ -2928,7 +2929,7 @@ class GUI_CLASS(ctk.CTk):
                                              self.assembly_station_coords[key][1],
                                              self.assembly_station_coords[key][2],
                                              self.assembly_station_coords[key][3],
-                                             fill="#a26122",
+                                             fill="#a86a2b",
                                              width = 0)
         self.map_canvas.pack()
         show_conveyor_parts_cb = ctk.CTkCheckBox(self.map_frame,text="Show conveyor_parts",variable=self.show_conveyor_parts, onvalue="1", offvalue="0", height=1, width=20)
@@ -2945,7 +2946,7 @@ class GUI_CLASS(ctk.CTk):
                 if self.current_bin_parts[key][slot]!="":
                     image_label = ctk.CTkLabel(self.map_frame,
                                                image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[key][slot]].rotate(self.bin_parts[key][slot].rotation*180/pi),
-                                                                  size=(15,15)),
+                                                                  size=(25,25)),
                                                text="",
                                                bg_color="#60c6f1",
                                                height=0)
@@ -2953,13 +2954,11 @@ class GUI_CLASS(ctk.CTk):
                                                                                               window=image_label))
     
     def show_hide_conveyor_parts(self,_,__,___):
-        show_conveyor_parts = True if self.show_conveyor_parts.get()=="1" else False
-        self.show_conveyor_parts.set("0")
         for element in self.map_canvas_conveyor_elements:
             self.map_canvas.delete(element[0])
         self.map_canvas_conveyor_elements.clear()
 
-        if show_conveyor_parts:
+        if self.show_conveyor_parts.get()=="1":
             self.show_conveyor_parts.set("1")
             self.add_conveyor_parts_to_map()
             
@@ -2968,21 +2967,24 @@ class GUI_CLASS(ctk.CTk):
         self.current_index = 0
         self.label_index = 0
         self.delay = 20
-        self.coordinates = [(i,545) for i in range(25,675,5)][::-1]
+        self.coordinates = [(i,545) for i in range(25,675,3)][::-1]
         for i in range(len(self.current_conveyor_parts)):
             part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]
             for j in range(self.conveyor_parts[i].part_lot.quantity):
                 self.conveyor_parts_image_labels.append(ctk.CTkLabel(self.map_frame,text="",
                                                         image=ctk.CTkImage(MENU_IMAGES[part].rotate(self.conveyor_parts[i].rotation*180/pi),size=(50,50)),
-                                                        bg_color="#a4a4a0"))
+                                                        bg_color="#a4a4a0",height=0,width=0))
+        if self.conveyor_setup_vals["order"].get()=="random":
+            random.shuffle(self.conveyor_parts_image_labels)
         self.num_conveyor_labels = min(len(self.conveyor_parts_image_labels),4)
         self.current_index_dict={label:0 for label in self.conveyor_parts_image_labels}
         if len(self.conveyor_parts_image_labels)>0:
             canvas_label=self.map_canvas.create_window(self.coordinates[self.current_index_dict[self.conveyor_parts_image_labels[self.label_index]]],window=self.conveyor_parts_image_labels[self.label_index])
             self.current_labels = [(canvas_label,self.conveyor_parts_image_labels[self.label_index])]
             self.current_index_dict[self.conveyor_parts_image_labels[self.label_index]] +=1
-            self.map_canvas.after(self.delay, self.move_conveyor)
             self.map_canvas_conveyor_elements = self.current_labels
+            self.map_canvas.after(self.delay, self.move_conveyor)
+            
 
     def move_conveyor(self):
         list_changed = False
@@ -3015,7 +3017,7 @@ class GUI_CLASS(ctk.CTk):
                                                                                            window=ctk.CTkLabel(self.map_frame,
                                                                                                                text="",
                                                                                                                image=ctk.CTkImage(MENU_IMAGES["assembly_station"].rotate(self.assembly_insert_rotations[i-1].get()*180/pi),size=(50,50)),
-                                                                                                               bg_color="#a26122")))
+                                                                                                               bg_color="#a86a2b")))
     # =======================================================
     #               General Gui Functions
     # =======================================================

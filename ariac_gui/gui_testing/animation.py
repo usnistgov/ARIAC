@@ -2,7 +2,7 @@ import tkinter as tk
 from functools import partial
 
 RADIUS = 5
-DELAY = 10  # milliseconds
+DELAY = 1000  # milliseconds
 WIDTH, HEIGHT = 900, 500
 
 def print_dict(d : dict):
@@ -13,7 +13,7 @@ class gui(tk.Tk):
     def __init__(self):
         super().__init__()
         self.num_labels = 3
-        self.coordinates = [(i,100) for i in range(0,WIDTH,25)]
+        self.coordinates = [(i,100) for i in range(0,WIDTH,1)]
 
         self.current_index = 0
         self.current_index_dict = {}

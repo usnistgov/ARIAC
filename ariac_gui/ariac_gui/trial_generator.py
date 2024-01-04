@@ -34,7 +34,7 @@ from ariac_msgs.msg import (
     DroppedPartChallenge as DroppedPartChallengeMsg,
     SensorBlackoutChallenge as SensorBlackoutChallengeMsg,
     RobotMalfunctionChallenge as RobotMalfunctionChallengeMsg,
-    HumanChallenge as HumanChallengeMsg,
+    # HumanChallenge as HumanChallengeMsg,
     Challenge as ChallengeMsg
 )
 from geometry_msgs.msg import PoseStamped, Vector3
@@ -83,7 +83,7 @@ TRAY_IDS=[str(i) for i in range(10)]
 SENSORS = ["break_beam", "proximity", "laser_profiler", "lidar", "camera", "logical_camera"]
 ROBOTS = ["floor_robot", "ceiling_robot"]
 BEHAVIORS = ["antagonistic","indifferent","helpful"]
-CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction","human"]
+CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction"]
 
 
 _part_color_ints = {"RED":0,
@@ -324,8 +324,8 @@ class GUI_CLASS(ctk.CTk):
         self.faulty_part_info["quadrants"] = [ctk.StringVar() for _ in range(4)]
 
         # Human challenge variables
-        self.human_info = {}
-        self.human_info["behavior"] = ctk.StringVar()
+        # self.human_info = {}
+        # self.human_info["behavior"] = ctk.StringVar()
 
         # Challenge condition variables
         self.challenge_condition_type = ctk.StringVar()
@@ -2096,7 +2096,7 @@ class GUI_CLASS(ctk.CTk):
         self.add_robot_malfunction_button = ctk.CTkButton(self.challenges_frame, text="Add robot malfunction challenge", command=self.add_robot_malfunction_challenge)
         self.add_sensor_blackout_button = ctk.CTkButton(self.challenges_frame, text="Add sensor blackout challenge", command=self.add_sensor_blackout_challenge)
         self.add_faulty_part_button = ctk.CTkButton(self.challenges_frame, text = "Add faulty part challenge", command=partial(self.add_faulty_part_challenge,1,1,1))
-        self.add_human_button = ctk.CTkButton(self.challenges_frame, text="Add human challenge", command = self.add_human_challenge)
+        # self.add_human_button = ctk.CTkButton(self.challenges_frame, text="Add human challenge", command = self.add_human_challenge)
 
         self.show_main_challenges_menu(1,1,1)
 
@@ -2177,7 +2177,7 @@ class GUI_CLASS(ctk.CTk):
         self.grid_and_append_challenge_widget(self.add_sensor_blackout_button)
         if len(self.kitting_ids)>0:
             self.grid_and_append_challenge_widget(self.add_faulty_part_button)
-        self.grid_and_append_challenge_widget(self.add_human_button)
+        # self.grid_and_append_challenge_widget(self.add_human_button)
         index = 0
         if len(self.current_challenges)>0:
             self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame,text="Challenges:"))
@@ -2193,12 +2193,12 @@ class GUI_CLASS(ctk.CTk):
             elif challenge.type == ChallengeMsg.DROPPED_PART:
                 challenge_counter["dropped_part"]+=1
                 label_text=f"Dropped Part {challenge_counter['dropped_part']}"
-            elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
+            else:
                 challenge_counter["sensor_blackout"]+=1
                 label_text=f"Sensor Blackout {challenge_counter['sensor_blackout']}"
-            else:
-                challenge_counter["human"]+=1
-                label_text=f"Human Challenge {challenge_counter['human']}"
+            # else:
+            #     challenge_counter["human"]+=1
+            #     label_text=f"Human Challenge {challenge_counter['human']}"
             challenge_label = ctk.CTkLabel(self.challenges_frame, text=label_text)
             challenge_label.grid(column = LEFT_COLUMN, row = self.current_challenges_row, pady=3)
             self.current_challenges_widgets.append(challenge_label)
@@ -2220,10 +2220,10 @@ class GUI_CLASS(ctk.CTk):
             self.add_dropped_part_challenge(challenge.dropped_part_challenge,index)
         elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
             self.add_sensor_blackout_challenge(challenge.sensor_blackout_challenge,index)
-        elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
-            self.add_robot_malfunction_challenge(challenge.robot_malfunction_challenge, index)
         else:
-            self.add_human_challenge(challenge.human_challenge, index)
+            self.add_robot_malfunction_challenge(challenge.robot_malfunction_challenge, index)
+        # else:
+        #     self.add_human_challenge(challenge.human_challenge, index)
     
     def remove_challenge(self, index):
         del self.current_challenges[index]
@@ -2562,50 +2562,50 @@ class GUI_CLASS(ctk.CTk):
         else:
             self.current_challenges[index] = new_challenge
 
-    def reset_human_info(self):
-        self.human_info["behavior"].set(BEHAVIORS[0])
+    # def reset_human_info(self):
+    #     self.human_info["behavior"].set(BEHAVIORS[0])
     
-    def add_human_challenge(self, human_challenge = None, index = -1):
-        self.clear_challenges_menu()
+    # def add_human_challenge(self, human_challenge = None, index = -1):
+    #     self.clear_challenges_menu()
 
-        self.current_challenge_type = "human"
+    #     self.current_challenge_type = "human"
 
-        behavior_label = ctk.CTkLabel(self.challenges_frame, text="Select the behavior for the human")
-        self.grid_and_append_challenge_widget(behavior_label)
-        behavior_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.human_info["behavior"],values=BEHAVIORS)
-        self.grid_and_append_challenge_widget(behavior_menu)
+    #     behavior_label = ctk.CTkLabel(self.challenges_frame, text="Select the behavior for the human")
+    #     self.grid_and_append_challenge_widget(behavior_label)
+    #     behavior_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.human_info["behavior"],values=BEHAVIORS)
+    #     self.grid_and_append_challenge_widget(behavior_menu)
 
-        self.show_challenges_condition_menu()
+    #     self.show_challenges_condition_menu()
 
-        if human_challenge != None:
-            self.human_info["behavior"].set(BEHAVIORS[human_challenge.behavior])
-            self.set_challenge_condition_info_to_existing(human_challenge.condition)
+    #     if human_challenge != None:
+    #         self.human_info["behavior"].set(BEHAVIORS[human_challenge.behavior])
+    #         self.set_challenge_condition_info_to_existing(human_challenge.condition)
 
-        self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human", index), state=NORMAL)
-        self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
-        self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
-        self.current_challenges_widgets.append(self.save_challenge_button)
+    #     self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human", index), state=NORMAL)
+    #     self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
+    #     self.current_challenges_widgets.append(self.cancel_challenge_button)
+    #     self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
+    #     self.current_challenges_widgets.append(self.save_challenge_button)
     
-    def save_human_challenge(self, index):
-        new_challenge = ChallengeMsg()
-        new_challenge.type = 4
-        human_challenge = HumanChallengeMsg()
-        human_challenge.behavior = BEHAVIORS.index(self.human_info["behavior"].get())
-        human_challenge.condition.type = CONDITION_TYPE.index(self.challenge_condition_type.get())
-        if self.challenge_condition_type.get()=="time":
-            human_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
-        elif self.challenge_condition_type.get()=="part_place":
-            human_challenge.condition.part_place_condition.part.color = _part_color_ints[self.challenge_condition_info["color"].get().upper()]
-            human_challenge.condition.part_place_condition.part.type = _part_type_ints[self.challenge_condition_info["type"].get().upper()]
-            human_challenge.condition.part_place_condition.agv = int(self.challenge_condition_info["agv"].get())
-        else:
-            human_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
-        new_challenge.human_challenge = human_challenge
-        if index == -1:
-            self.current_challenges.append(new_challenge)
-        else:
-            self.current_challenges[index] = new_challenge
+    # def save_human_challenge(self, index):
+    #     new_challenge = ChallengeMsg()
+    #     new_challenge.type = 4
+    #     human_challenge = HumanChallengeMsg()
+    #     human_challenge.behavior = BEHAVIORS.index(self.human_info["behavior"].get())
+    #     human_challenge.condition.type = CONDITION_TYPE.index(self.challenge_condition_type.get())
+    #     if self.challenge_condition_type.get()=="time":
+    #         human_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
+    #     elif self.challenge_condition_type.get()=="part_place":
+    #         human_challenge.condition.part_place_condition.part.color = _part_color_ints[self.challenge_condition_info["color"].get().upper()]
+    #         human_challenge.condition.part_place_condition.part.type = _part_type_ints[self.challenge_condition_info["type"].get().upper()]
+    #         human_challenge.condition.part_place_condition.agv = int(self.challenge_condition_info["agv"].get())
+    #     else:
+    #         human_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
+    #     new_challenge.human_challenge = human_challenge
+    #     if index == -1:
+    #         self.current_challenges.append(new_challenge)
+    #     else:
+    #         self.current_challenges[index] = new_challenge
 
     def save_challenge(self, type_of_challenge:str, index):
         if type_of_challenge == "dropped_part":
@@ -2614,10 +2614,10 @@ class GUI_CLASS(ctk.CTk):
             self.save_robot_malfunction_challenge(index)
         elif type_of_challenge == "sensor_blackout":
             self.save_sensor_blackout_challenge(index)
-        elif type_of_challenge == "faulty_part":
-            self.save_faulty_part_challenge(index)
         else:
-            self.save_human_challenge(index)
+            self.save_faulty_part_challenge(index)
+        # else:
+        #     self.save_human_challenge(index)
         self.challenges_counter.set(len(self.current_challenges))
         self.reset_all_challenges()
         self.clear_challenges_menu()
@@ -2627,7 +2627,7 @@ class GUI_CLASS(ctk.CTk):
         self.reset_challenge_condition_variables()
         self.reset_dropped_part_info()
         self.reset_faulty_part_info()
-        self.reset_human_info()
+        # self.reset_human_info()
         self.reset_robot_malfunction_info()
         self.reset_sensor_blackout_info()
     
@@ -2659,13 +2659,13 @@ class GUI_CLASS(ctk.CTk):
                         faulty_part_dict["faulty_part"]["quadrant4"] = True
                     self.challenges_dict["challenges"].append(faulty_part_dict)
 
-                elif challenge.type == ChallengeMsg.HUMAN:
-                    human_dict = {"human":{}}
-                    human_dict["human"]["behavior"] = BEHAVIORS[challenge.human_challenge.behavior]
-                    condition_dict = self.announcement_to_dict(challenge.human_challenge.condition)
-                    for key in condition_dict.keys():
-                        human_dict["human"][key] = condition_dict[key]
-                    self.challenges_dict["challenges"].append(human_dict)
+                # elif challenge.type == ChallengeMsg.HUMAN:
+                #     human_dict = {"human":{}}
+                #     human_dict["human"]["behavior"] = BEHAVIORS[challenge.human_challenge.behavior]
+                #     condition_dict = self.announcement_to_dict(challenge.human_challenge.condition)
+                #     for key in condition_dict.keys():
+                #         human_dict["human"][key] = condition_dict[key]
+                #     self.challenges_dict["challenges"].append(human_dict)
 
                 elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
                     robot_malfunction_dict = {"robot_malfunction":{}}

@@ -388,9 +388,9 @@ class GUI_CLASS(ctk.CTk):
          # Map elements
         self.map_canvas_bin_elements = []
         self.map_canvas_conveyor_elements = []
+        self.map_canvas_conveyor_lines = []
         self.map_canvas_assembly_station_elements = []
         self.bin_parts_counter.trace_add('write',self.add_bin_parts_to_map)
-        self.conveyor_parts_counter.trace_add('write',self.show_hide_conveyor_parts)
         self.add_map_to_frame()
 
         self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)        
@@ -2905,21 +2905,22 @@ class GUI_CLASS(ctk.CTk):
                                              outline="black",
                                              fill = "#60c6f1",
                                              width = 2)
-        conveyor_coordinates = [2,476,698,598]
-        self.map_canvas.create_rectangle(conveyor_coordinates[0],
-                                         conveyor_coordinates[1],
-                                         conveyor_coordinates[2],
-                                         conveyor_coordinates[3],
+        self.conveyor_coordinates = [2,476,698,598]
+        self.map_canvas.create_rectangle(self.conveyor_coordinates[0],
+                                         self.conveyor_coordinates[1],
+                                         self.conveyor_coordinates[2],
+                                         self.conveyor_coordinates[3],
                                          outline="black",
                                          fill = "#a4a4a0",
                                          width = 2)
-        for i in range(conveyor_coordinates[0], conveyor_coordinates[2],40):
-            self.map_canvas.create_rectangle(conveyor_coordinates[0]+i,
-                                             conveyor_coordinates[1]+1,
-                                             conveyor_coordinates[0]+i+4,
-                                             conveyor_coordinates[3]-1,
-                                             fill = "#706b62",
-                                             width = 0)
+        self.conveyor_lines_index = 0
+        for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+            self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[1]+1,
+                                                                                   self.conveyor_coordinates[0]+i+4+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[3]-1,
+                                                                                   fill = "#706b62",
+                                                                                   width = 0))
         
         self.assembly_station_coords = {"as1":[520,125,620,200],
                                    "as2":[520,25,620,100],
@@ -2959,6 +2960,10 @@ class GUI_CLASS(ctk.CTk):
             self.map_canvas.delete(element[0])
         self.map_canvas_conveyor_elements.clear()
 
+        for line in self.map_canvas_conveyor_lines:
+            self.map_canvas.delete(line)
+        self.map_canvas_conveyor_lines.clear()
+
         if self.show_conveyor_parts.get()=="1":
             self.show_conveyor_parts.set("1")
             self.add_conveyor_parts_to_map()
@@ -2969,8 +2974,16 @@ class GUI_CLASS(ctk.CTk):
         self.label_index = 0
         self.delay = 20
         self.conveyor_counter = 0
+        self.map_canvas_conveyor_lines.clear()
         self.coordinates = [(i,537) for i in range(25,675,1)][::-1]
         self.conveyor_parts_map_list = []
+        for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+            self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[1]+1,
+                                                                                   self.conveyor_coordinates[0]+i+4+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[3]-1,
+                                                                                   fill = "#706b62",
+                                                                                   width = 0))
         for i in range(len(self.current_conveyor_parts)):
             part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]
             for j in range(self.conveyor_parts[i].part_lot.quantity):
@@ -2995,6 +3008,18 @@ class GUI_CLASS(ctk.CTk):
 
     def move_conveyor(self):
         list_changed = False
+        for line in self.map_canvas_conveyor_lines:
+            self.map_canvas.delete(line)
+        self.map_canvas_conveyor_lines.clear()
+        self.conveyor_lines_index=(self.conveyor_lines_index+1)%40
+        for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+            if self.conveyor_coordinates[0]+i-self.conveyor_lines_index>self.conveyor_coordinates[0] and self.conveyor_coordinates[0]+i+4-self.conveyor_lines_index<self.conveyor_coordinates[2]:
+                self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[1]+1,
+                                                                                    self.conveyor_coordinates[0]+i+4-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[3]-1,
+                                                                                    fill = "#706b62",
+                                                                                    width = 0))
         for i in range(len(self.current_labels)):
             loop_i = i if not list_changed else i-1
             coord = self.coordinates[self.current_index_dict[self.current_labels[loop_i][1]]]

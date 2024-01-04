@@ -292,7 +292,8 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
                 new_challenge.dropped_part_challenge.part_to_drop.color = _part_color_ints[challenge["dropped_part"]["color"].upper()]
                 new_challenge.dropped_part_challenge.drop_after_num = challenge["dropped_part"]["drop_after"]
                 new_challenge.dropped_part_challenge.drop_after_time = challenge["dropped_part"]["delay"]
-            # elif "human" in challenge.keys():
+            elif "human" in challenge.keys():
+                pass
             #     new_challenge.type = 4
             #     new_challenge.human_challenge.behavior = BEHAVIORS.index(challenge["human"]["behavior"])
             #     if "time_condition" in challenge["human"].keys():

@@ -3041,6 +3041,13 @@ class GUI_CLASS(ctk.CTk):
                                                                                     self.conveyor_coordinates[3]-1,
                                                                                     fill = "#706b62",
                                                                                     width = 0))
+            if self.conveyor_coordinates[0]+i+44-self.conveyor_lines_index<self.conveyor_coordinates[2]:
+                self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+40-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[1]+1,
+                                                                                    self.conveyor_coordinates[0]+i+44-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[3]-1,
+                                                                                    fill = "#706b62",
+                                                                                    width = 0))
         for i in range(len(self.current_labels)):
             loop_i = i if not list_changed else i-1
             coord = self.coordinates[self.current_index_dict[self.current_labels[loop_i][1]]]

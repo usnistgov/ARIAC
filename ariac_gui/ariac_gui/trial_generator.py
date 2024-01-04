@@ -651,8 +651,16 @@ class GUI_CLASS(ctk.CTk):
             self.assembly_inserts_widgets[i][1].grid(row = i+1, column = RIGHT_COLUMN, padx = 10, pady = 15)
         filler_label = ctk.CTkLabel(self.assembly_inserts_frame, text = " "*60) # So the menu does not move when the labels change
         filler_label.grid(row = 10, column = LEFT_COLUMN)
+    
     def assembly_inserts_to_dict(self):
-        self.assembly_inserts_dict["assembly_inserts"] = {ASSEMBLY_STATIONS[i]:SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())] for i in range(len(ASSEMBLY_STATIONS))}
+        rotation_vals = [0 for i in range(len(ASSEMBLY_STATIONS))]
+        for i in range(len(ASSEMBLY_STATIONS)):
+            rotation_vals[i] = SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())]
+            try:
+                rotation_vals[i] = float(rotation_vals[i])
+            except:
+                pass
+        self.assembly_inserts_dict["assembly_inserts"] = {ASSEMBLY_STATIONS[i]:rotation_vals[i] for i in range(len(ASSEMBLY_STATIONS))}
     
     # =======================================================
     #                 AGV Parts Functions
@@ -684,7 +692,12 @@ class GUI_CLASS(ctk.CTk):
                         temp_dict["type"] = _part_type_str[part.part.type].lower()
                         temp_dict["color"] = _part_color_str[part.part.color].lower()
                         temp_dict["quadrant"] = int(part.quadrant)
-                        temp_dict["rotation"] = str(part.rotation)
+                        rotation_val = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
+                        try:
+                            rotation_val = float(rotation_val)
+                        except:
+                            pass
+                        temp_dict["rotation"] = rotation_val
                         self.agv_parts_dict[agv_key]["parts"].append(temp_dict)
 
              
@@ -859,7 +872,6 @@ class GUI_CLASS(ctk.CTk):
         back_button = ctk.CTkButton(add_part_bin_window,text="Back",command=add_part_bin_window.destroy)
         back_button.pack()
         
-
     def remove_part_from_bin(self, bin, index, window):
         self.current_bin_parts[bin][index] = ""
         self.bin_parts[bin][index] = BinPart()
@@ -972,7 +984,12 @@ class GUI_CLASS(ctk.CTk):
                     temp_bin_part_dict = {}
                     temp_bin_part_dict["type"] = _part_type_str[self.bin_parts[bin][slot].part.type]
                     temp_bin_part_dict["color"] = _part_color_str[self.bin_parts[bin][slot].part.color]
-                    temp_bin_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(self.bin_parts[bin][slot].rotation)]
+                    rotation_val = SLIDER_STR[SLIDER_VALUES.index(self.bin_parts[bin][slot].rotation)]
+                    try:
+                        rotation_val = float(rotation_val)
+                    except:
+                        pass
+                    temp_bin_part_dict["rotation"] = rotation_val
                     temp_bin_part_dict["flipped"] = True if self.bin_parts[bin][slot].flipped == "1" else False
                     temp_bin_part_dict["slots"] = temp_slots
                     try:
@@ -1204,7 +1221,12 @@ class GUI_CLASS(ctk.CTk):
                 temp_conveyor_part_dict["number"] = part.part_lot.quantity
                 temp_conveyor_part_dict["offset"] = part.offset
                 temp_conveyor_part_dict["flipped"] = True if part.flipped == "1" else False
-                temp_conveyor_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
+                rotation_val = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
+                try:
+                    rotation_val = float(rotation_val)
+                except:
+                    pass
+                temp_conveyor_part_dict["rotation"] = rotation_val
                 self.conveyor_parts_dict["parts_to_spawn"].append(temp_conveyor_part_dict)
 
     # =======================================================
@@ -2680,7 +2702,6 @@ class GUI_CLASS(ctk.CTk):
                         robot_malfunction_dict["robot_malfunction"][key] = copy(condition_dict[key])
                     self.challenges_dict["challenges"].append(robot_malfunction_dict)
                     
-
                 else:
                     sensor_blackout_dict = {"sensor_blackout":{}}
                     sensor_blackout_dict["sensor_blackout"]["duration"] = challenge.sensor_blackout_challenge.duration

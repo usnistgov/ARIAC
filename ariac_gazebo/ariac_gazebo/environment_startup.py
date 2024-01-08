@@ -40,7 +40,6 @@ from ariac_msgs.msg import (
     ConveyorBeltState,
     DroppedPartChallenge,
     FaultyPartChallenge,
-    HumanChallenge,
     KittingPart,
     KittingTask,
     OrderCondition,
@@ -218,34 +217,6 @@ class EnvironmentStartup(Node):
         else:
             self.get_logger().fatal(
                 f"Order type '{order_type}' is not correct. Check spelling.")
-            return None
-
-
-    def convert_behavior_to_int(self, behavior):
-        """Converts a behavior to an integer.
-        - antagonistic: HumanChallenge.ANTAGONISTIC
-        - indifferent: HumanChallenge.INDIFFERENT
-        - helpful: HumanChallenge.HELPFUL
-
-        Args:
-            behavior (str): The behavior of the human in string format.
-
-        Returns:
-            int: The behavior of a human in integer format.
-        """
-        options = {
-            'antagonistic': HumanChallenge.ANTAGONISTIC,
-            'indifferent': HumanChallenge.INDIFFERENT,
-            'helpful': HumanChallenge.HELPFUL
-        }
-
-        found_behavior = options.get(behavior)
-
-        if found_behavior in [HumanChallenge.ANTAGONISTIC, HumanChallenge.INDIFFERENT, HumanChallenge.HELPFUL]:
-            return found_behavior
-        else:
-            self.get_logger().fatal(
-                f"Behavior '{behavior}' is not correct. Check spelling.")
             return None
         
         
@@ -457,50 +428,6 @@ class EnvironmentStartup(Node):
         challenge_msg.robot_malfunction_challenge = msg
         return challenge_msg
     
-    def create_human_challenge(self, challenge_dict):
-        """Method to build and return a HumanChallenge object from a dictionary
-        
-        Args:
-            challenge_dict (dict): human dictionary from config file
-
-        Returns:
-            HumanChallenge: Object containing human challenge information
-        
-        """
-        msg = HumanChallenge()
-        
-        # Set the behavior
-        msg.behavior = self.convert_behavior_to_int(challenge_dict['behavior'])
-
-        # Set the condition
-        if challenge_dict.get('part_place_condition'):
-            msg.condition.type = Condition.PART_PLACE
-            msg.condition.part_place_condition.part.type = self.convert_part_type_to_int(
-                challenge_dict['part_place_condition']['type'])
-            msg.condition.part_place_condition.part.color = self.convert_part_color_to_int(
-                challenge_dict['part_place_condition']['color'])
-
-            for key in challenge_dict['part_place_condition'].keys():
-                if key == 'agv':
-                    msg.condition.part_place_condition.agv = challenge_dict[
-                        'part_place_condition']['agv']
-                # elif key == 'as':
-                #     msg.condition.part_place_condition.station = self.convert_assembly_station_to_int(
-                #         challenge_dict['part_place_condition']['as'])
-        elif challenge_dict.get('time_condition'):
-            msg.condition.type = Condition.TIME
-            msg.condition.time_condition.seconds = float(
-                challenge_dict['time_condition'])
-        elif challenge_dict.get('submission_condition'):
-            msg.condition.type = Condition.SUBMISSION
-            msg.condition.submission_condition.order_id = challenge_dict[
-                'submission_condition']['order_id']
-
-        challenge_msg = Challenge()
-        challenge_msg.type = Challenge.HUMAN
-        challenge_msg.human_challenge = msg
-        return challenge_msg
-    
     def create_dropped_part(self, challenge_dict):
         """Method to build and return a DroppedPartChallenge object from a dictionary
         
@@ -635,8 +562,6 @@ class EnvironmentStartup(Node):
                     challenge_list.append(self.create_faulty_part(value))
                 elif key == 'dropped_part':
                     challenge_list.append(self.create_dropped_part(value))
-                elif key == 'human':
-                    challenge_list.append(self.create_human_challenge(value))
 
         return challenge_list
 

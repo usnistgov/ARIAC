@@ -27,7 +27,6 @@ Distributions of NIST software should also include copyright and licensing state
 #include <ariac_msgs/srv/submit_order.hpp>
 #include <ariac_msgs/msg/faulty_part_challenge.hpp>
 #include <ariac_msgs/msg/dropped_part_challenge.hpp>
-#include <ariac_msgs/msg/human_challenge.hpp>
 #include <ariac_msgs/msg/quality_issue.hpp>
 #include <ariac_msgs/msg/agv_status.hpp>
 // ARIAC
@@ -142,17 +141,7 @@ namespace ariac_plugins
 
         void StoreFaultyPartChallenges(const ariac_msgs::msg::FaultyPartChallenge &_challenge);
         void StoreDroppedPartChallenges(const ariac_msgs::msg::DroppedPartChallenge &_challenge);
-        void StoreHumanChallenge(const ariac_msgs::msg::HumanChallenge &_challenge);
-        /**
-         * @brief Start the penalty for the human challenge
-         * 
-         */
-        void StartSafeZonePenalty();
-        /**
-         * @brief Build ariac_common::RobotMalfunctionChallenge from ROS message and store them in a list.
-         *
-         * @param _challenge  RobotMalfunctionChallenge ROS message
-         */
+
         void
         StoreRobotMalfunctionChallenges(const ariac_msgs::msg::RobotMalfunctionChallenge &_challenge);
 
@@ -208,12 +197,6 @@ namespace ariac_plugins
         void ProcessTemporalSensorBlackouts();
         void ProcessOnSubmissionSensorBlackouts();
         void ProcessOnSubmissionRobotMalfunctions();
-
-        // process the human challenge
-        void ProcessTemporalHumanChallenge();
-        void ProcessOnPartPlacementHumanChallenge();
-        void ProcessOnOrderSubmissionHumanChallenge();
-        void ProcessEndSafeZonePenalty();
 
         void UpdateSensorsHealth();
         void UpdateRobotsHealth();

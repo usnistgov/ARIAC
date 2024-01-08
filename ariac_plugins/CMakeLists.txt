@@ -102,13 +102,6 @@ target_include_directories(AGVTrayPlugin PUBLIC include)
 ament_target_dependencies(AGVTrayPlugin ${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_export_libraries(AGVTrayPlugin)
 
-# Teleport Plugin
-add_library(HumanTeleportPlugin SHARED
-  src/human_teleport_plugin.cpp
-)
-target_include_directories(HumanTeleportPlugin PUBLIC include)
-ament_target_dependencies(HumanTeleportPlugin ${THIS_PACKAGE_INCLUDE_DEPENDS})
-ament_export_libraries(HumanTeleportPlugin)
 
 # Task Manager Plugin
 add_library(TaskManagerPlugin SHARED
@@ -134,7 +127,6 @@ install(TARGETS
     ObjectDisposalPlugin
     AGVTrayPlugin
     TaskManagerPlugin
-    HumanTeleportPlugin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin)

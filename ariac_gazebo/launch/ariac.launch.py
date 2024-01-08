@@ -175,39 +175,6 @@ def launch_setup(context, *args, **kwargs):
             )
         )
 
-    # Human
-    with open(trial_config_path, "r") as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError:
-            print("Unable to read configuration file")
-            config = None
-
-    human_behavior = ""
-    trial_has_human_challenge = 'false'
-    if config is not None:
-        try:
-            challenges = config["challenges"]
-            if not challenges:
-                pass
-
-            for challenge in challenges:
-                for key, value in challenge.items():
-                    if key == 'human':
-                        human_behavior = value['behavior']
-                        trial_has_human_challenge = 'true'
-        except KeyError:
-            pass
-
-    human = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [FindPackageShare("ariac_human"), "/launch", "/human.launch.py"]
-        ),
-        launch_arguments={
-            'human_behavior': human_behavior,
-        }.items(),
-        condition=IfCondition(trial_has_human_challenge)
-    )
     nodes_to_start = [
         gazebo,
         sensor_tf_broadcaster,
@@ -216,7 +183,6 @@ def launch_setup(context, *args, **kwargs):
         robot_controller_switcher,
         robot_state_publisher,
         *controller_spawner_nodes,
-        human
     ]
 
     return nodes_to_start

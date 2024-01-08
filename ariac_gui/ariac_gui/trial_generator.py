@@ -71,7 +71,7 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 
 # Menu images
 GUI_PACKAGE = get_package_share_directory('ariac_gui')
-MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
+MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station","agv"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
 
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
@@ -390,6 +390,7 @@ class GUI_CLASS(ctk.CTk):
         self.map_canvas_conveyor_elements = []
         self.map_canvas_conveyor_lines = []
         self.map_canvas_assembly_station_elements = []
+        self.map_canvas_agv_elements = []
         self.bin_parts_counter.trace_add('write',self.add_bin_parts_to_map)
         self.add_map_to_frame()
 
@@ -405,6 +406,7 @@ class GUI_CLASS(ctk.CTk):
             self.robot_malfunction_info[robot].trace_add('write', self.enable_disable_robot_malfunction_save)
         self.open_initial_window()
         self.order_info["assembly_task"]["station"].trace_add('write',self.show_correct_assembly_agvs)
+        self.order_counter.trace_add('write', self.add_agv_parts_to_map)
     
     # =======================================================
     #            Load gui from a previous file
@@ -2912,6 +2914,7 @@ class GUI_CLASS(ctk.CTk):
                            "bin4":[545,230,650,335],
                            "bin2":[430,345,535,450],
                            "bin1":[545,345,650,450]}
+        bin_label_coordinates = {key:((bin_coordinates[key][0]+bin_coordinates[key][2])//2,bin_coordinates[key][1]-13 if bin_coordinates[key][1] == 230 else bin_coordinates[key][3]+13) for key in bin_coordinates.keys()}
         self.bin_parts_map_coords = {key:[] for key in bin_coordinates.keys()}
         for key in bin_coordinates.keys():
             starting_x = bin_coordinates[key][0]
@@ -2919,13 +2922,18 @@ class GUI_CLASS(ctk.CTk):
             for i in range(9):
                 self.bin_parts_map_coords[key].append((starting_x+(i%3+1)*26,starting_y+(i//3+1)*26))
         for key in bin_coordinates.keys():
+            self.map_canvas.create_window(bin_label_coordinates[key],
+                                          window=ctk.CTkLabel(self.map_frame,
+                                          text=key,
+                                          height=0))
             self.map_canvas.create_rectangle(bin_coordinates[key][0],
-                                             bin_coordinates[key][1],
-                                             bin_coordinates[key][2],
-                                             bin_coordinates[key][3],
-                                             outline="black",
-                                             fill = "#60c6f1",
-                                             width = 2)
+                                                        bin_coordinates[key][1],
+                                                        bin_coordinates[key][2],
+                                                        bin_coordinates[key][3],
+                                                        outline="black",
+                                                        fill = "#60c6f1",
+                                                        width = 2)
+            
         self.conveyor_coordinates = [2,476,698,598]
         self.map_canvas.create_rectangle(self.conveyor_coordinates[0],
                                          self.conveyor_coordinates[1],
@@ -2943,17 +2951,35 @@ class GUI_CLASS(ctk.CTk):
                                                                                    fill = "#706b62",
                                                                                    width = 0))
         
-        self.assembly_station_coords = {"as1":[520,125,620,200],
-                                   "as2":[520,25,620,100],
-                                   "as3":[80,125,180,200],
-                                   "as4":[80,25,180,100]}
+        self.assembly_station_coords = {"as1":[490,125,590,200],
+                                        "as2":[490,25,590,100],
+                                        "as3":[100,125,200,200],
+                                        "as4":[100,25,200,100]}
+        assembly_station_label_coords = {key:((self.assembly_station_coords[key][0]+self.assembly_station_coords[key][2])//2,self.assembly_station_coords[key][1]-13 if self.assembly_station_coords[key][1] == 230 else self.assembly_station_coords[key][3]+13) for key in self.assembly_station_coords.keys()}
         for key in self.assembly_station_coords.keys():
+            self.map_canvas.create_window(assembly_station_label_coords[key],
+                                          window=ctk.CTkLabel(self.map_frame,
+                                          text=key,
+                                          height=0))
             self.map_canvas.create_rectangle(self.assembly_station_coords[key][0],
                                              self.assembly_station_coords[key][1],
                                              self.assembly_station_coords[key][2],
                                              self.assembly_station_coords[key][3],
                                              fill="#a86a2b",
                                              width = 0)
+        
+        self.agv_coords = {"agv1":(35,90),
+                           "agv2":(265,90),
+                           "agv3":(425,90),
+                           "agv4":(660,90)}
+        for key in self.agv_coords:
+            self.map_canvas.create_window(self.agv_coords[key],
+                                          window=ctk.CTkLabel(self.map_frame,text="",
+                                                              image=ctk.CTkImage(MENU_IMAGES["agv"],size=(90,180)),
+                                                              height=0,width=0))
+            label_coord = (self.agv_coords[key][0],190)
+            self.map_canvas.create_window(label_coord, window=ctk.CTkLabel(self.map_frame, text=key, height=0))
+        
         self.map_canvas.pack()
         show_conveyor_parts_cb = ctk.CTkCheckBox(self.map_frame,text="Show conveyor_parts",variable=self.show_conveyor_parts, onvalue="1", offvalue="0", height=1, width=20)
         show_conveyor_parts_cb.pack(pady=5)
@@ -3087,6 +3113,36 @@ class GUI_CLASS(ctk.CTk):
                                                                                                                text="",
                                                                                                                image=ctk.CTkImage(MENU_IMAGES["assembly_station"].rotate(self.assembly_insert_rotations[i-1].get()*180/pi),size=(50,50)),
                                                                                                                bg_color="#a86a2b")))
+    
+    def add_agv_parts_to_map(self,_,__,___):
+        for element in self.map_canvas_agv_elements:
+            self.map_canvas.delete(element)
+        self.map_canvas_agv_elements.clear()
+        coord_offset_x = [20, -20]
+        coord_offset_y = [-30, 30]
+        parts_on_agv = {f"agv{i}":[] for i in range(1,5)}
+        for order in self.current_orders:
+            order:OrderMsg
+            if order.type == OrderMsg.ASSEMBLY:
+                for part in order.assembly_task.parts:
+                    part : AssemblyPart
+                    parts_on_agv[f"agv{part.agv}"].append(part)
+        for agv_key in parts_on_agv.keys():
+            if len(parts_on_agv[agv_key])>0:
+                for part in parts_on_agv[agv_key]:
+                    q = int(part.quadrant)
+                    coord = self.agv_coords[agv_key]
+                    coord = (coord[0], coord[1]+22)
+                    coord = (coord[0]+coord_offset_x[q%2],coord[1]+coord_offset_y[(q-1)//2])
+                    part_title = _part_color_str[part.part.color].lower()+_part_type_str[part.part.type].lower()
+                    rotation_val = part.rotation
+                    self.map_canvas_assembly_station_elements.append(self.map_canvas.create_window(coord,
+                                                                        window=ctk.CTkLabel(self.map_frame,
+                                                                                            text="",
+                                                                                            image=ctk.CTkImage(MENU_IMAGES[part_title].rotate(rotation_val*180/pi),size=(25,25)),
+                                                                                            bg_color="#c1c1c1")))
+
+
     # =======================================================
     #               General Gui Functions
     # =======================================================

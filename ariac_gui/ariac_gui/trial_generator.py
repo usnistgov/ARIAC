@@ -144,6 +144,10 @@ class GUI_CLASS(ctk.CTk):
         s.theme_use('clam')
         s.configure('TNotebook', font='Arial Bold')
 
+        # Dark mode and light mode
+        self.current_mode = "light"
+        self.all_canvases = []
+
         self.notebook = ttk.Notebook(self)
 
         # Loaded file information
@@ -192,7 +196,7 @@ class GUI_CLASS(ctk.CTk):
         self.trial_name.trace_add('write', self.update_current_file_label)
 
         # AGV parts info
-        self.available_quadrants = {f"agv_{i}":[j for j in range(1,5)] for i in range(1,5)}
+        self.available_quadrants = {f"agv_{i}":[str(j) for j in range(1,5)] for i in range(1,5)}
         self.all_present_parts = []
         self.needed_kitting_trays = [0 for _ in range(4)]
         self.original_agv_parts_dict = {}
@@ -342,49 +346,61 @@ class GUI_CLASS(ctk.CTk):
         self.current_challenges_row = 1
 
         # Menu tabs
-        self.setup_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.notebook_frames = []
+        
+        self.setup_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.setup_frame.pack(fill='both',expand=True)
         self.notebook.add(self.setup_frame,text="Setup")
+        self.notebook_frames.append(self.setup_frame)
         self.add_setup_widgets_to_frame()
 
-        self.kitting_tray_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.kitting_tray_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.kitting_tray_frame.pack(fill='both',expand=True)
         self.notebook.add(self.kitting_tray_frame,text="Kitting Trays")
+        self.notebook_frames.append(self.kitting_tray_frame)
         self.add_kitting_trays_widgets_to_frame()
 
-        self.assembly_inserts_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.assembly_inserts_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.assembly_inserts_frame.pack(fill='both',expand=True)
         self.notebook.add(self.assembly_inserts_frame,text="Insert Rotation")
+        self.notebook_frames.append(self.assembly_inserts_frame)
         self.add_assembly_inserts_widgets_to_frame()
 
-        self.bin_parts_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.bin_parts_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.bin_parts_frame.pack(fill='both',expand=True)
         self.notebook.add(self.bin_parts_frame,text="Bin Parts")
+        self.notebook_frames.append(self.bin_parts_frame)
         self.add_bin_parts_widgets_to_frame()
 
-        self.conveyor_parts_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.conveyor_parts_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.conveyor_parts_frame.pack(fill='both',expand=True)
         self.notebook.add(self.conveyor_parts_frame, text="Conveyor Parts")
+        self.notebook_frames.append(self.conveyor_parts_frame)
         self.add_conveyor_parts_widgets_to_frame()
 
-        self.orders_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.orders_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.orders_frame.pack(fill='both',expand=True)
         self.notebook.add(self.orders_frame, text="Orders")
+        self.notebook_frames.append(self.orders_frame)
         self.add_order_widgets_to_frame()
 
-        self.challenges_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.challenges_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.challenges_frame.pack(fill='both',expand=True)
         self.notebook.add(self.challenges_frame, text="Challenges")
+        self.notebook_frames.append(self.challenges_frame)
         self.add_challenges_widgets_to_frame()
 
-        self.current_file_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.current_file_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.current_file_frame.pack(fill='both',expand=True)
         self.notebook.add(self.current_file_frame, text="Current File")
+        self.notebook_frames.append(self.current_file_frame)
         self.add_current_file_to_frame()
 
-        self.map_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.map_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.map_frame.pack(fill='both',expand=True)
         self.notebook.add(self.map_frame, text="Full Map")
+        self.notebook_frames.append(self.map_frame)
+
          # Map elements
         self.map_canvas_bin_elements = []
         self.map_canvas_conveyor_elements = []
@@ -394,7 +410,8 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_counter.trace_add('write',self.add_bin_parts_to_map)
         self.add_map_to_frame()
 
-        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)        
+        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)
+        self.light_dark_button = ctk.CTkButton(self, text="Dark mode", command = self.switch_light_dark)    
         self._build_assembly_parts_pose_direction()
 
         # Challenge trace_add functions
@@ -404,9 +421,11 @@ class GUI_CLASS(ctk.CTk):
             self.faulty_part_info["quadrants"][q].trace_add('write', self.enable_disable_faulty_part_save)
         for robot in ROBOTS:
             self.robot_malfunction_info[robot].trace_add('write', self.enable_disable_robot_malfunction_save)
-        self.open_initial_window()
+        
         self.order_info["assembly_task"]["station"].trace_add('write',self.show_correct_assembly_agvs)
         self.order_counter.trace_add('write', self.add_agv_parts_to_map)
+
+        self.open_initial_window()
     
     # =======================================================
     #            Load gui from a previous file
@@ -415,8 +434,12 @@ class GUI_CLASS(ctk.CTk):
         self.initial_label.grid_forget()
         self.load_file_button.grid_forget()
         self.new_file_button.grid_forget()
+        self.minsize(788, 735)
+        self.maxsize(788, 800)
         self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
         self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN)
+        self.light_dark_button.grid(pady=10, column=MIDDLE_COLUMN)
+        
         
     def open_initial_window(self):
         self.initial_label = ctk.CTkLabel(self, text="Would you like to open an existing file or create a new one?")
@@ -493,7 +516,7 @@ class GUI_CLASS(ctk.CTk):
             elif order.type == OrderMsg.ASSEMBLY:
                 for part in order.assembly_task.parts:
                     part : AssemblyPart
-                    self.available_quadrants[f"agv_{part.agv}"].remove(int(part.quadrant))
+                    self.available_quadrants[f"agv_{part.agv}"].remove(str(part.quadrant))
         self.kitting_order_counter.set(str(len(self.kitting_ids)))
         
         self.current_challenges = competition.competition["challenges"]
@@ -575,7 +598,8 @@ class GUI_CLASS(ctk.CTk):
         self.kitting_tray_frame.grid_columnconfigure(6, weight=1)
         tray_label = ctk.CTkLabel(self.kitting_tray_frame,text="Select the tray ids for each slot")
         tray_label.grid(row=1, column = MIDDLE_COLUMN)
-        kitting_tray_canvas = Canvas(self.kitting_tray_frame, height=400)
+        kitting_tray_canvas = Canvas(self.kitting_tray_frame, height=400,bd = 0, highlightthickness=0)
+        self.all_canvases.append(kitting_tray_canvas)
         kitting_tray_canvas.create_rectangle(10, 10, 170, 310, 
                                 outline = "black", fill = "#f6f6f6",
                                 width = 2)
@@ -712,12 +736,12 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_frame.grid_rowconfigure(100, weight=1)
         self.bin_parts_frame.grid_columnconfigure(0, weight=1)
         self.bin_parts_frame.grid_columnconfigure(6, weight=1)
-        bin_selection = ctk.StringVar()
-        bin_selection.set(ALL_BINS[0])
+        self.bin_selection = ctk.StringVar()
+        self.bin_selection.set(ALL_BINS[0])
         bin_label = ctk.CTkLabel(self.bin_parts_frame,text="Select the bin you would like to add parts to:")
         bin_label.grid(column = MIDDLE_COLUMN, columnspan = 2,row=1)
         bin_menu = ctk.CTkOptionMenu(self.bin_parts_frame,
-                                        variable=bin_selection,
+                                        variable=self.bin_selection,
                                         values=ALL_BINS,
                                         fg_color = "#e2e2e2",
                                         text_color="black",
@@ -728,28 +752,30 @@ class GUI_CLASS(ctk.CTk):
         bin_menu.grid(column = MIDDLE_COLUMN, columnspan = 2,row=2)
         assembly_stations_label = ctk.CTkLabel(self.bin_parts_frame,text="↑↑↑ Assembly Stations ↑↑↑")
         assembly_stations_label.grid(column = MIDDLE_COLUMN, columnspan = 2,row=3)
-        bin_map_canvas = Canvas(self.bin_parts_frame, height = 250, width=255)
-        self.show_map(bin_map_canvas, bin_selection)
+        bin_map_canvas = Canvas(self.bin_parts_frame, height = 250, width=255,bd = 0, highlightthickness=0)
+        self.all_canvases.append(bin_map_canvas)
+        self.show_map(bin_map_canvas, self.bin_selection)
         bin_map_canvas.grid(column=RIGHT_COLUMN, sticky="we",row = 4,padx=25)
-        bin_parts_canvas = Canvas(self.bin_parts_frame, height=320)
+        self.bin_parts_canvas = Canvas(self.bin_parts_frame, height=320,bd = 0, highlightthickness=0)
+        self.all_canvases.append(self.bin_parts_canvas)
         
-        bin_parts_canvas.create_rectangle(75, 10, 375, 310, 
+        self.bin_parts_canvas.create_rectangle(75, 10, 375, 310, 
                                 outline = "black", fill = "#60c6f1",
                                 width = 2)
-        self.show_grid(bin_selection,bin_parts_canvas,self.bin_parts_frame)
-        bin_parts_canvas.grid(column = MIDDLE_COLUMN, sticky = "we", row=4)
+        self.show_grid(self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame)
+        self.bin_parts_canvas.grid(column = MIDDLE_COLUMN, sticky = "we", row=4)
         conveyor_belt_label = ctk.CTkLabel(self.bin_parts_frame,text="↓↓↓ Conveyor Belt ↓↓↓")
         conveyor_belt_label.grid(column = MIDDLE_COLUMN, columnspan = 2)
-        add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection))
+        add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,self.bin_selection))
         add_multiple_parts_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 5)
-        clear_bin_button = ctk.CTkButton(self.bin_parts_frame, text="Clear bin", command = partial(self.clear_bin, bin_selection))
+        clear_bin_button = ctk.CTkButton(self.bin_parts_frame, text="Clear bin", command = partial(self.clear_bin, self.bin_selection))
         clear_bin_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 5)
         flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
         flipped_meaning_label.grid(column = MIDDLE_COLUMN, columnspan = 2,pady = 10)
-        bin_selection.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
-        bin_selection.trace_add('write',partial(self.update_map,bin_map_canvas, bin_selection))
-        self.bin_parts_counter.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
-        self.bin_parts_counter.trace_add('write',partial(self.update_map,bin_map_canvas, bin_selection))
+        self.bin_selection.trace_add('write',partial(self.update_bin_grid, self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame))
+        self.bin_selection.trace_add('write',partial(self.update_map,bin_map_canvas, self.bin_selection))
+        self.bin_parts_counter.trace_add('write',partial(self.update_bin_grid, self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame))
+        self.bin_parts_counter.trace_add('write',partial(self.update_map,bin_map_canvas, self.bin_selection))
     def clear_bin(self, bin_selection):
         current_bin = bin_selection.get()
         self.current_bin_parts[current_bin]=["" for _ in range(9)]
@@ -790,6 +816,7 @@ class GUI_CLASS(ctk.CTk):
                                                                   size=(10,10)),
                                                text="",
                                                bg_color=("#60c6f1" if key==bin_selection.get() else "white"),
+                                               fg_color=("#60c6f1" if key==bin_selection.get() else "white"),
                                                height=0)
                     self.current_bin_map_canvas_elements.append(canvas.create_window(part_coordinates[key][slot],
                                                                                      window=image_label))
@@ -812,11 +839,11 @@ class GUI_CLASS(ctk.CTk):
             if self.current_bin_parts[bin_selection.get()][i]=="":
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES["plus"],size=(75,75)),
-                                                            fg_color="transparent",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
+                                                            fg_color="#60c6f1",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
             else:
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[bin_selection.get()][i]].rotate(self.bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
-                                                            fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
+                                                            fg_color="#60c6f1",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
             if self.bin_parts[bin_selection.get()][i].flipped == "1":
                 current_flipped_labels[i]=(ctk.CTkLabel(main_wind, text="F",bg_color="#60c6f1"))
         for i in range(len(current_bin_slot_widgets)):
@@ -1839,7 +1866,7 @@ class GUI_CLASS(ctk.CTk):
         a_part_dict["agv"] = ctk.StringVar()
         a_part_dict["quadrant"] = ctk.StringVar()
         a_part_dict["rotation"] = ctk.DoubleVar()
-        
+        self.update_available_agvs(1,1,1)
         if assembly_part==None:
             a_part_dict["color"].set(PART_COLORS[0])
             a_part_dict["pType"].set(available_part_types[0])
@@ -1850,6 +1877,8 @@ class GUI_CLASS(ctk.CTk):
             a_part_dict["color"].set(_part_color_str[assembly_part.part.color].lower())
             a_part_dict["pType"].set(_part_type_str[assembly_part.part.type].lower())
             self.available_quadrants[f"agv_{str(assembly_part.agv)}"].append(str(assembly_part.quadrant))
+            self.available_assembly_agvs.append(str(assembly_part.agv))
+            self.available_assembly_agvs = list(set([str(val) for val in sorted([int(x) for x in self.available_assembly_agvs])]))
             self.available_quadrants[f"agv_{str(assembly_part.agv)}"] = [str(val) for val in sorted([int(val) for val in self.available_quadrants[f"agv_{str(assembly_part.agv)}"]])]
             a_part_dict["agv"].set(str(assembly_part.agv))
             a_part_dict["quadrant"].set(str(assembly_part.quadrant))
@@ -1901,11 +1930,14 @@ class GUI_CLASS(ctk.CTk):
         new_assembly_part = AssemblyPart(a_part_dict["color"].get(),a_part_dict["pType"].get(),a_part_dict["agv"].get(),a_part_dict["quadrant"].get(),a_part_dict["rotation"].get())
         if index == -1:
             self.order_info["assembly_task"]["parts"].append(new_assembly_part)
-            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(int(a_part_dict["quadrant"].get()))
+            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(str(a_part_dict["quadrant"].get()))
         else:
             self.order_info["assembly_task"]["parts"][index] = new_assembly_part
-            self.available_quadrants[f"agv_{original_agv}"].remove(a_part_dict["quadrant"].get())
-            self.available_quadrants[f"agv_{str(original_agv)}"] = [str(val) for val in sorted([int(val) for val in self.available_quadrants[f"agv_{str(original_agv)}"]])]
+            self.available_quadrants[f"agv_{original_agv}"].append(str(original_quadrant))
+            self.available_quadrants[f"agv_{str(original_agv)}"] = [str(val) for val in list(set(sorted([int(val) for val in self.available_quadrants[f"agv_{str(original_agv)}"]])))]
+            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(str(a_part_dict["quadrant"].get()))
+            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"] = [str(val) for val in list(set(sorted([int(val) for val in self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"]])))]
+            
         if len(self.order_info["assembly_task"]["parts"])>3:
             self.add_part_assembly_task.configure(state=DISABLED)
         self.move_order_widgets()
@@ -2903,7 +2935,8 @@ class GUI_CLASS(ctk.CTk):
     #                       Map
     # =======================================================
     def add_map_to_frame(self):
-        self.map_canvas=Canvas(self.map_frame,width = 700, height=600)
+        self.map_canvas=Canvas(self.map_frame,width = 700, height=600,bd = 0, highlightthickness=0)
+        self.all_canvases.append(self.map_canvas)
         self.show_conveyor_parts = ctk.StringVar()
         self.show_conveyor_parts.set("0")
         bin_coordinates = {"bin8":[50,230,155,335],
@@ -3014,6 +3047,14 @@ class GUI_CLASS(ctk.CTk):
         if self.show_conveyor_parts.get()=="1":
             self.show_conveyor_parts.set("1")
             self.add_conveyor_parts_to_map()
+        else:
+            for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+                self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+self.conveyor_lines_index,
+                                                                                       self.conveyor_coordinates[1]+1,
+                                                                                       self.conveyor_coordinates[0]+i+4+self.conveyor_lines_index,
+                                                                                       self.conveyor_coordinates[3]-1,
+                                                                                       fill = "#706b62",
+                                                                                       width = 0))
             
     def add_conveyor_parts_to_map(self):
         self.conveyor_parts_image_labels = []
@@ -3136,7 +3177,7 @@ class GUI_CLASS(ctk.CTk):
                     coord = (coord[0]+coord_offset_x[q%2],coord[1]+coord_offset_y[(q-1)//2])
                     part_title = _part_color_str[part.part.color].lower()+_part_type_str[part.part.type].lower()
                     rotation_val = part.rotation
-                    self.map_canvas_assembly_station_elements.append(self.map_canvas.create_window(coord,
+                    self.map_canvas_agv_elements.append(self.map_canvas.create_window(coord,
                                                                         window=ctk.CTkLabel(self.map_frame,
                                                                                             text="",
                                                                                             image=ctk.CTkImage(MENU_IMAGES[part_title].rotate(rotation_val*180/pi),size=(25,25)),
@@ -3181,6 +3222,25 @@ class GUI_CLASS(ctk.CTk):
         elif self.notebook.index("current") == 4:
             self.conveyor_sub_frame._parent_canvas.yview_scroll(int(2), "units")
 
+    def switch_light_dark(self):
+        if self.current_mode == "light":
+            ctk.set_appearance_mode("dark")
+            self.current_mode = "dark"
+            self.light_dark_button.configure(text="Light mode")
+            for frame in self.notebook_frames:
+                frame.configure(fg_color="#5a5a5a")
+            for c in self.all_canvases:
+                c.configure(bg = "#5a5a5a")
+        else:
+            ctk.set_appearance_mode("light")
+            self.current_mode = "light"
+            self.light_dark_button.configure(text="Dark mode")
+            for frame in self.notebook_frames:
+                frame.configure(fg_color="transparent")
+            for c in self.all_canvases:
+                c.configure(bg = "#e0dcdc")
+
+        self.update_bin_grid(self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame,1,1,1)
 
 if __name__=="__main__":
     app = GUI_CLASS()

@@ -436,9 +436,9 @@ class GUI_CLASS(ctk.CTk):
         self.new_file_button.grid_forget()
         self.minsize(788, 735)
         self.maxsize(788, 800)
-        self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
-        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN)
-        self.light_dark_button.grid(pady=10, column=MIDDLE_COLUMN)
+        self.notebook.grid(pady=10,column=LEFT_COLUMN, columnspan=2,sticky=tk.E+tk.W+tk.N+tk.S)
+        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,row=4)
+        self.light_dark_button.grid(pady=10, column=LEFT_COLUMN, row=4)
         
         
     def open_initial_window(self):
@@ -839,11 +839,11 @@ class GUI_CLASS(ctk.CTk):
             if self.current_bin_parts[bin_selection.get()][i]=="":
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES["plus"],size=(75,75)),
-                                                            fg_color="#60c6f1",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
+                                                            fg_color="#60c6f1",bg_color="#4FA2C6",hover_color="#458DAC",width=0))
             else:
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[bin_selection.get()][i]].rotate(self.bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
-                                                            fg_color="#60c6f1",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
+                                                            fg_color="#60c6f1",bg_color="#60c6f1",hover_color="#60c6f1",width=0))
             if self.bin_parts[bin_selection.get()][i].flipped == "1":
                 current_flipped_labels[i]=(ctk.CTkLabel(main_wind, text="F",bg_color="#60c6f1"))
         for i in range(len(current_bin_slot_widgets)):
@@ -3031,6 +3031,7 @@ class GUI_CLASS(ctk.CTk):
                                                                   size=(25,25)),
                                                text="",
                                                bg_color="#60c6f1",
+                                               fg_color="#60c6f1",
                                                height=0)
                     self.map_canvas_bin_elements.append(self.map_canvas.create_window(self.bin_parts_map_coords[key][slot],
                                                                                               window=image_label))
@@ -3181,7 +3182,8 @@ class GUI_CLASS(ctk.CTk):
                                                                         window=ctk.CTkLabel(self.map_frame,
                                                                                             text="",
                                                                                             image=ctk.CTkImage(MENU_IMAGES[part_title].rotate(rotation_val*180/pi),size=(25,25)),
-                                                                                            bg_color="#c1c1c1")))
+                                                                                            bg_color="#c1c1c1",
+                                                                                            fg_color="#c1c1c1")))
 
 
     # =======================================================
@@ -3239,9 +3241,4 @@ class GUI_CLASS(ctk.CTk):
                 frame.configure(fg_color="transparent")
             for c in self.all_canvases:
                 c.configure(bg = "#e0dcdc")
-
         self.update_bin_grid(self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame,1,1,1)
-
-if __name__=="__main__":
-    app = GUI_CLASS()
-    app.mainloop()

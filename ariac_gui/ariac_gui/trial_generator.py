@@ -297,6 +297,7 @@ class GUI_CLASS(ctk.CTk):
 
         # Challenges widgets
         self.current_challenges_widgets = []
+        self.challenge_sub_frame_widgets = []
         self.current_challenges_condition_widgets = []
         self.challenges_counter = ctk.StringVar()
         self.challenges_counter.set("0")
@@ -601,10 +602,10 @@ class GUI_CLASS(ctk.CTk):
         kitting_tray_canvas = Canvas(self.kitting_tray_frame, height=400,bd = 0, highlightthickness=0)
         self.all_canvases.append(kitting_tray_canvas)
         kitting_tray_canvas.create_rectangle(10, 10, 170, 310, 
-                                outline = "black", fill = "#f6f6f6",
+                                outline = "black", fill = "#c2c2c2",
                                 width = 2)
         kitting_tray_canvas.create_rectangle(200, 10, 360, 310, 
-                                outline = "black", fill = "#f6f6f6",
+                                outline = "black", fill = "#c2c2c2",
                                 width = 2)
         menu_coordinates = [(95,275),(95,175),(95,75),(285,75),(285,175),(285,275)]
         label_coordinates = [(coord[0],coord[1]-35) for coord in menu_coordinates]
@@ -2151,9 +2152,15 @@ class GUI_CLASS(ctk.CTk):
         self.add_dropped_part_button = ctk.CTkButton(self.challenges_frame, text="Add dropped part challenge", command=self.add_dropped_part_challenge)
         self.add_robot_malfunction_button = ctk.CTkButton(self.challenges_frame, text="Add robot malfunction challenge", command=self.add_robot_malfunction_challenge)
         self.add_sensor_blackout_button = ctk.CTkButton(self.challenges_frame, text="Add sensor blackout challenge", command=self.add_sensor_blackout_challenge)
-        self.add_faulty_part_button = ctk.CTkButton(self.challenges_frame, text = "Add faulty part challenge", command=partial(self.add_faulty_part_challenge,1,1,1))
+        self.add_faulty_part_button = ctk.CTkButton(self.challenges_frame, text = "Add faulty part challenge", command=partial(self.add_faulty_part_challenge))
         # self.add_human_button = ctk.CTkButton(self.challenges_frame, text="Add human challenge", command = self.add_human_challenge)
-
+        
+        self.challenges_sub_frame = ctk.CTkScrollableFrame(self.challenges_frame, width = 700, height=300)
+        self.challenges_sub_frame.grid_rowconfigure(0, weight=1)
+        self.challenges_sub_frame.grid_rowconfigure(100, weight=1)
+        self.challenges_sub_frame.grid_columnconfigure(0, weight=1)
+        self.challenges_sub_frame.grid_columnconfigure(6, weight=1)
+        
         self.show_main_challenges_menu(1,1,1)
 
         self.save_challenge_button = ctk.CTkButton(self.challenges_frame,text="Save", command=self.save_challenge)
@@ -2162,7 +2169,7 @@ class GUI_CLASS(ctk.CTk):
         self.order_counter.trace_add('write', self.show_main_challenges_menu)
         self.challenges_counter.trace_add('write', self.show_main_challenges_menu)
         self.challenge_condition_type.trace_add('write', self.show_correct_condition_menu)
-        self.faulty_part_info["order_id"].trace_add('write', self.add_faulty_part_challenge)
+        
 
     def reset_challenge_condition_variables(self, type_aswell = True):
         if type_aswell:
@@ -2236,8 +2243,17 @@ class GUI_CLASS(ctk.CTk):
         # self.grid_and_append_challenge_widget(self.add_human_button)
         index = 0
         if len(self.current_challenges)>0:
+            above_challenges_label_sep = ttk.Separator(self.challenges_frame,orient='horizontal')
+            above_challenges_label_sep.grid(column=LEFT_COLUMN,columnspan=3, row=self.current_challenges_row, pady=10, sticky = "we")
+            self.current_challenges_widgets.append(above_challenges_label_sep)
+            self.current_challenges_row+=1
             self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame,text="Challenges:"))
+            below_challenges_label_sep = ttk.Separator(self.challenges_frame,orient='horizontal')
+            below_challenges_label_sep.grid(column=LEFT_COLUMN,columnspan=3, row=self.current_challenges_row, pady=10, sticky = "we")
+            self.current_challenges_widgets.append(below_challenges_label_sep)
+            self.current_challenges_row+=1
         challenge_counter = {challenge:0 for challenge in CHALLENGE_TYPES}
+        scroll_frame_current_row = 0
         for challenge in self.current_challenges:
             challenge : ChallengeMsg
             if challenge.type == ChallengeMsg.FAULTY_PART:
@@ -2255,23 +2271,30 @@ class GUI_CLASS(ctk.CTk):
             # else:
             #     challenge_counter["human"]+=1
             #     label_text=f"Human Challenge {challenge_counter['human']}"
-            challenge_label = ctk.CTkLabel(self.challenges_frame, text=label_text)
-            challenge_label.grid(column = LEFT_COLUMN, row = self.current_challenges_row, pady=3)
+            challenge_label = ctk.CTkLabel(self.challenges_sub_frame, text=label_text)
+            challenge_label.grid(column = LEFT_COLUMN, row = scroll_frame_current_row, pady=3,padx = 15)
             self.current_challenges_widgets.append(challenge_label)
 
-            edit_challenge_button = ctk.CTkButton(self.challenges_frame, text="Edit challenge", command = partial(self.edit_challenge, challenge, index))
-            edit_challenge_button.grid(column = MIDDLE_COLUMN, row = self.current_challenges_row)
-            self.current_challenges_widgets.append(edit_challenge_button)
+            edit_challenge_button = ctk.CTkButton(self.challenges_sub_frame, text="Edit challenge", command = partial(self.edit_challenge, challenge, index))
+            edit_challenge_button.grid(column = MIDDLE_COLUMN, row = scroll_frame_current_row,padx = 15)
+            self.challenge_sub_frame_widgets.append(edit_challenge_button)
 
-            remove_challenge_button = ctk.CTkButton(self.challenges_frame,text="Remove challenge", command=partial(self.remove_challenge, index))
-            remove_challenge_button.grid(column = RIGHT_COLUMN, row = self.current_challenges_row)
-            self.current_challenges_widgets.append(remove_challenge_button)
-            self.current_challenges_row+=1
+            remove_challenge_button = ctk.CTkButton(self.challenges_sub_frame,text="Remove challenge", command=partial(self.remove_challenge, index))
+            remove_challenge_button.grid(column = RIGHT_COLUMN, row = scroll_frame_current_row,padx = 15)
+            self.challenge_sub_frame_widgets.append(remove_challenge_button)
+            scroll_frame_current_row+=1
+            
+            challenges_table_sep = ttk.Separator(self.challenges_sub_frame,orient='horizontal')
+            challenges_table_sep.grid(column=LEFT_COLUMN,columnspan=3, row=scroll_frame_current_row, pady=10, sticky = "we")
+            self.challenge_sub_frame_widgets.append(challenges_table_sep)
+            scroll_frame_current_row+=1
+            
             index+=1
+        self.grid_and_append_challenge_widget(self.challenges_sub_frame)
     
     def edit_challenge(self, challenge, index):
         if challenge.type == ChallengeMsg.FAULTY_PART:
-            self.add_faulty_part_challenge(1,1,1,challenge.faulty_part_challenge, index)
+            self.add_faulty_part_challenge(challenge.faulty_part_challenge, index)
         elif challenge.type == ChallengeMsg.DROPPED_PART:
             self.add_dropped_part_challenge(challenge.dropped_part_challenge,index)
         elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
@@ -2305,6 +2328,9 @@ class GUI_CLASS(ctk.CTk):
         for widget in self.current_challenges_condition_widgets:
             widget.grid_forget()
         self.current_challenges_condition_widgets.clear()
+        for widget in self.challenge_sub_frame_widgets:
+            widget.grid_forget()
+        self.challenge_sub_frame_widgets.clear()
         self.current_challenges_row = 1
 
     def updated_challenge_save_hover_msg(self):
@@ -2546,7 +2572,7 @@ class GUI_CLASS(ctk.CTk):
         for variable in self.faulty_part_info["quadrants"]:
             variable.set('0')
     
-    def add_faulty_part_challenge(self,_,__,___,faulty_part_challenge = None, index = -1):
+    def add_faulty_part_challenge(self,faulty_part_challenge = None, index = -1):
         self.clear_challenges_menu()
 
         self.current_challenge_type = "faulty part"
@@ -2947,7 +2973,7 @@ class GUI_CLASS(ctk.CTk):
                            "bin4":[545,230,650,335],
                            "bin2":[430,345,535,450],
                            "bin1":[545,345,650,450]}
-        bin_label_coordinates = {key:((bin_coordinates[key][0]+bin_coordinates[key][2])//2,bin_coordinates[key][1]-13 if bin_coordinates[key][1] == 230 else bin_coordinates[key][3]+13) for key in bin_coordinates.keys()}
+        bin_label_coordinates = {key:((bin_coordinates[key][0]+bin_coordinates[key][2])//2,bin_coordinates[key][1]-11 if bin_coordinates[key][1] == 230 else bin_coordinates[key][3]+11) for key in bin_coordinates.keys()}
         self.bin_parts_map_coords = {key:[] for key in bin_coordinates.keys()}
         for key in bin_coordinates.keys():
             starting_x = bin_coordinates[key][0]
@@ -2988,7 +3014,7 @@ class GUI_CLASS(ctk.CTk):
                                         "as2":[490,25,590,100],
                                         "as3":[100,125,200,200],
                                         "as4":[100,25,200,100]}
-        assembly_station_label_coords = {key:((self.assembly_station_coords[key][0]+self.assembly_station_coords[key][2])//2,self.assembly_station_coords[key][1]-13 if self.assembly_station_coords[key][1] == 230 else self.assembly_station_coords[key][3]+13) for key in self.assembly_station_coords.keys()}
+        assembly_station_label_coords = {key:((self.assembly_station_coords[key][0]+self.assembly_station_coords[key][2])//2,self.assembly_station_coords[key][1]-8 if self.assembly_station_coords[key][1] == 230 else self.assembly_station_coords[key][3]+8) for key in self.assembly_station_coords.keys()}
         for key in self.assembly_station_coords.keys():
             self.map_canvas.create_window(assembly_station_label_coords[key],
                                           window=ctk.CTkLabel(self.map_frame,
@@ -3010,7 +3036,7 @@ class GUI_CLASS(ctk.CTk):
                                           window=ctk.CTkLabel(self.map_frame,text="",
                                                               image=ctk.CTkImage(MENU_IMAGES["agv"],size=(90,180)),
                                                               height=0,width=0))
-            label_coord = (self.agv_coords[key][0],190)
+            label_coord = (self.agv_coords[key][0],184)
             self.map_canvas.create_window(label_coord, window=ctk.CTkLabel(self.map_frame, text=key, height=0))
         
         self.map_canvas.pack()
@@ -3078,7 +3104,7 @@ class GUI_CLASS(ctk.CTk):
             for j in range(self.conveyor_parts[i].part_lot.quantity):
                 self.conveyor_parts_image_labels.append(ctk.CTkLabel(self.map_frame,text="",
                                                         image=ctk.CTkImage(MENU_IMAGES[part].rotate(self.conveyor_parts[i].rotation*180/pi),size=(50,50)),
-                                                        bg_color="#a4a4a0",height=0,width=0))
+                                                        bg_color="#a4a4a0",fg_color="#a4a4a0",height=0,width=0))
                 self.conveyor_parts_map_list.append(self.conveyor_parts[i])
         if self.conveyor_setup_vals["order"].get()=="random":
             random.seed(1)
@@ -3217,12 +3243,16 @@ class GUI_CLASS(ctk.CTk):
             self.sub_frame._parent_canvas.yview_scroll(int(-2), "units")
         elif self.notebook.index("current") == 4:
             self.conveyor_sub_frame._parent_canvas.yview_scroll(int(-2), "units")
+        elif self.notebook.index("current") == 6:
+            self.challenges_sub_frame._parent_canvas.yview_scroll(int(-2), "units")
     
     def mouse_wheel_down_current_file(self, event):
         if self.notebook.index("current") == 7:
             self.sub_frame._parent_canvas.yview_scroll(int(2), "units")
         elif self.notebook.index("current") == 4:
             self.conveyor_sub_frame._parent_canvas.yview_scroll(int(2), "units")
+        elif self.notebook.index("current") == 6:
+            self.challenges_sub_frame._parent_canvas.yview_scroll(int(2), "units")
 
     def switch_light_dark(self):
         if self.current_mode == "light":

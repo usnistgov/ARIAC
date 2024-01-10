@@ -732,13 +732,17 @@ class GUI_CLASS(ctk.CTk):
                                                                                             text="",
                                                                                             image=ctk.CTkImage(MENU_IMAGES["tray"].rotate(90),size=(175,136)),
                                                                                             bg_color="#797979",
-                                                                                            fg_color="#797979")))
+                                                                                            fg_color="#797979",
+                                                                                            height = 0,
+                                                                                            width = 0)))
                 self.kitting_tray_canvas_widgets.append(self.kitting_tray_canvas.create_window(self.tray_center_coords[f"slot_{i+1}"],
                                                                         window=ctk.CTkLabel(self.kitting_tray_frame,
                                                                                             text="",
                                                                                             image=ctk.CTkImage(MENU_IMAGES[f"fiducial_tag_{selections[i]}"].rotate(90),size=(47,40)),
                                                                                             bg_color="#797979",
-                                                                                            fg_color="#797979")))
+                                                                                            fg_color="#797979",
+                                                                                            height = 0,
+                                                                                            width = 0)))
     
     
     # =======================================================

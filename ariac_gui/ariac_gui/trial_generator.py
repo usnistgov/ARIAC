@@ -650,6 +650,14 @@ class GUI_CLASS(ctk.CTk):
         self.all_canvases.append(self.kitting_tray_canvas)
         tray_coords = {"kts_1":[140, 10, 340, 510],
                        "kts_2":[360, 10, 560, 510]}
+        kitting_table_line_coords = []
+        for key in tray_coords.keys():
+            for i in range(1,4):
+                quarter_length = (tray_coords[key][2]-tray_coords[key][0])//4
+                kitting_table_line_coords.append([tray_coords[key][0]+quarter_length*i-1,
+                                                  tray_coords[key][1],
+                                                  tray_coords[key][0]+quarter_length*i+1,
+                                                  tray_coords[key][3]])
         self.kitting_tray_canvas.create_rectangle(tray_coords["kts_1"][0],
                                              tray_coords["kts_1"][1],
                                              tray_coords["kts_1"][2],
@@ -662,6 +670,12 @@ class GUI_CLASS(ctk.CTk):
                                              tray_coords["kts_2"][3], 
                                              outline = "black", fill = "#797979",
                                              width = 2)
+        for coord in kitting_table_line_coords:
+            self.kitting_tray_canvas.create_rectangle(coord[0],
+                                                      coord[1],
+                                                      coord[2],
+                                                      coord[3],
+                                                      fill = "#242424")
         menu_coordinates = [(55,400),(55,260),(55,120),(645,120),(645,260),(645,400)]
         label_coordinates = [(coord[0],coord[1]-35) for coord in menu_coordinates]
         self.tray_center_coords = {f"slot_{i+1}":(((tray_coords["kts_1"][0]+tray_coords["kts_1"][2])//2 if i <=2 else (tray_coords["kts_2"][0]+tray_coords["kts_2"][2])//2),menu_coordinates[i][1]) for i in range(len(menu_coordinates))}
@@ -670,7 +684,7 @@ class GUI_CLASS(ctk.CTk):
         tray_menus = [ctk.CTkOptionMenu(self.kitting_tray_frame,
                                         variable=self.kitting_tray_selections[i],
                                         values=KITTING_TRAY_OPTIONS,
-                                        fg_color = "#e2e2e2",
+                                        fg_color = "#f6f6f6",
                                         text_color="black",
                                         button_color="#d3d3d3",
                                         button_hover_color="#9e9e9e",

@@ -3215,7 +3215,7 @@ class GUI_CLASS(ctk.CTk):
             self.current_labels = [(canvas_label,self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index])]
             self.current_index_dict[self.conveyor_parts_image_labels[self.label_index]] +=1
             self.map_canvas_conveyor_elements = self.current_labels
-            self.map_canvas.after(self.delay, self.move_conveyor)
+        self.map_canvas.after(self.delay, self.move_conveyor)
             
 
     def move_conveyor(self):
@@ -3239,29 +3239,32 @@ class GUI_CLASS(ctk.CTk):
                                                                                     self.conveyor_coordinates[3]-1,
                                                                                     fill = "#706b62",
                                                                                     width = 0))
-        for i in range(len(self.current_labels)):
-            loop_i = i if not list_changed else i-1
-            coord = self.coordinates[self.current_index_dict[self.current_labels[loop_i][1]]]
-            coord = (coord[0], coord[1]+int(float(self.current_labels[loop_i][2].offset)*35))
-            self.map_canvas.coords(self.current_labels[loop_i][0], coord)
-            self.current_index_dict[self.current_labels[loop_i][1]]+=1
-            current_index = self.current_index_dict[self.current_labels[loop_i][1]]
-            if self.conveyor_counter*self.delay/1000>=float(self.conveyor_setup_vals["spawn_rate"].get()):
-                self.conveyor_counter = 0
-                if len(self.conveyor_parts_image_labels)>len(self.current_labels):
-                    self.label_index=(self.label_index+1)%len(self.conveyor_parts_image_labels)
-                    self.current_labels.append((self.map_canvas.create_window(self.coordinates[0], window=self.conveyor_parts_image_labels[self.label_index]),self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index]))
-            if current_index>=len(self.coordinates):
-                list_changed = True
-                self.current_index_dict[self.current_labels[loop_i][1]] = 0
-                self.map_canvas.delete(self.current_labels[0][0])
-                del self.current_labels[0]
-                if len(self.current_labels)==0:
+        try:
+            for i in range(len(self.current_labels)):
+                loop_i = i if not list_changed else i-1
+                coord = self.coordinates[self.current_index_dict[self.current_labels[loop_i][1]]]
+                coord = (coord[0], coord[1]+int(float(self.current_labels[loop_i][2].offset)*35))
+                self.map_canvas.coords(self.current_labels[loop_i][0], coord)
+                self.current_index_dict[self.current_labels[loop_i][1]]+=1
+                current_index = self.current_index_dict[self.current_labels[loop_i][1]]
+                if self.conveyor_counter*self.delay/1000>=float(self.conveyor_setup_vals["spawn_rate"].get()):
                     self.conveyor_counter = 0
-                    self.label_index=(self.label_index+1)%len(self.conveyor_parts_image_labels)
-                    self.current_labels.append((self.map_canvas.create_window(self.coordinates[0], window=self.conveyor_parts_image_labels[self.label_index]),self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index]))
-        self.conveyor_counter+=1
-        self.map_canvas_conveyor_elements = self.current_labels
+                    if len(self.conveyor_parts_image_labels)>len(self.current_labels):
+                        self.label_index=(self.label_index+1)%len(self.conveyor_parts_image_labels)
+                        self.current_labels.append((self.map_canvas.create_window(self.coordinates[0], window=self.conveyor_parts_image_labels[self.label_index]),self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index]))
+                if current_index>=len(self.coordinates):
+                    list_changed = True
+                    self.current_index_dict[self.current_labels[loop_i][1]] = 0
+                    self.map_canvas.delete(self.current_labels[0][0])
+                    del self.current_labels[0]
+                    if len(self.current_labels)==0:
+                        self.conveyor_counter = 0
+                        self.label_index=(self.label_index+1)%len(self.conveyor_parts_image_labels)
+                        self.current_labels.append((self.map_canvas.create_window(self.coordinates[0], window=self.conveyor_parts_image_labels[self.label_index]),self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index]))
+            self.conveyor_counter+=1
+            self.map_canvas_conveyor_elements = self.current_labels
+        except:
+            pass
         if self.show_conveyor_parts.get()=="1":
             self.map_canvas.after(self.delay, self.move_conveyor)
     

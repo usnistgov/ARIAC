@@ -71,7 +71,7 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 
 # Menu images
 GUI_PACKAGE = get_package_share_directory('ariac_gui')
-MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station","agv", "tray"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f"fiducial_tag_{i}" for i in range(10)]}
+MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station","agv", "tray"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f"id_0{i}" for i in range(10)]}
 
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
@@ -208,6 +208,9 @@ class GUI_CLASS(ctk.CTk):
             self.kitting_tray_selections[i].trace_add('write', self.show_kitting_trays)
         self.available_kitting_trays = []
         self.kitting_tray_canvas_widgets = []
+        self.kitting_tray_ratio = 5/7
+        self.kitting_tray_width = 175
+        self.kitting_tray_height = int(self.kitting_tray_width * self.kitting_tray_ratio)
 
         # Assembly insert info
         self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
@@ -730,7 +733,7 @@ class GUI_CLASS(ctk.CTk):
                 self.kitting_tray_canvas_widgets.append(self.kitting_tray_canvas.create_window(self.tray_center_coords[f"slot_{i+1}"],
                                                                         window=ctk.CTkLabel(self.kitting_tray_frame,
                                                                                             text="",
-                                                                                            image=ctk.CTkImage(MENU_IMAGES["tray"].rotate(90),size=(175,136)),
+                                                                                            image=ctk.CTkImage(MENU_IMAGES["tray"],size=(self.kitting_tray_width,self.kitting_tray_height)),
                                                                                             bg_color="#797979",
                                                                                             fg_color="#797979",
                                                                                             height = 0,
@@ -738,7 +741,7 @@ class GUI_CLASS(ctk.CTk):
                 self.kitting_tray_canvas_widgets.append(self.kitting_tray_canvas.create_window(self.tray_center_coords[f"slot_{i+1}"],
                                                                         window=ctk.CTkLabel(self.kitting_tray_frame,
                                                                                             text="",
-                                                                                            image=ctk.CTkImage(MENU_IMAGES[f"fiducial_tag_{selections[i]}"].rotate(90),size=(47,40)),
+                                                                                            image=ctk.CTkImage(MENU_IMAGES[f"id_0{selections[i]}"].rotate(90),size=(34,34)),
                                                                                             bg_color="#797979",
                                                                                             fg_color="#797979",
                                                                                             height = 0,
@@ -934,11 +937,11 @@ class GUI_CLASS(ctk.CTk):
             if self.current_bin_parts[bin_selection.get()][i]=="":
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES["plus"],size=(75,75)),
-                                                            fg_color="#60c6f1",bg_color="#4FA2C6",hover_color="#458DAC",width=0))
+                                                            fg_color="#60c6f1",bg_color="#4FA2C6",hover_color="#458DAC", width = 1))
             else:
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[bin_selection.get()][i]].rotate(self.bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
-                                                            fg_color="#60c6f1",bg_color="#60c6f1",hover_color="#60c6f1",width=0))
+                                                            fg_color="#60c6f1",bg_color="#60c6f1",hover_color="#60c6f1", width = 1))
             if self.bin_parts[bin_selection.get()][i].flipped == "1":
                 current_flipped_labels[i]=(ctk.CTkLabel(main_wind, text="F",bg_color="#60c6f1"))
         for i in range(len(current_bin_slot_widgets)):
@@ -3128,7 +3131,7 @@ class GUI_CLASS(ctk.CTk):
         for key in self.agv_coords:
             self.map_canvas.create_window(self.agv_coords[key],
                                           window=ctk.CTkLabel(self.map_frame,text="",
-                                                              image=ctk.CTkImage(MENU_IMAGES["agv"],size=(90,180)),
+                                                              image=ctk.CTkImage(MENU_IMAGES["agv"],size=(108,180)),
                                                               height=0,width=0))
             label_coord = (self.agv_coords[key][0],184)
             self.map_canvas.create_window(label_coord, window=ctk.CTkLabel(self.map_frame, text=key, height=0))
@@ -3274,7 +3277,7 @@ class GUI_CLASS(ctk.CTk):
                                                                                            window=ctk.CTkLabel(self.map_frame,
                                                                                                                text="",
                                                                                                                image=ctk.CTkImage(MENU_IMAGES["assembly_station"].rotate(self.assembly_insert_rotations[i-1].get()*180/pi),size=(50,50)),
-                                                                                                               bg_color="#a86a2b")))
+                                                                                                               bg_color="#a86a2b",fg_color="#a86a2b")))
     
     def add_agv_parts_to_map(self,_,__,___):
         for element in self.map_canvas_agv_elements:
@@ -3301,7 +3304,7 @@ class GUI_CLASS(ctk.CTk):
                     self.map_canvas_agv_elements.append(self.map_canvas.create_window(coord,
                                                                         window=ctk.CTkLabel(self.map_frame,
                                                                                             text="",
-                                                                                            image=ctk.CTkImage(MENU_IMAGES[part_title].rotate(rotation_val*180/pi),size=(25,25)),
+                                                                                            image=ctk.CTkImage(MENU_IMAGES[part_title].rotate(rotation_val*180/pi),size=(28,28)),
                                                                                             bg_color="#c1c1c1",
                                                                                             fg_color="#c1c1c1")))
 

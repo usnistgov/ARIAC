@@ -3,7 +3,7 @@ from setuptools import setup
 package_name = 'ariac_gui'
 PART_TYPES=["sensor", "pump", "regulator", "battery"]
 PART_COLORS=['green', 'red', 'purple','blue','orange']
-file_names = ['plus','assembly_station','agv','tray']+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f'fiducial_tag_{i}' for i in range(10)]
+file_names = ['plus','assembly_station','agv','tray']+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f'id_0{i}' for i in range(10)]
 setup(
     name=package_name,
     version='2024.1.0',

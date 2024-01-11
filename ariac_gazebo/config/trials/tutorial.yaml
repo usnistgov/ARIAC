@@ -138,7 +138,7 @@ orders:
       time_condition: 1
     priority: false
     kitting_task:
-      agv_number: 1
+      agv_number: 3
       tray_id: 3
       destination: 'warehouse'
       products:

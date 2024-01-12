@@ -71,7 +71,7 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 
 # Menu images
 GUI_PACKAGE = get_package_share_directory('ariac_gui')
-MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station","agv", "tray"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f"id_0{i}" for i in range(10)]}
+MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station","agv", "tray","light_icon","dark_icon"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f"id_0{i}" for i in range(10)]}
 
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
@@ -416,7 +416,7 @@ class GUI_CLASS(ctk.CTk):
         self.add_map_to_frame()
 
         self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)
-        self.light_dark_button = ctk.CTkButton(self, text="Dark mode", command = self.switch_light_dark)    
+        self.light_dark_button = ctk.CTkButton(self, text="", image=ctk.CTkImage(MENU_IMAGES["dark_icon"],size=(50,50)), command = self.switch_light_dark, fg_color="#ebebeb", bg_color="#ebebeb", hover_color="#ebebeb")
         self._build_assembly_parts_pose_direction()
 
         # Challenge trace_add functions
@@ -596,52 +596,6 @@ class GUI_CLASS(ctk.CTk):
     # =======================================================
     #               Kitting Tray Functions
     # =======================================================
-    # def add_kitting_trays_widgets_to_frame(self):
-    #     self.kitting_tray_frame.grid_rowconfigure(0, weight=1)
-    #     self.kitting_tray_frame.grid_rowconfigure(100, weight=1)
-    #     self.kitting_tray_frame.grid_columnconfigure(0, weight=1)
-    #     self.kitting_tray_frame.grid_columnconfigure(6, weight=1)
-    #     tray_label = ctk.CTkLabel(self.kitting_tray_frame,text="Select the tray ids for each slot")
-    #     tray_label.grid(row=1, column = MIDDLE_COLUMN)
-    #     kitting_tray_canvas = Canvas(self.kitting_tray_frame, height=400,bd = 0, highlightthickness=0)
-    #     self.all_canvases.append(kitting_tray_canvas)
-    #     kitting_tray_canvas.create_rectangle(10, 10, 170, 310, 
-    #                             outline = "black", fill = "#c2c2c2",
-    #                             width = 2)
-    #     kitting_tray_canvas.create_rectangle(200, 10, 360, 310, 
-    #                             outline = "black", fill = "#c2c2c2",
-    #                             width = 2)
-    #     menu_coordinates = [(95,275),(95,175),(95,75),(285,75),(285,175),(285,275)]
-    #     label_coordinates = [(coord[0],coord[1]-35) for coord in menu_coordinates]
-        
-    #     for i in self.kitting_tray_selections:i.set(KITTING_TRAY_OPTIONS[0])
-    #     tray_menus = [ctk.CTkOptionMenu(self.kitting_tray_frame,
-    #                                     variable=self.kitting_tray_selections[i],
-    #                                     values=KITTING_TRAY_OPTIONS,
-    #                                     fg_color = "#e2e2e2",
-    #                                     text_color="black",
-    #                                     button_color="#d3d3d3",
-    #                                     button_hover_color="#9e9e9e",
-    #                                     anchor='center',
-    #                                     width=50) for i in range(6)]
-    #     for i in range(6):
-    #         kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"Slot {i+1}:",bg_color="#f6f6f6"))
-    #         kitting_tray_canvas.create_window(menu_coordinates[i], window = tray_menus[i])
-    #     kitting_tray_canvas.create_window((90,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_1"))
-    #     kitting_tray_canvas.create_window((280,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
-    #     kitting_tray_canvas.grid(row = 3,column = MIDDLE_COLUMN, sticky = "we")
-    
-    # def kitting_trays_to_dict(self):
-    #     self.kitting_trays_dict = {}
-    #     slots = []
-    #     trays = []
-    #     for i in range(len(self.kitting_tray_selections)):
-    #         tray = self.kitting_tray_selections[i].get()
-    #         if tray != "":
-    #             slots.append(i+1)
-    #             trays.append(int(tray))
-    #     self.kitting_trays_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
-    
     def add_kitting_trays_widgets_to_frame(self):
         self.kitting_tray_frame.grid_rowconfigure(0, weight=1)
         self.kitting_tray_frame.grid_rowconfigure(100, weight=1)
@@ -3358,7 +3312,7 @@ class GUI_CLASS(ctk.CTk):
         if self.current_mode == "light":
             ctk.set_appearance_mode("dark")
             self.current_mode = "dark"
-            self.light_dark_button.configure(text="Light mode")
+            self.light_dark_button.configure(image=ctk.CTkImage(MENU_IMAGES["light_icon"],size=(75,75)), fg_color="#242424", bg_color="#242424", hover_color="#242424")
             for frame in self.notebook_frames:
                 frame.configure(fg_color="#5a5a5a")
             for c in self.all_canvases:
@@ -3366,7 +3320,7 @@ class GUI_CLASS(ctk.CTk):
         else:
             ctk.set_appearance_mode("light")
             self.current_mode = "light"
-            self.light_dark_button.configure(text="Dark mode")
+            self.light_dark_button.configure(image=ctk.CTkImage(MENU_IMAGES["dark_icon"],size=(75,75)), fg_color="#ebebeb", bg_color="#ebebeb", hover_color="#ebebeb")
             for frame in self.notebook_frames:
                 frame.configure(fg_color="transparent")
             for c in self.all_canvases:

@@ -50,6 +50,8 @@ set(msg_files
   "msg/TimeCondition.msg"
   "msg/Trial.msg"
   "msg/VacuumGripperState.msg"
+  "msg/SlotPart.msg"
+  "msg/SlotOccupancy.msg"
 )
 
 set(srv_files

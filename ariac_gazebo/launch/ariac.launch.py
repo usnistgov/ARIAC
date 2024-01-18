@@ -1,5 +1,6 @@
 import os
 import yaml
+import xacro
 import rclpy.logging
 from launch import LaunchDescription
 from launch.actions import (
@@ -24,15 +25,6 @@ def launch_setup(context, *args, **kwargs):
     world_file_name = 'ariac.world'
     world_path = os.path.join(pkg_share, 'worlds', world_file_name)
 
-    robot_description_content = Command(
-        [
-            PathJoinSubstitution([FindExecutable(name="xacro")]),
-            " ",
-            PathJoinSubstitution([FindPackageShare("ariac_description"), "urdf/ariac_robots", "ariac_robots.urdf.xacro"]),
-            " "
-        ]
-    )
-
     trial_name = LaunchConfiguration("trial_name").perform(context)
     trial_config_path = os.path.join(pkg_share, 'config', 'trials', trial_name + ".yaml")
 
@@ -56,6 +48,34 @@ def launch_setup(context, *args, **kwargs):
         rclpy.logging.get_logger('Launch File').fatal(
             f"Sensor configuration '{sensor_config}.yaml' not found in {competitor_pkg_share}/config/")
         exit()
+
+    # Robot Cameras
+    with open(user_config_path, "r") as stream:
+        try:
+            sensor_config = yaml.safe_load(stream)
+        except yaml.YAMLError:
+            rclpy.logging.get_logger('Launch File').fatal("Unable to read sensor configuration")
+            exit()
+
+    urdf = os.path.join(get_package_share_directory('ariac_description'), 'urdf/ariac_robots', 'ariac_robots.urdf.xacro')
+
+    xacro_args = {}
+
+    if 'robot_cameras' in sensor_config.keys():
+        try:
+            if sensor_config['robot_cameras']['floor_robot_camera']['active']:
+                xacro_args.update({'floor_robot_camera_active_arg': 'true'})
+                xacro_args.update({'floor_robot_camera_type_arg': sensor_config['robot_cameras']['floor_robot_camera']['type']})
+
+            if sensor_config['robot_cameras']['ceiling_robot_camera']['active']:
+                xacro_args.update({'ceiling_robot_camera_active_arg': 'true'})
+                xacro_args.update({'ceiling_robot_camera_type_arg': sensor_config['robot_cameras']['ceiling_robot_camera']['type']})
+        except KeyError:
+            rclpy.logging.get_logger('Launch File').error("Unable to parse sensor configuration")
+    
+    doc = xacro.process_file(urdf, mappings=xacro_args)
+
+    robot_description_content = doc.toprettyxml(indent='  ')
 
     # Gazebo node
     gazebo = IncludeLaunchDescription(
@@ -155,39 +175,6 @@ def launch_setup(context, *args, **kwargs):
             )
         )
 
-    # Human
-    with open(trial_config_path, "r") as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError:
-            print("Unable to read configuration file")
-            config = None
-
-    human_behavior = ""
-    trial_has_human_challenge = 'false'
-    if config is not None:
-        try:
-            challenges = config["challenges"]
-            if not challenges:
-                pass
-
-            for challenge in challenges:
-                for key, value in challenge.items():
-                    if key == 'human':
-                        human_behavior = value['behavior']
-                        trial_has_human_challenge = 'true'
-        except KeyError:
-            pass
-
-    human = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [FindPackageShare("ariac_human"), "/launch", "/human.launch.py"]
-        ),
-        launch_arguments={
-            'human_behavior': human_behavior,
-        }.items(),
-        condition=IfCondition(trial_has_human_challenge)
-    )
     nodes_to_start = [
         gazebo,
         sensor_tf_broadcaster,
@@ -196,7 +183,6 @@ def launch_setup(context, *args, **kwargs):
         robot_controller_switcher,
         robot_state_publisher,
         *controller_spawner_nodes,
-        human
     ]
 
     return nodes_to_start

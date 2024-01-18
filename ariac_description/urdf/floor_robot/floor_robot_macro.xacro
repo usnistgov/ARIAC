@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
-  <xacro:macro name="floor_robot" params="">
+  <xacro:macro name="floor_robot" params="
+    camera_active
+    camera_type
+  ">
 
     <!-- Include linear actuator macro -->
     <xacro:include filename="$(find ariac_description)/urdf/floor_robot/linear_actuator_macro.xacro"/>
@@ -12,8 +15,7 @@
     <!-- Inclue gripper macro -->
     <xacro:include filename="$(find ariac_description)/urdf/vacuum_gripper/vacuum_gripper_macro.xacro"/>
 
-    <xacro:arg name="initial_positions_file" default="$(find ariac_description)/config/floor_robot_initial_positions.yaml"/>
-    <xacro:property name="initial_positions_file" default="$(arg initial_positions_file)"/>
+    <xacro:property name="initial_positions_file" default="$(find ariac_description)/config/floor_robot_initial_positions.yaml"/>
 
     <!-- Run linear actuator macro -->
     <xacro:linear_actuator
@@ -40,9 +42,10 @@
     <xacro:vacuum_gripper
       parent="wrist_3_link"
       prefix="floor"
+      use_camera="${camera_active}"
+      camera_type="${camera_type}"
       >
     </xacro:vacuum_gripper>
-    
 
   </xacro:macro>
 </robot>

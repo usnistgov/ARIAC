@@ -57,13 +57,12 @@ floor_robot_controller:
     constraints:
       stopped_velocity_tolerance: 0.2
       goal_time: 0.0
-      linear_actuator: {trajectory: 0.1, goal: 0.1}
-      floor_shoulder_pan_joint: { trajectory: 0.2, goal: 0.1 }
-      floor_shoulder_lift_joint: { trajectory: 0.2, goal: 0.1 }
-      floor_elbow_joint: { trajectory: 0.2, goal: 0.1 }
-      floor_wrist_1_joint: { trajectory: 0.2, goal: 0.1 }
-      floor_wrist_2_joint: { trajectory: 0.2, goal: 0.1 }
-      floor_wrist_3_joint: { trajectory: 0.2, goal: 0.1 }
+      floor_shoulder_pan_joint: { trajectory: 0.5, goal: 0.1 }
+      floor_shoulder_lift_joint: { trajectory: 0.5, goal: 0.1 }
+      floor_elbow_joint: { trajectory: 0.5, goal: 0.1 }
+      floor_wrist_1_joint: { trajectory: 0.5, goal: 0.1 }
+      floor_wrist_2_joint: { trajectory: 0.5, goal: 0.1 }
+      floor_wrist_3_joint: { trajectory: 0.5, goal: 0.1 }
 
 
 
@@ -111,7 +110,7 @@ linear_rail_controller:
     constraints:
       stopped_velocity_tolerance: 0.2
       goal_time: 0.0
-      linear_actuator_joint: {trajectory: 0.1, goal: 0.1}
+      linear_actuator_joint: {trajectory: 0.5, goal: 0.1}
 
 
 

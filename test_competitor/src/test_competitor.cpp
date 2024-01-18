@@ -403,8 +403,8 @@ geometry_msgs::msg::Quaternion TestCompetitor::QuaternionFromRPY(double r, doubl
   return q_msg;
 }
 
-void TestCompetitor::AddModelToPlanningScene(
-    std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose)
+moveit_msgs::msg::CollisionObject TestCompetitor::CreateCollisionObject(
+  std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose)
 {
   moveit_msgs::msg::CollisionObject collision;
 
@@ -429,11 +429,19 @@ void TestCompetitor::AddModelToPlanningScene(
 
   collision.operation = collision.ADD;
 
-  planning_scene_.applyCollisionObject(collision);
+  return collision;
+}
+
+void TestCompetitor::AddModelToPlanningScene(
+    std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose)
+{
+  planning_scene_.applyCollisionObject(CreateCollisionObject(name, mesh_file, model_pose));
 }
 
 void TestCompetitor::AddModelsToPlanningScene()
 {
+  std::vector<moveit_msgs::msg::CollisionObject> objects;
+
   // Add bins
   std::map<std::string, std::pair<double, double>> bin_positions = {
       {"bin1", std::pair<double, double>(-1.9, 3.375)},
@@ -453,7 +461,7 @@ void TestCompetitor::AddModelsToPlanningScene()
     bin_pose.position.z = 0;
     bin_pose.orientation = QuaternionFromRPY(0, 0, 3.14159);
 
-    AddModelToPlanningScene(bin.first, "bin.stl", bin_pose);
+    objects.push_back(CreateCollisionObject(bin.first, "bin.stl", bin_pose));
   }
 
   // Add assembly stations
@@ -472,7 +480,7 @@ void TestCompetitor::AddModelsToPlanningScene()
     assembly_station_pose.position.z = 0;
     assembly_station_pose.orientation = QuaternionFromRPY(0, 0, 0);
 
-    AddModelToPlanningScene(station.first, "assembly_station.stl", assembly_station_pose);
+    objects.push_back(CreateCollisionObject(station.first, "assembly_station.stl", assembly_station_pose));
   }
 
   // Add assembly briefcases
@@ -494,7 +502,7 @@ void TestCompetitor::AddModelsToPlanningScene()
 
     std::string frame_name = insert.first + "_frame";
 
-    AddModelToPlanningScene(insert.first, "assembly_insert.stl", FrameWorldPose(frame_name));
+    objects.push_back(CreateCollisionObject(insert.first, "assembly_insert.stl", FrameWorldPose(frame_name)));
   }
 
   geometry_msgs::msg::Pose conveyor_pose;
@@ -503,7 +511,7 @@ void TestCompetitor::AddModelsToPlanningScene()
   conveyor_pose.position.z = 0;
   conveyor_pose.orientation = QuaternionFromRPY(0, 0, 0);
 
-  AddModelToPlanningScene("conveyor", "conveyor.stl", conveyor_pose);
+  objects.push_back(CreateCollisionObject("conveyor", "conveyor.stl", conveyor_pose));
 
   geometry_msgs::msg::Pose kts1_table_pose;
   kts1_table_pose.position.x = -1.3;
@@ -511,7 +519,7 @@ void TestCompetitor::AddModelsToPlanningScene()
   kts1_table_pose.position.z = 0;
   kts1_table_pose.orientation = QuaternionFromRPY(0, 0, 3.14159);
 
-  AddModelToPlanningScene("kts1_table", "kit_tray_table.stl", kts1_table_pose);
+  objects.push_back(CreateCollisionObject("kts1_table", "kit_tray_table.stl", kts1_table_pose));
 
   geometry_msgs::msg::Pose kts2_table_pose;
   kts2_table_pose.position.x = -1.3;
@@ -519,7 +527,11 @@ void TestCompetitor::AddModelsToPlanningScene()
   kts2_table_pose.position.z = 0;
   kts2_table_pose.orientation = QuaternionFromRPY(0, 0, 0);
 
-  AddModelToPlanningScene("kts2_table", "kit_tray_table.stl", kts2_table_pose);
+  objects.push_back(CreateCollisionObject("kts2_table", "kit_tray_table.stl", kts2_table_pose));
+
+  if (!planning_scene_.applyCollisionObjects(objects)) {
+    RCLCPP_WARN(get_logger(), "Unable to add objects to planning scene");
+  }
 }
 
 geometry_msgs::msg::Quaternion TestCompetitor::SetRobotOrientation(double rotation)
@@ -612,7 +624,7 @@ void TestCompetitor::FloorRobotWaitForAttach(double timeout)
     starting_pose.position.z -= 0.001;
     waypoints.push_back(starting_pose);
 
-    FloorRobotMoveCartesian(waypoints, 0.1, 0.1);
+    FloorRobotMoveCartesian(waypoints, 0.01, 0.01);
 
     usleep(200);
 
@@ -778,20 +790,44 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
 
   FloorRobotWaitForAttach(3.0);
 
+  RCLCPP_INFO_STREAM(get_logger(), "Picked kit tray " << tray_id);
+
   // Add kit tray to planning scene
   std::string tray_name = "kit_tray_" + std::to_string(tray_id);
   AddModelToPlanningScene(tray_name, "kit_tray.stl", tray_pose);
   floor_robot_.attachObject(tray_name);
 
+  order_planning_scene_objects_.push_back(tray_name);
+
   // Move up slightly
   waypoints.clear();
-  waypoints.push_back(BuildPose(tray_pose.position.x, tray_pose.position.y,
-                                tray_pose.position.z + 0.2, SetRobotOrientation(tray_rotation)));
-  FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+
+  
+  auto current_pose = floor_robot_.getCurrentPose().pose;
+
+  current_pose.position.z += 0.2;
+  waypoints.push_back(current_pose);
+
+  RCLCPP_INFO(get_logger(), "Moving up..");
+  if (FloorRobotMoveCartesian(waypoints, 0.1, 0.1)) {
+    RCLCPP_INFO(get_logger(), "Moved up successfully");
+  }
+
+  if (station == "kts1")
+  {
+    floor_robot_.setJointValueTarget(floor_kts1_js_);
+  }
+  else
+  {
+    floor_robot_.setJointValueTarget(floor_kts2_js_);
+  }
+  RCLCPP_INFO(get_logger(), "Moving to kit tray joint state..");
+  FloorRobotMovetoTarget();
 
   floor_robot_.setJointValueTarget("linear_actuator_joint", rail_positions_["agv" + std::to_string(agv_num)]);
   floor_robot_.setJointValueTarget("floor_shoulder_pan_joint", 0);
 
+  RCLCPP_INFO(get_logger(), "Moving to AGV..");
   FloorRobotMovetoTarget();
 
   auto agv_tray_pose = FrameWorldPose("agv" + std::to_string(agv_num) + "_tray");
@@ -917,6 +953,8 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
   AddModelToPlanningScene(part_name, part_types_[part_to_pick.type] + ".stl", part_pose);
   floor_robot_.attachObject(part_name);
   floor_robot_attached_part_ = part_to_pick;
+
+  order_planning_scene_objects_.push_back(part_name);
 
   // Move up slightly
   waypoints.clear();
@@ -1054,8 +1092,6 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
                                   part_pose.position.z + 0.1, SetRobotOrientation(0)));
     FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
 
-    robot_pose = floor_robot_.getCurrentPose().pose;
-
     if(floor_gripper_state_.attached)
     {
       // Add part to planning scene
@@ -1063,6 +1099,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
       AddModelToPlanningScene(part_name, part_types_[part_to_pick.type] + ".stl", robot_pose);
       RCLCPP_INFO_STREAM(get_logger(), "Attached " << part_name << " to robot");
       floor_robot_.attachObject(part_name);
+      order_planning_scene_objects_.push_back(part_name);
       floor_robot_attached_part_ = part_to_pick;
       part_picked = true;
     }
@@ -1370,7 +1407,7 @@ bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
 
   CeilingRobotSetGripperState(true);
 
-  CeilingRobotWaitForAttach(4.0);
+  CeilingRobotWaitForAttach(5.0);
 
   // Add part to planning scene
   std::string part_name = part_colors_[part.part.color] + "_" + part_types_[part.part.type];
@@ -1571,6 +1608,11 @@ bool TestCompetitor::CompleteKittingTask(ariac_msgs::msg::KittingTask task)
 {
   FloorRobotSendHome();
 
+  if(agv_locations_[task.agv_number] != ariac_msgs::msg::AGVStatus::KITTING)
+  {
+    MoveAGV(task.agv_number,ariac_msgs::srv::MoveAGV::Request::KITTING);
+  }
+
   FloorRobotPickandPlaceTray(task.tray_id, task.agv_number);
 
   bool found;
@@ -1594,6 +1636,11 @@ bool TestCompetitor::CompleteKittingTask(ariac_msgs::msg::KittingTask task)
   {
     RCLCPP_ERROR(get_logger(), "Issue with shipment");
   }
+
+  //Remove objects from planning scene
+  planning_scene_.removeCollisionObjects(order_planning_scene_objects_);
+
+  order_planning_scene_objects_.clear();
 
   MoveAGV(task.agv_number, task.destination);
 
@@ -1759,6 +1806,11 @@ bool TestCompetitor::CompleteCombinedTask(ariac_msgs::msg::CombinedTask task)
   {
     destination = ariac_msgs::srv::MoveAGV::Request::ASSEMBLY_BACK;
   }
+
+  //Remove objects from planning scene
+  planning_scene_.removeCollisionObjects(order_planning_scene_objects_);
+
+  order_planning_scene_objects_.clear();
 
   MoveAGV(agv_number, destination);
 

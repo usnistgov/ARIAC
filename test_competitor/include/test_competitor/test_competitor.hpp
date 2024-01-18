@@ -112,6 +112,7 @@ private:
   double GetYaw(geometry_msgs::msg::Pose pose);
   geometry_msgs::msg::Quaternion QuaternionFromRPY(double r, double p, double y);
 
+  moveit_msgs::msg::CollisionObject CreateCollisionObject(std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose);
   void AddModelToPlanningScene(std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose);
   
   // AGV location
@@ -373,5 +374,6 @@ private:
     {ariac_msgs::msg::AGVStatus::ASSEMBLY_BACK, "assembly station back"},
     {ariac_msgs::msg::AGVStatus::WAREHOUSE, "warehouse"}
   };
-  
+
+  std::vector<std::string> order_planning_scene_objects_;
 };

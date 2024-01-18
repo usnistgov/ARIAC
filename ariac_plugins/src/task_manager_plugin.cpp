@@ -3836,12 +3836,14 @@ namespace ariac_plugins
 
         return true;
     }
+
     //==============================================================================
     bool TaskManagerPlugin::EndCompetitionServiceCallback(
         const std::shared_ptr<std_srvs::srv::Trigger::Request> request,
         std::shared_ptr<std_srvs::srv::Trigger::Response> response)
     {
         std::lock_guard<std::mutex> lock(this->impl_->lock_);
+        RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "End competition service called");
 
         (void)request;
 
@@ -3852,11 +3854,28 @@ namespace ariac_plugins
 
         // Display the trial score
         // ComputeTrialScore();
-        impl_->PrintTrialSummary();
+
+        bool at_leat_one_submission = false;
+        for (auto &order : impl_->all_orders_)
+        {
+            if (order->GetKittingScore())
+                at_leat_one_submission = true;
+            if (order->GetAssemblyScore())
+                at_leat_one_submission = true;
+            if (order->GetCombinedScore())
+                at_leat_one_submission = true;
+
+        }
+
+        if (at_leat_one_submission)
+            impl_->PrintTrialSummary();
+        // else
+        //     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "No orders were submitted");
+        // impl_->PrintTrialSummary();
 
         return true;
     }
-
+    
     //==============================================================================
     void TaskManagerPluginPrivate::PerformQualityCheck(
         ariac_msgs::srv::PerformQualityCheck::Request::SharedPtr request,

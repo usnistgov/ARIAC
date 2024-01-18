@@ -132,7 +132,7 @@ namespace ariac_plugins
   bool AssemblyLockPrivate::CheckModelContact(ConstContactsPtr &msg)
   {
     std::string part_in_contact;
-    int min_contacts = 4;
+    int min_contacts = 1;
 
     for (int i = 0; i < msg->contact_size(); ++i)
     {
@@ -166,29 +166,6 @@ namespace ariac_plugins
       model_collision_ = boost::dynamic_pointer_cast<gazebo::physics::Collision>(model_->GetWorld()->EntityByName(part_in_contact));
       model_to_attach_ = model_collision_->GetModel();
       return true;
-      /* Seems to cause issues for sensor insertion
-      //Check normals
-      std::vector<bool> aligned;
-      for (int j = 0; j < msg->contact(i).normal_size(); ++j){
-        ignition::math::Vector3d contact_normal = gazebo::msgs::ConvertIgn(msg->contact(i).normal(j));
-        ignition::math::Vector3d assembly_normal = assembly_surface_link_->WorldPose().Rot().RotateVector(ignition::math::Vector3d(0, 0, 1));
-
-        double alignment = assembly_normal.Dot(contact_normal);
-
-        // RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Alignment: " << alignment);
-
-        if (std::abs(alignment) > 0.95) {
-          aligned.push_back(true);
-        }
-        else{
-          aligned.push_back(false);
-        }
-      }
-
-      if (std::all_of(aligned.begin(), aligned.end(), [](bool v) { return v; })){
-        return true;
-      }
-    */
     }
 
     return false;

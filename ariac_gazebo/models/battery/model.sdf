@@ -55,10 +55,11 @@
       </visual>
 
       <collision name="collision">
+        <pose>0 0 0.02 0 0 0</pose>
         <geometry>
-          <mesh>
-            <uri>model://battery/meshes/battery_collision.stl</uri>
-          </mesh>
+          <box>
+            <size>0.13 0.05 0.04</size>
+          </box>
         </geometry>
         <max_contacts>10</max_contacts>
         <surface>

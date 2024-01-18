@@ -1197,12 +1197,36 @@ bool TestCompetitor::CeilingRobotWaitForAssemble(int station, ariac_msgs::msg::A
 {
   // Wait for part to be attached
   rclcpp::Time start = now();
-  std::vector<geometry_msgs::msg::Pose> waypoints;
-  geometry_msgs::msg::Pose starting_pose = ceiling_robot_.getCurrentPose().pose;
 
   auto rotation = GetYaw(FrameWorldPose("as"+std::to_string(station)+"_insert_frame"));
 
   bool assembled = false;
+
+  double R[3][3] = {cos(rotation), -sin(rotation), 0,
+                      sin(rotation), cos(rotation), 0,
+                      0, 0, 1};
+
+  double dx = R[0][0] * part.install_direction.x + R[0][1] * part.install_direction.y + R[0][2] * part.install_direction.z;
+  double dy = R[1][0] * part.install_direction.x + R[1][1] * part.install_direction.y + R[1][2] * part.install_direction.z;
+  double dz = R[2][0] * part.install_direction.x + R[2][1] * part.install_direction.y + R[2][2] * part.install_direction.z;
+
+  geometry_msgs::msg::Pose pose = ceiling_robot_.getCurrentPose().pose;
+
+  pose.position.x += dx * (assembly_offset_ + 0.005);
+  pose.position.y += dy * (assembly_offset_ + 0.005);
+  pose.position.z += dz * (assembly_offset_ + 0.005);
+
+  std::vector<geometry_msgs::msg::Pose> waypoints;
+  waypoints.push_back(pose);
+
+  auto ret = CeilingRobotPlanCartesian(waypoints, 0.01, 0.01, false);
+
+  if (ret.first) {
+    ceiling_robot_.asyncExecute(ret.second);
+  } else {
+    return false;
+  }
+
   while (!assembled)
   {
     RCLCPP_DEBUG_THROTTLE(get_logger(), *get_clock(), 1000, "Waiting for part to be assembled");
@@ -1226,26 +1250,9 @@ bool TestCompetitor::CeilingRobotWaitForAssemble(int station, ariac_msgs::msg::A
       RCLCPP_WARN(get_logger(), "Not a valid part type");
       return false;
     }
-
-    double step = 0.0005;
-
-    waypoints.clear();
-    starting_pose.position.x += step * sin(-rotation);
-    starting_pose.position.y += step * cos(-rotation);
-    starting_pose.position.z += step * part.install_direction.z;
-    waypoints.push_back(starting_pose);
-
-    CeilingRobotMoveCartesian(waypoints, 0.01, 0.01, false);
-
-    usleep(100);
-
-    if (now() - start > rclcpp::Duration::from_seconds(5))
-    {
-      RCLCPP_ERROR(get_logger(), "Unable to assemble object");
-      ceiling_robot_.stop();
-      return false;
-    }
   }
+
+  ceiling_robot_.stop();
 
   RCLCPP_INFO(get_logger(), "Part is assembled");
 
@@ -1273,7 +1280,7 @@ bool TestCompetitor::CeilingRobotMoveCartesian(
 {
   moveit_msgs::msg::RobotTrajectory trajectory;
 
-  double path_fraction = ceiling_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory, avoid_collisions);
+  double path_fraction = ceiling_robot_.computeCartesianPath(waypoints, 0.0005, 0.0, trajectory, avoid_collisions);
 
   if (path_fraction < 0.9)
   {
@@ -1288,6 +1295,28 @@ bool TestCompetitor::CeilingRobotMoveCartesian(
   rt.getRobotTrajectoryMsg(trajectory);
 
   return static_cast<bool>(ceiling_robot_.execute(trajectory));
+}
+
+std::pair<bool,moveit_msgs::msg::RobotTrajectory> TestCompetitor::CeilingRobotPlanCartesian(
+    std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions)
+{
+  moveit_msgs::msg::RobotTrajectory trajectory;
+
+  double path_fraction = ceiling_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory, avoid_collisions);
+
+  if (path_fraction < 0.9)
+  {
+    RCLCPP_ERROR(get_logger(), "Unable to generate trajectory through waypoints");
+    return std::make_pair(false, trajectory);
+  }
+
+  // Retime trajectory
+  robot_trajectory::RobotTrajectory rt(ceiling_robot_.getCurrentState()->getRobotModel(), "ceiling_robot");
+  rt.setRobotTrajectoryMsg(*ceiling_robot_.getCurrentState(), trajectory);
+  totg_.computeTimeStamps(rt, vsf, asf);
+  rt.getRobotTrajectoryMsg(trajectory);
+
+  return std::make_pair(true, trajectory);
 }
 
 bool TestCompetitor::CeilingRobotMoveToAssemblyStation(int station)
@@ -1341,7 +1370,7 @@ bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
 
   CeilingRobotSetGripperState(true);
 
-  CeilingRobotWaitForAttach(3.0);
+  CeilingRobotWaitForAttach(4.0);
 
   // Add part to planning scene
   std::string part_name = part_colors_[part.part.color] + "_" + part_types_[part.part.type];
@@ -1431,7 +1460,7 @@ bool TestCompetitor::CeilingRobotAssemblePart(int station, ariac_msgs::msg::Asse
 
   // Move to just before assembly position
   waypoints.clear();
-  waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.005) * part_assemble * part_to_gripper));
+  waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -assembly_offset_) * part_assemble * part_to_gripper));
   CeilingRobotMoveCartesian(waypoints, 0.1, 0.1, true);
 
   CeilingRobotWaitForAssemble(station, part);
@@ -1443,21 +1472,21 @@ bool TestCompetitor::CeilingRobotAssemblePart(int station, ariac_msgs::msg::Asse
   ceiling_robot_.detachObject(part_name);
 
   // Move away slightly
-  auto current_pose = ceiling_robot_.getCurrentPose().pose;
-
   if (part.part.type == ariac_msgs::msg::Part::REGULATOR)
   {
-    current_pose.position.x -= 0.05;
+    return true;
   }
-  else
-  {
-    current_pose.position.z += 0.1;
-  }
+
+  ceiling_robot_.setStartStateToCurrentState();
+
+  auto current_pose = ceiling_robot_.getCurrentPose().pose;
+
+  current_pose.position.z += 0.1;
 
   waypoints.clear();
   waypoints.push_back(current_pose);
 
-  CeilingRobotMoveCartesian(waypoints, 0.3, 0.3, true);
+  CeilingRobotMoveCartesian(waypoints, 0.1, 0.1, false);
 
   return true;
 }

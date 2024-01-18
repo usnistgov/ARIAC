@@ -87,12 +87,12 @@ ceiling_robot_controller:
     constraints:
       stopped_velocity_tolerance: 0.2
       goal_time: 0.0
-      ceiling_shoulder_pan_joint: { trajectory: 0.2, goal: 0.1 }
-      ceiling_shoulder_lift_joint: { trajectory: 0.2, goal: 0.1 }
-      ceiling_elbow_joint: { trajectory: 0.2, goal: 0.1 }
-      ceiling_wrist_1_joint: { trajectory: 0.2, goal: 0.1 }
-      ceiling_wrist_2_joint: { trajectory: 0.2, goal: 0.1 }
-      ceiling_wrist_3_joint: { trajectory: 0.2, goal: 0.1 }
+      ceiling_shoulder_pan_joint: { trajectory: 0.5, goal: 0.1 }
+      ceiling_shoulder_lift_joint: { trajectory: 0.5, goal: 0.1 }
+      ceiling_elbow_joint: { trajectory: 0.5, goal: 0.1 }
+      ceiling_wrist_1_joint: { trajectory: 0.5, goal: 0.1 }
+      ceiling_wrist_2_joint: { trajectory: 0.5, goal: 0.1 }
+      ceiling_wrist_3_joint: { trajectory: 0.5, goal: 0.1 }
 
 
 
@@ -132,9 +132,9 @@ gantry_controller:
     constraints:
       stopped_velocity_tolerance: 0.2
       goal_time: 0.0
-      gantry_x_axis_joint: {trajectory: 0.1, goal: 0.1}
-      gantry_y_axis_joint:  {trajectory: 0.1, goal: 0.1}
-      gantry_rotation_joint: {trajectory: 0.1, goal: 0.1}
+      gantry_x_axis_joint: {trajectory: 0.5, goal: 0.1}
+      gantry_y_axis_joint:  {trajectory: 0.5, goal: 0.1}
+      gantry_rotation_joint: {trajectory: 0.5, goal: 0.1}
 
 
 

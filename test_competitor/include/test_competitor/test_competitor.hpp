@@ -95,6 +95,7 @@ private:
 
   bool CeilingRobotMovetoTarget();
   bool CeilingRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
+  std::pair<bool,moveit_msgs::msg::RobotTrajectory> CeilingRobotPlanCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
   void CeilingRobotWaitForAttach(double timeout);
   bool CeilingRobotWaitForAssemble(int station, ariac_msgs::msg::AssemblyPart part);
   bool CeilingRobotMoveToAssemblyStation(int station);
@@ -244,6 +245,7 @@ private:
   double kit_tray_thickness_ = 0.01;
   double drop_height_ = 0.002;
   double pick_offset_ = 0.003;
+  double assembly_offset_ = 0.02;
   double battery_grip_offset_ = -0.05;
 
   std::map<int, std::string> part_types_ = {

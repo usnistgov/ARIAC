@@ -1416,6 +1416,7 @@ class GUI_CLASS(ctk.CTk):
             table_sep.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=current_row+1, pady=10, sticky = "we")
             self.current_main_order_widgets.append(table_sep)
             current_row+=2
+
     def edit_order(self, index : int):
         self.temp_order_hold = (deepcopy(self.current_orders[index]),index)
         self.set_order_variables_to_current_order(self.current_orders[index])
@@ -1712,6 +1713,7 @@ class GUI_CLASS(ctk.CTk):
         return sorted(quadrant_options)
 
     def show_kitting_menu(self):
+        self.save_order_button.configure(text="Save kitting order")
         self.order_info["order_type"].set("kitting")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
@@ -1838,6 +1840,7 @@ class GUI_CLASS(ctk.CTk):
 
     def show_assembly_menu(self):
         self.order_info["order_type"].set("assembly")
+        self.save_order_button.configure(text="Save assembly order")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
         self.current_left_order_widgets.clear()
@@ -1997,6 +2000,7 @@ class GUI_CLASS(ctk.CTk):
         window.destroy()
     
     def show_combined_menu(self):
+        self.save_order_button.configure(text="Save combined order")
         self.order_info["order_type"].set("combined")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()

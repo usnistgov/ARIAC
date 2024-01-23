@@ -439,8 +439,6 @@ class GUI_CLASS(ctk.CTk):
         self.initial_label.grid_forget()
         self.load_file_button.grid_forget()
         self.new_file_button.grid_forget()
-        self.minsize(788, 735)
-        self.maxsize(788, 800)
         self.notebook.grid(pady=10,column=LEFT_COLUMN, columnspan=2,sticky=tk.E+tk.W+tk.N+tk.S)
         self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,row=4)
         self.light_dark_button.grid(pady=10, column=LEFT_COLUMN, row=4)

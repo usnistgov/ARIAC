@@ -89,8 +89,8 @@ public:
 private:
   // Robot Move Functions
   bool FloorRobotMovetoTarget();
-  bool FloorRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf);
-  std::pair<bool,moveit_msgs::msg::RobotTrajectory> FloorRobotPlanCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf);
+  bool FloorRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
+  std::pair<bool,moveit_msgs::msg::RobotTrajectory> FloorRobotPlanCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
   void FloorRobotWaitForAttach(double timeout);
 
   bool CeilingRobotMovetoTarget();
@@ -244,7 +244,7 @@ private:
   // Constants
   double conveyor_speed_ = 0.2;
   double kit_tray_thickness_ = 0.01;
-  double drop_height_ = 0.002;
+  double drop_height_ = 0.005;
   double pick_offset_ = 0.003;
   double assembly_offset_ = 0.02;
   double battery_grip_offset_ = -0.05;

@@ -9,10 +9,17 @@ TestCompetitor::TestCompetitor()
   // Use upper joint velocity and acceleration limits
   floor_robot_.setMaxAccelerationScalingFactor(1.0);
   floor_robot_.setMaxVelocityScalingFactor(1.0);
+  floor_robot_.setPlanningTime(10.0);
+  floor_robot_.setNumPlanningAttempts(5);
+  floor_robot_.allowReplanning(true);
+  floor_robot_.setReplanAttempts(5);
 
   ceiling_robot_.setMaxAccelerationScalingFactor(1.0);
   ceiling_robot_.setMaxVelocityScalingFactor(1.0);
-
+  ceiling_robot_.setPlanningTime(10.0);
+  ceiling_robot_.setNumPlanningAttempts(5);
+  ceiling_robot_.allowReplanning(true);
+  ceiling_robot_.setReplanAttempts(5);
   // Subscribe to topics
   rclcpp::SubscriptionOptions options;
 
@@ -566,11 +573,11 @@ bool TestCompetitor::FloorRobotMovetoTarget()
 }
 
 bool TestCompetitor::FloorRobotMoveCartesian(
-    std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf)
+    std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions)
 {
   moveit_msgs::msg::RobotTrajectory trajectory;
 
-  double path_fraction = floor_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory);
+  double path_fraction = floor_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory, avoid_collisions);
 
   if (path_fraction < 0.9)
   {
@@ -588,11 +595,11 @@ bool TestCompetitor::FloorRobotMoveCartesian(
 }
 
 std::pair<bool,moveit_msgs::msg::RobotTrajectory> TestCompetitor::FloorRobotPlanCartesian(
-    std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf)
+    std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions)
 {
   moveit_msgs::msg::RobotTrajectory trajectory;
 
-  double path_fraction = floor_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory);
+  double path_fraction = floor_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory, avoid_collisions);
 
   if (path_fraction < 0.9)
   {
@@ -624,9 +631,9 @@ void TestCompetitor::FloorRobotWaitForAttach(double timeout)
     starting_pose.position.z -= 0.001;
     waypoints.push_back(starting_pose);
 
-    FloorRobotMoveCartesian(waypoints, 0.01, 0.01);
+    FloorRobotMoveCartesian(waypoints, 0.01, 0.01, true);
 
-    usleep(200);
+    usleep(500);
 
     if (now() - start > rclcpp::Duration::from_seconds(timeout))
     {
@@ -686,7 +693,7 @@ bool TestCompetitor::FloorRobotChangeGripper(std::string station, std::string gr
   waypoints.push_back(BuildPose(tc_pose.position.x, tc_pose.position.y,
                                 tc_pose.position.z, SetRobotOrientation(0.0)));
 
-  if (!FloorRobotMoveCartesian(waypoints, 0.2, 0.1))
+  if (!FloorRobotMoveCartesian(waypoints, 0.2, 0.1, true))
     return false;
 
   // Call service to change gripper
@@ -713,7 +720,7 @@ bool TestCompetitor::FloorRobotChangeGripper(std::string station, std::string gr
   waypoints.push_back(BuildPose(tc_pose.position.x, tc_pose.position.y,
                                 tc_pose.position.z + 0.4, SetRobotOrientation(0.0)));
 
-  if (!FloorRobotMoveCartesian(waypoints, 0.2, 0.1))
+  if (!FloorRobotMoveCartesian(waypoints, 0.2, 0.1, true))
     return false;
 
   return true;
@@ -784,7 +791,7 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
                                 tray_pose.position.z + 0.2, SetRobotOrientation(tray_rotation)));
   waypoints.push_back(BuildPose(tray_pose.position.x, tray_pose.position.y,
                                 tray_pose.position.z + pick_offset_, SetRobotOrientation(tray_rotation)));
-  FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+  FloorRobotMoveCartesian(waypoints, 0.3, 0.3, true);
 
   FloorRobotSetGripperState(true);
 
@@ -802,16 +809,10 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
   // Move up slightly
   waypoints.clear();
 
-  
-  auto current_pose = floor_robot_.getCurrentPose().pose;
+  waypoints.push_back(BuildPose(tray_pose.position.x, tray_pose.position.y,
+                              tray_pose.position.z + 0.2, SetRobotOrientation(tray_rotation)));
 
-  current_pose.position.z += 0.2;
-  waypoints.push_back(current_pose);
-
-  RCLCPP_INFO(get_logger(), "Moving up..");
-  if (FloorRobotMoveCartesian(waypoints, 0.1, 0.1)) {
-    RCLCPP_INFO(get_logger(), "Moved up successfully");
-  }
+  FloorRobotMoveCartesian(waypoints, 0.05, 0.05, true);
 
   if (station == "kts1")
   {
@@ -821,18 +822,17 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
   {
     floor_robot_.setJointValueTarget(floor_kts2_js_);
   }
-  RCLCPP_INFO(get_logger(), "Moving to kit tray joint state..");
   FloorRobotMovetoTarget();
+
+  RCLCPP_INFO_STREAM(get_logger(), "Moving tray to AGV " << agv_num);
 
   floor_robot_.setJointValueTarget("linear_actuator_joint", rail_positions_["agv" + std::to_string(agv_num)]);
   floor_robot_.setJointValueTarget("floor_shoulder_pan_joint", 0);
 
-  RCLCPP_INFO(get_logger(), "Moving to AGV..");
   FloorRobotMovetoTarget();
 
   auto agv_tray_pose = FrameWorldPose("agv" + std::to_string(agv_num) + "_tray");
   auto agv_rotation = GetYaw(agv_tray_pose);
-  RCLCPP_INFO_STREAM(get_logger(), "Moving tray to AGV " << agv_num);
 
   waypoints.clear();
   waypoints.push_back(BuildPose(agv_tray_pose.position.x, agv_tray_pose.position.y,
@@ -841,7 +841,7 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
   waypoints.push_back(BuildPose(agv_tray_pose.position.x, agv_tray_pose.position.y,
                                 agv_tray_pose.position.z + kit_tray_thickness_ + drop_height_, SetRobotOrientation(agv_rotation)));
 
-  FloorRobotMoveCartesian(waypoints, 0.2, 0.1);
+  FloorRobotMoveCartesian(waypoints, 0.2, 0.1, true);
 
   FloorRobotSetGripperState(false);
 
@@ -851,9 +851,9 @@ bool TestCompetitor::FloorRobotPickandPlaceTray(int tray_id, int agv_num)
 
   waypoints.clear();
   waypoints.push_back(BuildPose(agv_tray_pose.position.x, agv_tray_pose.position.y,
-                                agv_tray_pose.position.z + 0.3, SetRobotOrientation(0)));
+                                agv_tray_pose.position.z + 0.3, SetRobotOrientation(agv_rotation)));
 
-  FloorRobotMoveCartesian(waypoints, 0.2, 0.1);
+  FloorRobotMoveCartesian(waypoints, 0.2, 0.1, false);
 
   return true;
 }
@@ -940,7 +940,7 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
   waypoints.push_back(BuildPose(part_pose.position.x, part_pose.position.y,
                                 part_pose.position.z + part_heights_[part_to_pick.type] + pick_offset_, SetRobotOrientation(part_rotation)));
 
-  FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+  FloorRobotMoveCartesian(waypoints, 0.3, 0.3, true);
 
   FloorRobotSetGripperState(true);
 
@@ -959,9 +959,13 @@ bool TestCompetitor::FloorRobotPickBinPart(ariac_msgs::msg::Part part_to_pick)
   // Move up slightly
   waypoints.clear();
   waypoints.push_back(BuildPose(part_pose.position.x, part_pose.position.y,
-                                part_pose.position.z + 0.3, SetRobotOrientation(0)));
+                                part_pose.position.z + 0.2, SetRobotOrientation(part_rotation)));
 
-  FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+  FloorRobotMoveCartesian(waypoints, 0.2, 0.1, true);
+
+  floor_robot_.setJointValueTarget("linear_actuator_joint", rail_positions_[bin_side]);
+  floor_robot_.setJointValueTarget("floor_shoulder_pan_joint", 0);
+  FloorRobotMovetoTarget();
 
   return true;
 }
@@ -983,7 +987,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
       return false;
     }
   }
-  
+
   bool found_part = false;
   bool part_picked = false;
   int num_tries = 0;
@@ -1049,7 +1053,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     std::vector<geometry_msgs::msg::Pose> waypoints;
     waypoints.push_back(BuildPose(part_pose.position.x, robot_pose.position.y,
                                   part_pose.position.z + 0.15, SetRobotOrientation(part_rotation)));
-    FloorRobotMoveCartesian(waypoints, 0.5, 0.5);
+    FloorRobotMoveCartesian(waypoints, 0.5, 0.5, true);
 
     auto elapsed_time_ = rclcpp::Time(now()) - detection_time;
     auto current_part_position_ = part_pose.position.y - (elapsed_time.seconds() * conveyor_speed_);
@@ -1067,7 +1071,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     waypoints.push_back(BuildPose(part_pose.position.x,  robot_pose.position.y,
                                   part_pose.position.z + part_heights_[part_to_pick.type],SetRobotOrientation(part_rotation)));
 
-    auto trajectory = FloorRobotPlanCartesian(waypoints, 0.5, 0.5);
+    auto trajectory = FloorRobotPlanCartesian(waypoints, 0.5, 0.5, true);
     if (!trajectory.first)
     {
       found_part = false;
@@ -1090,7 +1094,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     waypoints.clear();
     waypoints.push_back(BuildPose(part_pose.position.x, robot_pose.position.y,
                                   part_pose.position.z + 0.1, SetRobotOrientation(0)));
-    FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+    FloorRobotMoveCartesian(waypoints, 0.3, 0.3, true);
 
     if(floor_gripper_state_.attached)
     {
@@ -1108,7 +1112,7 @@ bool TestCompetitor::FloorRobotPickConveyorPart(ariac_msgs::msg::Part part_to_pi
     waypoints.clear();
     waypoints.push_back(BuildPose(robot_pose.position.x, robot_pose.position.y,
                                   robot_pose.position.z + 0.3, SetRobotOrientation(0)));
-    FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+    FloorRobotMoveCartesian(waypoints, 0.3, 0.3, true);
     
     num_tries++;
   }
@@ -1148,7 +1152,7 @@ bool TestCompetitor::FloorRobotPlacePartOnKitTray(int agv_num, int quadrant)
                                 part_drop_pose.position.z + part_heights_[floor_robot_attached_part_.type] + kit_tray_thickness_ + drop_height_,
                                 SetRobotOrientation(0)));
 
-  FloorRobotMoveCartesian(waypoints, 0.3, 0.3);
+  FloorRobotMoveCartesian(waypoints, 0.2, 0.2, true);
 
   // Drop part in quadrant
   FloorRobotSetGripperState(false);
@@ -1159,10 +1163,14 @@ bool TestCompetitor::FloorRobotPlacePartOnKitTray(int agv_num, int quadrant)
 
   waypoints.clear();
   waypoints.push_back(BuildPose(part_drop_pose.position.x, part_drop_pose.position.y,
-                                part_drop_pose.position.z + 0.3,
+                                part_drop_pose.position.z + 0.2,
                                 SetRobotOrientation(0)));
 
-  FloorRobotMoveCartesian(waypoints, 0.2, 0.1);
+  FloorRobotMoveCartesian(waypoints, 0.2, 0.1, false);
+
+  floor_robot_.setJointValueTarget("linear_actuator_joint", rail_positions_["agv" + std::to_string(agv_num)]);
+  floor_robot_.setJointValueTarget("floor_shoulder_pan_joint", 0);
+  FloorRobotMovetoTarget();
 
   return true;
 }
@@ -1220,7 +1228,7 @@ void TestCompetitor::CeilingRobotWaitForAttach(double timeout)
 
     CeilingRobotMoveCartesian(waypoints, 0.01, 0.01, false);
 
-    usleep(200);
+    usleep(500);
 
     if (now() - start > rclcpp::Duration::from_seconds(timeout))
     {
@@ -1317,7 +1325,7 @@ bool TestCompetitor::CeilingRobotMoveCartesian(
 {
   moveit_msgs::msg::RobotTrajectory trajectory;
 
-  double path_fraction = ceiling_robot_.computeCartesianPath(waypoints, 0.0005, 0.0, trajectory, avoid_collisions);
+  double path_fraction = ceiling_robot_.computeCartesianPath(waypoints, 0.01, 0.0, trajectory, avoid_collisions);
 
   if (path_fraction < 0.9)
   {
@@ -1403,7 +1411,7 @@ bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
                                 part.pose.position.z + part_heights_[part.part.type] + pick_offset_, SetRobotOrientation(part_rotation)));
 
   RCLCPP_INFO_STREAM(get_logger(), "Moving ceiling robot to pick " << part_types_[part.part.type]);
-  CeilingRobotMoveCartesian(waypoints, 0.7, 0.7, true);
+  CeilingRobotMoveCartesian(waypoints, 0.7, 0.7, false);
 
   CeilingRobotSetGripperState(true);
 
@@ -1416,13 +1424,12 @@ bool TestCompetitor::CeilingRobotPickAGVPart(ariac_msgs::msg::PartPose part)
   ceiling_robot_attached_part_ = part.part;
 
   // Move up slightly
-  auto current_pose = ceiling_robot_.getCurrentPose().pose;
-  current_pose.position.z += 0.2;
-
   waypoints.clear();
-  waypoints.push_back(current_pose);
+  waypoints.push_back(BuildPose(part.pose.position.x, part.pose.position.y,
+                                part.pose.position.z + 0.3,
+                                SetRobotOrientation(0)));
 
-  CeilingRobotMoveCartesian(waypoints, 0.7, 0.7, true);
+  CeilingRobotMoveCartesian(waypoints, 0.3, 0.3, true);
 
   return true;
 }
@@ -1480,7 +1487,6 @@ bool TestCompetitor::CeilingRobotAssemblePart(int station, ariac_msgs::msg::Asse
   if (part.part.type == ariac_msgs::msg::Part::BATTERY)
   {
     tf2::fromMsg(BuildPose(battery_grip_offset_, 0, part_heights_[part.part.type], QuaternionFromRPY(M_PI, 0, M_PI)), part_to_gripper);
-
     KDL::Vector up(0, 0, 0.1);
     waypoints.push_back(tf2::toMsg(insert * KDL::Frame(up) * KDL::Frame(install * -0.06) * part_assemble * part_to_gripper));
     waypoints.push_back(tf2::toMsg(insert * KDL::Frame(install * -0.06) * part_assemble * part_to_gripper));
@@ -1508,20 +1514,15 @@ bool TestCompetitor::CeilingRobotAssemblePart(int station, ariac_msgs::msg::Asse
                           "_" + part_types_[ceiling_robot_attached_part_.type];
   ceiling_robot_.detachObject(part_name);
 
-  // Move away slightly
-  if (part.part.type == ariac_msgs::msg::Part::REGULATOR)
-  {
-    return true;
+  waypoints.clear();
+  KDL::Vector away;
+  if (part.part.type == ariac_msgs::msg::Part::REGULATOR) {
+    away = KDL::Vector(-0.1, 0, 0);
+  } else {
+    away = KDL::Vector(0, 0, 0.1);
   }
 
-  ceiling_robot_.setStartStateToCurrentState();
-
-  auto current_pose = ceiling_robot_.getCurrentPose().pose;
-
-  current_pose.position.z += 0.1;
-
-  waypoints.clear();
-  waypoints.push_back(current_pose);
+  waypoints.push_back(tf2::toMsg(insert * KDL::Frame(away) * part_assemble * part_to_gripper));
 
   CeilingRobotMoveCartesian(waypoints, 0.1, 0.1, false);
 

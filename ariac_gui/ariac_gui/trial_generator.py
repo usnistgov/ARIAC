@@ -439,8 +439,6 @@ class GUI_CLASS(ctk.CTk):
         self.initial_label.grid_forget()
         self.load_file_button.grid_forget()
         self.new_file_button.grid_forget()
-        self.minsize(788, 735)
-        self.maxsize(788, 800)
         self.notebook.grid(pady=10,column=LEFT_COLUMN, columnspan=2,sticky=tk.E+tk.W+tk.N+tk.S)
         self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,row=4)
         self.light_dark_button.grid(pady=10, column=LEFT_COLUMN, row=4)
@@ -1416,6 +1414,7 @@ class GUI_CLASS(ctk.CTk):
             table_sep.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=current_row+1, pady=10, sticky = "we")
             self.current_main_order_widgets.append(table_sep)
             current_row+=2
+
     def edit_order(self, index : int):
         self.temp_order_hold = (deepcopy(self.current_orders[index]),index)
         self.set_order_variables_to_current_order(self.current_orders[index])
@@ -1712,6 +1711,7 @@ class GUI_CLASS(ctk.CTk):
         return sorted(quadrant_options)
 
     def show_kitting_menu(self):
+        self.save_order_button.configure(text="Save kitting order")
         self.order_info["order_type"].set("kitting")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
@@ -1838,6 +1838,7 @@ class GUI_CLASS(ctk.CTk):
 
     def show_assembly_menu(self):
         self.order_info["order_type"].set("assembly")
+        self.save_order_button.configure(text="Save assembly order")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
         self.current_left_order_widgets.clear()
@@ -1997,6 +1998,7 @@ class GUI_CLASS(ctk.CTk):
         window.destroy()
     
     def show_combined_menu(self):
+        self.save_order_button.configure(text="Save combined order")
         self.order_info["order_type"].set("combined")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
@@ -3078,10 +3080,10 @@ class GUI_CLASS(ctk.CTk):
                                              fill="#a86a2b",
                                              width = 0)
         
-        self.agv_coords = {"agv1":(35,90),
-                           "agv2":(265,90),
-                           "agv3":(425,90),
-                           "agv4":(660,90)}
+        self.agv_coords = {"agv4":(35,90),
+                           "agv3":(265,90),
+                           "agv2":(425,90),
+                           "agv1":(660,90)}
         for key in self.agv_coords:
             self.map_canvas.create_window(self.agv_coords[key],
                                           window=ctk.CTkLabel(self.map_frame,text="",

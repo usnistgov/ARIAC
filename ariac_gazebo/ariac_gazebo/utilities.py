@@ -7,6 +7,7 @@ from geometry_msgs.msg import Pose
 def convert_pi_string_to_float(s: str) -> float:
     """Takes a string that contains pi and evaluates the expression. Returns a float
     Returns 0.0 if the expression cannot be evaluated"""
+    s=str(s)
     value = 0.0
     negative = False
 

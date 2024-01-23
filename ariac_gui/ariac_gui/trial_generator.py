@@ -3080,10 +3080,10 @@ class GUI_CLASS(ctk.CTk):
                                              fill="#a86a2b",
                                              width = 0)
         
-        self.agv_coords = {"agv1":(35,90),
-                           "agv2":(265,90),
-                           "agv3":(425,90),
-                           "agv4":(660,90)}
+        self.agv_coords = {"agv4":(35,90),
+                           "agv3":(265,90),
+                           "agv2":(425,90),
+                           "agv1":(660,90)}
         for key in self.agv_coords:
             self.map_canvas.create_window(self.agv_coords[key],
                                           window=ctk.CTkLabel(self.map_frame,text="",

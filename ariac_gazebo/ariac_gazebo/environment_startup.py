@@ -922,7 +922,7 @@ class EnvironmentStartup(Node):
             insert_rotations = self.trial_config['assembly_inserts']
             
             for n in range(1,5):
-                rotations[f'as{n}'] = convert_pi_string_to_float(str(insert_rotations[f'as{n}']))
+                rotations[f'as{n}'] = convert_pi_string_to_float(insert_rotations[f'as{n}'])
         except (TypeError, KeyError):
             self.get_logger().warn(bcolors.WARNING + "Unable to parse rotated assemble insert challenge" + bcolors.ENDC)
             for n in range(1,5):

@@ -3725,6 +3725,7 @@ namespace ariac_plugins
         // log_message_ += output;
         WriteToAriacLogFile();
         // WriteToLog();
+    }
 
     bool TaskManagerPlugin::EndCompetitionServiceCallback(
         const std::shared_ptr<std_srvs::srv::Trigger::Request> request,

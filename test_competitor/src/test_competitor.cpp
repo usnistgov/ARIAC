@@ -1571,7 +1571,6 @@ bool TestCompetitor::CompleteOrders()
     {
       RCLCPP_INFO_STREAM(get_logger(), "Current order is: " << current_order_.id << " of type KITTING");
       TestCompetitor::CompleteKittingTask(current_order_.kitting_task);
-      // kitting_agv_num = current_order_.kitting_task.agv_number;
     }
     else if (current_order_.type == ariac_msgs::msg::Order::ASSEMBLY)
     {
@@ -1582,22 +1581,8 @@ bool TestCompetitor::CompleteOrders()
     {
       RCLCPP_INFO_STREAM(get_logger(), "Current order is: " << current_order_.id << " of type COMBINED");
       TestCompetitor::CompleteCombinedTask(current_order_.combined_task);
-      // write your own code here to set the kitting_agv_num value
     }
 
-    // loop until the AGV is at the warehouse
-    // auto agv_location = -1;
-    // while (agv_location != ariac_msgs::msg::AGVStatus::WAREHOUSE)
-    // {
-    //   if (kitting_agv_num == 1)
-    //     agv_location = agv_locations_[1];
-    //   else if (kitting_agv_num == 2)
-    //     agv_location = agv_locations_[2];
-    //   else if (kitting_agv_num == 3)
-    //     agv_location = agv_locations_[3];
-    //   else if (kitting_agv_num == 4)
-    //     agv_location = agv_locations_[4];
-    // }
 
     TestCompetitor::SubmitOrder(current_order_.id);
   }
@@ -1983,7 +1968,17 @@ bool TestCompetitor::MoveAGV(int agv_num, int destination)
   request->location = destination;
 
   auto future = client->async_send_request(request);
-  future.wait();
 
-  return future.get()->success;
+  rclcpp::Duration timeout = rclcpp::Duration::from_seconds(20);
+
+  rclcpp::Time start = get_clock()->now();
+
+  while (get_clock()->now() - start < timeout){
+    if (agv_locations_[agv_num] == destination) {
+      return true;
+    }
+  }
+
+  RCLCPP_INFO_STREAM(get_logger(), "Unable to move AGV" << agv_num << " to " << agv_destination_[destination]);
+  return false;
 }

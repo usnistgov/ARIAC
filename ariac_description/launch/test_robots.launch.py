@@ -33,12 +33,10 @@ import xacro
 
 from launch import LaunchDescription
 from launch.actions import (
-    DeclareLaunchArgument,
     IncludeLaunchDescription,
     OpaqueFunction,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
 from launch_ros.substitutions import FindPackageShare
 from launch_ros.actions import Node
 
@@ -47,13 +45,18 @@ from ament_index_python.packages import get_package_share_directory
 def launch_setup(context, *args, **kwargs):
     urdf = os.path.join(get_package_share_directory('ariac_description'), 'urdf/ariac_robots', 'ariac_robots.urdf.xacro')
 
-    xacro_args = {'camera': 'true'}
+    xacro_args = {
+        'floor_robot_camera_active_arg': 'true',
+        'floor_robot_camera_type_arg': 'rgb',
+        'ceiling_robot_camera_active_arg': 'true',
+        'ceiling_robot_camera_type_arg': 'rgbd',
+    }
+    
     doc = xacro.process_file(urdf, mappings=xacro_args)
 
     robot_description_content = doc.toprettyxml(indent='  ')
 
     robot_description = {"robot_description": robot_description_content}
-
 
     robot_state_publisher_node = Node(
         package="robot_state_publisher",

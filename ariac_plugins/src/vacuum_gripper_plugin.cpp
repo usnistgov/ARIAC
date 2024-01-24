@@ -312,7 +312,7 @@ namespace ariac_plugins
   {
     std::string model_in_contact;
 
-    int min_contacts = 4;
+    int min_contacts = 2;
 
     for (int i = 0; i < msg->contact_size(); ++i)
     {

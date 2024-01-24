@@ -1,0 +1,388 @@
+# Trial name: assembly_all_stations.yaml
+# ARIAC2024
+# Author: Justin
+# 2024-01-18 12:18:39
+
+# ENVIRONMENT SETUP
+
+time_limit: -1
+
+# KITTING TRAYS
+
+kitting_trays:
+  tray_ids: []
+  slots: []
+
+# INSERT ROTATION
+
+assembly_inserts:
+  as1: '0.0'
+  as2: '0.0'
+  as3: '0.0'
+  as4: '0.0'
+
+# PARTS INFORMATION
+
+parts:
+  agvs:
+    agv1:
+      tray_id: 0
+      parts:
+      - type: sensor
+        color: green
+        quadrant: 1
+        rotation: 0.0
+      - type: pump
+        color: green
+        quadrant: 2
+        rotation: 0.0
+      - type: regulator
+        color: green
+        quadrant: 3
+        rotation: 0.0
+      - type: battery
+        color: green
+        quadrant: 4
+        rotation: 0.0
+    agv2:
+      tray_id: 0
+      parts:
+      - type: sensor
+        color: orange
+        quadrant: 1
+        rotation: 0.0
+      - type: pump
+        color: orange
+        quadrant: 2
+        rotation: 0.0
+      - type: regulator
+        color: orange
+        quadrant: 3
+        rotation: 0.0
+      - type: battery
+        color: orange
+        quadrant: 4
+        rotation: 0.0
+    agv3:
+      tray_id: 0
+      parts:
+      - type: sensor
+        color: purple
+        quadrant: 1
+        rotation: 0.0
+      - type: pump
+        color: purple
+        quadrant: 2
+        rotation: 0.0
+      - type: regulator
+        color: purple
+        quadrant: 3
+        rotation: 0.0
+      - type: battery
+        color: purple
+        quadrant: 4
+        rotation: 0.0
+    agv4:
+      tray_id: 0
+      parts:
+      - type: sensor
+        color: blue
+        quadrant: 1
+        rotation: 0.0
+      - type: pump
+        color: blue
+        quadrant: 2
+        rotation: 0.0
+      - type: regulator
+        color: blue
+        quadrant: 3
+        rotation: 0.0
+      - type: battery
+        color: blue
+        quadrant: 4
+        rotation: 0.0
+
+# ORDERS INFORMATION
+
+orders:
+- id: JY52FQ1O
+  type: assembly
+  announcement:
+    time_condition: 0.0
+  priority: false
+  assembly_task:
+    agv_number:
+    - 1
+    station: as1
+    products:
+    - type: sensor
+      color: green
+      assembled_pose:
+        xyz:
+        - -0.1
+        - 0.395
+        - 0.045
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - -1
+      - 0
+    - type: regulator
+      color: green
+      assembled_pose:
+        xyz:
+        - 0.175
+        - -0.223
+        - 0.215
+        rpy:
+        - pi/2
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+    - type: battery
+      color: green
+      assembled_pose:
+        xyz:
+        - -0.15
+        - 0.035
+        - 0.043
+        rpy:
+        - 0
+        - 0
+        - pi/2
+      assembly_direction:
+      - 0
+      - 1
+      - 0
+    - type: pump
+      color: green
+      assembled_pose:
+        xyz:
+        - 0.14
+        - 0.0
+        - 0.02
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+- id: USIIN1S6
+  type: assembly
+  announcement:
+    time_condition: 2.0
+  priority: false
+  assembly_task:
+    agv_number:
+    - 2
+    station: as2
+    products:
+    - type: sensor
+      color: orange
+      assembled_pose:
+        xyz:
+        - -0.1
+        - 0.395
+        - 0.045
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - -1
+      - 0
+    - type: pump
+      color: orange
+      assembled_pose:
+        xyz:
+        - 0.14
+        - 0.0
+        - 0.02
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+    - type: regulator
+      color: orange
+      assembled_pose:
+        xyz:
+        - 0.175
+        - -0.223
+        - 0.215
+        rpy:
+        - pi/2
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+    - type: battery
+      color: orange
+      assembled_pose:
+        xyz:
+        - -0.15
+        - 0.035
+        - 0.043
+        rpy:
+        - 0
+        - 0
+        - pi/2
+      assembly_direction:
+      - 0
+      - 1
+      - 0
+- id: 1ZN81NOG
+  type: assembly
+  announcement:
+    time_condition: 4.0
+  priority: false
+  assembly_task:
+    agv_number:
+    - 3
+    station: as3
+    products:
+    - type: sensor
+      color: purple
+      assembled_pose:
+        xyz:
+        - -0.1
+        - 0.395
+        - 0.045
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - -1
+      - 0
+    - type: pump
+      color: purple
+      assembled_pose:
+        xyz:
+        - 0.14
+        - 0.0
+        - 0.02
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+    - type: regulator
+      color: purple
+      assembled_pose:
+        xyz:
+        - 0.175
+        - -0.223
+        - 0.215
+        rpy:
+        - pi/2
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+    - type: battery
+      color: purple
+      assembled_pose:
+        xyz:
+        - -0.15
+        - 0.035
+        - 0.043
+        rpy:
+        - 0
+        - 0
+        - pi/2
+      assembly_direction:
+      - 0
+      - 1
+      - 0
+- id: OSFXCZHP
+  type: assembly
+  announcement:
+    time_condition: 6.0
+  priority: false
+  assembly_task:
+    agv_number:
+    - 4
+    station: as4
+    products:
+    - type: sensor
+      color: blue
+      assembled_pose:
+        xyz:
+        - -0.1
+        - 0.395
+        - 0.045
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - -1
+      - 0
+    - type: pump
+      color: blue
+      assembled_pose:
+        xyz:
+        - 0.14
+        - 0.0
+        - 0.02
+        rpy:
+        - 0
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+    - type: regulator
+      color: blue
+      assembled_pose:
+        xyz:
+        - 0.175
+        - -0.223
+        - 0.215
+        rpy:
+        - pi/2
+        - 0
+        - -pi/2
+      assembly_direction:
+      - 0
+      - 0
+      - -1
+    - type: battery
+      color: blue
+      assembled_pose:
+        xyz:
+        - -0.15
+        - 0.035
+        - 0.043
+        rpy:
+        - 0
+        - 0
+        - pi/2
+      assembly_direction:
+      - 0
+      - 1
+      - 0
+

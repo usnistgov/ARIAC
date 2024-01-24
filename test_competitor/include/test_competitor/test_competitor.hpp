@@ -89,12 +89,13 @@ public:
 private:
   // Robot Move Functions
   bool FloorRobotMovetoTarget();
-  bool FloorRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf);
-  std::pair<bool,moveit_msgs::msg::RobotTrajectory> FloorRobotPlanCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf);
+  bool FloorRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
+  std::pair<bool,moveit_msgs::msg::RobotTrajectory> FloorRobotPlanCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
   void FloorRobotWaitForAttach(double timeout);
 
   bool CeilingRobotMovetoTarget();
   bool CeilingRobotMoveCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
+  std::pair<bool,moveit_msgs::msg::RobotTrajectory> CeilingRobotPlanCartesian(std::vector<geometry_msgs::msg::Pose> waypoints, double vsf, double asf, bool avoid_collisions);
   void CeilingRobotWaitForAttach(double timeout);
   bool CeilingRobotWaitForAssemble(int station, ariac_msgs::msg::AssemblyPart part);
   bool CeilingRobotMoveToAssemblyStation(int station);
@@ -111,6 +112,7 @@ private:
   double GetYaw(geometry_msgs::msg::Pose pose);
   geometry_msgs::msg::Quaternion QuaternionFromRPY(double r, double p, double y);
 
+  moveit_msgs::msg::CollisionObject CreateCollisionObject(std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose);
   void AddModelToPlanningScene(std::string name, std::string mesh_file, geometry_msgs::msg::Pose model_pose);
   
   // AGV location
@@ -242,8 +244,9 @@ private:
   // Constants
   double conveyor_speed_ = 0.2;
   double kit_tray_thickness_ = 0.01;
-  double drop_height_ = 0.002;
+  double drop_height_ = 0.005;
   double pick_offset_ = 0.003;
+  double assembly_offset_ = 0.02;
   double battery_grip_offset_ = -0.05;
 
   std::map<int, std::string> part_types_ = {
@@ -364,4 +367,13 @@ private:
     {"floor_wrist_2_joint", -1.57},
     {"floor_wrist_3_joint", 0.0}
   };
+
+  std::map<int, std::string> agv_destination_ = {
+    {ariac_msgs::msg::AGVStatus::KITTING, "kitting"},
+    {ariac_msgs::msg::AGVStatus::ASSEMBLY_FRONT, "assembly station front"},
+    {ariac_msgs::msg::AGVStatus::ASSEMBLY_BACK, "assembly station back"},
+    {ariac_msgs::msg::AGVStatus::WAREHOUSE, "warehouse"}
+  };
+
+  std::vector<std::string> order_planning_scene_objects_;
 };

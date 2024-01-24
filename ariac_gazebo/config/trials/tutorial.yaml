@@ -77,10 +77,27 @@ parts:
         rotation: 'pi'
 
 orders:
+  - id: 'MMB30H56'
+    type: 'kitting'
+    announcement:
+      time_condition: 0
+    priority: false
+    kitting_task:
+      agv_number: 3
+      tray_id: 3
+      destination: 'warehouse'
+      products:
+        - type: 'battery'
+          color: 'blue'
+          quadrant: 3
+        - type: 'pump'
+          color: 'purple'
+          quadrant: 1
+          
   - id: '2IZJP127'
     type: 'assembly'
     announcement:
-      time_condition: 0
+      time_condition: 5
     priority: false
     assembly_task:
       agv_number: [1, 2]
@@ -114,7 +131,7 @@ orders:
   - id: '2IZJP320'
     type: 'combined'
     announcement:
-      time_condition: 0
+      time_condition: 10
     priority: false
     combined_task:
       station: 'as3'
@@ -131,49 +148,3 @@ orders:
             xyz: [-0.1, 0.395, 0.045]
             rpy: [0, 0, '-pi/2']
           assembly_direction: [0, -1, 0]
-
-  - id: 'MMB30H56'
-    type: 'kitting'
-    announcement:
-      time_condition: 1
-    priority: false
-    kitting_task:
-      agv_number: 1
-      tray_id: 3
-      destination: 'warehouse'
-      products:
-        - type: 'battery'
-          color: 'blue'
-          quadrant: 3
-        - type: 'pump'
-          color: 'purple'
-          quadrant: 1
-
-  - id: 'MMB30H57'
-    type: 'kitting'
-    announcement:
-      time_condition: 5
-    priority: false
-    kitting_task:
-      agv_number: 2
-      tray_id: 5
-      destination: 'warehouse'
-      products:
-        - type: 'regulator'
-          color: 'orange'
-          quadrant: 2
-
-
-  - id: 'MMB30H58'
-    type: 'kitting'
-    announcement:
-      time_condition: 10
-    priority: false
-    kitting_task:
-      agv_number: 3
-      tray_id: 8
-      destination: 'warehouse'
-      products:
-        - type: 'sensor'
-          color: 'green'
-          quadrant: 4

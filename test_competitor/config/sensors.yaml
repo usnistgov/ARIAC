@@ -1,4 +1,13 @@
-sensors:
+robot_cameras:
+  floor_robot_camera: 
+    active: true
+    type: rgb
+  
+  ceiling_robot_camera: 
+    active: true
+    type: rgbd
+
+static_sensors:
   right_bins_camera:
     type: advanced_logical_camera
     pose:

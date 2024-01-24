@@ -1224,7 +1224,8 @@ namespace ariac_common
          * @param quadrant3  Quadrant 3 object
          * @param quadrant4  Quadrant 4 object
          * @param bonus  Bonus score
-         * @param penalty  Penalty score
+         * @param extra_parts_penalty  Penalty for having extra parts
+         * @param wrong_tray_penalty  Penalty for using the wrong tray
          */
         KittingScore(std::string order_id,
                      int score,
@@ -1234,7 +1235,8 @@ namespace ariac_common
                      std::shared_ptr<Quadrant> quadrant3,
                      std::shared_ptr<Quadrant> quadrant4,
                      int bonus,
-                     int penalty,
+                     int extra_parts_penalty,
+                     int wrong_tray_penalty,
                      int agv,
                      int destination_score) : order_id_(order_id),
                                               score_(score),
@@ -1244,7 +1246,8 @@ namespace ariac_common
                                               quadrant3_(quadrant3),
                                               quadrant4_(quadrant4),
                                               bonus_(bonus),
-                                              penalty_(penalty),
+                                              extra_parts_penalty_(extra_parts_penalty),
+                                              wrong_tray_penalty_(wrong_tray_penalty),
                                               agv_(agv),
                                               destination_score_(destination_score) {}
 
@@ -1305,11 +1308,18 @@ namespace ariac_common
         int GetBonus() const { return bonus_; }
 
         /**
-         * @brief Get the Penalty object
+         * @brief Get the penalty for extra parts
          *
-         * @return int Penalty score
+         * @return int penalty for extra parts
          */
-        int GetPenalty() const { return penalty_; }
+        int GetExtraPartsPenalty() const { return extra_parts_penalty_; }
+
+        /**
+         * @brief Get the penalty for using the wrong tray
+         *
+         * @return int penalty for using the wrong tray
+         */
+        int GetWrongTrayPenalty() const { return wrong_tray_penalty_; }
 
         /**
          * @brief Get the AGV object
@@ -1342,8 +1352,10 @@ namespace ariac_common
         std::shared_ptr<Quadrant> quadrant4_ = nullptr;
         //! Bonus score
         int bonus_;
-        //! Penalty score
-        int penalty_;
+        //! Penalty for having extra parts
+        int extra_parts_penalty_;
+        //! Penalty for using the wrong tray
+        int wrong_tray_penalty_;
         //! AGV
         int agv_;
         //! Destination

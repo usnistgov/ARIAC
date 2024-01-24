@@ -290,7 +290,8 @@ namespace ariac_plugins
             std::shared_ptr<ariac_common::Order> kitting_order,
             std::shared_ptr<ariac_common::Order> assembly_order,
             std::shared_ptr<ariac_common::Order> combined_order);
-        void PrintTrialSummary();
+        /*!< Summarize trial score in the terminal and log the result in a file. */
+        void PrintTrialSummary(bool empty_file=false);
 
         /**
          * @brief Retrieve the tray information from the message and store it in the agv_parts_ map.
@@ -391,7 +392,7 @@ namespace ariac_plugins
         return output;
     }
 
-
+    //==============================================================================
     void TaskManagerPluginPrivate::DisplayTaskManagerInfo(std::string message, bool once, std::string color)
     {
         std::string color_code = "";
@@ -424,8 +425,9 @@ namespace ariac_plugins
 
     //==============================================================================
     int TaskManagerPluginPrivate::ComputeMaxScoreKittingTask(int expected_number_of_parts){
-        unsigned correct_part_tray_score = 3;
-        unsigned quadrants_score = 3 * expected_number_of_parts;
+        unsigned correct_part_tray_score = 1;
+        // unsigned quadrants_score = 3 * expected_number_of_parts;
+        unsigned quadrants_score = 3;
         unsigned bonus_score = expected_number_of_parts;
         return correct_part_tray_score + quadrants_score + bonus_score;
     }
@@ -434,14 +436,14 @@ namespace ariac_plugins
     //==============================================================================
     int TaskManagerPluginPrivate::ComputeMaxScoreAssemblyTask(int expected_number_of_parts){
         unsigned slots_score = 3 * expected_number_of_parts;
-        unsigned bonus_score = 4 * expected_number_of_parts;
+        unsigned bonus_score = expected_number_of_parts;
         return slots_score + bonus_score;
     }
 
     //==============================================================================
     int TaskManagerPluginPrivate::ComputeMaxScoreCombinedTask(int expected_number_of_parts){
         unsigned slots_score = 5 * expected_number_of_parts;
-        unsigned bonus_score = 4 * expected_number_of_parts;
+        unsigned bonus_score = expected_number_of_parts;
         return slots_score + bonus_score;
     }
 
@@ -1931,20 +1933,33 @@ namespace ariac_plugins
         bool D = is_flipped_part;
         bool E = is_faulty_part;
 
-        if (!B || E)
+        // if not correct part type or is flipped part or is faulty part then score is 0
+        if (!B || D || E)
             return 0;
 
+        // if correct part type and correct part color then score is 3
         if (B && C && !D && !E)
             return 3;
 
+        // if correct part type and not correct part color then score is 2
         if (B && !C && !D && !E)
             return 2;
 
-        if (B && C && D && !E)
-            return 2;
+        // old scoring system
+        // if (!B || E)
+        //     return 0;
 
-        if (B && !C && D && !E)
-            return 1;
+        // if (B && C && !D && !E)
+        //     return 3;
+
+        // if (B && !C && !D && !E)
+        //     return 2;
+
+        // if (B && C && D && !E)
+        //     return 2;
+
+        // if (B && !C && D && !E)
+        //     return 1;
 
         return 0;
     }
@@ -1952,6 +1967,8 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPluginPrivate::ScoreKittingTask(std::shared_ptr<ariac_common::Order> _order, std::string _submitted_order_id)
     {
+        // kitting task score
+        // Sk = (pt_t + sum(pt_q) + pt_b - pn_ep - pn_t) * pm_d 
 
         // RCLCPP_DEBUG_STREAM(ros_node_->get_logger(), "Scoring kitting task for order: " << _submitted_order_id);
 
@@ -1961,21 +1978,23 @@ namespace ariac_plugins
         std::shared_ptr<ariac_common::Quadrant> quadrant3_ptr = nullptr;
         std::shared_ptr<ariac_common::Quadrant> quadrant4_ptr = nullptr;
 
-        // Bonus points for completing the order
-        int bonus = 0;
-        // Points for correct tray
-        int tray_score = 0;
+        // Tray Points
+        unsigned pt_t{0}; // points for correct tray
+        // Bonus Points
+        unsigned pt_b{0};
 
-        int total_quadrants_score = 0;
+        int total_quadrants_score{0};
 
-        // destination
-        int destination_score = 1;
+        // multiplier for shipping to the correct destination
+        unsigned pm_d{0};
 
-        // penalty for having extra parts
-        int penalty = 0;
+        // Extra parts penalty
+        int pn_ep = {0}; // penalty for having extra parts
+        // Wrong tray penalty
+        unsigned pn_t{0}; // penalty for having wrong tray
 
         // current AGV location
-        int agv_current_location = -1;
+        int agv_current_location{-1};
 
         // Get the kitting task for this order
         auto kitting_task = _order->GetKittingTask();
@@ -2003,11 +2022,12 @@ namespace ariac_plugins
         // Get tray sensor information for this AGV
         auto shipment = ParseAGVTraySensorImage(agv_tray_images_[expected_agv]);
 
-        std::map<int, int> quadrant_scores;
-        quadrant_scores[1] = 0;
-        quadrant_scores[2] = 0;
-        quadrant_scores[3] = 0;
-        quadrant_scores[4] = 0;
+        // Quadrant Points
+        std::map<int, int> pt_q; // key: quadrant, value: points for quadrant
+        pt_q[1] = 0;
+        pt_q[2] = 0;
+        pt_q[3] = 0;
+        pt_q[4] = 0;
 
         // If faulty part challenge is used in the trial
         std::array<bool, 4> faulty_parts = {false, false, false, false};
@@ -2022,9 +2042,10 @@ namespace ariac_plugins
             }
         }
 
-        // Parse the kitting task and get the parts
+        // Parse the announced kitting task and get the parts
         for (auto product : kitting_task->GetProducts())
         {
+            // Parse the submiitted tray and get the parts
             for (auto tray_part : shipment.GetTrayParts())
             {
                 if (tray_part.GetQuadrant() == product.GetQuadrant())
@@ -2037,11 +2058,11 @@ namespace ariac_plugins
                     bool is_faulty_part = faulty_parts[quadrant - 1];
                     bool is_flipped_part = tray_part.isFlipped();
 
-                    quadrant_scores[quadrant] = ScoreQuadrant(is_correct_part_type, is_correct_part_color, is_flipped_part, is_faulty_part);
+                    pt_q[quadrant] = ScoreQuadrant(is_correct_part_type, is_correct_part_color, is_flipped_part, is_faulty_part);
 
                     // RCLCPP_INFO_STREAM(ros_node_->get_logger(), "Score: " << quadrant_scores[quadrant]);
 
-                    auto quadrant_ptr = std::make_shared<ariac_common::Quadrant>(quadrant, is_correct_part_type, is_correct_part_color, is_faulty_part, is_flipped_part, quadrant_scores[quadrant]);
+                    auto quadrant_ptr = std::make_shared<ariac_common::Quadrant>(quadrant, is_correct_part_type, is_correct_part_color, is_faulty_part, is_flipped_part, pt_q[quadrant]);
                     if (quadrant == 1)
                         quadrant1_ptr = quadrant_ptr;
                     else if (quadrant == 2)
@@ -2056,10 +2077,10 @@ namespace ariac_plugins
 
         // Check isCorrectTrayId
         if (kitting_task->GetTrayId() == shipment.GetTrayId())
-            tray_score = 3;
+            pt_t = 1;
 
         // Sum quadrant scores
-        total_quadrants_score = quadrant_scores[1] + quadrant_scores[2] + quadrant_scores[3] + quadrant_scores[4];
+        total_quadrants_score = pt_q[1] + pt_q[2] + pt_q[3] + pt_q[4];
 
         // std::cout << "Quadrant 1 score: " << quadrant_scores[1] << std::endl;
         // std::cout << "Quadrant 2 score: " << quadrant_scores[2] << std::endl;
@@ -2070,32 +2091,37 @@ namespace ariac_plugins
 
         // Compute bonus
         if (total_quadrants_score == 3 * expected_number_of_parts)
-            bonus = expected_number_of_parts;
+            pt_b = expected_number_of_parts;
 
         // Compute penalty for having extra parts in the tray
         if (shipment.GetTrayParts().size() > expected_number_of_parts)
-            penalty = shipment.GetTrayParts().size() - expected_number_of_parts;
+            pn_ep = shipment.GetTrayParts().size() - expected_number_of_parts;
 
         // Check destination
         if (agv_current_location != expected_destination)
-            destination_score = 0;
+            pm_d = 0;
 
         // Compute the score for the submitted kit
-        int kit_score = std::max(tray_score + total_quadrants_score + bonus - penalty, 0) * destination_score;
+        // Sk = (pt_t + sum(pt_q) + pt_b - pn_ep - pn_t) * pm_d 
+        int Sk = (pt_t + total_quadrants_score + pt_b - pn_ep - pn_t) * pm_d;
+
+        // old scoring system for kitting score
+        // int kit_score = std::max(pt_t + total_quadrants_score + pt_b - pn_ep, 0) * pm_d;
 
         // Create a kitting score object
         auto kitting_score = std::make_shared<ariac_common::KittingScore>(
             _order->GetId(),
-            kit_score,
-            tray_score,
+            Sk,
+            pt_t,
             quadrant1_ptr,
             quadrant2_ptr,
             quadrant3_ptr,
             quadrant4_ptr,
-            bonus,
-            penalty,
+            pt_b,
+            pn_ep,
+            pn_t,
             expected_agv,
-            destination_score);
+            pm_d);
 
         // Set the kitting score for this order
         _order->SetKittingScore(kitting_score);
@@ -2109,11 +2135,11 @@ namespace ariac_plugins
         // TrialLogOutput("========================================\n");
 
         // RCLCPP_INFO_STREAM(ros_node_->get_logger(), output);
-
-        // PrintKittingScore(kitting_score, expected_number_of_parts, output);
         PrintKittingScore(_order, false, true);
 
+        // ----------------------------------------
         // Clear the AGV of parts and kit tray
+        // ----------------------------------------
         for (std::string name: models_on_agv_[kitting_task->GetAgvNumber()]) {
             gazebo::physics::ModelPtr model = world_->ModelByName(name);
             if (!model) {
@@ -3556,8 +3582,17 @@ namespace ariac_plugins
     // }
 
     //==============================================================================
-    void TaskManagerPluginPrivate::PrintTrialSummary()
+    void TaskManagerPluginPrivate::PrintTrialSummary(bool empty_file)
     {
+        // Condition when no orders were submitted
+        if (empty_file){
+            //TODO: create an empty file
+            log_message_ = "No orders were submitted";
+            WriteToAriacLogFile();
+            return;
+        }
+
+        // Logic for submitting orders
         std::shared_ptr<ariac_common::KittingScore> kitting_score = nullptr;
         std::shared_ptr<ariac_common::AssemblyScore> assembly_score = nullptr;
         std::shared_ptr<ariac_common::CombinedScore> combined_score = nullptr;
@@ -3867,8 +3902,7 @@ namespace ariac_plugins
 
         }
 
-        if (at_leat_one_submission)
-            impl_->PrintTrialSummary();
+        impl_->PrintTrialSummary(at_leat_one_submission);
         // else
         //     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "No orders were submitted");
         // impl_->PrintTrialSummary();

@@ -2472,6 +2472,8 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPluginPrivate::ScoreAssemblyTask(std::shared_ptr<ariac_common::Order> _order, std::string _submitted_order_id)
     {
+        // Scoring formula for assembly task
+        // Sa = (sum_pt_s + pt_b) * pm_s
         // These shared pointers are uniquely for KittingScore
         std::shared_ptr<ariac_common::ScoredAssemblyPart> battery_ptr = nullptr;
         std::shared_ptr<ariac_common::ScoredAssemblyPart> pump_ptr = nullptr;
@@ -2484,12 +2486,12 @@ namespace ariac_plugins
         double rotation_target{0.261799};
 
         // Bonus points for completing the order
-        int bonus = 0;
+        int pt_b{0};
 
-        int parts_score = 0;
+        int sum_pt_s{0};
 
-        // score for correct station
-        int station_score = 0;
+        // station multiplier
+        int pm_s{0};
 
         // Get the assembly task for this order
         auto assembly_task = _order->GetAssemblyTask();
@@ -2555,23 +2557,51 @@ namespace ariac_plugins
                         is_correct_pose = false;
                     }
 
-                    // Compute the score for this part
+                    // ----------------------------------------
+                    // Compute slot score
+                    // ----------------------------------------
+
+                    // if not assembled (incorrect pose) then score is 0
+                    if (!is_correct_pose)
+                    {
+                        part_score = 0;
+                    }
+                    // if correct pose and correct color then score is 3
                     if (is_correct_part_type && is_correct_part_color && is_correct_pose)
                     {
                         part_score = 3;
                     }
-                    else if (is_correct_part_type && (is_correct_part_color || is_correct_pose))
+                    // if correct pose or correct color then score is 2
+                    if (is_correct_part_color || is_correct_pose)
                     {
                         part_score = 2;
                     }
-                    else if (is_correct_part_type && (!is_correct_part_color && !is_correct_pose))
+                    // if incorrect pose and incorrect pose then score is 1
+                    if (!is_correct_part_color && !is_correct_pose)
                     {
                         part_score = 1;
                     }
-                    else
-                    {
-                        part_score = 0;
-                    }
+                    
+                    // ----------------------------------------
+                    // old scoring system
+                    // ----------------------------------------
+
+                    // if (is_correct_part_type && is_correct_part_color && is_correct_pose)
+                    // {
+                    //     part_score = 3;
+                    // }
+                    // else if (is_correct_part_type && (is_correct_part_color || is_correct_pose))
+                    // {
+                    //     part_score = 2;
+                    // }
+                    // else if (is_correct_part_type && (!is_correct_part_color && !is_correct_pose))
+                    // {
+                    //     part_score = 1;
+                    // }
+                    // else
+                    // {
+                    //     part_score = 0;
+                    // }
 
                     // Part orientation in RPY
                     tf2::Quaternion q(
@@ -2616,31 +2646,31 @@ namespace ariac_plugins
                         sensor_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, faulty_part);
                     }
 
-                    parts_score += part_score;
+                    sum_pt_s += part_score;
                 }
             }
         }
         // Check isCorrectStation
         if (assembly_task->GetStation() == shipment.GetStation())
-            station_score = 1;
+            pm_s = 1;
 
         // Compute bonus points
-        if (parts_score == expected_number_of_parts * 3)
-            bonus = expected_number_of_parts * 4;
+        if (sum_pt_s == expected_number_of_parts * 3)
+            pt_b = expected_number_of_parts;
 
         // Compute the score for the submitted shipment
-        int insert_score = (parts_score + bonus) * station_score;
+        int Sa = (sum_pt_s + pt_b) * pm_s;
 
         // Create a shared pointer to an AssemblyScore object
         auto assembly_score = std::make_shared<ariac_common::AssemblyScore>(
             _order->GetId(),
-            insert_score,
+            Sa,
             shipment.GetStation(),
             battery_ptr,
             pump_ptr,
             regulator_ptr,
             sensor_ptr,
-            bonus);
+            pt_b);
 
         // Set the score for this assembly task
         _order->SetAssemblyScore(assembly_score);

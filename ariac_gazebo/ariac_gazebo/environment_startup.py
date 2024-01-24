@@ -226,7 +226,6 @@ class EnvironmentStartup(Node):
                     if os.path.exists(ws + 'src/' + pkg + '/ariac_log/'):
                         parent_folder = ws + 'src/' + pkg + '/ariac_log/'
                         break
-                    
             
             if not parent_folder:
                 self.get_logger().fatal("Unable to find ariac_logs directory")

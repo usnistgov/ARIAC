@@ -258,7 +258,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
                 new_order.assembly_task.parts = assembly_parts
             
             if order["type"] == "combined":
-                new_order.combined_task.station = ASSEMBLY_STATIONS.index(order["combined_task"]["station"])
+                new_order.combined_task.station = ASSEMBLY_STATIONS.index(order["combined_task"]["station"])+1
                 combined_parts = []
                 for part in order["combined_task"]["products"]:
                     combined_part = PartMsg()

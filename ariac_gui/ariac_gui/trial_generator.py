@@ -2154,7 +2154,7 @@ class GUI_CLASS(ctk.CTk):
                 temp_order_dict["id"] = order.id
                 temp_order_dict["type"] = ORDER_TYPES[order.type]
                 temp_order_dict["announcement"] = self.announcement_to_dict(order.condition)
-                temp_order_dict["priority"] = order.priority
+                temp_order_dict["priority"] = order.priority == "1"
                 if order.type == 0:
                     temp_order_dict["kitting_task"] = {}
                     temp_order_dict["kitting_task"]["agv_number"] = order.kitting_task.agv_number

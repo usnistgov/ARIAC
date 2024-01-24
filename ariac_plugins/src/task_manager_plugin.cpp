@@ -1979,19 +1979,19 @@ namespace ariac_plugins
         std::shared_ptr<ariac_common::Quadrant> quadrant4_ptr = nullptr;
 
         // Tray Points
-        unsigned pt_t{0}; // points for correct tray
+        int pt_t = 0; // points for correct tray
         // Bonus Points
-        unsigned pt_b{0};
+        int pt_b = 0;
 
-        int total_quadrants_score{0};
+        int total_quadrants_score = 0;
 
         // multiplier for shipping to the correct destination
-        unsigned pm_d{0};
+        int pm_d = 0;
 
         // Extra parts penalty
-        int pn_ep = {0}; // penalty for having extra parts
+        int pn_ep = 0; // penalty for having extra parts
         // Wrong tray penalty
-        unsigned pn_t{0}; // penalty for having wrong tray
+        int pn_t = 0; // penalty for having wrong tray
 
         // current AGV location
         int agv_current_location{-1};
@@ -2486,12 +2486,12 @@ namespace ariac_plugins
         double rotation_target{0.261799};
 
         // Bonus points for completing the order
-        int pt_b{0};
+        int pt_b = 0;
 
-        int sum_pt_s{0};
+        int sum_pt_s = 0;
 
         // station multiplier
-        int pm_s{0};
+        int pm_s = 0;
 
         // Get the assembly task for this order
         auto assembly_task = _order->GetAssemblyTask();
@@ -3493,12 +3493,12 @@ namespace ariac_plugins
             pt_b = expected_number_of_parts;
 
         // Compute the score for the submitted shipment
-        int insert_score = (sum_parts_score + pt_b) * pm_s;
+        int Sc = (sum_parts_score + pt_b) * pm_s;
 
         // Create a combined score object
         auto combined_score = std::make_shared<ariac_common::CombinedScore>(
             _order->GetId(),
-            insert_score,
+            Sc,
             shipment.GetStation(),
             battery_ptr,
             pump_ptr,

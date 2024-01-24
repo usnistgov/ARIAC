@@ -244,7 +244,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
             
             if order["type"]=="assembly":
                 new_order.assembly_task.agv_numbers = order["assembly_task"]["agv_number"]
-                new_order.assembly_task.station = ASSEMBLY_STATIONS.index(order["assembly_task"]["station"])
+                new_order.assembly_task.station = ASSEMBLY_STATIONS.index(order["assembly_task"]["station"])+1
                 assembly_parts = []
                 if order["assembly_task"]["station"] in ["as1","as2"]:
                     correct_agv = FIRST_STATIONS_AGVS[0]

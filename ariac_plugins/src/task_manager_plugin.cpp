@@ -3286,6 +3286,17 @@ namespace ariac_plugins
     //==============================================================================
     void TaskManagerPluginPrivate::ScoreCombinedTask(std::shared_ptr<ariac_common::Order> _order, std::string _submitted_order_id)
     {
+        // -------------------------------------------------
+        // Scoring formula:  Sc = (sum_parts_score + pt_b) * pm_s
+        // -------------------------------------------------
+
+        // Bonus points for completing the order
+        int pt_b{0};
+        // Sum of the points for the parts
+        int sum_parts_score{0};
+        // station multiplier
+        int pm_s{0};
+
         // These shared pointers are uniquely for CombinedTask
         std::shared_ptr<ariac_common::ScoredAssemblyPart> battery_ptr = nullptr;
         std::shared_ptr<ariac_common::ScoredAssemblyPart> pump_ptr = nullptr;
@@ -3294,17 +3305,10 @@ namespace ariac_plugins
 
         // 2 cm tolerance for the translation
         double translation_target{0.02};
+
         // 15 deg tolerance for the rotation
         double rotation_target{0.261799};
-
-        // Bonus points for completing the order
-        int bonus = 0;
-
-        int parts_score = 0;
-
-        // score for correct station
-        int station_score = 0;
-
+        
         // Get the assembly task for this order
         auto combined_task = _order->GetCombinedTask();
         auto expected_station = combined_task->GetStation();
@@ -3385,27 +3389,56 @@ namespace ariac_plugins
                         is_correct_pose = false;
                     }
 
-                    // Compute the score for this part
-                    if (!is_correct_part_type || is_faulty)
+                    //----------------------------------------
+                    // Slot points
+                    //----------------------------------------
+
+                    // if incorrect pose then no points (0)
+                    if (!is_correct_pose)
                     {
                         part_score = 0;
                     }
-                    else if (is_correct_part_type && is_correct_part_color && is_correct_pose)
+                    // if correct pose and correct color then 5 points
+                    if (is_correct_part_type && is_correct_part_color && is_correct_pose)
                     {
                         part_score = 5;
                     }
-                    else if (is_correct_part_type && (is_correct_part_color || is_correct_pose))
+                    // if correct color or correct pose then 4 points
+                    if (is_correct_part_type && (is_correct_part_color || is_correct_pose))
                     {
                         part_score = 4;
                     }
-                    else if (is_correct_part_type && (!is_correct_part_color && !is_correct_pose))
+                    // if incorrect color and incorrect pose then 3 points
+                    if (is_correct_part_type && (!is_correct_part_color && !is_correct_pose))
                     {
                         part_score = 3;
                     }
-                    else
-                    {
-                        part_score = 0;
-                    }
+                    
+                    //----------------------------------------
+                    // Old scoring system
+                    //----------------------------------------
+
+                    // // Compute the score for this part
+                    // if (!is_correct_part_type || is_faulty)
+                    // {
+                    //     part_score = 0;
+                    // }
+                    // else if (is_correct_part_type && is_correct_part_color && is_correct_pose)
+                    // {
+                    //     part_score = 5;
+                    // }
+                    // else if (is_correct_part_type && (is_correct_part_color || is_correct_pose))
+                    // {
+                    //     part_score = 4;
+                    // }
+                    // else if (is_correct_part_type && (!is_correct_part_color && !is_correct_pose))
+                    // {
+                    //     part_score = 3;
+                    // }
+                    // else
+                    // {
+                    //     part_score = 0;
+                    // }
 
                     // Convert the position and orientation to RPY for display in the terminal
                     tf2::Quaternion q(
@@ -3447,20 +3480,20 @@ namespace ariac_plugins
                         sensor_ptr = std::make_shared<ariac_common::ScoredAssemblyPart>(shipment_part, is_correct_part_color, is_correct_pose, part_position, part_orientation, part_score, is_faulty);
                     }
 
-                    parts_score += part_score;
+                    sum_parts_score += part_score;
                 }
             }
         }
         // Check isCorrectStation
         if (combined_task->GetStation() == shipment.GetStation())
-            station_score = 1;
+            pm_s = 1;
 
         // Compute bonus points
-        if (parts_score == expected_number_of_parts * 5)
-            bonus = expected_number_of_parts * 4;
+        if (sum_parts_score == expected_number_of_parts * 3)
+            pt_b = expected_number_of_parts;
 
         // Compute the score for the submitted shipment
-        int insert_score = (parts_score + bonus) * station_score;
+        int insert_score = (sum_parts_score + pt_b) * pm_s;
 
         // Create a combined score object
         auto combined_score = std::make_shared<ariac_common::CombinedScore>(
@@ -3471,7 +3504,7 @@ namespace ariac_plugins
             pump_ptr,
             regulator_ptr,
             sensor_ptr,
-            bonus);
+            pt_b);
 
         // Set the score for this combined task
         _order->SetCombinedScore(combined_score);

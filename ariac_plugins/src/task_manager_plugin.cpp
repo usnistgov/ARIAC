@@ -106,6 +106,7 @@ namespace ariac_plugins
         sdf::ElementPtr sdf_;
         /*!< Time since the start competition service is called. */
         gazebo::common::Time start_competition_time_;
+        gazebo::common::Time end_competition_time_;
         gazebo::common::Time last_sim_time_;
         gazebo::common::Time last_on_update_time_;
 
@@ -406,8 +407,7 @@ namespace ariac_plugins
     //==============================================================================
     int TaskManagerPluginPrivate::ComputeMaxScoreKittingTask(int expected_number_of_parts){
         unsigned correct_part_tray_score = 1;
-        // unsigned quadrants_score = 3 * expected_number_of_parts;
-        unsigned quadrants_score = 3;
+        unsigned quadrants_score = 3 * expected_number_of_parts;
         unsigned bonus_score = expected_number_of_parts;
         return correct_part_tray_score + quadrants_score + bonus_score;
     }
@@ -1228,12 +1228,25 @@ namespace ariac_plugins
         // The elapsed time since the start of the competition is greater than the time limit
         // The current state is ORDER_ANNOUNCEMENTS_DONE
         if (impl_->time_limit_ >= 0 &&
-            (current_sim_time - impl_->start_competition_time_).Double() > impl_->time_limit_ && impl_->current_state_ == ariac_msgs::msg::CompetitionState::ORDER_ANNOUNCEMENTS_DONE)
+            (current_sim_time - impl_->start_competition_time_).Double() > impl_->time_limit_ && 
+            impl_->current_state_ != ariac_msgs::msg::CompetitionState::ENDED &&
+            impl_->competition_time_set_)
         {
             RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Time limit reached. Ending competition.");
             this->impl_->current_state_ = ariac_msgs::msg::CompetitionState::ENDED;
-            // deactive robots, sensors, and submission service (de-register)
-            // destructor for the service
+
+            bool at_least_one_submission = false;
+            for (auto &order : impl_->all_orders_)
+            {
+                if (order->GetKittingScore())
+                    at_least_one_submission = true;
+                if (order->GetAssemblyScore())
+                    at_least_one_submission = true;
+                if (order->GetCombinedScore())
+                    at_least_one_submission = true;
+
+            }
+            impl_->PrintTrialSummary(!at_least_one_submission);
         }
 
         // current state was set to STARTED in start competition service callback
@@ -1943,8 +1956,12 @@ namespace ariac_plugins
             pn_ep = shipment.GetTrayParts().size() - expected_number_of_parts;
 
         // Check destination
-        if (agv_current_location != expected_destination)
+        if (agv_current_location != expected_destination){
             pm_d = 0;
+        } 
+        else {
+            pm_d = 1;
+        }
 
         // Compute the score for the submitted kit
         // Sk = (pt_t + sum(pt_q) + pt_b - pn_ep - pn_t) * pm_d 
@@ -2412,17 +2429,17 @@ namespace ariac_plugins
                         part_score = 0;
                     }
                     // if correct pose and correct color then score is 3
-                    if (is_correct_part_type && is_correct_part_color && is_correct_pose)
+                    else if (is_correct_part_type && is_correct_part_color && is_correct_pose)
                     {
                         part_score = 3;
                     }
                     // if correct pose or correct color then score is 2
-                    if (is_correct_part_color || is_correct_pose)
+                    else if (is_correct_part_color || is_correct_pose)
                     {
                         part_score = 2;
                     }
                     // if incorrect pose and incorrect pose then score is 1
-                    if (!is_correct_part_color && !is_correct_pose)
+                    else if (!is_correct_part_color && !is_correct_pose)
                     {
                         part_score = 1;
                     }
@@ -3244,17 +3261,17 @@ namespace ariac_plugins
                         part_score = 0;
                     }
                     // if correct pose and correct color then 5 points
-                    if (is_correct_part_type && is_correct_part_color && is_correct_pose)
+                    else if (is_correct_part_type && is_correct_part_color && is_correct_pose)
                     {
                         part_score = 5;
                     }
                     // if correct color or correct pose then 4 points
-                    if (is_correct_part_type && (is_correct_part_color || is_correct_pose))
+                    else if (is_correct_part_type && (is_correct_part_color || is_correct_pose))
                     {
                         part_score = 4;
                     }
                     // if incorrect color and incorrect pose then 3 points
-                    if (is_correct_part_type && (!is_correct_part_color && !is_correct_pose))
+                    else if (is_correct_part_type && (!is_correct_part_color && !is_correct_pose))
                     {
                         part_score = 3;
                     }
@@ -3334,7 +3351,7 @@ namespace ariac_plugins
             pm_s = 1;
 
         // Compute bonus points
-        if (sum_parts_score == expected_number_of_parts * 3)
+        if (sum_parts_score == expected_number_of_parts * 5)
             pt_b = expected_number_of_parts;
 
         // Compute the score for the submitted shipment
@@ -3494,6 +3511,7 @@ namespace ariac_plugins
 
     {
         // Condition when no orders were submitted
+        end_competition_time_ = world_->SimTime();
         if (empty_file){
             //TODO: create an empty file
             log_message_ = "No orders were submitted";
@@ -3564,7 +3582,7 @@ namespace ariac_plugins
             }
         }
         // Get the max completion time
-        auto trial_completion_time = *std::max_element(completion_times.begin(), completion_times.end());
+        auto trial_completion_time = (end_competition_time_-start_competition_time_).Double();
 
 
         // ----------------------------------------
@@ -3580,7 +3598,7 @@ namespace ariac_plugins
         else
             output += TerminalDisplay("Trial time limit: ", "green") + "No time limit\n";
         output += TerminalDisplay("Completion time: ", "green") + std::to_string(trial_completion_time) + "\n";
-        output += TerminalDisplay("Max score: ", "green") + std::to_string(max_score) + "\n";
+        output += TerminalDisplay("Max score: ", "green") + std::to_string((int)max_score) + "\n";
         output += TerminalDisplay("Actual score: ", "green") + std::to_string((int)trial_score_) + "\n";
         // output += TerminalDisplay("========================================\n", "yellow");
         // output += TerminalDisplay("Orders Summary\n", "yellow");
@@ -3598,7 +3616,7 @@ namespace ariac_plugins
         else
             TrialLogOutput("Trial time limit: ", "No time limit\n");
         TrialLogOutput("Completion time: ", std::to_string(trial_completion_time) + "\n");
-        TrialLogOutput("Max score: ", std::to_string(max_score) + "\n");
+        TrialLogOutput("Max score: ", std::to_string((int)max_score) + "\n");
         TrialLogOutput("Actual score: ", std::to_string((int)trial_score_) + "\n");
         TrialLogOutput("========================================\n");
         TrialLogOutput("Orders Summary\n");
@@ -3744,22 +3762,20 @@ namespace ariac_plugins
         // Display the trial score
         // ComputeTrialScore();
 
-        bool at_leat_one_submission = false;
+        bool at_least_one_submission = false;
         for (auto &order : impl_->all_orders_)
         {
             if (order->GetKittingScore())
-                at_leat_one_submission = true;
+                at_least_one_submission = true;
             if (order->GetAssemblyScore())
-                at_leat_one_submission = true;
+                at_least_one_submission = true;
             if (order->GetCombinedScore())
-                at_leat_one_submission = true;
+                at_least_one_submission = true;
 
         }
 
-        impl_->PrintTrialSummary(at_leat_one_submission);
+        impl_->PrintTrialSummary(!at_least_one_submission);
 
-        if (at_leat_one_submission)
-            impl_->PrintTrialSummary();
 
         // else
         //     RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "No orders were submitted");

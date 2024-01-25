@@ -218,11 +218,15 @@ void AriacCameraPlugin::OnNewImageFrame(
     impl_->image_pub_.publish(impl_->image_msg_);
   }
   else {
-    cv::Mat blank(_height, _width, CV_8UC3, cv::Scalar(0,0,0));
-    sensor_msgs::fillImage(
-      impl_->image_msg_, img_encoding_, _height, _width,
-      img_step_ * _width, reinterpret_cast<const void *>(blank.data));
-    impl_->image_pub_.publish(impl_->image_msg_);
+    cv_bridge::CvImage blank;
+    blank.image = cv::Mat(_height, _width, CV_8UC3, cv::Scalar(0, 0, 0));
+
+    auto blank_msg = blank.toImageMsg();
+
+    blank_msg->header =  impl_->image_msg_.header;
+    blank_msg->encoding = sensor_msgs::image_encodings::RGB8;
+
+    impl_->image_pub_.publish(blank_msg);
   }
 }
 
@@ -273,7 +277,14 @@ void AriacCameraPlugin::OnNewDepthFrame(
   else {
     cv_bridge::CvImage blank;
     blank.image = cv::Mat(_height, _width, CV_32FC1, cv::Scalar(0));
-    impl_->image_pub_.publish(blank.toImageMsg());
+
+    auto blank_msg = blank.toImageMsg();
+
+    blank_msg->header =  image_msg.header;
+
+    blank_msg->encoding = sensor_msgs::image_encodings::TYPE_32FC1;
+
+    impl_->depth_image_pub_.publish(blank_msg);
   }
   
 }

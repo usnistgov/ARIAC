@@ -428,63 +428,24 @@ namespace ariac_plugins
         return slots_score + bonus_score;
     }
 
-
     //==============================================================================
     void TaskManagerPluginPrivate::WriteToAriacLogFile()
     {
-        // impl_->ariac_log_folder_
         // Create a file name with the trial name
         std::string file_name = "trial_log.txt";
         auto log_file_path = ariac_log_folder_ +  file_name;
-        // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
+        
         // Open the log file
         DisplayTaskManagerInfo("Log file generated at: ");
         DisplayTaskManagerInfo(log_file_path);
         auto log_file = std::ofstream(log_file_path);
+        
         // Write to log file
         log_file << log_message_;
         
         // Close the log file
         log_file.close();
     }
-
-
-    // OLD code from ARIAC2023
-    // void TaskManagerPluginPrivate::WriteToLog()
-    // {
-    //     // Get the environment variable INSIDE_DOCKER
-    //     auto inside_docker = std::getenv("INSIDE_DOCKER");
-
-    //     // compare inside_docker to "ok"
-    //     if (inside_docker == NULL)
-    //     {
-    //         // RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "INSIDE_DOCKER environment variable not set");
-    //         return;
-    //     }
-
-    //     // Create a folder
-    //     std::string folder_path = "/home/ubuntu/logs/";
-    //     std::string command = "mkdir -p " + folder_path;
-    //     system(command.c_str());
-
-    //     // remove .yaml from trial name
-    //     if (trial_name_.length() > 5)
-    //     {
-    //         trial_name_.erase(trial_name_.length() - 5);
-    //     }
-
-    //     // Create a file name with the trial name
-    //     std::string file_name = trial_name_ + ".txt";
-    //     auto log_file_path = folder_path + file_name;
-
-    //     // Open the log file
-    //     RCLCPP_WARN_STREAM_ONCE(ros_node_->get_logger(), "Generating log file: " << log_file_path);
-    //     auto log_file = std::ofstream(log_file_path);
-    //     // Write to log file
-    //     log_file << log_message_;
-    //     // Close the log file
-    //     log_file.close();
-    // }
 
     //==============================================================================
     void
@@ -3659,8 +3620,14 @@ namespace ariac_plugins
         ariac_msgs::srv::PerformQualityCheck::Response::SharedPtr response)
     {
         response->valid_id = false;
-        int idx;
 
+        if (current_state_ == ariac_msgs::msg::CompetitionState::ENDED)
+        {
+            RCLCPP_WARN(ros_node_->get_logger(), "Competition has ended. This service cannot be used.");
+            return;
+        }
+
+        int idx;
         // Check if order id matches any of the orders
         for (int i = 0; i < all_orders_.size(); i++)
         {
@@ -3750,6 +3717,12 @@ namespace ariac_plugins
     {
         // Check if service has already been checked for requested order
         response->valid_id = false;
+
+        if (current_state_ == ariac_msgs::msg::CompetitionState::ENDED)
+        {
+            RCLCPP_WARN(ros_node_->get_logger(), "Competition has ended. This service cannot be used.");
+            return;
+        }
 
         std::shared_ptr<ariac_common::Order> order = nullptr;
 

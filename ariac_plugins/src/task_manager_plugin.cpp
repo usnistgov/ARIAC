@@ -40,7 +40,6 @@ Distributions of NIST software should also include copyright and licensing state
 #include <ariac_msgs/srv/submit_order.hpp>
 #include <ariac_msgs/srv/perform_quality_check.hpp>
 #include <ariac_msgs/srv/get_pre_assembly_poses.hpp>
-#include <std_msgs/msg/bool.hpp>
 #include <ariac_msgs/srv/get_pre_assembly_poses.hpp>
 // ROS
 #include <rclcpp/rclcpp.hpp>
@@ -96,6 +95,8 @@ namespace ariac_plugins
         bool floor_robot_health_;
         /*< Time limit reached flag*/
         bool time_limit_reached_ = false;
+        /*< Environment ready flad*/
+        bool environment_ready_ = false;
 
         //============== GAZEBO =================
         /*!< Connection to world update event. Callback is called while this is alive. */
@@ -134,6 +135,8 @@ namespace ariac_plugins
         //============== SUBSCRIBERS =================
         /*!< Subscriber to topic: "/ariac/trial_config"*/
         rclcpp::Subscription<ariac_msgs::msg::Trial>::SharedPtr trial_config_sub_;
+        /*!< Subscriber to topic: "/ariac/environment_ready"*/
+        rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr environment_status_sub_;
         /*!< Subscriber to topic: "/ariac/agv1_status"*/
         rclcpp::Subscription<ariac_msgs::msg::AGVStatus>::SharedPtr agv1_status_;
         /*!< Subscriber to topic: "/ariac/agv2_status"*/
@@ -542,6 +545,10 @@ namespace ariac_plugins
         impl_->trial_config_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Trial>(
             "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", qos_profile),
             std::bind(&TaskManagerPlugin::OnTrialCallback, this, std::placeholders::_1));
+        
+        impl_->environment_status_sub_ = impl_->ros_node_->create_subscription<std_msgs::msg::Bool>(
+            "/ariac/environment_ready", qos.get_subscription_qos("/ariac/environment_ready", qos_profile),
+            std::bind(&TaskManagerPlugin::OnEnvironmentReadyCallback, this, std::placeholders::_1));
 
         impl_->agv1_status_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::AGVStatus>(
             "/ariac/agv1_status", qos.get_subscription_qos("/ariac/agv1_status", rclcpp::QoS(1)),
@@ -1199,7 +1206,7 @@ namespace ariac_plugins
 
         // Delay advertising the competition start service to avoid a crash.
         // Sometimes if the competition is started before the world is fully loaded, it causes a crash.
-        if (!impl_->start_competition_service_ && current_sim_time.Double() >= 5.0)
+        if (!impl_->start_competition_service_ && impl_->environment_ready_)
         {
             // Create the start competition service
             // Now competitors can call this service to start the competition
@@ -1407,6 +1414,12 @@ namespace ariac_plugins
                 StoreChallenges(challenges);
             }
         }
+    }
+
+    //==============================================================================
+    void TaskManagerPlugin::OnEnvironmentReadyCallback(const std_msgs::msg::Bool::SharedPtr _msg)
+    {
+        impl_->environment_ready_ = _msg->data;
     }
 
     //==============================================================================

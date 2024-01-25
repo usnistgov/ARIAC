@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
 import rclpy
 import time
 
@@ -37,6 +36,8 @@ def main():
 
     # Read conveyor part config
     startup_node.parse_conveyor_config()
+
+    startup_node.environment_ready()
 
     try:
         rclpy.spin(startup_node)

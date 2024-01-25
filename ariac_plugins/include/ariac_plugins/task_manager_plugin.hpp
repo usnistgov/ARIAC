@@ -17,6 +17,7 @@ Distributions of NIST software should also include copyright and licensing state
 // Services
 #include <std_srvs/srv/trigger.hpp>
 // Messages
+#include <std_msgs/msg/bool.hpp>
 #include <ariac_msgs/msg/order.hpp>
 #include <ariac_msgs/msg/order_condition.hpp>
 #include <ariac_msgs/msg/trial.hpp>
@@ -216,6 +217,7 @@ namespace ariac_plugins
          * @param _msg Shared pointer to the message
          */
         void OnTrialCallback(const ariac_msgs::msg::Trial::SharedPtr _msg);
+        void OnEnvironmentReadyCallback(const std_msgs::msg::Bool::SharedPtr _msg);
         void OnAGV1StatusCallback(const ariac_msgs::msg::AGVStatus::SharedPtr _msg);
         void OnAGV2StatusCallback(const ariac_msgs::msg::AGVStatus::SharedPtr _msg);
         void OnAGV3StatusCallback(const ariac_msgs::msg::AGVStatus::SharedPtr _msg);

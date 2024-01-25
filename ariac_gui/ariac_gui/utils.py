@@ -160,10 +160,10 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
     
     assembly_insert_rotations = [0.0 for _ in range(4)]
     if "assembly_inserts" in yaml_dict.keys():
-        assembly_insert_rotations[0] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as1"])]
-        assembly_insert_rotations[1] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as2"])]
-        assembly_insert_rotations[2] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as3"])]
-        assembly_insert_rotations[3] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as4"])]
+        assembly_insert_rotations[0] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as1"] if yaml_dict["assembly_inserts"]["as1"]!=0 else "0")]
+        assembly_insert_rotations[1] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as2"] if yaml_dict["assembly_inserts"]["as2"]!=0 else "0")]
+        assembly_insert_rotations[2] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as3"] if yaml_dict["assembly_inserts"]["as3"]!=0 else "0")]
+        assembly_insert_rotations[3] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as4"] if yaml_dict["assembly_inserts"]["as4"]!=0 else "0")]
     
     bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
     current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
@@ -171,7 +171,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
         for bin in yaml_dict["parts"]["bins"].keys():
             for part in yaml_dict["parts"]["bins"][bin]:
                 try:
-                    part_rotation = SLIDER_VALUES[SLIDER_STR.index(part["rotation"])]
+                    part_rotation = SLIDER_VALUES[SLIDER_STR.index(part["rotation"] if part["rotation"]!=0 else "0")]
                 except:
                     part_rotation = 0.0
                 try:
@@ -244,7 +244,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
             
             if order["type"]=="assembly":
                 new_order.assembly_task.agv_numbers = order["assembly_task"]["agv_number"]
-                new_order.assembly_task.station = ASSEMBLY_STATIONS.index(order["assembly_task"]["station"])
+                new_order.assembly_task.station = ASSEMBLY_STATIONS.index(order["assembly_task"]["station"])+1
                 assembly_parts = []
                 if order["assembly_task"]["station"] in ["as1","as2"]:
                     correct_agv = FIRST_STATIONS_AGVS[0]
@@ -258,7 +258,7 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
                 new_order.assembly_task.parts = assembly_parts
             
             if order["type"] == "combined":
-                new_order.combined_task.station = ASSEMBLY_STATIONS.index(order["combined_task"]["station"])
+                new_order.combined_task.station = ASSEMBLY_STATIONS.index(order["combined_task"]["station"])+1
                 combined_parts = []
                 for part in order["combined_task"]["products"]:
                     combined_part = PartMsg()

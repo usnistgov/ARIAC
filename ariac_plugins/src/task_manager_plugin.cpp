@@ -3753,6 +3753,8 @@ namespace ariac_plugins
         RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "End competition service called");
 
         (void)request;
+        
+        impl_->end_competition_time_ = impl_->world_->SimTime();
 
         this->impl_->current_state_ = ariac_msgs::msg::CompetitionState::ENDED;
 

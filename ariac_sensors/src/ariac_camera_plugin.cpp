@@ -14,6 +14,8 @@
 
 #include <camera_info_manager/camera_info_manager.hpp>
 #include <image_transport/image_transport.hpp>
+#include <opencv2/opencv.hpp>
+#include <cv_bridge/cv_bridge.hpp>
 #include <sensor_msgs/fill_image.hpp>
 #include <sensor_msgs/image_encodings.hpp>
 #include <sensor_msgs/msg/camera_info.hpp>
@@ -215,6 +217,17 @@ void AriacCameraPlugin::OnNewImageFrame(
   if (impl_->publish_sensor_data_) {
     impl_->image_pub_.publish(impl_->image_msg_);
   }
+  else {
+    cv_bridge::CvImage blank;
+    blank.image = cv::Mat(_height, _width, CV_8UC3, cv::Scalar(0, 0, 0));
+
+    auto blank_msg = blank.toImageMsg();
+
+    blank_msg->header =  impl_->image_msg_.header;
+    blank_msg->encoding = sensor_msgs::image_encodings::RGB8;
+
+    impl_->image_pub_.publish(blank_msg);
+  }
 }
 
 void AriacCameraPlugin::OnNewDepthFrame(
@@ -260,6 +273,18 @@ void AriacCameraPlugin::OnNewDepthFrame(
   
   if (impl_->publish_sensor_data_) {
     impl_->depth_image_pub_.publish(image_msg);
+  }
+  else {
+    cv_bridge::CvImage blank;
+    blank.image = cv::Mat(_height, _width, CV_32FC1, cv::Scalar(0));
+
+    auto blank_msg = blank.toImageMsg();
+
+    blank_msg->header =  image_msg.header;
+
+    blank_msg->encoding = sensor_msgs::image_encodings::TYPE_32FC1;
+
+    impl_->depth_image_pub_.publish(blank_msg);
   }
   
 }

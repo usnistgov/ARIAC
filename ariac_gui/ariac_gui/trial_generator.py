@@ -663,12 +663,6 @@ class GUI_CLASS(ctk.CTk):
         self.kitting_trays_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
     
     def update_available_kitting_trays(self,_,__,___):
-        self.available_kitting_trays.clear()
-        for i in range(len(self.kitting_tray_selections)):
-            tray = self.kitting_tray_selections[i].get()
-            if tray != "":
-                self.available_kitting_trays.append(str(tray))
-        self.available_kitting_trays = sorted(self.available_kitting_trays)
         try:
             self.reset_order()
             self.show_main_order_menu()
@@ -676,6 +670,12 @@ class GUI_CLASS(ctk.CTk):
             pass
     
     def show_kitting_trays(self,_,__,___):
+        self.available_kitting_trays = [tray.get() for tray in self.kitting_tray_selections if tray.get() != KITTING_TRAY_OPTIONS[0]]
+        try:
+            self.reset_order()
+            self.show_main_order_menu()
+        except:
+            pass
         for widget in self.kitting_tray_canvas_widgets:
             self.kitting_tray_canvas.delete(widget)
         self.kitting_tray_canvas_widgets.clear()
@@ -1728,7 +1728,7 @@ class GUI_CLASS(ctk.CTk):
         tray_id_label = ctk.CTkLabel(self.orders_frame,text="Select the tray for the kitting order")
         self.grid_left_column(tray_id_label)
         self.current_left_order_widgets.append(tray_id_label)
-
+        
         tray_id_menu = ctk.CTkOptionMenu(self.orders_frame,variable=self.order_info["kitting_task"]["tray_id"], values = self.available_kitting_trays)
         self.grid_left_column(tray_id_menu)
         self.current_left_order_widgets.append(tray_id_menu)

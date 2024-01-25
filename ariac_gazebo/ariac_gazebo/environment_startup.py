@@ -54,6 +54,8 @@ from ariac_msgs.msg import (
     Trial,
 )
 
+from std_msgs.msg import Bool as BoolMsg
+
 from gazebo_msgs.srv import SpawnEntity
 from std_srvs.srv import Empty
 from ariac_gazebo.spawn_params import (
@@ -135,29 +137,31 @@ class EnvironmentStartup(Node):
             'rgb_camera': 300,
             'rgbd_camera': 500,
             'basic_logical_camera': 500,
-            'advanced_logical_camera': 2000,            
+            'advanced_logical_camera': None,
+            "robot_rgb_camera": 800,
+            "robot_rgbd_camera": 1000,
         }
 
         # Create publishers for bin and conveyor parts
         self.bin_parts = BinParts()
-        self.bin_parts_publisher = self.create_publisher(BinParts,
-                                                         '/ariac/bin_parts', 10)
+        self.bin_parts_publisher = self.create_publisher(BinParts, '/ariac/bin_parts', 10)
 
         self.conveyor_parts = ConveyorParts()
-        self.conveyor_parts_publisher = self.create_publisher(ConveyorParts,
-                                                              '/ariac/conveyor_parts', 10)
+        self.conveyor_parts_publisher = self.create_publisher(ConveyorParts, '/ariac/conveyor_parts', 10)
 
-        self.bin_parts_pub_timer = self.create_timer(
-            1.0, self.publish_bin_parts)
-        self.conveyor_parts_pub_timer = self.create_timer(
-            1.0, self.publish_conveyor_parts)
+        self.bin_parts_pub_timer = self.create_timer(1.0, self.publish_bin_parts)
+        self.conveyor_parts_pub_timer = self.create_timer(1.0, self.publish_conveyor_parts)
 
         # Create publisher for the trial config file
         # This is used by the task manager
-        latching_qos = QoSProfile(
-            depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
-        self.trial_info_pub = self.create_publisher(
-            Trial, '/ariac/trial_config', latching_qos)
+        latching_qos = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.trial_info_pub = self.create_publisher(Trial, '/ariac/trial_config', latching_qos)
+
+        # Create publisher for environment_ready topic
+        self.env_ready = False
+        self.environment_ready_publisher = self.create_publisher(BoolMsg, '/ariac/environment_ready', latching_qos)
+
+        self.bin_parts_pub_timer = self.create_timer(1.0, self.publish_environment_status)
 
         # Create service client to spawn objects into gazebo
         self.spawn_client = self.create_client(SpawnEntity, '/spawn_entity')
@@ -226,7 +230,6 @@ class EnvironmentStartup(Node):
                     if os.path.exists(ws + 'src/' + pkg + '/ariac_log/'):
                         parent_folder = ws + 'src/' + pkg + '/ariac_log/'
                         break
-                    
             
             if not parent_folder:
                 self.get_logger().fatal("Unable to find ariac_logs directory")
@@ -827,7 +830,9 @@ class EnvironmentStartup(Node):
             'rgb_camera': 0,
             'rgbd_camera': 0,
             'basic_logical_camera': 0,
-            'advanced_logical_camera': 0,            
+            'advanced_logical_camera': 0,
+            'robot_rgb_camera': 0,
+            'robot_rgbd_camera': 0,
         }
 
         total_cost = 0
@@ -846,13 +851,43 @@ class EnvironmentStartup(Node):
                     self.get_logger().error(bcolors.FAIL + f"Unable to spawn {sensor_name}." + bcolors.ENDC)
                     self.get_logger().error(bcolors.FAIL + "Advanced Logical Cameras can only be used in development mode" + bcolors.ENDC)
                     continue
-
+            else:
+                total_cost += self.sensor_costs[sensor_type]
+            
             sensor_counts[sensor_type] += 1
-            total_cost += self.sensor_costs[sensor_type]
 
             params = SensorSpawnParams(
                 sensor_name, sensor_type, visualize=vis, xyz=xyz, rpy=rpy)
+            
             self.spawn_entity(params)
+
+        try:
+            floor_robot_camera = self.user_config['robot_cameras']['floor_robot_camera']
+            
+            if floor_robot_camera['active']:
+                if floor_robot_camera['type'].lower() == 'rgb':
+                    sensor_counts['robot_rgb_camera'] += 1
+                    total_cost += self.sensor_costs['robot_rgb_camera']
+                elif floor_robot_camera['type'].lower() == 'rgbd':
+                    sensor_counts['robot_rgbd_camera'] += 1
+                    total_cost += self.sensor_costs['robot_rgbd_camera']
+
+        except (TypeError, KeyError):
+            pass
+
+        try:
+            ceiling_robot_camera = self.user_config['robot_cameras']['ceiling_robot_camera']
+
+            if ceiling_robot_camera['active']:
+                if ceiling_robot_camera['type'].lower() == 'rgb':
+                    sensor_counts['robot_rgb_camera'] += 1
+                    total_cost += self.sensor_costs['robot_rgb_camera']
+                elif ceiling_robot_camera['type'].lower() == 'rgbd':
+                    sensor_counts['robot_rgbd_camera'] += 1
+                    total_cost += self.sensor_costs['robot_rgbd_camera']
+        
+        except (TypeError, KeyError):
+            pass
 
         # Create sensor log
         with open(self.trial_log_folder + 'sensor_cost.txt', 'w') as f:
@@ -860,7 +895,7 @@ class EnvironmentStartup(Node):
             f.write('User Sensor Log\n')
             f.write('='*30+'\n')
             for sensor in sensor_counts.keys():
-                f.write(f'Number of {sensor} used: {sensor_counts[sensor]}\n')
+                f.write(f'Number of {sensor}\'s used: {sensor_counts[sensor]}\n')
             f.write(f"\n\nTotal sensor cost is: ${total_cost}\n")
             f.write('-'*30+'\n')
 
@@ -1466,3 +1501,11 @@ class EnvironmentStartup(Node):
 
     def publish_conveyor_parts(self):
         self.conveyor_parts_publisher.publish(self.conveyor_parts)
+
+    def publish_environment_status(self):
+        msg = BoolMsg()
+        msg.data = self.env_ready
+        self.environment_ready_publisher.publish(msg)
+
+    def environment_ready(self):
+        self.env_ready = True

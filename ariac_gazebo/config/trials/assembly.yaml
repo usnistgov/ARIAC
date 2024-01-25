@@ -10,7 +10,7 @@ kitting_trays: # Which kitting trays will be spawn
   slots: [1]
 
 assembly_inserts:
-  as1: 'pi/2'
+  as1: '0.0'
   as2: 'pi/3'
   as3: 'pi/4'
   as4: 'pi' 

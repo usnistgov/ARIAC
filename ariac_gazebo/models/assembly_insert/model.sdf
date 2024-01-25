@@ -159,6 +159,7 @@
     </link>  
 
     <link name="pump_contact">
+      <pose>0 0 .002 0 0 0</pose>
       <collision name="pump_contact">
         <geometry>
           <mesh>

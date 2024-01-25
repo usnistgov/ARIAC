@@ -37,7 +37,7 @@ ACCEPTED_NUMBERS = "0123456789."  # for requiring number input
 SENSORS = ["break_beam", "proximity", "laser_profiler", "lidar", "camera", "logical_camera"]
 ROBOTS = ["floor_robot", "ceiling_robot"]
 BEHAVIORS = ["antagonistic","indifferent","helpful"]
-CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction","human"]
+CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction"]
 AGV_LIST = [f"agv{i}" for i in range(1,5)]
 
 DEFAULT_QUADRANTS = {[key for key in _part_type_ints.keys()][i]:str(i+1) for i in range(len(_part_type_ints))}
@@ -293,19 +293,20 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
                 new_challenge.dropped_part_challenge.drop_after_num = challenge["dropped_part"]["drop_after"]
                 new_challenge.dropped_part_challenge.drop_after_time = challenge["dropped_part"]["delay"]
             elif "human" in challenge.keys():
-                new_challenge.type = 4
-                new_challenge.human_challenge.behavior = BEHAVIORS.index(challenge["human"]["behavior"])
-                if "time_condition" in challenge["human"].keys():
-                    new_challenge.human_challenge.condition.type = 0
-                    new_challenge.human_challenge.condition.time_condition.seconds = challenge["human"]["time_condition"]
-                elif "part_place_condition" in challenge["human"].keys():
-                    new_challenge.human_challenge.condition.type = 1
-                    new_challenge.human_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["human"]["part_place_condition"]["color"].upper()]
-                    new_challenge.human_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["human"]["part_place_condition"]["type"].upper()]
-                    new_challenge.human_challenge.condition.part_place_condition.agv = challenge["human"]["part_place_condition"]["agv"]
-                else:
-                    new_challenge.human_challenge.condition.type = 2
-                    new_challenge.human_challenge.condition.submission_condition.order_id = challenge["human"]["submission_condition"]["order_id"]
+                pass
+            #     new_challenge.type = 4
+            #     new_challenge.human_challenge.behavior = BEHAVIORS.index(challenge["human"]["behavior"])
+            #     if "time_condition" in challenge["human"].keys():
+            #         new_challenge.human_challenge.condition.type = 0
+            #         new_challenge.human_challenge.condition.time_condition.seconds = challenge["human"]["time_condition"]
+            #     elif "part_place_condition" in challenge["human"].keys():
+            #         new_challenge.human_challenge.condition.type = 1
+            #         new_challenge.human_challenge.condition.part_place_condition.part.color = _part_color_ints[challenge["human"]["part_place_condition"]["color"].upper()]
+            #         new_challenge.human_challenge.condition.part_place_condition.part.type = _part_type_ints[challenge["human"]["part_place_condition"]["type"].upper()]
+            #         new_challenge.human_challenge.condition.part_place_condition.agv = challenge["human"]["part_place_condition"]["agv"]
+            #     else:
+            #         new_challenge.human_challenge.condition.type = 2
+            #         new_challenge.human_challenge.condition.submission_condition.order_id = challenge["human"]["submission_condition"]["order_id"]
             elif "robot_malfunction" in challenge.keys():
                 new_challenge.type = 3
                 new_challenge.robot_malfunction_challenge.duration = challenge["robot_malfunction"]["duration"]

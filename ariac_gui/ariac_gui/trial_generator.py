@@ -34,7 +34,7 @@ from ariac_msgs.msg import (
     DroppedPartChallenge as DroppedPartChallengeMsg,
     SensorBlackoutChallenge as SensorBlackoutChallengeMsg,
     RobotMalfunctionChallenge as RobotMalfunctionChallengeMsg,
-    HumanChallenge as HumanChallengeMsg,
+    # HumanChallenge as HumanChallengeMsg,
     Challenge as ChallengeMsg
 )
 from geometry_msgs.msg import PoseStamped, Vector3
@@ -71,7 +71,7 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 
 # Menu images
 GUI_PACKAGE = get_package_share_directory('ariac_gui')
-MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]}
+MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station","agv", "tray","light_icon","dark_icon"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f"id_0{i}" for i in range(10)]}
 
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]
@@ -83,7 +83,7 @@ TRAY_IDS=[str(i) for i in range(10)]
 SENSORS = ["break_beam", "proximity", "laser_profiler", "lidar", "camera", "logical_camera"]
 ROBOTS = ["floor_robot", "ceiling_robot"]
 BEHAVIORS = ["antagonistic","indifferent","helpful"]
-CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction","human"]
+CHALLENGE_TYPES = ["faulty_part", "dropped_part", "sensor_blackout", "robot_malfunction"]
 
 
 _part_color_ints = {"RED":0,
@@ -144,6 +144,10 @@ class GUI_CLASS(ctk.CTk):
         s.theme_use('clam')
         s.configure('TNotebook', font='Arial Bold')
 
+        # Dark mode and light mode
+        self.current_mode = "light"
+        self.all_canvases = []
+
         self.notebook = ttk.Notebook(self)
 
         # Loaded file information
@@ -192,7 +196,7 @@ class GUI_CLASS(ctk.CTk):
         self.trial_name.trace_add('write', self.update_current_file_label)
 
         # AGV parts info
-        self.available_quadrants = {f"agv_{i}":[j for j in range(1,5)] for i in range(1,5)}
+        self.available_quadrants = {f"agv_{i}":[str(j) for j in range(1,5)] for i in range(1,5)}
         self.all_present_parts = []
         self.needed_kitting_trays = [0 for _ in range(4)]
         self.original_agv_parts_dict = {}
@@ -201,13 +205,18 @@ class GUI_CLASS(ctk.CTk):
         self.kitting_tray_selections = [ctk.StringVar() for _ in range(6)]
         for i in range(len(self.kitting_tray_selections)):
             self.kitting_tray_selections[i].trace_add('write', self.update_current_file_label)
-            self.kitting_tray_selections[i].trace_add('write', self.update_available_kitting_trays)
+            self.kitting_tray_selections[i].trace_add('write', self.show_kitting_trays)
         self.available_kitting_trays = []
+        self.kitting_tray_canvas_widgets = []
+        self.kitting_tray_ratio = 5/7
+        self.kitting_tray_width = 175
+        self.kitting_tray_height = int(self.kitting_tray_width * self.kitting_tray_ratio)
 
         # Assembly insert info
         self.assembly_insert_rotations = [ctk.DoubleVar() for _ in range(4)]
         for i in range(len(self.assembly_insert_rotations)):
             self.assembly_insert_rotations[i].trace_add('write', self.update_current_file_label)
+            self.assembly_insert_rotations[i].trace_add('write', self.show_assembly_stations)
         self.assembly_inserts_widgets = []
         
         # Bin parts info
@@ -292,6 +301,7 @@ class GUI_CLASS(ctk.CTk):
 
         # Challenges widgets
         self.current_challenges_widgets = []
+        self.challenge_sub_frame_widgets = []
         self.current_challenges_condition_widgets = []
         self.challenges_counter = ctk.StringVar()
         self.challenges_counter.set("0")
@@ -323,8 +333,8 @@ class GUI_CLASS(ctk.CTk):
         self.faulty_part_info["quadrants"] = [ctk.StringVar() for _ in range(4)]
 
         # Human challenge variables
-        self.human_info = {}
-        self.human_info["behavior"] = ctk.StringVar()
+        # self.human_info = {}
+        # self.human_info["behavior"] = ctk.StringVar()
 
         # Challenge condition variables
         self.challenge_condition_type = ctk.StringVar()
@@ -341,47 +351,72 @@ class GUI_CLASS(ctk.CTk):
         self.current_challenges_row = 1
 
         # Menu tabs
-        self.setup_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.notebook_frames = []
+        
+        self.setup_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.setup_frame.pack(fill='both',expand=True)
         self.notebook.add(self.setup_frame,text="Setup")
+        self.notebook_frames.append(self.setup_frame)
         self.add_setup_widgets_to_frame()
 
-        self.kitting_tray_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.kitting_tray_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.kitting_tray_frame.pack(fill='both',expand=True)
         self.notebook.add(self.kitting_tray_frame,text="Kitting Trays")
+        self.notebook_frames.append(self.kitting_tray_frame)
         self.add_kitting_trays_widgets_to_frame()
 
-        self.assembly_inserts_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.assembly_inserts_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.assembly_inserts_frame.pack(fill='both',expand=True)
         self.notebook.add(self.assembly_inserts_frame,text="Insert Rotation")
+        self.notebook_frames.append(self.assembly_inserts_frame)
         self.add_assembly_inserts_widgets_to_frame()
 
-        self.bin_parts_frame = ttk.Frame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.bin_parts_frame = ctk.CTkFrame(self.notebook, width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.bin_parts_frame.pack(fill='both',expand=True)
         self.notebook.add(self.bin_parts_frame,text="Bin Parts")
+        self.notebook_frames.append(self.bin_parts_frame)
         self.add_bin_parts_widgets_to_frame()
 
-        self.conveyor_parts_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.conveyor_parts_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.conveyor_parts_frame.pack(fill='both',expand=True)
         self.notebook.add(self.conveyor_parts_frame, text="Conveyor Parts")
+        self.notebook_frames.append(self.conveyor_parts_frame)
         self.add_conveyor_parts_widgets_to_frame()
 
-        self.orders_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.orders_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.orders_frame.pack(fill='both',expand=True)
         self.notebook.add(self.orders_frame, text="Orders")
+        self.notebook_frames.append(self.orders_frame)
         self.add_order_widgets_to_frame()
 
-        self.challenges_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.challenges_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.challenges_frame.pack(fill='both',expand=True)
         self.notebook.add(self.challenges_frame, text="Challenges")
+        self.notebook_frames.append(self.challenges_frame)
         self.add_challenges_widgets_to_frame()
 
-        self.current_file_frame = ttk.Frame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.current_file_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
         self.current_file_frame.pack(fill='both',expand=True)
         self.notebook.add(self.current_file_frame, text="Current File")
+        self.notebook_frames.append(self.current_file_frame)
         self.add_current_file_to_frame()
 
-        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)        
+        self.map_frame = ctk.CTkFrame(self.notebook,width=FRAMEWIDTH, height=FRAMEHEIGHT)
+        self.map_frame.pack(fill='both',expand=True)
+        self.notebook.add(self.map_frame, text="Full Map")
+        self.notebook_frames.append(self.map_frame)
+
+         # Map elements
+        self.map_canvas_bin_elements = []
+        self.map_canvas_conveyor_elements = []
+        self.map_canvas_conveyor_lines = []
+        self.map_canvas_assembly_station_elements = []
+        self.map_canvas_agv_elements = []
+        self.bin_parts_counter.trace_add('write',self.add_bin_parts_to_map)
+        self.add_map_to_frame()
+
+        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)
+        self.light_dark_button = ctk.CTkButton(self, text="", image=ctk.CTkImage(MENU_IMAGES["dark_icon"],size=(50,50)), command = self.switch_light_dark, fg_color="#ebebeb", bg_color="#ebebeb", hover_color="#ebebeb")
         self._build_assembly_parts_pose_direction()
 
         # Challenge trace_add functions
@@ -391,8 +426,11 @@ class GUI_CLASS(ctk.CTk):
             self.faulty_part_info["quadrants"][q].trace_add('write', self.enable_disable_faulty_part_save)
         for robot in ROBOTS:
             self.robot_malfunction_info[robot].trace_add('write', self.enable_disable_robot_malfunction_save)
-        self.open_initial_window()
+        
         self.order_info["assembly_task"]["station"].trace_add('write',self.show_correct_assembly_agvs)
+        self.order_counter.trace_add('write', self.add_agv_parts_to_map)
+
+        self.open_initial_window()
     
     # =======================================================
     #            Load gui from a previous file
@@ -401,8 +439,10 @@ class GUI_CLASS(ctk.CTk):
         self.initial_label.grid_forget()
         self.load_file_button.grid_forget()
         self.new_file_button.grid_forget()
-        self.notebook.grid(pady=10,column=MIDDLE_COLUMN,sticky=tk.E+tk.W+tk.N+tk.S)
-        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN)
+        self.notebook.grid(pady=10,column=LEFT_COLUMN, columnspan=2,sticky=tk.E+tk.W+tk.N+tk.S)
+        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,row=4)
+        self.light_dark_button.grid(pady=10, column=LEFT_COLUMN, row=4)
+        
         
     def open_initial_window(self):
         self.initial_label = ctk.CTkLabel(self, text="Would you like to open an existing file or create a new one?")
@@ -479,7 +519,7 @@ class GUI_CLASS(ctk.CTk):
             elif order.type == OrderMsg.ASSEMBLY:
                 for part in order.assembly_task.parts:
                     part : AssemblyPart
-                    self.available_quadrants[f"agv_{part.agv}"].remove(int(part.quadrant))
+                    self.available_quadrants[f"agv_{part.agv}"].remove(str(part.quadrant))
         self.kitting_order_counter.set(str(len(self.kitting_ids)))
         
         self.current_challenges = competition.competition["challenges"]
@@ -561,33 +601,67 @@ class GUI_CLASS(ctk.CTk):
         self.kitting_tray_frame.grid_columnconfigure(6, weight=1)
         tray_label = ctk.CTkLabel(self.kitting_tray_frame,text="Select the tray ids for each slot")
         tray_label.grid(row=1, column = MIDDLE_COLUMN)
-        kitting_tray_canvas = Canvas(self.kitting_tray_frame, height=400)
-        kitting_tray_canvas.create_rectangle(10, 10, 170, 310, 
-                                outline = "black", fill = "#f6f6f6",
-                                width = 2)
-        kitting_tray_canvas.create_rectangle(200, 10, 360, 310, 
-                                outline = "black", fill = "#f6f6f6",
-                                width = 2)
-        menu_coordinates = [(95,75),(95,175),(95,275),(285,75),(285,175),(285,275)]
+        self.kitting_tray_canvas = Canvas(self.kitting_tray_frame, width = 700, height=600, bd = 0, highlightthickness=0)
+        self.all_canvases.append(self.kitting_tray_canvas)
+        tray_coords = {"kts_1":[140, 10, 340, 510],
+                       "kts_2":[360, 10, 560, 510]}
+        kitting_table_line_coords = []
+        for key in tray_coords.keys():
+            for i in range(1,4):
+                quarter_length = (tray_coords[key][2]-tray_coords[key][0])//4
+                kitting_table_line_coords.append([tray_coords[key][0]+quarter_length*i-1,
+                                                  tray_coords[key][1],
+                                                  tray_coords[key][0]+quarter_length*i+1,
+                                                  tray_coords[key][3]])
+        self.kitting_tray_canvas.create_rectangle(tray_coords["kts_1"][0],
+                                             tray_coords["kts_1"][1],
+                                             tray_coords["kts_1"][2],
+                                             tray_coords["kts_1"][3],
+                                             outline = "black", fill = "#797979",
+                                             width = 2)
+        self.kitting_tray_canvas.create_rectangle(tray_coords["kts_2"][0],
+                                             tray_coords["kts_2"][1],
+                                             tray_coords["kts_2"][2],
+                                             tray_coords["kts_2"][3], 
+                                             outline = "black", fill = "#797979",
+                                             width = 2)
+        for coord in kitting_table_line_coords:
+            self.kitting_tray_canvas.create_rectangle(coord[0],
+                                                      coord[1],
+                                                      coord[2],
+                                                      coord[3],
+                                                      fill = "#242424")
+        menu_coordinates = [(55,400),(55,260),(55,120),(645,120),(645,260),(645,400)]
         label_coordinates = [(coord[0],coord[1]-35) for coord in menu_coordinates]
+        self.tray_center_coords = {f"slot_{i+1}":(((tray_coords["kts_1"][0]+tray_coords["kts_1"][2])//2 if i <=2 else (tray_coords["kts_2"][0]+tray_coords["kts_2"][2])//2),menu_coordinates[i][1]) for i in range(len(menu_coordinates))}
         
         for i in self.kitting_tray_selections:i.set(KITTING_TRAY_OPTIONS[0])
         tray_menus = [ctk.CTkOptionMenu(self.kitting_tray_frame,
                                         variable=self.kitting_tray_selections[i],
                                         values=KITTING_TRAY_OPTIONS,
-                                        fg_color = "#e2e2e2",
+                                        fg_color = "#f6f6f6",
                                         text_color="black",
                                         button_color="#d3d3d3",
                                         button_hover_color="#9e9e9e",
-                                        anchor='center',
-                                        width=50) for i in range(6)]
+                                        anchor='center') for i in range(6)]
         for i in range(6):
-            kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"Slot {i+1}:",bg_color="#f6f6f6"))
-            kitting_tray_canvas.create_window(menu_coordinates[i], window = tray_menus[i])
-        kitting_tray_canvas.create_window((90,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_1"))
-        kitting_tray_canvas.create_window((280,325),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
-        kitting_tray_canvas.grid(row = 3,column = MIDDLE_COLUMN, sticky = "we")
-
+            self.kitting_tray_canvas.create_window(label_coordinates[i], window=ctk.CTkLabel(self.kitting_tray_frame, text=f"Slot {i+1}:"))
+            self.kitting_tray_canvas.create_window(menu_coordinates[i], window = tray_menus[i])
+        self.kitting_tray_canvas.create_window(((tray_coords["kts_1"][0]+tray_coords["kts_1"][2])//2,555),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_1"))
+        self.kitting_tray_canvas.create_window(((tray_coords["kts_2"][0]+tray_coords["kts_2"][2])//2,555),window=ctk.CTkLabel(self.kitting_tray_frame,text="kts_2"))
+        self.kitting_tray_canvas.grid(row = 3,column = MIDDLE_COLUMN, sticky = "we")
+    
+    def kitting_trays_to_dict(self):
+        self.kitting_trays_dict = {}
+        slots = []
+        trays = []
+        for i in range(len(self.kitting_tray_selections)):
+            tray = self.kitting_tray_selections[i].get()
+            if tray != "":
+                slots.append(i+1)
+                trays.append(int(tray))
+        self.kitting_trays_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
+    
     def update_available_kitting_trays(self,_,__,___):
         self.available_kitting_trays.clear()
         for i in range(len(self.kitting_tray_selections)):
@@ -601,16 +675,30 @@ class GUI_CLASS(ctk.CTk):
         except:
             pass
     
-    def kitting_trays_to_dict(self):
-        self.kitting_trays_dict = {}
-        slots = []
-        trays = []
-        for i in range(len(self.kitting_tray_selections)):
-            tray = self.kitting_tray_selections[i].get()
-            if tray != "":
-                slots.append(i+1)
-                trays.append(int(tray))
-        self.kitting_trays_dict["kitting_trays"] = {"tray_ids":trays, "slots":slots}
+    def show_kitting_trays(self,_,__,___):
+        for widget in self.kitting_tray_canvas_widgets:
+            self.kitting_tray_canvas.delete(widget)
+        self.kitting_tray_canvas_widgets.clear()
+        selections = [val.get() for val in self.kitting_tray_selections]
+        for i in range(len(selections)):
+            if selections[i]!="":
+                self.kitting_tray_canvas_widgets.append(self.kitting_tray_canvas.create_window(self.tray_center_coords[f"slot_{i+1}"],
+                                                                        window=ctk.CTkLabel(self.kitting_tray_frame,
+                                                                                            text="",
+                                                                                            image=ctk.CTkImage(MENU_IMAGES["tray"],size=(self.kitting_tray_width,self.kitting_tray_height)),
+                                                                                            bg_color="#797979",
+                                                                                            fg_color="#797979",
+                                                                                            height = 0,
+                                                                                            width = 0)))
+                self.kitting_tray_canvas_widgets.append(self.kitting_tray_canvas.create_window(self.tray_center_coords[f"slot_{i+1}"],
+                                                                        window=ctk.CTkLabel(self.kitting_tray_frame,
+                                                                                            text="",
+                                                                                            image=ctk.CTkImage(MENU_IMAGES[f"id_0{selections[i]}"].rotate(90),size=(34,34)),
+                                                                                            bg_color="#797979",
+                                                                                            fg_color="#797979",
+                                                                                            height = 0,
+                                                                                            width = 0)))
+    
     
     # =======================================================
     #               Insert Rotation Functions
@@ -639,8 +727,16 @@ class GUI_CLASS(ctk.CTk):
             self.assembly_inserts_widgets[i][1].grid(row = i+1, column = RIGHT_COLUMN, padx = 10, pady = 15)
         filler_label = ctk.CTkLabel(self.assembly_inserts_frame, text = " "*60) # So the menu does not move when the labels change
         filler_label.grid(row = 10, column = LEFT_COLUMN)
+    
     def assembly_inserts_to_dict(self):
-        self.assembly_inserts_dict["assembly_inserts"] = {ASSEMBLY_STATIONS[i]:SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())] for i in range(len(ASSEMBLY_STATIONS))}
+        rotation_vals = [0 for i in range(len(ASSEMBLY_STATIONS))]
+        for i in range(len(ASSEMBLY_STATIONS)):
+            rotation_vals[i] = SLIDER_STR[SLIDER_VALUES.index(self.assembly_insert_rotations[i].get())]
+            try:
+                rotation_vals[i] = float(rotation_vals[i])
+            except:
+                pass
+        self.assembly_inserts_dict["assembly_inserts"] = {ASSEMBLY_STATIONS[i]:rotation_vals[i] for i in range(len(ASSEMBLY_STATIONS))}
     
     # =======================================================
     #                 AGV Parts Functions
@@ -672,7 +768,12 @@ class GUI_CLASS(ctk.CTk):
                         temp_dict["type"] = _part_type_str[part.part.type].lower()
                         temp_dict["color"] = _part_color_str[part.part.color].lower()
                         temp_dict["quadrant"] = int(part.quadrant)
-                        temp_dict["rotation"] = str(part.rotation)
+                        rotation_val = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
+                        try:
+                            rotation_val = float(rotation_val)
+                        except:
+                            pass
+                        temp_dict["rotation"] = rotation_val
                         self.agv_parts_dict[agv_key]["parts"].append(temp_dict)
 
              
@@ -685,12 +786,12 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_frame.grid_rowconfigure(100, weight=1)
         self.bin_parts_frame.grid_columnconfigure(0, weight=1)
         self.bin_parts_frame.grid_columnconfigure(6, weight=1)
-        bin_selection = ctk.StringVar()
-        bin_selection.set(ALL_BINS[0])
+        self.bin_selection = ctk.StringVar()
+        self.bin_selection.set(ALL_BINS[0])
         bin_label = ctk.CTkLabel(self.bin_parts_frame,text="Select the bin you would like to add parts to:")
         bin_label.grid(column = MIDDLE_COLUMN, columnspan = 2,row=1)
         bin_menu = ctk.CTkOptionMenu(self.bin_parts_frame,
-                                        variable=bin_selection,
+                                        variable=self.bin_selection,
                                         values=ALL_BINS,
                                         fg_color = "#e2e2e2",
                                         text_color="black",
@@ -701,28 +802,30 @@ class GUI_CLASS(ctk.CTk):
         bin_menu.grid(column = MIDDLE_COLUMN, columnspan = 2,row=2)
         assembly_stations_label = ctk.CTkLabel(self.bin_parts_frame,text="↑↑↑ Assembly Stations ↑↑↑")
         assembly_stations_label.grid(column = MIDDLE_COLUMN, columnspan = 2,row=3)
-        bin_map_canvas = Canvas(self.bin_parts_frame, height = 250, width=255)
-        self.show_map(bin_map_canvas, bin_selection)
+        bin_map_canvas = Canvas(self.bin_parts_frame, height = 250, width=255,bd = 0, highlightthickness=0)
+        self.all_canvases.append(bin_map_canvas)
+        self.show_map(bin_map_canvas, self.bin_selection)
         bin_map_canvas.grid(column=RIGHT_COLUMN, sticky="we",row = 4,padx=25)
-        bin_parts_canvas = Canvas(self.bin_parts_frame, height=320)
+        self.bin_parts_canvas = Canvas(self.bin_parts_frame, height=320,bd = 0, highlightthickness=0)
+        self.all_canvases.append(self.bin_parts_canvas)
         
-        bin_parts_canvas.create_rectangle(75, 10, 375, 310, 
+        self.bin_parts_canvas.create_rectangle(75, 10, 375, 310, 
                                 outline = "black", fill = "#60c6f1",
                                 width = 2)
-        self.show_grid(bin_selection,bin_parts_canvas,self.bin_parts_frame)
-        bin_parts_canvas.grid(column = MIDDLE_COLUMN, sticky = "we", row=4)
+        self.show_grid(self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame)
+        self.bin_parts_canvas.grid(column = MIDDLE_COLUMN, sticky = "we", row=4)
         conveyor_belt_label = ctk.CTkLabel(self.bin_parts_frame,text="↓↓↓ Conveyor Belt ↓↓↓")
         conveyor_belt_label.grid(column = MIDDLE_COLUMN, columnspan = 2)
-        add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,bin_selection))
+        add_multiple_parts_button = ctk.CTkButton(self.bin_parts_frame,text="Add multiple parts",command=partial(self.add_multiple_parts,self.bin_selection))
         add_multiple_parts_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 5)
-        clear_bin_button = ctk.CTkButton(self.bin_parts_frame, text="Clear bin", command = partial(self.clear_bin, bin_selection))
+        clear_bin_button = ctk.CTkButton(self.bin_parts_frame, text="Clear bin", command = partial(self.clear_bin, self.bin_selection))
         clear_bin_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 5)
         flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
         flipped_meaning_label.grid(column = MIDDLE_COLUMN, columnspan = 2,pady = 10)
-        bin_selection.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
-        bin_selection.trace_add('write',partial(self.update_map,bin_map_canvas, bin_selection))
-        self.bin_parts_counter.trace_add('write',partial(self.update_bin_grid, bin_selection,bin_parts_canvas,self.bin_parts_frame))
-        self.bin_parts_counter.trace_add('write',partial(self.update_map,bin_map_canvas, bin_selection))
+        self.bin_selection.trace_add('write',partial(self.update_bin_grid, self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame))
+        self.bin_selection.trace_add('write',partial(self.update_map,bin_map_canvas, self.bin_selection))
+        self.bin_parts_counter.trace_add('write',partial(self.update_bin_grid, self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame))
+        self.bin_parts_counter.trace_add('write',partial(self.update_map,bin_map_canvas, self.bin_selection))
     def clear_bin(self, bin_selection):
         current_bin = bin_selection.get()
         self.current_bin_parts[current_bin]=["" for _ in range(9)]
@@ -763,6 +866,7 @@ class GUI_CLASS(ctk.CTk):
                                                                   size=(10,10)),
                                                text="",
                                                bg_color=("#60c6f1" if key==bin_selection.get() else "white"),
+                                               fg_color=("#60c6f1" if key==bin_selection.get() else "white"),
                                                height=0)
                     self.current_bin_map_canvas_elements.append(canvas.create_window(part_coordinates[key][slot],
                                                                                      window=image_label))
@@ -785,11 +889,11 @@ class GUI_CLASS(ctk.CTk):
             if self.current_bin_parts[bin_selection.get()][i]=="":
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES["plus"],size=(75,75)),
-                                                            fg_color="transparent",bg_color="#4FA2C6",hover_color="#458DAC",width=1))
+                                                            fg_color="#60c6f1",bg_color="#4FA2C6",hover_color="#458DAC", width = 1))
             else:
                 current_bin_slot_widgets.append(ctk.CTkButton(main_wind,text=f"",command=partial(self.add_bin_part, bin_selection.get(), i),
                                                             image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[bin_selection.get()][i]].rotate(self.bin_parts[bin_selection.get()][i].rotation*180/pi),size=(75,75)),
-                                                            fg_color="transparent",bg_color="#60c6f1",hover_color="#60c6f1",width=1))
+                                                            fg_color="#60c6f1",bg_color="#60c6f1",hover_color="#60c6f1", width = 1))
             if self.bin_parts[bin_selection.get()][i].flipped == "1":
                 current_flipped_labels[i]=(ctk.CTkLabel(main_wind, text="F",bg_color="#60c6f1"))
         for i in range(len(current_bin_slot_widgets)):
@@ -847,7 +951,6 @@ class GUI_CLASS(ctk.CTk):
         back_button = ctk.CTkButton(add_part_bin_window,text="Back",command=add_part_bin_window.destroy)
         back_button.pack()
         
-
     def remove_part_from_bin(self, bin, index, window):
         self.current_bin_parts[bin][index] = ""
         self.bin_parts[bin][index] = BinPart()
@@ -960,7 +1063,12 @@ class GUI_CLASS(ctk.CTk):
                     temp_bin_part_dict = {}
                     temp_bin_part_dict["type"] = _part_type_str[self.bin_parts[bin][slot].part.type]
                     temp_bin_part_dict["color"] = _part_color_str[self.bin_parts[bin][slot].part.color]
-                    temp_bin_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(self.bin_parts[bin][slot].rotation)]
+                    rotation_val = SLIDER_STR[SLIDER_VALUES.index(self.bin_parts[bin][slot].rotation)]
+                    try:
+                        rotation_val = float(rotation_val)
+                    except:
+                        pass
+                    temp_bin_part_dict["rotation"] = rotation_val
                     temp_bin_part_dict["flipped"] = True if self.bin_parts[bin][slot].flipped == "1" else False
                     temp_bin_part_dict["slots"] = temp_slots
                     try:
@@ -1067,6 +1175,7 @@ class GUI_CLASS(ctk.CTk):
         del self.conveyor_parts[index]
         del self.current_conveyor_parts[index]
         self.conveyor_parts_counter.set(str(len(self.current_conveyor_parts)))
+        self.show_conveyor_parts.set("0")
 
     def update_spawn_rate_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
         label.configure(text=f"Spawn rate (seconds): {value.get()}")
@@ -1162,6 +1271,7 @@ class GUI_CLASS(ctk.CTk):
         label.configure(text=f"Offset: {value.get()}")
     
     def save_conveyor_parts(self, window:ctk.CTkToplevel, conveyor_part_vals, index):
+        self.show_conveyor_parts.set("0")
         color = conveyor_part_vals["color"].get()
         pType = conveyor_part_vals["pType"].get()
         for _ in range(int(conveyor_part_vals["num_parts"].get())):
@@ -1190,7 +1300,12 @@ class GUI_CLASS(ctk.CTk):
                 temp_conveyor_part_dict["number"] = part.part_lot.quantity
                 temp_conveyor_part_dict["offset"] = part.offset
                 temp_conveyor_part_dict["flipped"] = True if part.flipped == "1" else False
-                temp_conveyor_part_dict["rotation"] = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
+                rotation_val = SLIDER_STR[SLIDER_VALUES.index(part.rotation)]
+                try:
+                    rotation_val = float(rotation_val)
+                except:
+                    pass
+                temp_conveyor_part_dict["rotation"] = rotation_val
                 self.conveyor_parts_dict["parts_to_spawn"].append(temp_conveyor_part_dict)
 
     # =======================================================
@@ -1299,6 +1414,7 @@ class GUI_CLASS(ctk.CTk):
             table_sep.grid(column=FAR_LEFT_COLUMN,columnspan=5, row=current_row+1, pady=10, sticky = "we")
             self.current_main_order_widgets.append(table_sep)
             current_row+=2
+
     def edit_order(self, index : int):
         self.temp_order_hold = (deepcopy(self.current_orders[index]),index)
         self.set_order_variables_to_current_order(self.current_orders[index])
@@ -1595,6 +1711,7 @@ class GUI_CLASS(ctk.CTk):
         return sorted(quadrant_options)
 
     def show_kitting_menu(self):
+        self.save_order_button.configure(text="Save kitting order")
         self.order_info["order_type"].set("kitting")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
@@ -1721,6 +1838,7 @@ class GUI_CLASS(ctk.CTk):
 
     def show_assembly_menu(self):
         self.order_info["order_type"].set("assembly")
+        self.save_order_button.configure(text="Save assembly order")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
         self.current_left_order_widgets.clear()
@@ -1801,7 +1919,7 @@ class GUI_CLASS(ctk.CTk):
         a_part_dict["agv"] = ctk.StringVar()
         a_part_dict["quadrant"] = ctk.StringVar()
         a_part_dict["rotation"] = ctk.DoubleVar()
-        
+        self.update_available_agvs(1,1,1)
         if assembly_part==None:
             a_part_dict["color"].set(PART_COLORS[0])
             a_part_dict["pType"].set(available_part_types[0])
@@ -1812,6 +1930,8 @@ class GUI_CLASS(ctk.CTk):
             a_part_dict["color"].set(_part_color_str[assembly_part.part.color].lower())
             a_part_dict["pType"].set(_part_type_str[assembly_part.part.type].lower())
             self.available_quadrants[f"agv_{str(assembly_part.agv)}"].append(str(assembly_part.quadrant))
+            self.available_assembly_agvs.append(str(assembly_part.agv))
+            self.available_assembly_agvs = list(set([str(val) for val in sorted([int(x) for x in self.available_assembly_agvs])]))
             self.available_quadrants[f"agv_{str(assembly_part.agv)}"] = [str(val) for val in sorted([int(val) for val in self.available_quadrants[f"agv_{str(assembly_part.agv)}"]])]
             a_part_dict["agv"].set(str(assembly_part.agv))
             a_part_dict["quadrant"].set(str(assembly_part.quadrant))
@@ -1863,11 +1983,14 @@ class GUI_CLASS(ctk.CTk):
         new_assembly_part = AssemblyPart(a_part_dict["color"].get(),a_part_dict["pType"].get(),a_part_dict["agv"].get(),a_part_dict["quadrant"].get(),a_part_dict["rotation"].get())
         if index == -1:
             self.order_info["assembly_task"]["parts"].append(new_assembly_part)
-            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(int(a_part_dict["quadrant"].get()))
+            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(str(a_part_dict["quadrant"].get()))
         else:
             self.order_info["assembly_task"]["parts"][index] = new_assembly_part
-            self.available_quadrants[f"agv_{original_agv}"].remove(a_part_dict["quadrant"].get())
-            self.available_quadrants[f"agv_{str(original_agv)}"] = [str(val) for val in sorted([int(val) for val in self.available_quadrants[f"agv_{str(original_agv)}"]])]
+            self.available_quadrants[f"agv_{original_agv}"].append(str(original_quadrant))
+            self.available_quadrants[f"agv_{str(original_agv)}"] = [str(val) for val in list(set(sorted([int(val) for val in self.available_quadrants[f"agv_{str(original_agv)}"]])))]
+            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"].remove(str(a_part_dict["quadrant"].get()))
+            self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"] = [str(val) for val in list(set(sorted([int(val) for val in self.available_quadrants[f"agv_{a_part_dict['agv'].get()}"]])))]
+            
         if len(self.order_info["assembly_task"]["parts"])>3:
             self.add_part_assembly_task.configure(state=DISABLED)
         self.move_order_widgets()
@@ -1875,6 +1998,7 @@ class GUI_CLASS(ctk.CTk):
         window.destroy()
     
     def show_combined_menu(self):
+        self.save_order_button.configure(text="Save combined order")
         self.order_info["order_type"].set("combined")
         for widget in self.current_left_order_widgets:
             widget.grid_forget()
@@ -2081,9 +2205,15 @@ class GUI_CLASS(ctk.CTk):
         self.add_dropped_part_button = ctk.CTkButton(self.challenges_frame, text="Add dropped part challenge", command=self.add_dropped_part_challenge)
         self.add_robot_malfunction_button = ctk.CTkButton(self.challenges_frame, text="Add robot malfunction challenge", command=self.add_robot_malfunction_challenge)
         self.add_sensor_blackout_button = ctk.CTkButton(self.challenges_frame, text="Add sensor blackout challenge", command=self.add_sensor_blackout_challenge)
-        self.add_faulty_part_button = ctk.CTkButton(self.challenges_frame, text = "Add faulty part challenge", command=partial(self.add_faulty_part_challenge,1,1,1))
-        self.add_human_button = ctk.CTkButton(self.challenges_frame, text="Add human challenge", command = self.add_human_challenge)
-
+        self.add_faulty_part_button = ctk.CTkButton(self.challenges_frame, text = "Add faulty part challenge", command=partial(self.add_faulty_part_challenge))
+        # self.add_human_button = ctk.CTkButton(self.challenges_frame, text="Add human challenge", command = self.add_human_challenge)
+        
+        self.challenges_sub_frame = ctk.CTkScrollableFrame(self.challenges_frame, width = 700, height=300)
+        self.challenges_sub_frame.grid_rowconfigure(0, weight=1)
+        self.challenges_sub_frame.grid_rowconfigure(100, weight=1)
+        self.challenges_sub_frame.grid_columnconfigure(0, weight=1)
+        self.challenges_sub_frame.grid_columnconfigure(6, weight=1)
+        
         self.show_main_challenges_menu(1,1,1)
 
         self.save_challenge_button = ctk.CTkButton(self.challenges_frame,text="Save", command=self.save_challenge)
@@ -2092,7 +2222,7 @@ class GUI_CLASS(ctk.CTk):
         self.order_counter.trace_add('write', self.show_main_challenges_menu)
         self.challenges_counter.trace_add('write', self.show_main_challenges_menu)
         self.challenge_condition_type.trace_add('write', self.show_correct_condition_menu)
-        self.faulty_part_info["order_id"].trace_add('write', self.add_faulty_part_challenge)
+        
 
     def reset_challenge_condition_variables(self, type_aswell = True):
         if type_aswell:
@@ -2163,11 +2293,20 @@ class GUI_CLASS(ctk.CTk):
         self.grid_and_append_challenge_widget(self.add_sensor_blackout_button)
         if len(self.kitting_ids)>0:
             self.grid_and_append_challenge_widget(self.add_faulty_part_button)
-        self.grid_and_append_challenge_widget(self.add_human_button)
+        # self.grid_and_append_challenge_widget(self.add_human_button)
         index = 0
         if len(self.current_challenges)>0:
+            above_challenges_label_sep = ttk.Separator(self.challenges_frame,orient='horizontal')
+            above_challenges_label_sep.grid(column=LEFT_COLUMN,columnspan=3, row=self.current_challenges_row, pady=10, sticky = "we")
+            self.current_challenges_widgets.append(above_challenges_label_sep)
+            self.current_challenges_row+=1
             self.grid_and_append_challenge_widget(ctk.CTkLabel(self.challenges_frame,text="Challenges:"))
+            below_challenges_label_sep = ttk.Separator(self.challenges_frame,orient='horizontal')
+            below_challenges_label_sep.grid(column=LEFT_COLUMN,columnspan=3, row=self.current_challenges_row, pady=10, sticky = "we")
+            self.current_challenges_widgets.append(below_challenges_label_sep)
+            self.current_challenges_row+=1
         challenge_counter = {challenge:0 for challenge in CHALLENGE_TYPES}
+        scroll_frame_current_row = 0
         for challenge in self.current_challenges:
             challenge : ChallengeMsg
             if challenge.type == ChallengeMsg.FAULTY_PART:
@@ -2179,37 +2318,44 @@ class GUI_CLASS(ctk.CTk):
             elif challenge.type == ChallengeMsg.DROPPED_PART:
                 challenge_counter["dropped_part"]+=1
                 label_text=f"Dropped Part {challenge_counter['dropped_part']}"
-            elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
+            else:
                 challenge_counter["sensor_blackout"]+=1
                 label_text=f"Sensor Blackout {challenge_counter['sensor_blackout']}"
-            else:
-                challenge_counter["human"]+=1
-                label_text=f"Human Challenge {challenge_counter['human']}"
-            challenge_label = ctk.CTkLabel(self.challenges_frame, text=label_text)
-            challenge_label.grid(column = LEFT_COLUMN, row = self.current_challenges_row, pady=3)
+            # else:
+            #     challenge_counter["human"]+=1
+            #     label_text=f"Human Challenge {challenge_counter['human']}"
+            challenge_label = ctk.CTkLabel(self.challenges_sub_frame, text=label_text)
+            challenge_label.grid(column = LEFT_COLUMN, row = scroll_frame_current_row, pady=3,padx = 15)
             self.current_challenges_widgets.append(challenge_label)
 
-            edit_challenge_button = ctk.CTkButton(self.challenges_frame, text="Edit challenge", command = partial(self.edit_challenge, challenge, index))
-            edit_challenge_button.grid(column = MIDDLE_COLUMN, row = self.current_challenges_row)
-            self.current_challenges_widgets.append(edit_challenge_button)
+            edit_challenge_button = ctk.CTkButton(self.challenges_sub_frame, text="Edit challenge", command = partial(self.edit_challenge, challenge, index))
+            edit_challenge_button.grid(column = MIDDLE_COLUMN, row = scroll_frame_current_row,padx = 15)
+            self.challenge_sub_frame_widgets.append(edit_challenge_button)
 
-            remove_challenge_button = ctk.CTkButton(self.challenges_frame,text="Remove challenge", command=partial(self.remove_challenge, index))
-            remove_challenge_button.grid(column = RIGHT_COLUMN, row = self.current_challenges_row)
-            self.current_challenges_widgets.append(remove_challenge_button)
-            self.current_challenges_row+=1
+            remove_challenge_button = ctk.CTkButton(self.challenges_sub_frame,text="Remove challenge", command=partial(self.remove_challenge, index))
+            remove_challenge_button.grid(column = RIGHT_COLUMN, row = scroll_frame_current_row,padx = 15)
+            self.challenge_sub_frame_widgets.append(remove_challenge_button)
+            scroll_frame_current_row+=1
+            
+            challenges_table_sep = ttk.Separator(self.challenges_sub_frame,orient='horizontal')
+            challenges_table_sep.grid(column=LEFT_COLUMN,columnspan=3, row=scroll_frame_current_row, pady=10, sticky = "we")
+            self.challenge_sub_frame_widgets.append(challenges_table_sep)
+            scroll_frame_current_row+=1
+            
             index+=1
+        self.grid_and_append_challenge_widget(self.challenges_sub_frame)
     
     def edit_challenge(self, challenge, index):
         if challenge.type == ChallengeMsg.FAULTY_PART:
-            self.add_faulty_part_challenge(1,1,1,challenge.faulty_part_challenge, index)
+            self.add_faulty_part_challenge(challenge.faulty_part_challenge, index)
         elif challenge.type == ChallengeMsg.DROPPED_PART:
             self.add_dropped_part_challenge(challenge.dropped_part_challenge,index)
         elif challenge.type == ChallengeMsg.SENSOR_BLACKOUT:
             self.add_sensor_blackout_challenge(challenge.sensor_blackout_challenge,index)
-        elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
-            self.add_robot_malfunction_challenge(challenge.robot_malfunction_challenge, index)
         else:
-            self.add_human_challenge(challenge.human_challenge, index)
+            self.add_robot_malfunction_challenge(challenge.robot_malfunction_challenge, index)
+        # else:
+        #     self.add_human_challenge(challenge.human_challenge, index)
     
     def remove_challenge(self, index):
         del self.current_challenges[index]
@@ -2235,6 +2381,9 @@ class GUI_CLASS(ctk.CTk):
         for widget in self.current_challenges_condition_widgets:
             widget.grid_forget()
         self.current_challenges_condition_widgets.clear()
+        for widget in self.challenge_sub_frame_widgets:
+            widget.grid_forget()
+        self.challenge_sub_frame_widgets.clear()
         self.current_challenges_row = 1
 
     def updated_challenge_save_hover_msg(self):
@@ -2476,7 +2625,7 @@ class GUI_CLASS(ctk.CTk):
         for variable in self.faulty_part_info["quadrants"]:
             variable.set('0')
     
-    def add_faulty_part_challenge(self,_,__,___,faulty_part_challenge = None, index = -1):
+    def add_faulty_part_challenge(self,faulty_part_challenge = None, index = -1):
         self.clear_challenges_menu()
 
         self.current_challenge_type = "faulty part"
@@ -2548,50 +2697,50 @@ class GUI_CLASS(ctk.CTk):
         else:
             self.current_challenges[index] = new_challenge
 
-    def reset_human_info(self):
-        self.human_info["behavior"].set(BEHAVIORS[0])
+    # def reset_human_info(self):
+    #     self.human_info["behavior"].set(BEHAVIORS[0])
     
-    def add_human_challenge(self, human_challenge = None, index = -1):
-        self.clear_challenges_menu()
+    # def add_human_challenge(self, human_challenge = None, index = -1):
+    #     self.clear_challenges_menu()
 
-        self.current_challenge_type = "human"
+    #     self.current_challenge_type = "human"
 
-        behavior_label = ctk.CTkLabel(self.challenges_frame, text="Select the behavior for the human")
-        self.grid_and_append_challenge_widget(behavior_label)
-        behavior_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.human_info["behavior"],values=BEHAVIORS)
-        self.grid_and_append_challenge_widget(behavior_menu)
+    #     behavior_label = ctk.CTkLabel(self.challenges_frame, text="Select the behavior for the human")
+    #     self.grid_and_append_challenge_widget(behavior_label)
+    #     behavior_menu = ctk.CTkOptionMenu(self.challenges_frame, variable=self.human_info["behavior"],values=BEHAVIORS)
+    #     self.grid_and_append_challenge_widget(behavior_menu)
 
-        self.show_challenges_condition_menu()
+    #     self.show_challenges_condition_menu()
 
-        if human_challenge != None:
-            self.human_info["behavior"].set(BEHAVIORS[human_challenge.behavior])
-            self.set_challenge_condition_info_to_existing(human_challenge.condition)
+    #     if human_challenge != None:
+    #         self.human_info["behavior"].set(BEHAVIORS[human_challenge.behavior])
+    #         self.set_challenge_condition_info_to_existing(human_challenge.condition)
 
-        self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human", index), state=NORMAL)
-        self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
-        self.current_challenges_widgets.append(self.cancel_challenge_button)
-        self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
-        self.current_challenges_widgets.append(self.save_challenge_button)
+    #     self.save_challenge_button.configure(text="Save human challenge", command=partial(self.save_challenge, "human", index), state=NORMAL)
+    #     self.cancel_challenge_button.grid(column = MIDDLE_COLUMN, row = 49)
+    #     self.current_challenges_widgets.append(self.cancel_challenge_button)
+    #     self.save_challenge_button.grid(pady=5,column = MIDDLE_COLUMN, row = 48)
+    #     self.current_challenges_widgets.append(self.save_challenge_button)
     
-    def save_human_challenge(self, index):
-        new_challenge = ChallengeMsg()
-        new_challenge.type = 4
-        human_challenge = HumanChallengeMsg()
-        human_challenge.behavior = BEHAVIORS.index(self.human_info["behavior"].get())
-        human_challenge.condition.type = CONDITION_TYPE.index(self.challenge_condition_type.get())
-        if self.challenge_condition_type.get()=="time":
-            human_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
-        elif self.challenge_condition_type.get()=="part_place":
-            human_challenge.condition.part_place_condition.part.color = _part_color_ints[self.challenge_condition_info["color"].get().upper()]
-            human_challenge.condition.part_place_condition.part.type = _part_type_ints[self.challenge_condition_info["type"].get().upper()]
-            human_challenge.condition.part_place_condition.agv = int(self.challenge_condition_info["agv"].get())
-        else:
-            human_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
-        new_challenge.human_challenge = human_challenge
-        if index == -1:
-            self.current_challenges.append(new_challenge)
-        else:
-            self.current_challenges[index] = new_challenge
+    # def save_human_challenge(self, index):
+    #     new_challenge = ChallengeMsg()
+    #     new_challenge.type = 4
+    #     human_challenge = HumanChallengeMsg()
+    #     human_challenge.behavior = BEHAVIORS.index(self.human_info["behavior"].get())
+    #     human_challenge.condition.type = CONDITION_TYPE.index(self.challenge_condition_type.get())
+    #     if self.challenge_condition_type.get()=="time":
+    #         human_challenge.condition.time_condition.seconds = float(self.challenge_condition_info["time_condition"].get())
+    #     elif self.challenge_condition_type.get()=="part_place":
+    #         human_challenge.condition.part_place_condition.part.color = _part_color_ints[self.challenge_condition_info["color"].get().upper()]
+    #         human_challenge.condition.part_place_condition.part.type = _part_type_ints[self.challenge_condition_info["type"].get().upper()]
+    #         human_challenge.condition.part_place_condition.agv = int(self.challenge_condition_info["agv"].get())
+    #     else:
+    #         human_challenge.condition.submission_condition.order_id = self.challenge_condition_info["submission_id"].get()
+    #     new_challenge.human_challenge = human_challenge
+    #     if index == -1:
+    #         self.current_challenges.append(new_challenge)
+    #     else:
+    #         self.current_challenges[index] = new_challenge
 
     def save_challenge(self, type_of_challenge:str, index):
         if type_of_challenge == "dropped_part":
@@ -2600,10 +2749,10 @@ class GUI_CLASS(ctk.CTk):
             self.save_robot_malfunction_challenge(index)
         elif type_of_challenge == "sensor_blackout":
             self.save_sensor_blackout_challenge(index)
-        elif type_of_challenge == "faulty_part":
-            self.save_faulty_part_challenge(index)
         else:
-            self.save_human_challenge(index)
+            self.save_faulty_part_challenge(index)
+        # else:
+        #     self.save_human_challenge(index)
         self.challenges_counter.set(len(self.current_challenges))
         self.reset_all_challenges()
         self.clear_challenges_menu()
@@ -2613,7 +2762,7 @@ class GUI_CLASS(ctk.CTk):
         self.reset_challenge_condition_variables()
         self.reset_dropped_part_info()
         self.reset_faulty_part_info()
-        self.reset_human_info()
+        # self.reset_human_info()
         self.reset_robot_malfunction_info()
         self.reset_sensor_blackout_info()
     
@@ -2645,13 +2794,13 @@ class GUI_CLASS(ctk.CTk):
                         faulty_part_dict["faulty_part"]["quadrant4"] = True
                     self.challenges_dict["challenges"].append(faulty_part_dict)
 
-                elif challenge.type == ChallengeMsg.HUMAN:
-                    human_dict = {"human":{}}
-                    human_dict["human"]["behavior"] = BEHAVIORS[challenge.human_challenge.behavior]
-                    condition_dict = self.announcement_to_dict(challenge.human_challenge.condition)
-                    for key in condition_dict.keys():
-                        human_dict["human"][key] = condition_dict[key]
-                    self.challenges_dict["challenges"].append(human_dict)
+                # elif challenge.type == ChallengeMsg.HUMAN:
+                #     human_dict = {"human":{}}
+                #     human_dict["human"]["behavior"] = BEHAVIORS[challenge.human_challenge.behavior]
+                #     condition_dict = self.announcement_to_dict(challenge.human_challenge.condition)
+                #     for key in condition_dict.keys():
+                #         human_dict["human"][key] = condition_dict[key]
+                #     self.challenges_dict["challenges"].append(human_dict)
 
                 elif challenge.type == ChallengeMsg.ROBOT_MALFUNCTION:
                     robot_malfunction_dict = {"robot_malfunction":{}}
@@ -2666,7 +2815,6 @@ class GUI_CLASS(ctk.CTk):
                         robot_malfunction_dict["robot_malfunction"][key] = copy(condition_dict[key])
                     self.challenges_dict["challenges"].append(robot_malfunction_dict)
                     
-
                 else:
                     sensor_blackout_dict = {"sensor_blackout":{}}
                     sensor_blackout_dict["sensor_blackout"]["duration"] = challenge.sensor_blackout_challenge.duration
@@ -2861,6 +3009,265 @@ class GUI_CLASS(ctk.CTk):
             self.sub_frame.configure(width = self.notebook.winfo_width()-30, height=self.notebook.winfo_height()-50)
         self.current_file_label.configure(text=new_label)
 
+    
+    # =======================================================
+    #                       Map
+    # =======================================================
+    def add_map_to_frame(self):
+        self.map_canvas=Canvas(self.map_frame,width = 700, height=600,bd = 0, highlightthickness=0)
+        self.all_canvases.append(self.map_canvas)
+        self.show_conveyor_parts = ctk.StringVar()
+        self.show_conveyor_parts.set("0")
+        bin_coordinates = {"bin8":[50,230,155,335],
+                           "bin7":[165,230,270,335],
+                           "bin5":[50,345,155,450],
+                           "bin6":[165,345,270,450],
+                           "bin3":[430,230,535,335],
+                           "bin4":[545,230,650,335],
+                           "bin2":[430,345,535,450],
+                           "bin1":[545,345,650,450]}
+        bin_label_coordinates = {key:((bin_coordinates[key][0]+bin_coordinates[key][2])//2,bin_coordinates[key][1]-11 if bin_coordinates[key][1] == 230 else bin_coordinates[key][3]+11) for key in bin_coordinates.keys()}
+        self.bin_parts_map_coords = {key:[] for key in bin_coordinates.keys()}
+        for key in bin_coordinates.keys():
+            starting_x = bin_coordinates[key][0]
+            starting_y = bin_coordinates[key][1]
+            for i in range(9):
+                self.bin_parts_map_coords[key].append((starting_x+(i%3+1)*26,starting_y+(i//3+1)*26))
+        for key in bin_coordinates.keys():
+            self.map_canvas.create_window(bin_label_coordinates[key],
+                                          window=ctk.CTkLabel(self.map_frame,
+                                          text=key,
+                                          height=0))
+            self.map_canvas.create_rectangle(bin_coordinates[key][0],
+                                                        bin_coordinates[key][1],
+                                                        bin_coordinates[key][2],
+                                                        bin_coordinates[key][3],
+                                                        outline="black",
+                                                        fill = "#60c6f1",
+                                                        width = 2)
+            
+        self.conveyor_coordinates = [2,476,698,598]
+        self.map_canvas.create_rectangle(self.conveyor_coordinates[0],
+                                         self.conveyor_coordinates[1],
+                                         self.conveyor_coordinates[2],
+                                         self.conveyor_coordinates[3],
+                                         outline="black",
+                                         fill = "#a4a4a0",
+                                         width = 2)
+        self.conveyor_lines_index = 0
+        for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+            self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[1]+1,
+                                                                                   self.conveyor_coordinates[0]+i+4+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[3]-1,
+                                                                                   fill = "#706b62",
+                                                                                   width = 0))
+        
+        self.assembly_station_coords = {"as1":[490,125,590,200],
+                                        "as2":[490,25,590,100],
+                                        "as3":[100,125,200,200],
+                                        "as4":[100,25,200,100]}
+        assembly_station_label_coords = {key:((self.assembly_station_coords[key][0]+self.assembly_station_coords[key][2])//2,self.assembly_station_coords[key][1]-8 if self.assembly_station_coords[key][1] == 230 else self.assembly_station_coords[key][3]+8) for key in self.assembly_station_coords.keys()}
+        for key in self.assembly_station_coords.keys():
+            self.map_canvas.create_window(assembly_station_label_coords[key],
+                                          window=ctk.CTkLabel(self.map_frame,
+                                          text=key,
+                                          height=0))
+            self.map_canvas.create_rectangle(self.assembly_station_coords[key][0],
+                                             self.assembly_station_coords[key][1],
+                                             self.assembly_station_coords[key][2],
+                                             self.assembly_station_coords[key][3],
+                                             fill="#a86a2b",
+                                             width = 0)
+        
+        self.agv_coords = {"agv4":(35,90),
+                           "agv3":(265,90),
+                           "agv2":(425,90),
+                           "agv1":(660,90)}
+        for key in self.agv_coords:
+            self.map_canvas.create_window(self.agv_coords[key],
+                                          window=ctk.CTkLabel(self.map_frame,text="",
+                                                              image=ctk.CTkImage(MENU_IMAGES["agv"],size=(108,180)),
+                                                              height=0,width=0))
+            label_coord = (self.agv_coords[key][0],184)
+            self.map_canvas.create_window(label_coord, window=ctk.CTkLabel(self.map_frame, text=key, height=0))
+        
+        self.map_canvas.pack()
+        show_conveyor_parts_cb = ctk.CTkCheckBox(self.map_frame,text="Show conveyor_parts",variable=self.show_conveyor_parts, onvalue="1", offvalue="0", height=1, width=20)
+        show_conveyor_parts_cb.pack(pady=5)
+        self.show_conveyor_parts.trace_add('write', self.show_hide_conveyor_parts)
+        self.show_assembly_stations(1,1,1)
+    
+    def add_bin_parts_to_map(self,_,__,___):
+        for element in self.map_canvas_bin_elements:
+            self.map_canvas.delete(element)
+        self.map_canvas_bin_elements.clear()
+        for key in self.bin_parts_map_coords.keys():
+            for slot in range(9):
+                if self.current_bin_parts[key][slot]!="":
+                    image_label = ctk.CTkLabel(self.map_frame,
+                                               image=ctk.CTkImage(MENU_IMAGES[self.current_bin_parts[key][slot]].rotate(self.bin_parts[key][slot].rotation*180/pi),
+                                                                  size=(25,25)),
+                                               text="",
+                                               bg_color="#60c6f1",
+                                               fg_color="#60c6f1",
+                                               height=0)
+                    self.map_canvas_bin_elements.append(self.map_canvas.create_window(self.bin_parts_map_coords[key][slot],
+                                                                                              window=image_label))
+    
+    def show_hide_conveyor_parts(self,_,__,___):
+        for element in self.map_canvas_conveyor_elements:
+            self.map_canvas.delete(element[0])
+        self.map_canvas_conveyor_elements.clear()
+
+        for line in self.map_canvas_conveyor_lines:
+            self.map_canvas.delete(line)
+        self.map_canvas_conveyor_lines.clear()
+
+        if self.show_conveyor_parts.get()=="1":
+            self.show_conveyor_parts.set("1")
+            self.add_conveyor_parts_to_map()
+        else:
+            for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+                self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+self.conveyor_lines_index,
+                                                                                       self.conveyor_coordinates[1]+1,
+                                                                                       self.conveyor_coordinates[0]+i+4+self.conveyor_lines_index,
+                                                                                       self.conveyor_coordinates[3]-1,
+                                                                                       fill = "#706b62",
+                                                                                       width = 0))
+            
+    def add_conveyor_parts_to_map(self):
+        self.conveyor_parts_image_labels = []
+        self.current_index = 0
+        self.label_index = 0
+        self.delay = 20
+        self.conveyor_counter = 0
+        self.map_canvas_conveyor_lines.clear()
+        self.coordinates = [(i,537) for i in range(25,675,1)][::-1]
+        self.conveyor_parts_map_list = []
+        for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+            self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[1]+1,
+                                                                                   self.conveyor_coordinates[0]+i+4+self.conveyor_lines_index,
+                                                                                   self.conveyor_coordinates[3]-1,
+                                                                                   fill = "#706b62",
+                                                                                   width = 0))
+        for i in range(len(self.current_conveyor_parts)):
+            part = _part_color_str[self.conveyor_parts[i].part_lot.part.color]+_part_type_str[self.conveyor_parts[i].part_lot.part.type]
+            for j in range(self.conveyor_parts[i].part_lot.quantity):
+                self.conveyor_parts_image_labels.append(ctk.CTkLabel(self.map_frame,text="",
+                                                        image=ctk.CTkImage(MENU_IMAGES[part].rotate(self.conveyor_parts[i].rotation*180/pi),size=(50,50)),
+                                                        bg_color="#a4a4a0",fg_color="#a4a4a0",height=0,width=0))
+                self.conveyor_parts_map_list.append(self.conveyor_parts[i])
+        if self.conveyor_setup_vals["order"].get()=="random":
+            random.seed(1)
+            random.shuffle(self.conveyor_parts_image_labels)
+            random.seed(1)
+            random.shuffle(self.conveyor_parts_map_list)
+        self.num_conveyor_labels = min(len(self.conveyor_parts_image_labels),4)
+        self.current_index_dict={label:0 for label in self.conveyor_parts_image_labels}
+        if len(self.conveyor_parts_image_labels)>0:
+            canvas_label=self.map_canvas.create_window(self.coordinates[self.current_index_dict[self.conveyor_parts_image_labels[self.label_index]]],window=self.conveyor_parts_image_labels[self.label_index])
+            self.current_labels = [(canvas_label,self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index])]
+            self.current_index_dict[self.conveyor_parts_image_labels[self.label_index]] +=1
+            self.map_canvas_conveyor_elements = self.current_labels
+        self.map_canvas.after(self.delay, self.move_conveyor)
+            
+
+    def move_conveyor(self):
+        list_changed = False
+        for line in self.map_canvas_conveyor_lines:
+            self.map_canvas.delete(line)
+        self.map_canvas_conveyor_lines.clear()
+        self.conveyor_lines_index=(self.conveyor_lines_index+1)%40
+        for i in range(self.conveyor_coordinates[0], self.conveyor_coordinates[2],40):
+            if self.conveyor_coordinates[0]+i-self.conveyor_lines_index>self.conveyor_coordinates[0] and self.conveyor_coordinates[0]+i+4-self.conveyor_lines_index<self.conveyor_coordinates[2]:
+                self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[1]+1,
+                                                                                    self.conveyor_coordinates[0]+i+4-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[3]-1,
+                                                                                    fill = "#706b62",
+                                                                                    width = 0))
+            if self.conveyor_coordinates[0]+i+44-self.conveyor_lines_index<self.conveyor_coordinates[2]:
+                self.map_canvas_conveyor_lines.append(self.map_canvas.create_rectangle(self.conveyor_coordinates[0]+i+40-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[1]+1,
+                                                                                    self.conveyor_coordinates[0]+i+44-self.conveyor_lines_index,
+                                                                                    self.conveyor_coordinates[3]-1,
+                                                                                    fill = "#706b62",
+                                                                                    width = 0))
+        try:
+            for i in range(len(self.current_labels)):
+                loop_i = i if not list_changed else i-1
+                coord = self.coordinates[self.current_index_dict[self.current_labels[loop_i][1]]]
+                coord = (coord[0], coord[1]+int(float(self.current_labels[loop_i][2].offset)*35))
+                self.map_canvas.coords(self.current_labels[loop_i][0], coord)
+                self.current_index_dict[self.current_labels[loop_i][1]]+=1
+                current_index = self.current_index_dict[self.current_labels[loop_i][1]]
+                if self.conveyor_counter*self.delay/1000>=float(self.conveyor_setup_vals["spawn_rate"].get()):
+                    self.conveyor_counter = 0
+                    if len(self.conveyor_parts_image_labels)>len(self.current_labels):
+                        self.label_index=(self.label_index+1)%len(self.conveyor_parts_image_labels)
+                        self.current_labels.append((self.map_canvas.create_window(self.coordinates[0], window=self.conveyor_parts_image_labels[self.label_index]),self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index]))
+                if current_index>=len(self.coordinates):
+                    list_changed = True
+                    self.current_index_dict[self.current_labels[loop_i][1]] = 0
+                    self.map_canvas.delete(self.current_labels[0][0])
+                    del self.current_labels[0]
+                    if len(self.current_labels)==0:
+                        self.conveyor_counter = 0
+                        self.label_index=(self.label_index+1)%len(self.conveyor_parts_image_labels)
+                        self.current_labels.append((self.map_canvas.create_window(self.coordinates[0], window=self.conveyor_parts_image_labels[self.label_index]),self.conveyor_parts_image_labels[self.label_index], self.conveyor_parts_map_list[self.label_index]))
+            self.conveyor_counter+=1
+            self.map_canvas_conveyor_elements = self.current_labels
+        except:
+            pass
+        if self.show_conveyor_parts.get()=="1":
+            self.map_canvas.after(self.delay, self.move_conveyor)
+    
+    def show_assembly_stations(self,_,__,___):
+        for element in self.map_canvas_assembly_station_elements:
+            self.map_canvas.delete(element)
+        self.map_canvas_assembly_station_elements.clear()
+        for i in range(1,5):
+            key=f"as{i}"
+            coord = ((self.assembly_station_coords[key][0]+self.assembly_station_coords[key][2])//2,
+                     (self.assembly_station_coords[key][1]+self.assembly_station_coords[key][3])//2)
+            self.map_canvas_assembly_station_elements.append(self.map_canvas.create_window(coord,
+                                                                                           window=ctk.CTkLabel(self.map_frame,
+                                                                                                               text="",
+                                                                                                               image=ctk.CTkImage(MENU_IMAGES["assembly_station"].rotate(self.assembly_insert_rotations[i-1].get()*180/pi),size=(50,50)),
+                                                                                                               bg_color="#a86a2b",fg_color="#a86a2b")))
+    
+    def add_agv_parts_to_map(self,_,__,___):
+        for element in self.map_canvas_agv_elements:
+            self.map_canvas.delete(element)
+        self.map_canvas_agv_elements.clear()
+        coord_offset_x = [20, -20]
+        coord_offset_y = [-30, 30]
+        parts_on_agv = {f"agv{i}":[] for i in range(1,5)}
+        for order in self.current_orders:
+            order:OrderMsg
+            if order.type == OrderMsg.ASSEMBLY:
+                for part in order.assembly_task.parts:
+                    part : AssemblyPart
+                    parts_on_agv[f"agv{part.agv}"].append(part)
+        for agv_key in parts_on_agv.keys():
+            if len(parts_on_agv[agv_key])>0:
+                for part in parts_on_agv[agv_key]:
+                    q = int(part.quadrant)
+                    coord = self.agv_coords[agv_key]
+                    coord = (coord[0], coord[1]+22)
+                    coord = (coord[0]+coord_offset_x[q%2],coord[1]+coord_offset_y[(q-1)//2])
+                    part_title = _part_color_str[part.part.color].lower()+_part_type_str[part.part.type].lower()
+                    rotation_val = part.rotation
+                    self.map_canvas_agv_elements.append(self.map_canvas.create_window(coord,
+                                                                        window=ctk.CTkLabel(self.map_frame,
+                                                                                            text="",
+                                                                                            image=ctk.CTkImage(MENU_IMAGES[part_title].rotate(rotation_val*180/pi),size=(28,28)),
+                                                                                            bg_color="#c1c1c1",
+                                                                                            fg_color="#c1c1c1")))
+
+
     # =======================================================
     #               General Gui Functions
     # =======================================================
@@ -2892,14 +3299,32 @@ class GUI_CLASS(ctk.CTk):
             self.sub_frame._parent_canvas.yview_scroll(int(-2), "units")
         elif self.notebook.index("current") == 4:
             self.conveyor_sub_frame._parent_canvas.yview_scroll(int(-2), "units")
+        elif self.notebook.index("current") == 6:
+            self.challenges_sub_frame._parent_canvas.yview_scroll(int(-2), "units")
     
     def mouse_wheel_down_current_file(self, event):
         if self.notebook.index("current") == 7:
             self.sub_frame._parent_canvas.yview_scroll(int(2), "units")
         elif self.notebook.index("current") == 4:
             self.conveyor_sub_frame._parent_canvas.yview_scroll(int(2), "units")
+        elif self.notebook.index("current") == 6:
+            self.challenges_sub_frame._parent_canvas.yview_scroll(int(2), "units")
 
-
-if __name__=="__main__":
-    app = GUI_CLASS()
-    app.mainloop()
+    def switch_light_dark(self):
+        if self.current_mode == "light":
+            ctk.set_appearance_mode("dark")
+            self.current_mode = "dark"
+            self.light_dark_button.configure(image=ctk.CTkImage(MENU_IMAGES["light_icon"],size=(75,75)), fg_color="#242424", bg_color="#242424", hover_color="#242424")
+            for frame in self.notebook_frames:
+                frame.configure(fg_color="#5a5a5a")
+            for c in self.all_canvases:
+                c.configure(bg = "#5a5a5a")
+        else:
+            ctk.set_appearance_mode("light")
+            self.current_mode = "light"
+            self.light_dark_button.configure(image=ctk.CTkImage(MENU_IMAGES["dark_icon"],size=(75,75)), fg_color="#ebebeb", bg_color="#ebebeb", hover_color="#ebebeb")
+            for frame in self.notebook_frames:
+                frame.configure(fg_color="transparent")
+            for c in self.all_canvases:
+                c.configure(bg = "#e0dcdc")
+        self.update_bin_grid(self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame,1,1,1)

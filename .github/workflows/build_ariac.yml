@@ -20,6 +20,8 @@ jobs:
         apt-get update && apt-get upgrade -q -y
         apt-get update && apt-get install -q -y --no-install-recommends \
           python3-colcon-ros
+        apt-get install python3-pip -y
+        pip install setuptools==58.2.0
         cd /home/ariac_ws/src/
         rosdep update
         rosdep install --from-paths ./ -i -y --rosdistro iron \

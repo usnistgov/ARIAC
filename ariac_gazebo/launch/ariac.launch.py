@@ -29,6 +29,7 @@ def launch_setup(context, *args, **kwargs):
     trial_config_path = os.path.join(pkg_share, 'config', 'trials', trial_name + ".yaml")
 
     dev_mode = LaunchConfiguration("dev_mode")
+    record_state = LaunchConfiguration("record_state")
     
     if not os.path.exists(trial_config_path):
         rclpy.logging.get_logger('Launch File').fatal(
@@ -84,6 +85,7 @@ def launch_setup(context, *args, **kwargs):
         ),
         launch_arguments={
             'world': world_path,
+            'record': record_state,
         }.items()
     )
 
@@ -205,5 +207,10 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument("dev_mode", default_value="false", description="run simulation in dev mode")
     )
+
+    declared_arguments.append(
+        DeclareLaunchArgument("record_state", default_value="false", description="record a gazebo state.log")
+    )
+
 
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])

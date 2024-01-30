@@ -160,18 +160,19 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
     
     assembly_insert_rotations = [0.0 for _ in range(4)]
     if "assembly_inserts" in yaml_dict.keys():
-        assembly_insert_rotations[0] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as1"] if yaml_dict["assembly_inserts"]["as1"]!=0 else "0")]
-        assembly_insert_rotations[1] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as2"] if yaml_dict["assembly_inserts"]["as2"]!=0 else "0")]
-        assembly_insert_rotations[2] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as3"] if yaml_dict["assembly_inserts"]["as3"]!=0 else "0")]
-        assembly_insert_rotations[3] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"]["as4"] if yaml_dict["assembly_inserts"]["as4"]!=0 else "0")]
-    
+        for i in range(1,5):
+            try:
+                assembly_insert_rotations[i-1] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"][f"as{i}"])]
+            except:
+                assembly_insert_rotations[i-1] = 0.0
+            
     bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
     current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}
     try:
         for bin in yaml_dict["parts"]["bins"].keys():
             for part in yaml_dict["parts"]["bins"][bin]:
                 try:
-                    part_rotation = SLIDER_VALUES[SLIDER_STR.index(part["rotation"] if part["rotation"]!=0 else "0")]
+                    part_rotation = SLIDER_VALUES[SLIDER_STR.index(part["rotation"])]
                 except:
                     part_rotation = 0.0
                 try:

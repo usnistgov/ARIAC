@@ -1,5 +1,5 @@
-# Trial Name: qc.yaml
-# ARIAC2023
+# Trial Name: kitting.yaml
+# ARIAC2024
 
 # ENVIRONMENT SETUP
 
@@ -8,6 +8,12 @@ time_limit: -1 # options: -1 (no time limit) or number of seconds (max 500)
 kitting_trays: # Which kitting trays will be spawn
   tray_ids: [3, 8] 
   slots: [1, 4]
+
+assembly_inserts:
+  as1: '0.0'
+  as2: '0.0'
+  as3: '0.0'
+  as4: '0.0'
 
 parts:
   bins: # bin params - 8 total bins each bin has nine total slots (1-9)

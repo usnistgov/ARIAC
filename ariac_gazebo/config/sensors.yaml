@@ -1,0 +1,15 @@
+robot_cameras:
+  floor_robot_camera: 
+    active: false
+    type: rgb
+  
+  ceiling_robot_camera: 
+    active: false
+    type: rgbd
+
+static_sensors:  
+  conveyor_breakbeam:
+    type: break_beam
+    pose:
+      xyz: [-0.352, 3.91, 0.88]
+      rpy: [0, 0, pi]

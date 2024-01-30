@@ -9,6 +9,12 @@ kitting_trays: # Which kitting trays will be spawn
   tray_ids: [1] 
   slots: [4]
 
+assembly_inserts:
+  as1: '0.0'
+  as2: '0.0'
+  as3: '0.0'
+  as4: '0.0'
+
 parts:  
   bins: # bin params - 8 total bins each bin has nine total slots (1-9)
     bin1:

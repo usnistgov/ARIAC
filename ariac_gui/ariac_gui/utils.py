@@ -159,11 +159,12 @@ def build_competition_from_file(yaml_dict : dict) -> CompetitionClass:
     slots = yaml_dict["kitting_trays"]["slots"]
     
     assembly_insert_rotations = [0.0 for _ in range(4)]
-    for i in range(1,5):
-        try:
-            assembly_insert_rotations[i-1] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"][f"as{i}"])]
-        except:
-            assembly_insert_rotations[i-1] = 0.0
+    if "assembly_inserts" in yaml_dict.keys():
+        for i in range(1,5):
+            try:
+                assembly_insert_rotations[i-1] = SLIDER_VALUES[SLIDER_STR.index(yaml_dict["assembly_inserts"][f"as{i}"])]
+            except:
+                assembly_insert_rotations[i-1] = 0.0
             
     bin_parts = {f"bin{i}":[BinPart() for _ in range(9)] for i in range(1,9)}
     current_bin_parts = {f"bin{i}":["" for _ in range(9)] for i in range(1,9)}

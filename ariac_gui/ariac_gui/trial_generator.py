@@ -2037,6 +2037,7 @@ class GUI_CLASS(ctk.CTk):
         else:
             c_part_dict["color"].set(_part_color_str[combined_part.color].lower())
             c_part_dict["pType"].set(_part_type_str[combined_part.type].lower())
+            available_part_types+=[_part_type_str[combined_part.type].lower()]
 
         color_label = ctk.CTkLabel(add_c_part_wind, text="Select the color for the assembly part")
         color_label.pack()

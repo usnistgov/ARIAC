@@ -1936,6 +1936,7 @@ class GUI_CLASS(ctk.CTk):
             a_part_dict["agv"].set(str(assembly_part.agv))
             a_part_dict["quadrant"].set(str(assembly_part.quadrant))
             a_part_dict["rotation"].set(float(assembly_part.rotation))
+            available_part_types+=[_part_type_str[assembly_part.part.type].lower()]
             edit_flag = True
                 
 

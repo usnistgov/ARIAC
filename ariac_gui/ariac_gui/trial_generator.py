@@ -1936,6 +1936,7 @@ class GUI_CLASS(ctk.CTk):
             a_part_dict["agv"].set(str(assembly_part.agv))
             a_part_dict["quadrant"].set(str(assembly_part.quadrant))
             a_part_dict["rotation"].set(float(assembly_part.rotation))
+            available_part_types+=[_part_type_str[assembly_part.part.type].lower()]
             edit_flag = True
                 
 
@@ -2035,8 +2036,9 @@ class GUI_CLASS(ctk.CTk):
             c_part_dict["color"].set(PART_COLORS[0])
             c_part_dict["pType"].set(available_part_types[0])
         else:
-            c_part_dict["color"].set(_part_color_str[combined_part.part.color].lower())
-            c_part_dict["pType"].set(_part_type_str[combined_part.part.type].lower())
+            c_part_dict["color"].set(_part_color_str[combined_part.color].lower())
+            c_part_dict["pType"].set(_part_type_str[combined_part.type].lower())
+            available_part_types+=[_part_type_str[combined_part.type].lower()]
 
         color_label = ctk.CTkLabel(add_c_part_wind, text="Select the color for the assembly part")
         color_label.pack()

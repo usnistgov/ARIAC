@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ariac_plugins</name>
-  <version>2024.1.0</version>
+  <version>2024.1.1</version>
   <description>Gazebo/ROS2 plugins for the ARAIC competition</description>
   <maintainer email="justin.albrecht@nist.gov">justin albrecht</maintainer>
   <maintainer email="zeid.kootbally@nist.gov">zeid kootbally</maintainer>

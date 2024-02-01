@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ariac_sensors</name>
-  <version>2024.1.0</version>
+  <version>2024.1.1</version>
   <description>Gazebo plugins for the ARIAC sensors</description>
   <maintainer email="justin.albrecht@nist.gov">justin</maintainer>
   <license>NIST</license>

@@ -1,0 +1,59 @@
+# Trial name: kitting.yaml
+# ARIAC2024
+# Author: 
+# 2024-02-01 09:57:39
+
+# ENVIRONMENT SETUP
+
+time_limit: -1
+
+# KITTING TRAYS
+
+kitting_trays:
+  tray_ids:
+  - 3
+  - 8
+  slots:
+  - 1
+  - 4
+
+# INSERT ROTATION
+
+assembly_inserts:
+  as1: 0.0
+  as2: 0.0
+  as3: 0.0
+  as4: 0.0
+
+# PARTS INFORMATION
+
+parts:
+  conveyor_belt:
+    active: true
+    spawn_rate: 5.0
+    order: sequential
+    parts_to_spawn:
+    - type: battery
+      color: blue
+      number: 10
+      offset: 0.0
+      flipped: false
+      rotation: 0.0
+
+# ORDERS INFORMATION
+
+orders:
+- id: MMB30H56
+  type: kitting
+  announcement:
+    time_condition: 0.0
+  priority: false
+  kitting_task:
+    agv_number: 4
+    tray_id: 3
+    destination: warehouse
+    products:
+    - type: battery
+      color: blue
+      quadrant: 3
+

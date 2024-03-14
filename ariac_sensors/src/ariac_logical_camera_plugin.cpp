@@ -123,8 +123,6 @@ void AriacLogicalCameraPluginPrivate::OnUpdate()
 
   const auto & image = this->sensor_->Image();
 
-  gazebo::common::Time sensor_update_time = this->sensor_->LastMeasurementTime();
-
   geometry_msgs::msg::Pose sensor_pose = gazebo_ros::Convert<geometry_msgs::msg::Pose>(
     gazebo::msgs::ConvertIgn(image.pose()));
 
@@ -182,7 +180,7 @@ void AriacLogicalCameraPluginPrivate::OnUpdate()
       basic_image_msg_->tray_poses.push_back(tray.pose);
     }
 
-    basic_image_msg_->header.stamp = gazebo_ros::Convert<builtin_interfaces::msg::Time>(sensor_update_time);
+    basic_image_msg_->header.stamp = ros_node_->get_clock()->now();
     basic_image_msg_->header.frame_id = frame_name_;
 
     basic_pub_->publish(*basic_image_msg_);
@@ -193,7 +191,7 @@ void AriacLogicalCameraPluginPrivate::OnUpdate()
     advanced_image_msg_->part_poses = parts;
     advanced_image_msg_->tray_poses = trays;
 
-    advanced_image_msg_->header.stamp = gazebo_ros::Convert<builtin_interfaces::msg::Time>(sensor_update_time);
+    advanced_image_msg_->header.stamp = ros_node_->get_clock()->now();
     advanced_image_msg_->header.frame_id = frame_name_;
 
     advanced_pub_->publish(*advanced_image_msg_);

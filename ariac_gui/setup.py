@@ -6,7 +6,7 @@ PART_COLORS=['green', 'red', 'purple','blue','orange']
 file_names = ['plus','assembly_station','agv','tray','light_icon','dark_icon']+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f'id_0{i}' for i in range(10)]
 setup(
     name=package_name,
-    version='2024.1.0',
+    version='2024.2.0',
     packages=[package_name],
     data_files=[
         ('share/ament_index/resource_index/packages',

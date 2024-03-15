@@ -43,6 +43,7 @@ public:
 
   std::string camera_name_;
   std::string sensor_type_;
+  std::string frame_name_;
 
   std::map<std::string, int> part_types_;
   std::map<std::string, int> part_colors_;
@@ -90,6 +91,8 @@ void AriacLogicalCameraPlugin::Load(gazebo::sensors::SensorPtr _sensor, sdf::Ele
 
   impl_->camera_name_ = _sdf->Get<std::string>("camera_name");
   impl_->sensor_type_ = _sdf->Get<std::string>("sensor_type");
+
+  impl_->frame_name_ = gazebo_ros::SensorFrameID(*_sensor, *_sdf);
 
   if (impl_->sensor_type_ == "basic") {
     impl_->basic_pub_ = impl_->ros_node_->create_publisher<ariac_msgs::msg::BasicLogicalCameraImage>(
@@ -177,6 +180,9 @@ void AriacLogicalCameraPluginPrivate::OnUpdate()
       basic_image_msg_->tray_poses.push_back(tray.pose);
     }
 
+    basic_image_msg_->header.stamp = ros_node_->get_clock()->now();
+    basic_image_msg_->header.frame_id = frame_name_;
+
     basic_pub_->publish(*basic_image_msg_);
 
   } else if (sensor_type_ == "advanced") {
@@ -184,6 +190,9 @@ void AriacLogicalCameraPluginPrivate::OnUpdate()
 
     advanced_image_msg_->part_poses = parts;
     advanced_image_msg_->tray_poses = trays;
+
+    advanced_image_msg_->header.stamp = ros_node_->get_clock()->now();
+    advanced_image_msg_->header.frame_id = frame_name_;
 
     advanced_pub_->publish(*advanced_image_msg_);
   }

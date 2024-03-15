@@ -50,3 +50,6 @@ log/
 # ARIAC Logs
 /ariac_log/*/
 
+# New trials
+/ariac_gazebo/config/trials/*.yaml
+

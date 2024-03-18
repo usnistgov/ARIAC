@@ -32,13 +32,15 @@
     </link>
 
     <!-- Gripper Joint -->
-    <joint name="${prefix}_gripper_joint" type="revolute">
-      <axis xyz="0 0 1"/>
+    <joint name="${prefix}_gripper_joint" type="fixed">
       <parent link="${prefix}_${parent}"/>
       <child link="${prefix}_gripper"/>
-      <limit lower="-.001" upper=".001" effort="1000" velocity="0" />
       <origin xyz="0.0 0.0 0.01" rpy="0.0 0.0 0.0"/>
     </joint>
+
+    <gazebo reference='${prefix}_gripper_joint'>
+      <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
 
     <!-- Add a contact sensor to the gripper -->
     <gazebo reference="${prefix}_gripper">

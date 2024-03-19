@@ -3429,7 +3429,7 @@ class GUI_CLASS(ctk.CTk):
     def update_save_file_msg(self):
         num_orders = len(self.current_orders)
         if num_orders == 0:
-            msg = "There must have at least one order to save"
+            msg = "There must be at least one order to save"
         else:
             msg = f"There {'is' if num_orders == 1 else 'are'} currently {num_orders} order{'' if num_orders == 1 else 's'}"
         return msg

@@ -72,6 +72,10 @@ CONVEYOR_ORDERS = ["random", "sequential"]
 # Menu images
 GUI_PACKAGE = get_package_share_directory('ariac_gui')
 MENU_IMAGES = {part_label:Image.open(GUI_PACKAGE + f"/resource/{part_label}.png") for part_label in ["plus","assembly_station","agv", "tray","light_icon","dark_icon"]+[color+pType for color in PART_COLORS for pType in PART_TYPES]+[f"id_0{i}" for i in range(10)]}
+for color in PART_COLORS:
+    MENU_IMAGES[color+"battery"] = MENU_IMAGES[color+"battery"].rotate(90)
+    MENU_IMAGES[color+"sensor"] = MENU_IMAGES[color+"sensor"].rotate(180)
+    MENU_IMAGES[color+"regulator"] = MENU_IMAGES[color+"regulator"].rotate(90)
 
 QUADRANTS=["1","2","3","4"]
 AGV_OPTIONS=["1","2","3","4"]

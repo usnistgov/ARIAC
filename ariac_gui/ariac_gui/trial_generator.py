@@ -57,8 +57,8 @@ MIDDLE_COLUMN = 3
 RIGHT_COLUMN = 4
 FAR_RIGHT_COLUMN = 5
 COLUMN_LIST = [LEFT_COLUMN, MIDDLE_COLUMN, RIGHT_COLUMN]
-PART_TYPES=["sensor", "pump", "regulator", "battery"]
-PART_COLORS=['green', 'red', 'purple','blue','orange']
+PART_TYPES=["battery", "pump", "sensor","regulator"]
+PART_COLORS=["red","green","blue","orange","purple"]
 
 #Options for kitting trays
 KITTING_TRAY_OPTIONS = [""]+[str(i) for i in range(10)]
@@ -185,7 +185,7 @@ class GUI_CLASS(ctk.CTk):
         self.author = ctk.StringVar()
         self.original_trial_name = ctk.StringVar()
         self.original_trial_name.set("")
-        self.time_limit.set('0')
+        self.time_limit.set('-1')
         self.trial_name.set('')
         self.author.set('')
 
@@ -415,7 +415,8 @@ class GUI_CLASS(ctk.CTk):
         self.bin_parts_counter.trace_add('write',self.add_bin_parts_to_map)
         self.add_map_to_frame()
 
-        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location)
+        self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location, state = tk.DISABLED)
+        ToolTip(self.save_file_button, msg = self.update_save_file_msg, delay=0.2)
         self.light_dark_button = ctk.CTkButton(self, text="", image=ctk.CTkImage(MENU_IMAGES["dark_icon"],size=(50,50)), command = self.switch_light_dark, fg_color="#ebebeb", bg_color="#ebebeb", hover_color="#ebebeb")
         self._build_assembly_parts_pose_direction()
 
@@ -635,7 +636,8 @@ class GUI_CLASS(ctk.CTk):
         label_coordinates = [(coord[0],coord[1]-35) for coord in menu_coordinates]
         self.tray_center_coords = {f"slot_{i+1}":(((tray_coords["kts_1"][0]+tray_coords["kts_1"][2])//2 if i <=2 else (tray_coords["kts_2"][0]+tray_coords["kts_2"][2])//2),menu_coordinates[i][1]) for i in range(len(menu_coordinates))}
         
-        for i in self.kitting_tray_selections:i.set(KITTING_TRAY_OPTIONS[0])
+        for i in self.kitting_tray_selections:
+            i.set(KITTING_TRAY_OPTIONS[0])
         tray_menus = [ctk.CTkOptionMenu(self.kitting_tray_frame,
                                         variable=self.kitting_tray_selections[i],
                                         values=KITTING_TRAY_OPTIONS,
@@ -822,10 +824,21 @@ class GUI_CLASS(ctk.CTk):
         clear_bin_button.grid(column = MIDDLE_COLUMN, columnspan = 2, pady = 5)
         flipped_meaning_label = ctk.CTkLabel(self.bin_parts_frame, text="When a part is flipped, an \"F\" will show up in the bottom right of the part image.")
         flipped_meaning_label.grid(column = MIDDLE_COLUMN, columnspan = 2,pady = 10)
+        random_bins_button = ctk.CTkButton(self.bin_parts_frame, text="Fill all bins with random parts", command=self.fill_bins_random)
+        random_bins_button.grid(column = MIDDLE_COLUMN, columnspan = 2,pady = 10)
+        clear_all_bins_button = ctk.CTkButton(self.bin_parts_frame, text="Clear all bins", command=self.clear_all_bins)
+        clear_all_bins_button.grid(column = MIDDLE_COLUMN, columnspan = 2,pady = 10)
         self.bin_selection.trace_add('write',partial(self.update_bin_grid, self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame))
         self.bin_selection.trace_add('write',partial(self.update_map,bin_map_canvas, self.bin_selection))
         self.bin_parts_counter.trace_add('write',partial(self.update_bin_grid, self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame))
         self.bin_parts_counter.trace_add('write',partial(self.update_map,bin_map_canvas, self.bin_selection))
+    
+    def clear_all_bins(self):
+        for i in range(1,9):
+            self.current_bin_parts[f"bin{i}"] = ["" for _ in range(9)]
+            self.bin_parts[f"bin{i}"] = [BinPart() for _ in range(9)]
+        self.bin_parts_counter.set("0")
+
     def clear_bin(self, bin_selection):
         current_bin = bin_selection.get()
         self.current_bin_parts[current_bin]=["" for _ in range(9)]
@@ -906,6 +919,24 @@ class GUI_CLASS(ctk.CTk):
             canvas.delete(i)
         self.current_bin_canvas_elements.clear()
         self.show_grid(bin_selection,canvas,main_wind)
+
+    def fill_bins_random(self):
+        for bin in ALL_BINS:
+            for index in range(9):
+                self.generate_random_bin_part(bin, index)
+        self.bin_parts_counter.set(str(sum([sum([1 for part in self.current_bin_parts[key] if part!=""]) for key in self.current_bin_parts.keys()])))
+
+    
+    def generate_random_bin_part(self, bin, index):
+        part_color = random.randint(0,4)
+        part_type = random.randint(10,13)
+        self.current_bin_parts[bin][index]=PART_COLORS[part_color]+PART_TYPES[part_type-10]
+        temp_part = PartMsg()
+        temp_part.color = part_color
+        temp_part.type = part_type
+        self.bin_parts[bin][index].part = temp_part
+        self.bin_parts[bin][index].rotation = SLIDER_VALUES[random.randint(0,len(SLIDER_VALUES)-1)]
+        self.bin_parts[bin][index].flipped = "0"
 
     def add_bin_part(self,bin, index):
         bin_vals = {}
@@ -1106,6 +1137,10 @@ class GUI_CLASS(ctk.CTk):
         self.add_conveyor_parts_button = ctk.CTkButton(self.conveyor_parts_frame,text="Add part lot", command=partial(self.add_conveyor_parts), state=tk.DISABLED)
         self.main_conveyor_menu_widgets.append(self.add_conveyor_parts_button)
         ToolTip(self.add_conveyor_parts_button, msg = self.add_conveyor_parts_hover_message, delay=0.2)
+        self.generate_random_parts_button = ctk.CTkButton(self.conveyor_parts_frame, text="Generate random parts", command=self.random_conveyor_parts_window_func)
+        self.main_conveyor_menu_widgets.append(self.generate_random_parts_button)
+        self.clear_conveyor_button = ctk.CTkButton(self.conveyor_parts_frame, text="Clear conveyor", command=self.clear_conveyor)
+        self.main_conveyor_menu_widgets.append(self.clear_conveyor_button)
         current_parts_label = ctk.CTkLabel(self.conveyor_parts_frame, text="Parts on conveyor belt:")
         self.main_conveyor_menu_widgets.append(current_parts_label)
 
@@ -1119,6 +1154,11 @@ class GUI_CLASS(ctk.CTk):
         self.has_parts.trace_add('write', self.activate_deactivate_menu)
         self.conveyor_parts_counter.trace_add('write',self.show_current_parts)    
     
+    def clear_conveyor(self):
+        self.current_conveyor_parts = []
+        self.conveyor_parts = []
+        self.conveyor_parts_counter.set("0")
+
     def add_conveyor_parts_hover_message(self)->str:
         msg=""
         if len(self.current_conveyor_parts)>0:
@@ -1248,7 +1288,10 @@ class GUI_CLASS(ctk.CTk):
         conveyor_part_vals["num_parts"].trace_add('write', partial(self.update_num_parts_slider, conveyor_part_vals["num_parts"], num_parts_label))
         offset_label = ctk.CTkLabel(add_parts_conveyor_window,text=f"Offset: {conveyor_part_vals['offset'].get()}")
         offset_label.pack()
-        offset_slider = ctk.CTkSlider(add_parts_conveyor_window,variable=conveyor_part_vals["offset"],from_=-1, to=1, number_of_steps=40, orientation="horizontal")
+        if conveyor_part_vals["pType"].get()=="pump":
+            offset_slider = ctk.CTkSlider(add_parts_conveyor_window,variable=conveyor_part_vals["offset"],from_=-0.9, to=0.9, number_of_steps=36, orientation="horizontal")
+        else:
+            offset_slider = ctk.CTkSlider(add_parts_conveyor_window,variable=conveyor_part_vals["offset"],from_=-1, to=1, number_of_steps=40, orientation="horizontal")
         offset_slider.pack()
         conveyor_part_vals["offset"].trace_add('write', partial(self.update_offset_slider, conveyor_part_vals["offset"], offset_label))
         rotation_label = ctk.CTkLabel(add_parts_conveyor_window, text=f"Rotation value: {SLIDER_STR[SLIDER_VALUES.index(conveyor_part_vals['rotation'].get())]}")
@@ -1262,6 +1305,19 @@ class GUI_CLASS(ctk.CTk):
         back_button.pack()
         save_button = ctk.CTkButton(add_parts_conveyor_window,text="Save part",command=partial(self.save_conveyor_parts,add_parts_conveyor_window,conveyor_part_vals, index))
         save_button.pack()
+        
+        conveyor_part_vals["pType"].trace_add('write', partial(self.update_offset_slider_for_pump, conveyor_part_vals["pType"],offset_slider,conveyor_part_vals["offset"]))
+        
+    def update_offset_slider_for_pump(self,part_type,slider,current_offset,_,__,___):
+        if part_type.get()=="pump":
+            slider.configure(from_=-0.9, to=0.9, number_of_steps=36)
+            if current_offset.get()<-0.9:
+                current_offset.set(-0.9)
+            if current_offset.get()>0.9:
+                current_offset.set(0.9)
+        else:
+            slider.configure(from_=-1, to=1, number_of_steps=40)
+        current_offset.set(current_offset.get())
     
     def update_num_parts_slider(self,value : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
         label.configure(text=f"Number of parts: {value.get()}")
@@ -1269,6 +1325,33 @@ class GUI_CLASS(ctk.CTk):
     def update_offset_slider(self, value : ctk.DoubleVar, label : ctk.CTkLabel,_,__,___):
         value.set(round(value.get(),3))
         label.configure(text=f"Offset: {value.get()}")
+    
+    def random_conveyor_parts_window_func(self):
+        random_parts_conveyor_window = ctk.CTkToplevel()
+        random_parts_conveyor_window.geometry("400x450 + 700 + 300")
+        num_diff_parts = ctk.IntVar()
+        num_diff_parts.set(1)
+        rand_conv_label = ctk.CTkLabel(random_parts_conveyor_window,text=f"Number of different parts: {num_diff_parts.get()}")
+        rand_conv_label.pack()
+        num_parts_slider = ctk.CTkSlider(random_parts_conveyor_window,variable=num_diff_parts,from_=1, to=25, number_of_steps=24, orientation="horizontal")
+        num_parts_slider.pack()
+        num_diff_parts.trace_add('write', partial(self.update_rand_conv_label, num_diff_parts, rand_conv_label))
+        generate_button = ctk.CTkButton(random_parts_conveyor_window, text="Generate parts", command=partial(self.generate_random_conveyor_part, random_parts_conveyor_window, num_diff_parts))
+        generate_button.pack()
+
+    def update_rand_conv_label(self, var : ctk.IntVar, label : ctk.CTkLabel,_,__,___):
+        label.configure(text=f"Number of different parts: {var.get()}")
+
+    def generate_random_conveyor_part(self, window, num_parts):
+        for _ in range(num_parts.get()):
+            part_color = random.randint(0,4)
+            part_type = random.randint(10,13)
+            s_part_color = PART_COLORS[part_color]
+            s_part_type = PART_TYPES[part_type-10]
+            self.conveyor_parts.append(ConveyorPart(s_part_color, s_part_type,1,(random.uniform(-1.0,1.0)if s_part_type!="pump"else random.uniform(-0.9,0.9)), SLIDER_VALUES[random.randint(0,len(SLIDER_VALUES)-1)], "0"))
+            self.current_conveyor_parts.append(PART_COLORS[part_color]+PART_TYPES[part_type-10])
+        self.conveyor_parts_counter.set(str(len(self.conveyor_parts)))
+        window.destroy()
     
     def save_conveyor_parts(self, window:ctk.CTkToplevel, conveyor_part_vals, index):
         self.show_conveyor_parts.set("0")
@@ -1883,8 +1966,14 @@ class GUI_CLASS(ctk.CTk):
             else:
                 msg="No issue. You can save now"
         else:
-            if len(self.order_info["combined_task"]["parts"])<1:
+            num_slots_with_tray_0 = sum([1 for tray in self.kitting_tray_selections if tray.get()=="0"])
+            combined_orders = sum([1 for order in self.current_orders if order.type==2])
+            if len(self.order_info["combined_task"]["parts"])<1 and num_slots_with_tray_0-combined_orders<=0:
+                msg="To save, you need at least one part\nAlso, saving now means that there will be more combined orders than trays with id 0 available"
+            elif len(self.order_info["combined_task"]["parts"])<1:
                 msg="To save, you need at least one part"
+            elif num_slots_with_tray_0-combined_orders<=0:
+                msg="Saving now means that there will be more combined orders than trays with id 0 available"
             else:
                 msg="No issue. You can save now"
             for part in self.order_info["combined_task"]["parts"]:
@@ -2095,7 +2184,6 @@ class GUI_CLASS(ctk.CTk):
             new_order.id = self.used_ids[-1]
         else:
             new_order.id = self.current_orders[index].id
-        
         new_order.type = ORDER_TYPES.index(self.order_info["order_type"].get())
         new_order.priority = True if self.order_info["priority"].get() == "1" else False
         if self.order_info["order_type"].get() == "kitting":
@@ -2953,6 +3041,13 @@ class GUI_CLASS(ctk.CTk):
             self.current_file_label.configure("")
         except:
             return
+        try:
+            if len(self.current_orders) == 0:
+                self.save_file_button.configure(state = tk.DISABLED)
+            else:
+                self.save_file_button.configure(state = tk.NORMAL)
+        except:
+            pass
         self.build_file_dict()
         new_label = ""
         new_label = f"# Trial name: {self.trial_name.get()}.yaml\n"
@@ -3330,3 +3425,11 @@ class GUI_CLASS(ctk.CTk):
             for c in self.all_canvases:
                 c.configure(bg = "#e0dcdc")
         self.update_bin_grid(self.bin_selection,self.bin_parts_canvas,self.bin_parts_frame,1,1,1)
+    
+    def update_save_file_msg(self):
+        num_orders = len(self.current_orders)
+        if num_orders == 0:
+            msg = "There must have at least one order to save"
+        else:
+            msg = f"There {'is' if num_orders == 1 else 'are'} currently {num_orders} order{'' if num_orders == 1 else 's'}"
+        return msg

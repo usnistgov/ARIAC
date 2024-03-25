@@ -935,6 +935,7 @@ class GUI_CLASS(ctk.CTk):
         part_color = random.randint(0,4)
         part_type = random.randint(10,13)
         self.current_bin_parts[bin][index]=PART_COLORS[part_color]+PART_TYPES[part_type-10]
+        self.all_present_parts.append(PART_COLORS[part_color]+" "+PART_TYPES[part_type-10])
         temp_part = PartMsg()
         temp_part.color = part_color
         temp_part.type = part_type
@@ -1354,6 +1355,7 @@ class GUI_CLASS(ctk.CTk):
             s_part_type = PART_TYPES[part_type-10]
             self.conveyor_parts.append(ConveyorPart(s_part_color, s_part_type,1,(random.uniform(-1.0,1.0)if s_part_type!="pump"else random.uniform(-0.9,0.9)), SLIDER_VALUES[random.randint(0,len(SLIDER_VALUES)-1)], "0"))
             self.current_conveyor_parts.append(PART_COLORS[part_color]+PART_TYPES[part_type-10])
+            self.all_present_parts.append(f"{s_part_color} {s_part_type}")
         self.conveyor_parts_counter.set(str(len(self.conveyor_parts)))
         window.destroy()
     

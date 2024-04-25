@@ -155,8 +155,10 @@ namespace ariac_plugins
     impl_->first_publish_ = true;
 
     // Connect Subscribers
-    impl_->trial_config_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Trial>(
-        "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", rclcpp::QoS(1)),
+    rclcpp::QoS qos_profile = rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().reliable();  
+
+    impl_->trial_config_sub_ = impl_->ros_node_->create_subscription<ariac_msgs::msg::Trial>(  
+        "/ariac/trial_config", qos.get_subscription_qos("/ariac/trial_config", qos_profile),  
         std::bind(&VacuumGripperPluginPrivate::OnTrialCallback, impl_.get(), std::placeholders::_1));
 
     // Register enable service

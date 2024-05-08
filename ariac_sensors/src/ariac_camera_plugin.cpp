@@ -302,7 +302,7 @@ void AriacCameraPluginPrivate::FillCameraInfoMsg(){
 
   double cx = (static_cast<double>(width_) + 1.0) / 2.0;
   double cy = (static_cast<double>(height_) + 1.0) / 2.0;
-  double focal_length;
+  double focal_length = 0.0;
 
   bool border_crop = true;
   auto hack_baseline = 0.0;
@@ -315,7 +315,7 @@ void AriacCameraPluginPrivate::FillCameraInfoMsg(){
   double distortion_t2{0.0};
 
   if (camera_type_ == "rgb") {
-    double focal_length =
+    focal_length =
       (static_cast<double>(width_)) / (2.0 * tan(camera_->HFOV().Radian() / 2.0));
 
     if (camera_->LensDistortion()) {

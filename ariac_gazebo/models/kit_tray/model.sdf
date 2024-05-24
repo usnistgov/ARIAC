@@ -37,8 +37,8 @@
           </mesh>
         </geometry>
         <material>
-          <ambient>0.1 0.1 0.1 1.0</ambient>
-          <diffuse>0.1 0.1 0.1 1.0</diffuse>
+          <ambient>0.4 0.4 0.4 1.0</ambient>
+          <diffuse>0.4 0.4 0.4 1.0</diffuse>
         </material>
       </visual>
 

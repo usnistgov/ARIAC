@@ -40,6 +40,20 @@ def main():
 
         sensor_tf_broadcaster.generate_transform('world', sensor_name + "_frame", pose)
 
+        # Publish optical frame for cameras
+        try:
+            if 'rgb' in sensors[sensor_name]['type']:
+                xyz = [0, 0, 0]
+                rpy = ['-pi/2', 0, '-pi/2']
+                
+                optical_pose = pose_info(xyz, rpy)
+
+                sensor_tf_broadcaster.generate_transform(
+                    sensor_name + "_frame", sensor_name + "_optical_frame", optical_pose)
+
+        except KeyError:
+            pass
+
     # Send tf transforms
     sensor_tf_broadcaster.send_transforms()
 

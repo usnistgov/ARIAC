@@ -2289,15 +2289,19 @@ namespace ariac_common
          */
         bool isFlipped()
         {
-            KDL::Frame part_on_tray;
-            tf2::fromMsg(pose_on_tray_, part_on_tray);
-            KDL::Vector part_z = part_on_tray * KDL::Vector(0, 0, 1);
+            KDL::Rotation part_rotation = KDL::Rotation::Quaternion(
+                pose_on_tray_.orientation.x,
+                pose_on_tray_.orientation.y,
+                pose_on_tray_.orientation.z,
+                pose_on_tray_.orientation.w);
+
+            KDL::Vector part_z = KDL::Frame(part_rotation) * KDL::Vector(0, 0, 1);
 
             // Calculate the angle between the two vectors
             double angle = KDL::acos(KDL::dot(KDL::Vector(0, 0, 1), part_z) / (part_z.Norm()));
 
             // Return that the part is flipped if angle is greater than ~10deg
-            if (angle > -0.2 && angle < 0.2)
+            if (angle > -0.20 && angle < 0.20)
             {
                 return false;
             }

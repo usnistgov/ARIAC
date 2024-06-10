@@ -107,6 +107,9 @@
         </visual>
       </link>
 
+      <link name ="${prefix}_robot_camera_optical_link">
+      </link>
+
       <!-- Add camera mount joint -->
       <joint name="${prefix}_robot_camera_mount_joint" type="fixed">
         <axis xyz="0 1 0" />
@@ -121,6 +124,14 @@
         <origin xyz="0 -.07 -.006" rpy="0 -1.57 1.57"/>
         <parent link="${prefix}_robot_camera_mount_link"/>
         <child link="${prefix}_robot_camera_link"/>
+      </joint>
+
+      <!-- Add optical joint -->
+      <joint name="${prefix}_robot_camera_optical_joint" type="fixed">
+        <axis xyz="0 1 0" />
+        <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
+        <parent link="${prefix}_robot_camera_link"/>
+        <child link="${prefix}_robot_camera_optical_link"/>
       </joint>
 
       <!-- Add color to links -->

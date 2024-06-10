@@ -21,6 +21,8 @@ import string
 import yaml
 from copy import copy, deepcopy
 from datetime import datetime
+import subprocess
+from time import sleep
 
 from ariac_msgs.msg import (
     Part as PartMsg,
@@ -410,7 +412,7 @@ class GUI_CLASS(ctk.CTk):
         self.notebook.add(self.map_frame, text="Full Map")
         self.notebook_frames.append(self.map_frame)
 
-         # Map elements
+        # Map elements
         self.map_canvas_bin_elements = []
         self.map_canvas_conveyor_elements = []
         self.map_canvas_conveyor_lines = []
@@ -418,9 +420,14 @@ class GUI_CLASS(ctk.CTk):
         self.map_canvas_agv_elements = []
         self.bin_parts_counter.trace_add('write',self.add_bin_parts_to_map)
         self.add_map_to_frame()
+        
+        # Build package variable
+        self.build_package_var = ctk.StringVar()
+        self.build_package_var.set("1")
 
         self.save_file_button = ctk.CTkButton(self, text="Save file", command=self.choose_save_location, state = tk.DISABLED)
         ToolTip(self.save_file_button, msg = self.update_save_file_msg, delay=0.2)
+        self.build_package_cb = ctk.CTkCheckBox(self, text="Build ariac_gazebo pkg after saving",variable=self.build_package_var, onvalue="1", offvalue="0", height=1, width=20)
         self.light_dark_button = ctk.CTkButton(self, text="", image=ctk.CTkImage(MENU_IMAGES["dark_icon"],size=(50,50)), command = self.switch_light_dark, fg_color="#ebebeb", bg_color="#ebebeb", hover_color="#ebebeb")
         self._build_assembly_parts_pose_direction()
 
@@ -444,8 +451,9 @@ class GUI_CLASS(ctk.CTk):
         self.initial_label.grid_forget()
         self.load_file_button.grid_forget()
         self.new_file_button.grid_forget()
-        self.notebook.grid(pady=10,column=LEFT_COLUMN, columnspan=2,sticky=tk.E+tk.W+tk.N+tk.S)
-        self.save_file_button.grid(pady=10,column=MIDDLE_COLUMN,row=4)
+        self.notebook.grid(pady=10,column=LEFT_COLUMN, columnspan=3,sticky=tk.E+tk.W+tk.N+tk.S)
+        self.save_file_button.grid(pady=10,column=RIGHT_COLUMN,row=4)
+        self.build_package_cb.grid(pady=10, column=MIDDLE_COLUMN, row=4)
         self.light_dark_button.grid(pady=10, column=LEFT_COLUMN, row=4)
         
         
@@ -2250,7 +2258,7 @@ class GUI_CLASS(ctk.CTk):
                 temp_order_dict["id"] = order.id
                 temp_order_dict["type"] = ORDER_TYPES[order.type]
                 temp_order_dict["announcement"] = self.announcement_to_dict(order.condition)
-                temp_order_dict["priority"] = order.priority == "1"
+                temp_order_dict["priority"] = order.priority == True
                 if order.type == 0:
                     temp_order_dict["kitting_task"] = {}
                     temp_order_dict["kitting_task"]["agv_number"] = order.kitting_task.agv_number
@@ -3024,8 +3032,22 @@ class GUI_CLASS(ctk.CTk):
                 f.write(f"# CHALLENGES INFORMATION\n")
                 challenges_data = yaml.dump(self.challenges_dict,sort_keys=False,Dumper=NoAliasDumper)
                 f.write(f"\n{challenges_data}\n")
+            
+        self.build_package = self.build_package_var.get() == "1"
+        
         self.destroy()
-                  
+        
+        if self.build_package:
+            try:
+                ws_path = os.path.join(*[str(item) for item in get_package_prefix("ariac_gazebo").split("/")[:-2]])
+            
+                os.chdir("/" + ws_path)
+            
+                build_cmd = "colcon build --packages-select ariac_gazebo"
+                subprocess.run(build_cmd, shell=True)
+            except:
+                print("ERROR: Workspace not able to be found. Cannot build.")
+
     # =======================================================
     #                    Current File
     # =======================================================

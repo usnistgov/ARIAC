@@ -4,4 +4,4 @@
 
 [Link to documentation on pages.nist.gov](https://pages.nist.gov/ARIAC_docs/en/latest/index.html)
 
-![ARIAC 2024 Environment](resource/environment_2024.png)
+![ARIAC 2025 Environment](resource/environment.png)

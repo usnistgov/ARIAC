@@ -1,4 +1,4 @@
-# Welcome to ARIAC2024
+# Welcome to ARIAC2025
 
 [![ARIAC documentation](https://github.com/usnistgov/ARIAC_docs/actions/workflows/ARIAC_docs.yaml/badge.svg)](https://github.com/usnistgov/ARIAC_docs/actions/workflows/ARIAC_docs.yaml)
 

@@ -1,3 +1,0 @@
-ariac_msgs/Part part
-geometry_msgs/PoseStamped assembled_pose
-geometry_msgs/Vector3 install_direction

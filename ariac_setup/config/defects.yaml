@@ -1,0 +1,32 @@
+DEFECT_TYPES:
+  1:
+    DAE_FILE: defect_1.dae
+    DESCRIPTION: single bulge
+    DEFECTS:
+      - TYPE: 2
+        THETA: -0.213
+        Z: 0.0469
+  2:
+    DAE_FILE: defect_2.dae
+    DESCRIPTION: single dent
+    DEFECTS:
+      - TYPE: 1
+        THETA: 0.295
+        Z: 0.01424
+  3:
+    DAE_FILE: defect_3.dae
+    DESCRIPTION: single scratch
+    DEFECTS:
+      - TYPE: 3
+        THETA: -1.479
+        Z: 0.03479
+  4:
+    DAE_FILE: defect_4.dae
+    DESCRIPTION: scratch and bulge
+    DEFECTS:
+      - TYPE: 2
+        THETA: 0.175
+        Z: 0.03558
+      - TYPE: 3
+        THETA: -1.479
+        Z: 0.03479

@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<sdf version="1.11">
+  <model name="assembly_table">
+    
+    <static>true</static>
+    
+    <link name="stand">
+
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_table/meshes/assembly_table.gltf</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="collision">
+        <density>2700</density>
+        <pose>0 0 0.215 0 0 0</pose>
+        <geometry>
+          <box>
+            <size> 0.6 0.4 0.43 </size>
+          </box>
+        </geometry>
+      </collision>
+
+      <inertial auto="true"/>
+      <sensor name='contact_detector' type='contact'>
+        <update_rate>30</update_rate>
+          <contact>
+            <collision>collision</collision>
+          </contact>
+      </sensor>
+    </link>
+
+  </model>
+
+</sdf>

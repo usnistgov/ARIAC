@@ -1,0 +1,8 @@
+<library path="robotiq_gripper_controller">
+    <class name="robotiq_gripper_controller/RobotiqGripperController"
+           type="robotiq_gripper_controller::RobotiqGripperController" base_class_type="controller_interface::ControllerInterface">
+        <description>
+            ROS2 controller for the robotiq gripper
+        </description>
+    </class>
+</library>

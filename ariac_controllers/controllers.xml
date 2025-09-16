@@ -1,8 +1,0 @@
-<library path="ariac_controllers">
-    <class name="ariac_controllers/StaticController"
-           type="ariac_controllers::StaticController" base_class_type="controller_interface::ControllerInterface">
-        <description>
-            The static controller keeps the current state of the robot
-        </description>
-    </class>
-</library>

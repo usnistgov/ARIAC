@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+<sdf version="1.11">
+  <model name="cell_recycling_bin">
+    <static>true</static>
+    <link name="bin_link">
+      <collision name='collision'>
+        <geometry>
+          <mesh>
+            <uri>model://bins/meshes/green_bin.dae</uri>
+            <scale> 0.25 0.35 0.25 </scale>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://bins/meshes/green_bin.dae</uri>
+            <scale> 0.25 0.35 0.25 </scale>
+          </mesh>
+        </geometry>
+       </visual>
+
+      <sensor name='collision_detector' type='contact'>
+        <update_rate>30</update_rate>
+          <contact>
+            <collision>collision</collision>
+          </contact>
+      </sensor>
+
+    </link>
+
+    <plugin
+      filename="libEntityDisposalPlugin.so"
+      name="ariac_plugins::EntityDisposalPlugin">
+      <contact_link>bin_link</contact_link>
+    </plugin>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>bin_link</base_link>
+      <static>true</static>
+    </plugin>
+
+  </model>
+</sdf>

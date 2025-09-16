@@ -1,257 +1,373 @@
-/*
-This software was developed by employees of the National Institute of Standards and Technology (NIST), an agency of the Federal Government. Pursuant to title 17 United States Code Section 105, works of NIST employees are not subject to copyright protection in the United States and are considered to be in the public domain. Permission to freely use, copy, modify, and distribute this software and its documentation without fee is hereby granted, provided that this notice and disclaimer of warranty appears in all copies.
-
-The software is provided 'as is' without any warranty of any kind, either expressed, implied, or statutory, including, but not limited to, any warranty that the software will conform to specifications, any implied warranties of merchantability, fitness for a particular purpose, and freedom from infringement, and any warranty that the documentation will conform to the software, or any warranty that the software will be error free. In no event shall NIST be liable for any damages, including, but not limited to, direct, indirect, special or consequential damages, arising out of, resulting from, or in any way connected with this software, whether or not based upon warranty, contract, tort, or otherwise, whether or not injury was sustained by persons or property or otherwise, and whether or not loss was sustained from, or arose out of the results of, or use of, the software or services provided hereunder.
-
-Distributions of NIST software should also include copyright and licensing statements of any third-party software that are legally bundled with the code in compliance with the conditions of those licenses.
-*/
-
-#include <gazebo/physics/Model.hh>
-#include <gazebo/physics/World.hh>
-#include <gazebo/physics/Link.hh>
-#include <gazebo/physics/PhysicsEngine.hh>
-#include <gazebo/physics/ContactManager.hh>
-#include <gazebo/physics/Collision.hh>
-#include <gazebo/transport/Subscriber.hh>
-#include <gazebo/transport/Node.hh>
+#include <gz/plugin/Register.hh>
+#include <gz/common/Console.hh>
 
 #include <ariac_plugins/agv_tray_plugin.hpp>
 
-#include <gazebo_ros/node.hpp>
-#include <rclcpp/rclcpp.hpp>
+GZ_ADD_PLUGIN(
+  ariac_plugins::AgvTrayPlugin,
+  gz::sim::System,
+  ariac_plugins::AgvTrayPlugin::ISystemPreUpdate,
+  ariac_plugins::AgvTrayPlugin::ISystemConfigure)
 
-#include <std_srvs/srv/trigger.hpp>
+namespace ariac_plugins{
 
-#include <map>
-#include <memory>
+  AgvTrayPlugin::~AgvTrayPlugin()
+  {
+    executor->cancel();
+    thread_executor_spin.join();
+  }
 
-namespace ariac_plugins
-{
-/// Class to hold private data members (PIMPL pattern)
-class AGVTrayPluginPrivate
-{
-public:
-  /// Connection to world update event. Callback is called while this is alive.
-  gazebo::event::ConnectionPtr update_connection_;
+  void AgvTrayPlugin::Configure(
+    const gz::sim::Entity &_entity,
+    const std::shared_ptr<const sdf::Element> &_sdf,
+    gz::sim::EntityComponentManager &_ecm,
+    gz::sim::EventManager &)
+  {
+    model = gz::sim::Model(_entity);
 
-  /// Node for ROS communication.
-  gazebo_ros::Node::SharedPtr ros_node_;
+    agv_name = model.Name(_ecm);
 
-  bool locked_;
-  bool tray_attached_;
-  bool sensor_attached_;
-  bool in_contact_;
-  std::string agv_number_;
-  gazebo::physics::LinkPtr agv_tray_link_;
+    std::string ros_namespace = agv_name;
 
-  gazebo::transport::SubscriberPtr contact_sub_;
-  gazebo::transport::NodePtr gznode_;
+    tray_link = model.LinkByName(_ecm, "tray_link");
 
-  // Position of warehouse for agv_joint 
-  double warehouse_location_ = 17;
+    gz_node = std::make_shared<gz::transport::Node>();
 
-  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr lock_tray_service_;
-  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr unlock_tray_service_;
+    // Subscribe to slot gz contact topics
+    std::string left_contact_topic = "/world/ariac/model/" + agv_name + "/link/slot_{n}_link/sensor/left_contact_sensor/contact";
+    std::string right_contact_topic = "/world/ariac/model/" + agv_name + "/link/slot_{n}_link/sensor/right_contact_sensor/contact";
 
-  gazebo::physics::ModelPtr model_;
-  gazebo::physics::JointPtr kit_tray_joint_;
-  gazebo::physics::JointPtr agv_joint_;
-  gazebo::physics::JointPtr sensor_joint_;
-  gazebo::physics::CollisionPtr model_collision_;
-  std::map<std::string, gazebo::physics::CollisionPtr> collisions_;
+    std::string center_contact_topic = "/world/ariac/model/" + agv_name + "/link/center_slot_link/sensor/contact_sensor/contact";
 
+    // Create ROS node
+    ros_node = rclcpp::Node::make_shared("tray_plugin", ros_namespace);
 
-  bool CheckModelContact(ConstContactsPtr&);
-  void AttachJoint();
-  void DetachJoint();
+    rclcpp::Parameter sim_time("use_sim_time", true);
+    ros_node->set_parameter(sim_time);
 
-  /// Callback for enable service
-  void LockTray(
-    std_srvs::srv::Trigger::Request::SharedPtr,
-    std_srvs::srv::Trigger::Response::SharedPtr);
+    // Spin up executor thread
+    executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+    executor->add_node(ros_node);
 
-  void UnlockTray(
-    std_srvs::srv::Trigger::Request::SharedPtr,
-    std_srvs::srv::Trigger::Response::SharedPtr);
-};
+    auto spin = [this](){
+      while(rclcpp::ok()){
+        executor->spin_once();
+      }
+    };
 
-AGVTrayPlugin::AGVTrayPlugin()
-: impl_(std::make_unique<AGVTrayPluginPrivate>())
-{
-}
+    thread_executor_spin = std::thread(spin);
 
-AGVTrayPlugin::~AGVTrayPlugin()
-{
-}
+    // Add subscriber for location
+    location_subscription = ros_node->create_subscription<ariac_interfaces::msg::AgvStatus>(
+      "info", 
+      10,
+      std::bind(&AgvTrayPlugin::agv_station_check, this, std::placeholders::_1)
+    );
 
-void AGVTrayPlugin::Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf)
-{
-  // Create a GazeboRos node instead of a common ROS node.
-  // Pass it SDF parameters so common options like namespace and remapping
-  // can be handled.
-  impl_->model_ = model;
-  impl_->ros_node_ = gazebo_ros::Node::Get(sdf);
+    // Add service for removing cells at recycling
 
-  impl_->agv_number_ = sdf->GetElement("agv_number")->Get<std::string>();
+    recycle_cells_srv = ros_node->create_service<ariac_interfaces::srv::Trigger>(
+      "recycle_cells",
+      std::bind(&AgvTrayPlugin::recycle_cells_cb, this, std::placeholders::_1, std::placeholders::_2)
+    );
 
-  impl_->sensor_attached_ = false;
+    // Create publisher and timer
+    agv_slot_info_pub = ros_node->create_publisher<ariac_interfaces::msg::AgvTrayStatus>("tray_status", 10);
 
-  const gazebo_ros::QoS & qos = impl_->ros_node_->get_qos();
-  rclcpp::QoS pub_qos = qos.get_publisher_qos("~/out", rclcpp::SensorDataQoS().reliable());
+    pub_timer = ros_node->create_wall_timer(
+      std::chrono::milliseconds(100),
+      std::bind(&AgvTrayPlugin::pub_timer_cb, this));
 
-  gazebo::physics::WorldPtr world = impl_->model_->GetWorld();
-  impl_->kit_tray_joint_ = world->Physics()->CreateJoint("fixed", impl_->model_);
-  impl_->kit_tray_joint_->SetName(impl_->agv_number_ + "_kit_tray_joint");
+    for (int i=1; i<=4; i++) {
+      std::string name = left_contact_topic;
+      topic_names["left"][i] = name.replace(left_contact_topic.find("{n}"), 3, std::to_string(i));
+      name = right_contact_topic;
+      topic_names["right"][i] = name.replace(right_contact_topic.find("{n}"), 3, std::to_string(i));
+    }
 
-  impl_->sensor_joint_ = world->Physics()->CreateJoint("fixed", impl_->model_);
-  impl_->sensor_joint_->SetName(impl_->agv_number_ + "_sensor_joint");
+    gz_node->Subscribe(center_contact_topic, &AgvTrayPlugin::center_slot_contact_msg_cb, this);
 
-  // Initialize a gazebo node and subscribe to the contacts for the vacuum gripper
-  impl_->gznode_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
-  impl_->gznode_->Init(impl_->model_->GetWorld()->Name());
-
-  // Get gripper link
-  std::string link_name = sdf->GetElement("agv_tray_link")->Get<std::string>();
-  impl_->agv_tray_link_ = impl_->model_->GetLink(link_name);
-
-  impl_->agv_joint_ = model->GetJoint(impl_->agv_number_ + "_joint");
+    for (const auto& [side, slot_topic_names] : topic_names) {
+      for (const auto& [slot, topic] : slot_topic_names) {
+        std::function func = [this, slot, side](const gz::msgs::Contacts &msg) {contact_msg_cb(slot, side, msg); };
+        gz_node->Subscribe(topic, func);
+      }
+    }	
+  }
   
-  std::string topic = "/gazebo/world/ariac_robots/" + link_name + "/bumper/contacts";
-  impl_->contact_sub_ = impl_->gznode_->Subscribe(topic, &AGVTrayPlugin::OnContact, this);
+  void AgvTrayPlugin::PreUpdate(
+    const gz::sim::UpdateInfo &_info,
+    gz::sim::EntityComponentManager &_ecm)
+  {
+    switch(agv_station)
+    {
+    // In either of these situations, we want to lock any detected cells in place with detachable joints
+    case AGVStations::IN_TRANSIT:
+    case AGVStations::INSPECTION:
 
-  // Register services
-  impl_->lock_tray_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>(
-      "/ariac/" + impl_->agv_number_ + "_lock_tray", 
-      std::bind(
-      &AGVTrayPluginPrivate::LockTray, impl_.get(),
-      std::placeholders::_1, std::placeholders::_2));
+      for (const auto& [slot, slot_info] : cell_in_slot){
+        if (slot_locked[slot]){
+          continue;
+        }
 
-  impl_->unlock_tray_service_ = impl_->ros_node_->create_service<std_srvs::srv::Trigger>(
-    "/ariac/" + impl_->agv_number_ + "_unlock_tray", 
-    std::bind(
-    &AGVTrayPluginPrivate::UnlockTray, impl_.get(),
-    std::placeholders::_1, std::placeholders::_2));
-
-
-
-  // Create a connection so the OnUpdate function is called at every simulation
-  // iteration. Remove this call, the connection and the callback if not needed.
-  impl_->update_connection_ = gazebo::event::Events::ConnectWorldUpdateBegin(
-    std::bind(&AGVTrayPlugin::OnUpdate, this));
-}
-
-void AGVTrayPlugin::OnUpdate()
-{
-  // If gripper is enabled and in contact with gripable model attach joint
-  if (impl_->locked_ && !impl_->tray_attached_ && impl_->in_contact_) {
-    impl_->AttachJoint();
-  }
-
-  // If part attached and gripper is disabled remove joint
-  if (impl_->tray_attached_ && !impl_->locked_){
-    impl_->DetachJoint();
-  }
-
-  if (!impl_->sensor_attached_) {
-    std::string num(1, impl_->agv_number_.back());
-    std::string sensor_name = "agv_tray_sensor_" + num;
-    gazebo::physics::ModelPtr sensor;
-    sensor = impl_->model_->GetWorld()->ModelByName(sensor_name);
-    // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Sensor name: " << sensor_name);
-    if (sensor != NULL){
-      // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "Attaching sensor to agv");
-
-      impl_->sensor_joint_->Load(impl_->agv_tray_link_, sensor->GetLink(), ignition::math::Pose3d());
-      impl_->sensor_joint_->Init();
-
-      impl_->sensor_attached_ = true;
-    }
-  }
-
-  // Unlock tray if agv is at the warehouse
-  if (abs(impl_->agv_joint_->Position(0) - impl_->warehouse_location_) < 0.3 && impl_->tray_attached_) {
-    // RCLCPP_INFO_STREAM(impl_->ros_node_->get_logger(), "AGV in warehouse, unlocking tray");
-    impl_->DetachJoint();
-    impl_->locked_ = false;
-
-  }
-}
-
-void AGVTrayPlugin::OnContact(ConstContactsPtr& _msg){
-  if (impl_->locked_) {
-    impl_->in_contact_ = impl_->CheckModelContact(_msg);
-  }
-}
-
-void AGVTrayPluginPrivate::AttachJoint(){
-  RCLCPP_INFO(ros_node_->get_logger(), "Locking Tray");
-  kit_tray_joint_->Load(agv_tray_link_, model_collision_->GetLink(), ignition::math::Pose3d());
-  kit_tray_joint_->Init();
-
-  tray_attached_ = true;
-}
-
-void AGVTrayPluginPrivate::DetachJoint(){
-  RCLCPP_INFO(ros_node_->get_logger(), "Unlocking Tray");
-  kit_tray_joint_->Detach();
-  tray_attached_ = false;
-}
-
-bool AGVTrayPluginPrivate::CheckModelContact(ConstContactsPtr& msg){
-  std::string model_in_contact;
-
-  for (int i = 0; i < msg->contact_size(); ++i) {
-    // Find out which contact is the agv
-    if (msg->contact(i).collision1().find("agv") != std::string::npos) {
-      model_in_contact = msg->contact(i).collision2();
-    }
-    else if (msg->contact(i).collision2().find("agv") != std::string::npos){
-      model_in_contact = msg->contact(i).collision1();
-    }
-    else {
-      continue;
-    }
-
-    // Check if model is a kit_tray
-    if (model_in_contact.find("kit_tray") != std::string::npos){
-      model_collision_ = boost::dynamic_pointer_cast<gazebo::physics::Collision>(
-        model_->GetWorld()->EntityByName(model_in_contact));
-      return true;
-    }
-  }
-
-  return false;
-
-}
-
-void AGVTrayPluginPrivate::LockTray(
-  std_srvs::srv::Trigger::Request::SharedPtr req,
-  std_srvs::srv::Trigger::Response::SharedPtr res)
-{
-  res->success = false;
+        if (!slot_info.left.in_contact || !slot_info.right.in_contact){ // Ensure contact on both sides of a slot
+          continue;
+        }
   
-  if (!locked_) {
-    locked_ = true;
-    res->success = true;
-  } else {
-    RCLCPP_WARN(ros_node_->get_logger(), "Tray is already locked");
-  }
-}
-
-void AGVTrayPluginPrivate::UnlockTray(
-  std_srvs::srv::Trigger::Request::SharedPtr req,
-  std_srvs::srv::Trigger::Response::SharedPtr res)
-{
-  res->success = false;
+        if (slot_info.left.model_name != slot_info.right.model_name){ // Ensure object in contact is the same object
+          continue;
+        }
   
-  if (locked_) {
-    locked_ = false;
-    res->success = true;
-  } else {
-    RCLCPP_WARN(ros_node_->get_logger(), "Tray is not yet locked");
+        std::optional<gz::sim::v8::Entity> cell_entity = _ecm.EntityByName(slot_info.left.model_name);
+
+        if(!cell_entity.has_value()){
+          cell_entity = _ecm.EntityByName(slot_info.right.model_name);
+        }
+
+        if (!cell_entity.has_value()) {
+          cell_in_slot[slot].left.in_contact = false;
+          cell_in_slot[slot].right.in_contact = false;
+          cell_in_slot[slot].left.model_name = "";
+          cell_in_slot[slot].right.model_name = "";
+          slot_locked[slot] = false;
+          continue;
+        }
+  
+        auto cell_link = gz::sim::Model(cell_entity.value()).LinkByName(_ecm, "base_link");
+  
+        if (cell_link == 0) {
+          gzerr << "Unable to locate cell link" << std::endl;
+          continue;
+        }
+  
+        lock_joints[slot] = _ecm.CreateEntity();
+  
+        // After finding the cell base link, attach the cell to the tray via a fixed detachable joint, creating a lock
+        _ecm.CreateComponent(lock_joints[slot], gz::sim::components::DetachableJoint({tray_link, cell_link, "fixed"}));
+  
+        gzmsg << slot_info.left.model_name + " locked in slot " + std::to_string(slot) << std::endl;
+  
+        slot_locked[slot] = true;
+        
+      }
+
+      break;
+    // In either of these cases, we want to unlock the cells so that necessary operations can be performed using them
+    case AGVStations::SHIPPING:
+      for (const auto& [slot, slot_info] : cell_in_slot){
+        if (!_ecm.HasEntity(lock_joints[slot])){
+          lock_joints[slot] = gz::sim::kNullEntity;
+          cell_in_slot[slot].left.in_contact = false;
+          cell_in_slot[slot].right.in_contact = false;
+          cell_in_slot[slot].left.model_name = "";
+          cell_in_slot[slot].right.model_name = "";
+          slot_locked[slot] = false;
+        }
+      }
+
+      break;
+    case AGVStations::ASSEMBLY:
+      
+      for (const auto& [slot, slot_info] : cell_in_slot){
+        if (!slot_locked[slot]){
+          continue;
+        }
+        
+        // Remove the entity for the saved lock joint
+        _ecm.RequestRemoveEntity(lock_joints[slot]);
+        gzmsg << agv_name << " slot_" << slot << " unlocked" << std::endl;
+        slot_locked[slot] = false;
+        lock_joints[slot] = gz::sim::kNullEntity;
+      }
+
+      // Checking if cell is still in contact, remove cell from slot data if contact not recieved for 100 ms
+      for (const auto& [slot, slot_info] : cell_in_slot) {
+        if (_info.simTime.count() - slot_info.left.last_contact_time > 1E8) {
+          cell_in_slot[slot].left.in_contact = false;
+          cell_in_slot[slot].left.model_name = "";
+        }
+
+        if (_info.simTime.count() - slot_info.right.last_contact_time > 1E8) {
+          cell_in_slot[slot].right.in_contact = false;
+          cell_in_slot[slot].right.model_name = "";
+        }
+      }
+
+      break;
+    
+    // At this station, we want to have a service which can be called to delete all the cells currently on the AGV
+    case AGVStations::RECYCLING:
+
+      if (recycle_requested){
+        recycle_request_iteration = _info.iterations;
+        recycle_requested = false;
+      }
+
+      // On the first iteration, remove the lock joint on the cell in each slot
+      if (_info.iterations == recycle_request_iteration){
+        for (const auto& [slot, slot_info] : cell_in_slot) { 
+          if (!slot_locked[slot]){
+            continue;
+          }
+          gzwarn << "about to remove joint for slot " << slot << std::endl;
+          _ecm.RequestRemoveEntity(lock_joints[slot]);
+          lock_joints[slot] = gz::sim::kNullEntity;
+        }
+      } else if(_info.iterations == recycle_request_iteration + 1) { // On the second iteration, we remove the cell from each slot
+        for (const auto& [slot, slot_info] : cell_in_slot) { 
+        
+          if (!slot_locked[slot]){
+            continue;
+          }
+  
+          auto cell_to_remove = slot_info.left.model_name;
+  
+          auto cell_entity = _ecm.EntityByName(cell_to_remove);
+  
+          if (!cell_entity.has_value()){
+            gzerr << "Unable to find cell to remove." << std::endl;
+            break;
+          }
+          gzwarn << "about to remove cell for slot " << slot << std::endl;
+          _ecm.RequestRemoveEntity(cell_entity.value());
+  
+          gzmsg << "Removed " + cell_to_remove + " from the world scene" << std::endl;
+        }
+      } else if (_info.iterations == recycle_request_iteration + 2){ // On the third iteration, reset our variables.
+
+        for (const auto& [slot, slot_info] : cell_in_slot) {
+          cell_in_slot[slot].left.in_contact = false;
+          cell_in_slot[slot].right.in_contact = false;
+          cell_in_slot[slot].left.model_name = "";
+          cell_in_slot[slot].right.model_name = "";
+          slot_locked[slot] = false;
+        }
+      }
+
+      break;
+    }
+
+    switch (center_slot_state)
+    {
+    case CenterSlotState::IDLE:
+      break;
+
+    case CenterSlotState::TELEPORT_REQUESTED:
+
+      if (!_ecm.EntityByName(cell_to_teleport).has_value()) {
+        center_slot_state = CenterSlotState::IDLE;
+        break;
+      }
+      
+      auto cell_model = gz::sim::Model(_ecm.EntityByName(cell_to_teleport).value());
+      auto cell_link = gz::sim::Link(cell_model.LinkByName(_ecm, "base_link"));
+
+      if(!gz::sim::Link(tray_link).WorldPose(_ecm).has_value()){
+        center_slot_state = CenterSlotState::IDLE;
+        break;
+      }
+
+      if(!cell_link.WorldPose(_ecm).has_value()){
+        center_slot_state = CenterSlotState::IDLE;
+        break;
+      }
+
+      auto tray_pose = gz::sim::Link(tray_link).WorldPose(_ecm);
+
+      auto cell_pose = cell_link.WorldPose(_ecm).value();
+
+      float cell_z_offset = 0.0;
+      if(cell_pose.Rot().RotateVector(gz::math::Vector3d::UnitZ).Dot(gz::math::Vector3d::UnitZ) < 0){
+        cell_z_offset = 0.07;
+      }
+
+      gz::math::Pose3d teleport_cell_pose = gz::math::Pose3d(
+        tray_pose.value().X(),
+        tray_pose.value().Y(),
+        tray_pose.value().Z() + 0.0101 + cell_z_offset,
+        0.0,
+        cell_z_offset > 0.0 ? M_PI : 0.0,
+        cell_pose.Yaw()
+      );
+      
+
+      cell_model.SetWorldPoseCmd(_ecm, teleport_cell_pose);
+
+      center_slot_state = CenterSlotState::IDLE;
+
+      break;
+    }
+  }
+
+  void AgvTrayPlugin::contact_msg_cb(int slot, std::string side, const gz::msgs::Contacts &_gz_contacts_msg){
+    auto cell = get_cell_in_contact(_gz_contacts_msg);
+
+    if (cell.has_value()) {
+
+      auto gz_time =_gz_contacts_msg.header().stamp();
+      auto rcl_time = rclcpp::Time(gz_time.sec(), gz_time.nsec());
+      double last_contact_time = rcl_time.nanoseconds(); // Save time to check in shipping and assembly case, to detect when contact is no longer recieved
+
+      if (side == "left") {
+        cell_in_slot[slot].left = {true, cell.value(), last_contact_time};
+      }
+
+      if (side == "right") {
+        cell_in_slot[slot].right = {true, cell.value(), last_contact_time};
+      }
+      
+    }
+  }
+
+  void AgvTrayPlugin::center_slot_contact_msg_cb(const gz::msgs::Contacts &_gz_contacts_msg){
+    auto cell = get_cell_in_contact(_gz_contacts_msg);
+
+    if(cell.has_value()){
+      if(std::find(teleported_cells.begin(), teleported_cells.end(), cell.value()) == teleported_cells.end()){
+        gzwarn << "Requesting teleport of cell: " << cell.value() << "\n";
+        cell_to_teleport = cell.value();
+        center_slot_state = CenterSlotState::TELEPORT_REQUESTED;
+        teleported_cells.push_back(cell_to_teleport);
+      }
+    }
+  }
+
+  std::optional<std::string> AgvTrayPlugin::get_cell_in_contact(const gz::msgs::Contacts &_gz_contacts_msg)
+  {
+    for (int i = 0; i < _gz_contacts_msg.contact_size(); ++i){
+      std::string collision = _gz_contacts_msg.contact(i).collision2().name();
+      if (collision.find("cell") != std::string::npos){
+        return collision.substr(0, collision.find("::"));
+      }
+    }
+
+    return std::nullopt;
+  }
+
+  void AgvTrayPlugin::agv_station_check(ariac_interfaces::msg::AgvStatus::SharedPtr msg){
+    agv_station = msg->station_id;
+  }
+
+  void AgvTrayPlugin::recycle_cells_cb(const ariac_interfaces::srv::Trigger::Request::SharedPtr, ariac_interfaces::srv::Trigger::Response::SharedPtr rep){
+    
+    if (agv_station != ariac_interfaces::msg::AgvStations::RECYCLING){
+      rep->success = false;
+      rep->message = "Unable to run service unless AGV is at recycling station";
+      return;
+    }
+
+    recycle_requested = true;
+    rep->success = true;
+    rep->message = "Removal of cells requested";
+    return;
+  }
+
+  void AgvTrayPlugin::pub_timer_cb(){
+    tray_status.slot_1_occupied = cell_in_slot[1].left.in_contact && cell_in_slot[1].right.in_contact;
+    tray_status.slot_2_occupied = cell_in_slot[2].left.in_contact && cell_in_slot[2].right.in_contact;
+    tray_status.slot_3_occupied = cell_in_slot[3].left.in_contact && cell_in_slot[3].right.in_contact;
+    tray_status.slot_4_occupied = cell_in_slot[4].left.in_contact && cell_in_slot[4].right.in_contact;
+
+    agv_slot_info_pub->publish(tray_status);
   }
 }
-
-// Register this plugin with the simulator
-GZ_REGISTER_MODEL_PLUGIN(AGVTrayPlugin)
-}  // namespace ariac_plugins

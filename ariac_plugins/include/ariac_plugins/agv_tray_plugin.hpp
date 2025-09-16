@@ -1,59 +1,141 @@
-// Copyright 2018 Open Source Robotics Foundation, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+#ifndef ARIAC_PLUGINS__AGV_TRAY_PLUGIN_HPP_
+#define ARIAC_PLUGINS__AGV_TRAY_PLUGIN_HPP_
 
-#ifndef AGV_TRAY_PLUGIN_HPP_
-#define AGV_TRAY_PLUGIN_HPP_
+#include <gz/sim/System.hh>
+#include <gz/sim/EntityComponentManager.hh>
+#include <gz/sim/Model.hh>
+#include <gz/sim/Joint.hh>
+#include <gz/sim/Link.hh>
+#include <gz/sim/components.hh>
+#include <gz/transport/Node.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
 
-#include <gazebo/common/Plugin.hh>
+#include <rclcpp/rclcpp.hpp>
+#include "rclcpp_action/create_server.hpp"
 
-// For std::unique_ptr, could be removed
+#include <ariac_interfaces/msg/agv_stations.hpp>
+#include <ariac_interfaces/msg/agv_status.hpp>
+#include <ariac_interfaces/msg/agv_tray_status.hpp>
+#include <ariac_interfaces/srv/trigger.hpp>
+
+#include <thread>
+#include <chrono>
+#include <functional>
 #include <memory>
+#include <string>
+#include <cmath>
+
+using AGVStations = ariac_interfaces::msg::AgvStations;
+
+using AGVStatus = ariac_interfaces::msg::AgvStatus;
 
 namespace ariac_plugins
 {
-// Forward declaration of private data class.
-class AGVTrayPluginPrivate;
+  enum class AGVTrayLockState {
+    LOCKED,
+    UNLOCKED,
+    LOCK_REQUESTED,
+    UNLOCK_REQUESTED,
+    REMOVAL_REQUESTED
+    };
 
-/// Example ROS-powered Gazebo plugin with some useful boilerplate.
-/// \details This is a `ModelPlugin`, but it could be any supported Gazebo plugin type, such as
-/// System, Visual, GUI, World, Sensor, etc.
-class AGVTrayPlugin : public gazebo::ModelPlugin
-{
-public:
-  /// Constructor
-  AGVTrayPlugin();
+  enum class CenterSlotState {
+    IDLE,
+    TELEPORT_REQUESTED
+  };
 
-  /// Destructor
-  virtual ~AGVTrayPlugin();
+  struct ContactInfo {
+    bool in_contact;
+    std::string model_name;
+    double last_contact_time;
+  };
 
-  /// Gazebo calls this when the plugin is loaded.
-  /// \param[in] model Pointer to parent model. Other plugin types will expose different entities,
-  /// such as `gazebo::sensors::SensorPtr`, `gazebo::physics::WorldPtr`,
-  /// `gazebo::rendering::VisualPtr`, etc.
-  /// \param[in] sdf SDF element containing user-defined parameters.
-  void Load(gazebo::physics::ModelPtr model, sdf::ElementPtr sdf) override;
-  void OnContact(ConstContactsPtr& _msg);
+  struct SlotContactInfo {
+    ContactInfo left;
+    ContactInfo right;
+  };
 
-protected:
-  /// Optional callback to be called at every simulation iteration.
-  virtual void OnUpdate();
+  class AgvTrayPlugin:
+    public gz::sim::System,
+    public gz::sim::ISystemConfigure,
+    public gz::sim::ISystemPreUpdate
+  {
+    public:   
+      ~AgvTrayPlugin() override;
+      
+      void Configure (
+        const gz::sim::Entity &_entity,
+        const std::shared_ptr<const sdf::Element> &_sdf,
+        gz::sim::EntityComponentManager &_ecm,
+        gz::sim::EventManager &_event_manager) override;
+      
+      void PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm) final;
 
-private:
-  /// Recommended PIMPL pattern. This variable should hold all private
-  /// data members.
-  std::unique_ptr<AGVTrayPluginPrivate> impl_;
-};
-}  // namespace ariac_plugins
+    private: 
 
-#endif  // AGV_TRAY_PLUGIN_HPP_
+    // GZ 
+    gz::sim::Model model;
+    std::shared_ptr<gz::transport::Node> gz_node;
+
+    // ROS
+    rclcpp::Node::SharedPtr ros_node;
+    rclcpp::executors::MultiThreadedExecutor::SharedPtr executor;
+    std::thread thread_executor_spin;
+    rclcpp::Publisher<ariac_interfaces::msg::AgvTrayStatus>::SharedPtr agv_slot_info_pub;
+    rclcpp::TimerBase::SharedPtr pub_timer;
+    rclcpp::Subscription<ariac_interfaces::msg::AgvStatus>::SharedPtr location_subscription;
+    rclcpp::Service<ariac_interfaces::srv::Trigger>::SharedPtr recycle_cells_srv;
+
+    // SDF Tags
+    gz::sim::Entity tray_link = gz::sim::kNullEntity;
+
+    // Variables
+    std::string agv_name;
+    ariac_interfaces::msg::AgvTrayStatus tray_status;
+    int recycle_request_iteration;
+    AGVTrayLockState lock_state = AGVTrayLockState::LOCK_REQUESTED;
+    bool recycle_requested = false;
+    int agv_station = AGVStations::INSPECTION;
+
+    // Center teleporter
+    std::vector<std::string> teleported_cells;
+    CenterSlotState center_slot_state = CenterSlotState::IDLE;
+    std::string cell_to_teleport;
+
+    // Mappings
+    std::map<std::string, std::map<int, std::string>> topic_names;
+    std::map<int, gz::sim::Entity> lock_joints = {
+        { 1, gz::sim::kNullEntity },
+        { 2, gz::sim::kNullEntity },
+        { 3, gz::sim::kNullEntity },
+        { 4, gz::sim::kNullEntity },
+    };
+
+    std::map<int, bool> slot_locked = {
+        { 1, false },
+        { 2, false },
+        { 3, false },
+        { 4, false },
+    };
+
+    std::map<int, SlotContactInfo> cell_in_slot = {
+      { 1, {{ false, "", 0.0 }, { false, "", 0.0 }}},
+      { 2, {{ false, "", 0.0 }, { false, "", 0.0 }}},
+      { 3, {{ false, "", 0.0 }, { false, "", 0.0 }}},
+      { 4, {{ false, "", 0.0 }, { false, "", 0.0 }}},
+    };
+
+    // Functions
+    std::optional<std::string> get_cell_in_contact(const gz::msgs::Contacts &_gz_contacts_msg);
+    void agv_station_check(ariac_interfaces::msg::AgvStatus::SharedPtr msg);
+    void recycle_cells_cb(const ariac_interfaces::srv::Trigger::Request::SharedPtr, ariac_interfaces::srv::Trigger::Response::SharedPtr rep);
+    void pub_timer_cb();
+
+    // GZ CBs
+    void contact_msg_cb(int slot, std::string side, const gz::msgs::Contacts &_gz_contacts_msg);
+    void center_slot_contact_msg_cb(const gz::msgs::Contacts &_gz_contacts_msg); 
+  };
+}
+
+#endif // ARIAC_PLUGINS__AGV_TRAY_PLUGIN_HPP

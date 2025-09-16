@@ -2,36 +2,23 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ariac_plugins</name>
-  <version>2024.5.0</version>
-  <description>Gazebo/ROS2 plugins for the ARAIC competition</description>
-  <maintainer email="justin.albrecht@nist.gov">justin albrecht</maintainer>
-  <maintainer email="zeid.kootbally@nist.gov">zeid kootbally</maintainer>
-  <license>NIST</license>
+  <version>0.0.0</version>
+  <description>Plugins for the ARIAC competition</description>
+  <maintainer email="joseph.fernandez@nist.gov">Joseph Fernandez</maintainer>
+  <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>ariac_interfaces</depend>
 
-  <depend>ariac_msgs</depend>
-  <depend>example_interfaces</depend>
-
-  <build_depend>gazebo_dev</build_depend>
-  <build_depend>gazebo_msgs</build_depend>
-  <build_depend>sensor_msgs</build_depend>
-  <build_depend>controller_manager_msgs</build_depend>
-  <build_depend>gazebo_ros</build_depend>
-  <build_depend>rclcpp</build_depend>
-
-  <exec_depend>gazebo_dev</exec_depend>
-  <exec_depend>gazebo_msgs</exec_depend>
-  <exec_depend>sensor_msgs</exec_depend>
-  <exec_depend>controller_manager_msgs</exec_depend>
-  <exec_depend>gazebo_ros</exec_depend>
-  <exec_depend>rclcpp</exec_depend>
-
-  <test_depend>ament_cmake_gtest</test_depend>
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
+  <depend>ament_index_cpp</depend>
+  <depend>yaml-cpp</depend>
+  <depend>tinyxml2</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
   </export>
+
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_lint_auto</test_depend>
+
 </package>

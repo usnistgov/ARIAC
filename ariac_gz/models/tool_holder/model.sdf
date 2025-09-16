@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="tool_holder">
+    <static>true</static>
+    <link name="tool_holder_link">
+      <inertial auto="true"/>
+      
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://tool_holder/meshes/tool_holder.gltf</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="collision">
+        <density>2700</density>
+        <geometry>
+          <mesh>
+            <uri>model://tool_holder/meshes/tool_holder.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="vg_2_slot">
+      <pose>0.08 -0.0675 0.16437 3.14 0 0</pose>
+    </link>
+    <link name="vg_4_slot">
+      <pose>-0.08 -0.0675 0.16437 3.14 0 0</pose>
+    </link>
+
+    <joint name="base_to_vg_2_slot" type="fixed">
+      <parent>tool_holder_link</parent>
+      <child>vg_2_slot</child>
+    </joint>
+    <joint name="base_to_vg_4_slot" type="fixed">
+      <parent>tool_holder_link</parent>
+      <child>vg_4_slot</child>
+    </joint>
+
+
+    <plugin
+      filename="libToolStandPlugin.so"
+      name="ariac_plugins::ToolStandPlugin">
+    </plugin>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>tool_holder_link</base_link>
+      <static>true</static>
+      <child link="vg_2_slot" frame="vg_2"/>
+      <child link="vg_4_slot" frame="vg_4"/>
+    </plugin>
+  </model>
+</sdf>

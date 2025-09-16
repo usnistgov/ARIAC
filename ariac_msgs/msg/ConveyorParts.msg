@@ -1,1 +1,0 @@
-ariac_msgs/PartLot[] parts

@@ -1,0 +1,16 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="assembly_robot_1">
+  <xacro:include filename="$(find ariac_description)/urdf/robot_macro.xacro"/>
+
+  <xacro:robot 
+    name="assembly_robot_1"
+    model="ur5e"
+    x="5.0"
+    y="5.0"
+    z="0.4"
+    yaw="${pi}"
+    controllers="$(find ariac_description)/config/assembly_robot_1_controllers.yaml"
+    initial_positions="$(find ariac_description)/config/assembly_robot_1_positions.yaml">
+  </xacro:robot>
+  
+</robot>

@@ -1,0 +1,12 @@
+# MoveAgv.action
+
+# Goal
+int8 station_id
+
+---
+# Result
+AgvStatus status
+
+---
+# Feedback
+AgvStatus status

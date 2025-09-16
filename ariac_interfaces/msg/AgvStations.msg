@@ -1,0 +1,7 @@
+# AGVStations.msg
+
+int8 INSPECTION=1
+int8 ASSEMBLY=2
+int8 SHIPPING=3
+int8 RECYCLING=4
+int8 IN_TRANSIT=-1

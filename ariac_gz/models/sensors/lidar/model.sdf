@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="lidar">
+    <static>true</static>
+
+    <link name="lidar_link">
+      <visual name="visual">
+        <pose>-0.02 0 -0.0175 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.5 0.5 0.5</scale>
+            <uri>model://sensors/lidar/meshes/lidar.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <sensor type="gpu_lidar" name="lidar_0">
+        <topic>lidar_0_gz_topic</topic>
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>20</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.2618</min_angle>
+              <max_angle>0.2618</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>50</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.4363</min_angle>
+              <max_angle>0.4363</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.04</min>
+            <max>0.2</max>
+            <resolution>0.00001</resolution>
+          </range>
+        </lidar>
+
+        <update_rate>5</update_rate>
+
+        <plugin name="ariac_plugins::RaySensorPlugin" filename="libRaySensorPlugin.so">
+          <sensor_name>lidar_0</sensor_name>
+          <sensor_type>lidar</sensor_type>
+        </plugin>
+      </sensor>
+      
+    </link>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>lidar_link</base_link>
+      <static>true</static>
+      <sensor>true</sensor>
+    </plugin>
+  </model>
+</sdf>

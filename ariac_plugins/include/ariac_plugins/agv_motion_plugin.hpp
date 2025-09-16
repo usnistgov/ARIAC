@@ -1,0 +1,171 @@
+#ifndef ARIAC_PLUGINS__AGV_MOTION_PLUGIN_HPP_
+#define ARIAC_PLUGINS__AGV_MOTION_PLUGIN_HPP_
+
+#include <gz/sim/System.hh>
+#include <gz/sim/EntityComponentManager.hh>
+#include <gz/sim/Model.hh>
+#include <gz/sim/Joint.hh>
+#include <gz/sim/Link.hh>
+#include <gz/sim/components.hh>
+#include <gz/transport/Node.hh>
+#include <gz/math/Pose3.hh>
+#include <gz/math/Vector3.hh>
+
+#include <rclcpp/rclcpp.hpp>
+#include "rclcpp_action/create_server.hpp"
+
+#include "angles/angles.h"
+
+#include <geometry_msgs/msg/pose.hpp>
+
+#include <path_velocity_planner/velocity_planner.hpp>
+
+#include <ariac_interfaces/msg/agv_stations.hpp>
+#include <ariac_interfaces/msg/agv_status.hpp>
+#include <ariac_interfaces/action/move_agv.hpp>
+
+#include <ariac_components/penalty.hpp>
+
+#include <thread>
+#include <chrono>
+#include <functional>
+#include <memory>
+#include <string>
+#include <cmath>
+
+#include <ament_index_cpp/get_package_share_directory.hpp>
+
+using AGVStations = ariac_interfaces::msg::AgvStations;
+
+using AGVStatus = ariac_interfaces::msg::AgvStatus;
+
+using MoveAGVAction = ariac_interfaces::action::MoveAgv;
+using ActionServer = rclcpp_action::Server<MoveAGVAction>;
+using ActionServerPtr = ActionServer::SharedPtr;
+using GoalHandle = rclcpp_action::ServerGoalHandle<MoveAGVAction>;
+using GoalHandlePtr = std::shared_ptr<GoalHandle>;
+
+namespace ariac_plugins
+{
+  enum class AGVMotionStatus {
+    CONFIGURE,
+    IDLE,
+    PROCESSING,
+    MOVING,
+    MOTION_FINISHED,
+    TELEPORTING
+  };
+
+  enum class AGVLockState {
+    LOCKED,
+    UNLOCKED,
+    LOCK_REQUESTED,
+    UNLOCK_REQUESTED
+  };
+
+  enum class AGVPath {
+    INSPECTION_TO_ASSEMBLY,
+    ASSEMBLY_TO_INSPECTION,
+    INSPECTION_TO_SHIPPING,
+    SHIPPING_TO_INSPECTION,
+    INSPECTION_TO_RECYCLING,
+    RECYCLING_TO_INSPECTION,
+    SHIPPING_TO_RECYCLING
+  };
+
+  class AgvMotionPlugin:
+    public gz::sim::System,
+    public gz::sim::ISystemConfigure,
+    public gz::sim::ISystemPreUpdate,
+    public gz::sim::ISystemUpdate
+  {
+    public: 
+      AgvMotionPlugin();
+  
+      ~AgvMotionPlugin() override;
+      
+      void Configure (
+        const gz::sim::Entity &_entity,
+        const std::shared_ptr<const sdf::Element> &_sdf,
+        gz::sim::EntityComponentManager &_ecm,
+        gz::sim::EventManager &_event_manager) override;
+      
+      void PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm) final;
+      void Update(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm) override;
+
+    private: 
+      // GZ Callbacks
+      void contact_msg_cb(const gz::msgs::Contacts &_msg);
+
+      // ROS Callbacks
+      rclcpp_action::GoalResponse goal_recieved_cb(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const MoveAGVAction::Goal> goal);
+      rclcpp_action::CancelResponse goal_cancel_cb(const GoalHandlePtr goal_handle);
+      void goal_accepted_cb(GoalHandlePtr goal_handle);
+      void pub_timer_cb();
+
+      // Functions
+      bool is_at_target_pose(gz::math::Pose3d current_pose);
+      std::pair<path_velocity_planner::Point, double> get_destination();
+      geometry_msgs::msg::Pose gz_to_ros_pose(const gz::math::Pose3d &gz_pose);
+
+      // GZ 
+      gz::sim::Model model;
+      gz::sim::Link agv_base_link;
+      gz::sim::Entity floor_link_entity;
+      gz::sim::Entity agv_base_link_entity;
+      gz::sim::Entity lock_joint;
+      std::shared_ptr<gz::transport::Node> gz_node;
+
+      // ROS 
+      rclcpp::Node::SharedPtr ros_node;
+      rclcpp::executors::MultiThreadedExecutor::SharedPtr executor;
+      std::thread thread_executor_spin;
+      ActionServerPtr action_server;
+      GoalHandlePtr current_goal_handle;
+      rclcpp::Publisher<AGVStatus>::SharedPtr agv_info_pub;
+      rclcpp::TimerBase::SharedPtr pub_timer;
+      AGVStatus info_msg;
+
+      // Parameters
+      const double v_max = 0.8;
+      const double acc = 1;
+      const double goal_distance_threshold = 0.001;
+      const double goal_angle_threshold = (M_PI / 180) * 2; // 2 degrees
+      const double timeout = 15;
+      const double feedback_rate = 10;
+      const std::string link_name = "agv";
+      const std::string floor_model_name = "floor";
+      const std::string floor_link_name = "floor";
+
+      // Class variables
+      int destination_station;
+
+      bool collision_occurred = false;
+      
+      gz::math::Pose3d current_pose;
+      gz::math::Pose3d goal_pose;
+      
+      double start_time;
+      double last_feedback_time;
+
+      std::string agv_name;
+      std::string segment_profile;
+
+      std::map<std::string, path_velocity_planner::Point> start_locations;
+      std::map<int, path_velocity_planner::Point> goal_locations;
+      std::map<int, double> location_rotations;
+      std::map<std::string, std::map<AGVPath, std::vector<path_velocity_planner::Point>>> waypoints;
+
+      gz::math::Vector3d linear_velocity_vector; 
+      gz::math::Vector3d angular_velocity_vector; 
+      
+      path_velocity_planner::VelocityPlanner velocity_planner;
+      path_velocity_planner::Direction direction;
+
+      AGVLockState lock_state = AGVLockState::UNLOCKED;
+      AGVMotionStatus motion_state = AGVMotionStatus::CONFIGURE;
+      AGVPath current_path;
+  };
+}
+
+#endif // ARIAC_PLUGINS__AGV_MOTION_PLUGIN_HPP

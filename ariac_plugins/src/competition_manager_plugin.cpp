@@ -285,6 +285,10 @@ void CompetitionManagerPlugin::submit_kitting_cb(
     num_submitted_orders[ariac_db::OrderType::KIT]++;
 
     res->success = true;
+
+    if (orders_complete()) {
+      competition_state = CompetitionStates::ORDERS_COMPLETE;
+    }
   } else {
     res->success = false;
   }
@@ -337,6 +341,10 @@ void CompetitionManagerPlugin::submit_high_priority_cb(
 
     num_submitted_orders[ariac_db::OrderType::HIGH_PRIORITY]++;
 
+    if (orders_complete()) {
+      competition_state = CompetitionStates::ORDERS_COMPLETE;
+    }
+
   } else {
     res->success = false;
   }
@@ -383,6 +391,10 @@ void CompetitionManagerPlugin::submit_module_cb(
 
 
     res->success = true;
+
+    if (orders_complete()) {
+      competition_state = CompetitionStates::ORDERS_COMPLETE;
+    }
   } else {
     res->success = false;
   }
@@ -392,10 +404,6 @@ void CompetitionManagerPlugin::submit_module_cb(
 
 void CompetitionManagerPlugin::publish_status() {
   // Check if all orders are announced and complete
-  if (orders_complete()) {
-    competition_state = CompetitionStates::ORDERS_COMPLETE;
-  }
-
   CompetitionStatus status;
   status.competition_state = competition_state;
   status.time = competition_time;

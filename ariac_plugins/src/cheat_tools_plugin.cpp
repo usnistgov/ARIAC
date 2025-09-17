@@ -266,15 +266,37 @@ std::optional<std::string> CheatToolsPlugin::generate_cell_sdf(ariac_components:
   tinyxml2::XMLDocument doc;
 
   if (doc.LoadFile(sdf_path.c_str()) != tinyxml2::XML_SUCCESS) {
-    gzerr << "Failed to load file: " << sdf_path << "\n";
     return std::nullopt;
   }
 
   auto root = doc.RootElement();
 
   if (!root) {
-    gzerr << "No root element in SDF.\n";
     return std::nullopt;
+  }
+
+  std::string visual_path = "model://battery_cell/meshes/" + cell_names[cell.cell_type];
+
+  // Change visual to correct model for defect type
+
+  if (!cell.defective){
+    visual_path += "/base.glb";
+  } else {
+    visual_path += "/defect_" + std::to_string(cell.defect_type) + ".glb";
+  } 
+
+  // Set color based on type  
+  auto current_element = root;
+  for (std::string tag : {"model", "link", "visual", "geometry", "mesh", "uri"}){
+    current_element = current_element->FirstChildElement(tag.c_str());
+    
+    if(!current_element){
+      return std::nullopt;
+    }
+
+    if (tag == "uri") {
+      current_element->SetText(visual_path.c_str());
+    }
   }
   
   // Convert from XML to string

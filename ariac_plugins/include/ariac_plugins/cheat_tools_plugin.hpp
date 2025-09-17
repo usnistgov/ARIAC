@@ -162,6 +162,12 @@ class CheatToolsPlugin:
     {4, gz::math::Pose3d(0.036, 0.0, 0.074, M_PI, 0.0, 0.0)}
   };
 
+  std::map<int, std::string> cell_names =
+  {
+    {CellTypes::LI_ION, "li-ion"},
+    {CellTypes::NIMH, "nimh"},  
+  };
+
   std::vector<std::pair<std::string, ariac_components::Cell>> components_to_add;
 };
 }

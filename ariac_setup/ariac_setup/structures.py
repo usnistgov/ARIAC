@@ -330,3 +330,13 @@ class Lidar(Sensor):
         self._find_required(vertical, 'max_angle').text = str(self.vertical.max_angle)
 
         return ET.tostring(root, encoding="unicode")
+
+class Cheats(IntEnum):
+    CELLS_IN_VOLTAGE_TESTERS=1
+    KIT_ON_AGV=2
+    KITS_ON_AGVS=3
+    HIGH_PRIORITY_KIT=4
+    PARTIAL_MODULE=5
+    MODULE=6
+    FLIPPED_MODULE=7
+    MODULE_WITH_WELDS=8

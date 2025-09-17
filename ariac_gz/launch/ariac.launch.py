@@ -25,6 +25,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from ariac_setup.yaml_validation import TrialConfigValidator, UserConfigValidator
 from ariac_setup.user_config_parser import UserConfigParser, ParsingError
+from ariac_setup.structures import Cheats
 
 def launch_setup(context, *args, **kwargs):
 
@@ -204,43 +205,27 @@ def get_gz_args(trial_config: str, team_config: UserConfigParser, db_path: str, 
         db_path_xml.text = db_path
         competition_manager_plugin.append(db_path_xml)
     
-    if cheat_tools_plugin is not None and cheat_selection in range(1,13):
+    if cheat_tools_plugin is not None and cheat_selection in Cheats:
         elements: list[ET.Element]  = []
         match(cheat_selection):
-            case 1:
+            case Cheats.CELLS_IN_VOLTAGE_TESTERS:
                 elements.append(ET.Element("cells_in_voltage_testers"))
-            case 2:
+            case Cheats.KIT_ON_AGV:
                 elements.append(ET.Element("kit_on_agv1"))
-            case 3:
-                elements.append(ET.Element("kit_on_agv1"))
-                elements.append(ET.Element("kit_on_agv2"))
-            case 4:
+            case Cheats.KITS_ON_AGVS:
                 elements.append(ET.Element("kit_on_agv1"))
                 elements.append(ET.Element("kit_on_agv2"))
-                elements.append(ET.Element("kit_on_agv3"))
-            case 5:
+            case Cheats.HIGH_PRIORITY_KIT:
                 elements.append(ET.Element("kit_on_agv1"))
                 elements.append(ET.Element("agv1_high_priority"))
-            case 6:
-                elements.append(ET.Element("kit_on_agv1"))
-                elements.append(ET.Element("agv1_high_priority"))
-                elements.append(ET.Element("kit_on_agv2"))
-            case 7:
-                elements.append(ET.Element("kit_on_agv1"))
-                elements.append(ET.Element("agv1_high_priority"))
-                elements.append(ET.Element("kit_on_agv2"))
-                elements.append(ET.Element("kit_on_agv3"))
-            case 8:
+            case Cheats.PARTIAL_MODULE:
                 elements.append(ET.Element("partial_module"))
-            case 9:
+            case Cheats.MODULE:
                 elements.append(ET.Element("module"))
-            case 10:
+            case Cheats.FLIPPED_MODULE:
                 elements.append(ET.Element("flipped_module"))
-            case 11:
+            case Cheats.MODULE_WITH_WELDS:
                 elements.append(ET.Element("module"))
-                elements.append(ET.Element("module_has_welds"))
-            case 12:
-                elements.append(ET.Element("flipped_module"))
                 elements.append(ET.Element("module_has_welds"))
         for e in elements:
             e.text = "true"

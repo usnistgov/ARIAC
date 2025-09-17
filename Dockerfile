@@ -19,7 +19,6 @@ RUN curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyri
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null && \
     apt-get update && apt-get install -y gz-harmonic
 
-
 # Initialize rosdep
 RUN rosdep init || true && rosdep update
 
@@ -32,6 +31,8 @@ WORKDIR $ROS_WS
 
 # Copy ARIAC packages into workspace
 COPY ./ $ROS_WS/src/
+
+RUN pip3 install -r $ROS_WS/src/ariac_app/requirements.txt --break-system-packages
 
 # ================================================================
 # Resolve dependencies with rosdep

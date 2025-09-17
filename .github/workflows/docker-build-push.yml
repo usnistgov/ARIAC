@@ -46,12 +46,23 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=match,pattern=^(202[5-9]\.\d+\.\d+)$,group=1
+          type=match,pattern=^v(202[5-9]\.\d+\.\d+)$,group=1
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         platforms: linux/amd64
         push: ${{ github.event_name != 'pull_request' }}
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max

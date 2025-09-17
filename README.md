@@ -2,8 +2,8 @@
 
 [![ARIAC documentation](https://github.com/usnistgov/ARIAC_docs/actions/workflows/ARIAC_docs.yaml/badge.svg)](https://github.com/usnistgov/ARIAC_docs/actions/workflows/ARIAC_docs.yaml)
 
-[Link to documentation on pages.nist.gov](https://pages.nist.gov/ARIAC_docs/en/latest/index.html)
-
 [![Docker Build](https://github.com/usnistgov/ARIAC/actions/workflows/docker-build-push.yml/badge.svg?branch=ariac2025)](https://github.com/usnistgov/ARIAC/actions/workflows/docker-build-push.yml)
+
+[Link to documentation on pages.nist.gov](https://pages.nist.gov/ARIAC_docs/en/latest/index.html)
 
 ![ARIAC 2025 Environment](resource/environment.png)

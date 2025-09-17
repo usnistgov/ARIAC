@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Docker Build
 
 on:
   push:
@@ -6,9 +6,19 @@ on:
       - ariac2025
     tags:
       - 'v*'
+    paths-ignore:
+      - 'README.md'
+      - '*.md'
+      - 'docs/**'
   pull_request:
     branches:
       - ariac2025
+    paths-ignore:
+      - 'README.md'
+      - '*.md'
+      - 'docs/**'
+  schedule:
+    - cron: '0 2 * * 0'  # Weekly on Sunday at 2 AM UTC
 
 env:
   REGISTRY: docker.io

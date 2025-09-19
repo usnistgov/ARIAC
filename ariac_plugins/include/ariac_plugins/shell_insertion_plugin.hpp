@@ -125,13 +125,9 @@ class ShellInsertionPlugin:
     int competition_state;
 
     std::mt19937 rng;
-    // std::uniform_real_distribution<double> x_offset_distrubution = std::uniform_real_distribution<double>(-0.05, 0.05);
-    // std::uniform_real_distribution<double> y_offset_distrubution = std::uniform_real_distribution<double>(-0.1, 0.1);
-    // std::uniform_real_distribution<double> angle_distribution = std::uniform_real_distribution<double>(-M_PI, M_PI);
-
-    std::uniform_real_distribution<double> x_offset_distrubution = std::uniform_real_distribution<double>(0.0, 0.0);
-    std::uniform_real_distribution<double> y_offset_distrubution = std::uniform_real_distribution<double>(0.0, 0.0);
-    std::uniform_real_distribution<double> angle_distribution = std::uniform_real_distribution<double>(0.0, 0.0);
+    std::uniform_real_distribution<double> x_offset_distrubution = std::uniform_real_distribution<double>(-0.05, 0.05);
+    std::uniform_real_distribution<double> y_offset_distrubution = std::uniform_real_distribution<double>(-0.1, 0.1);
+    std::uniform_real_distribution<double> angle_distribution = std::uniform_real_distribution<double>(-M_PI, M_PI);
   };
 }
 

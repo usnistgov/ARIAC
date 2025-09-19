@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>ariac_app</name>
-  <version>2025.1.0</version>
+  <version>2025.1.1</version>
   <description>TODO: Package description</description>
   <maintainer email="justin.albrecht@nist.gov">Justin Albrecht</maintainer>
   <license>BSD-3-Clause</license>

@@ -20,7 +20,9 @@ RUN curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyri
     apt-get update && apt-get install -y gz-harmonic
 
 # Initialize rosdep
-RUN rosdep init || true && rosdep update
+RUN rosdep init || true
+
+RUN apt-get update && apt-get install -y  && rosdep update
 
 # ================================================================
 # Create ARIAC workspace

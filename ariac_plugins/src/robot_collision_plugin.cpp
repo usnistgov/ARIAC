@@ -90,7 +90,10 @@ void RobotCollisionPlugin::contact_msg_cb(const gz::msgs::Contacts &_gz_contacts
   for (int i = 0; i < _gz_contacts_msg.contact_size(); ++i) {
     std::string collision = _gz_contacts_msg.contact(i).collision2().name();
 
-    if (collision.find("cell") != std::string::npos || collision.find("shell") != std::string::npos)
+    if (
+      collision.find("cell") != std::string::npos || 
+      collision.find("shell") != std::string::npos || 
+      (collision.find("vg") != std::string::npos) && robot_name == "assembly_robot_2")
       break;
 
     std::string model_in_contact = collision.substr(0, collision.find("::"));

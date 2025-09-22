@@ -213,7 +213,7 @@ void CellFeedPlugin::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::Entity
 
 void CellFeedPlugin::control_feed_cb(const ControlSrvReqPtr request, ControlSrvResPtr response)
 {
-  if (competition_state != CompetitionStates::STARTED) {
+  if (competition_state != CompetitionStates::STARTED && competition_state != CompetitionStates::ORDERS_COMPLETE) {
     response->success = false;
     response->message = "Competition is not running";
     return;

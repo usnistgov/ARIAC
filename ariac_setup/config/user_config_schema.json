@@ -4,7 +4,8 @@
   "required": ["COMPETITOR_NAME", "SENSORS", "CONVEYOR_SPEED", "CELL_FEED_RATE"],
   "properties": {
     "COMPETITOR_NAME": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+$"
     },
     "SENSORS": {
       "type": "array",

@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.1.2 (2025-09-26)
+----------------------
+* Now allows controlling cell feed if all orders are complete
+
 2025.1.1 (2025-09-19)
 ----------------------
 * Fixed attached vacuum tool causing robot collision penalties

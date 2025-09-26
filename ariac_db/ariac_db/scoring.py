@@ -1,8 +1,6 @@
 import yaml
 import os
 
-from dataclasses import fields
-
 from ament_index_python import get_package_share_directory
 
 from ariac_db.structures import (
@@ -57,6 +55,16 @@ class ARIACScorer:
 
     def score_bonuses(self, run: Run, trial: Trial, orders: list[OrderSubmission]) -> BonusResults:
         results = BonusResults()
+
+        # Set bonuses to zero if run was aborted
+        if run.aborted:
+            results.b1.amount = 0.0
+            results.b2.amount = 0.0
+            results.b3.amount = 0.0
+            results.b4.amount = 0.0
+            results.b5.amount = 0.0
+            
+            return results
 
         # Trial time bonus
         results.b1.amount = self.weights.W3 * (1 - (run.duration / trial.time_limit)) if not run.aborted else 0

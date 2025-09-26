@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import os
+
 from nicegui import ui, app
 from jsonschema import ValidationError
 from yaml.constructor import ConstructorError
@@ -158,6 +160,9 @@ class TrialSelect(SelectFrame):
 
         if isinstance(path, str):
             self._path = Path(path)
+            if not self._path.exists():
+                self._path = None
+                del app.storage.general["trial_path"]
 
     def chip_on(self):
         self.chip_text = f"Trial id: {self.trial.info.trial_id}"
@@ -253,20 +258,25 @@ class UserSelect(SelectFrame):
 
         if isinstance(path, str):
             self._path = Path(path)
-            try:
-                parser = UserConfigParser(path)
 
-                self.info: UserInfo = UserInfo(
-                    name=parser.competitor_name,
-                    conveyor_speed=parser._conveyor_speed,
-                    cell_feed_rate=parser.cell_feed_rate,
-                    sensors=parser.sensors,
-                )
+            if self._path.exists(): # type: ignore
+                try:
+                    parser = UserConfigParser(path)
 
-                self.chip_text = f"Team name: {self.info.name}"
-                return
-            except:
-                pass
+                    self.info: UserInfo = UserInfo(
+                        name=parser.competitor_name,
+                        conveyor_speed=parser._conveyor_speed,
+                        cell_feed_rate=parser.cell_feed_rate,
+                        sensors=parser.sensors,
+                    )
+
+                    self.chip_text = f"Team name: {self.info.name}"
+                    return
+                except:
+                    pass
+            else:
+                self._path = None
+                del app.storage.general["user_path"]
 
         self.info: UserInfo = UserInfo(
             name="", conveyor_speed=0.05, cell_feed_rate=0.05, sensors=[]
@@ -292,6 +302,52 @@ class UserSelect(SelectFrame):
             return
 
         self.info, self._path = result
+
+
+        try:
+            self.validator.validate_yaml(self._path) # type: ignore
+        except ValidationError as e:
+            ui.html(
+                "<style>.multi-line-notification { white-space: pre-line; }</style>"
+            )
+            ui.notify(
+                f"Validation error: \n{e.message}",
+                type="negative",
+                multi_line=True,
+                classes="multi-line-notification",
+            )
+
+            os.remove(self._path) # type: ignore
+
+            self._path = None
+
+            self.info = UserInfo(
+                name="", conveyor_speed=0.05, cell_feed_rate=0.05, sensors=[]
+            )
+            return
+        
+        except ConstructorError as e:
+            ui.html(
+                "<style>.multi-line-notification { white-space: pre-line; }</style>"
+            )
+            ui.notify(
+                f"Validation error: \n{e}",
+                type="negative",
+                multi_line=True,
+                classes="multi-line-notification",
+            )
+
+            os.remove(self._path) # type: ignore
+
+            self._path = None
+
+            self.info = UserInfo(
+                name="", conveyor_speed=0.05, cell_feed_rate=0.05, sensors=[]
+            )
+
+            return
+        
+        ui.notify(f"User config written to file: {self._path}", type="info")
 
         self.chip_on()
 

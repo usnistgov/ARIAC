@@ -33,7 +33,8 @@ add_library(robotiq_gripper_controller SHARED
 )
 
 target_include_directories(robotiq_gripper_controller PUBLIC
-  include
+  $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include/robotiq_gripper_controller>
 )
 
 target_link_libraries(robotiq_gripper_controller PUBLIC
@@ -48,13 +49,12 @@ install(
   TARGETS
     robotiq_gripper_controller
     robotiq_gripper_controller_parameters
-  DESTINATION lib
+  EXPORT 
+    robotiq_gripper_controller
+  DESTINATION 
+    lib
 )
 
-install(
-  DIRECTORY include/
-  DESTINATION include/
-)
-
+ament_export_targets(robotiq_gripper_controller HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

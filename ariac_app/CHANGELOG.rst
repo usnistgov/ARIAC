@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.1.2 (2025-09-26)
+----------------------
+* Prevent team names from having spaces in validation
+
 2025.1.1 (2025-09-19)
 ----------------------
 

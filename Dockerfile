@@ -42,9 +42,9 @@ RUN pip3 install -r $ROS_WS/src/ariac_app/requirements.txt --break-system-packag
 RUN rosdep install --from-paths src --ignore-src -r -y
 
 # ================================================================
-# Build workspace (no symlink install because of ros2_control)
+# Build workspace
 # ================================================================
-RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash && colcon build"
+RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash && colcon build --symlink-install"
 
 # ================================================================
 # Default setup

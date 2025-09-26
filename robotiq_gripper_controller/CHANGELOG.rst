@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.1.2 (2025-09-26)
+----------------------
+* Fixes symlink install on robotiq_gripper_controller
+
 2025.1.1 (2025-09-19)
 ----------------------
 

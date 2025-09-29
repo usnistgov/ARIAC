@@ -52,7 +52,8 @@ class FilePicker(ui.dialog):
             self.update_grid()
 
     def update_grid(self) -> None:
-        self.ok_button.disable()
+        if self.extension is not None:
+            self.ok_button.disable()
 
         paths = list(self.path.glob('*'))
         paths = [p for p in paths if not p.name.startswith('.')]
@@ -85,10 +86,10 @@ class FilePicker(ui.dialog):
             self.ok_button.enable()
         elif path.is_dir() and self.selection_type == "directory":
             self.ok_button.enable()
-        else:
-            self.ok_button.disable()
 
     async def _handle_ok(self):
         row = await self.grid.get_selected_row()
         if row is not None:
             self.submit(Path(row['path']))
+        else:
+            self.submit(self.path)

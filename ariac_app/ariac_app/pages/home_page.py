@@ -198,7 +198,7 @@ class TrialSelect(SelectFrame):
         self.chip_on()
 
     async def _select(self):
-        path = await FilePicker("~", extension=".yaml")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", extension=".yaml")
 
         if path is None:
             ui.notify("Trial selection cancelled")
@@ -352,7 +352,7 @@ class UserSelect(SelectFrame):
         self.chip_on()
 
     async def _select(self):
-        path = await FilePicker("~", extension=".yaml")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", extension=".yaml")
 
         if path is None:
             ui.notify("Trial selection cancelled")
@@ -470,7 +470,7 @@ class DatabaseSelect:
         self.chip.disable()
 
     async def _create(self):
-        path = await FilePicker("~", selection_type="directory")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", selection_type="directory")
 
         if path is None:
             ui.notify("No folder selected")
@@ -497,7 +497,7 @@ class DatabaseSelect:
         self._chip_on()
 
     async def _select(self):
-        path = await FilePicker("~", extension=".db")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", extension=".db")
 
         if path is None:
             ui.notify("Database selection cancelled")

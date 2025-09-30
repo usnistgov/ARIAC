@@ -52,11 +52,6 @@ class FilePicker(ui.dialog):
         if self.selected_file:
             return str(self.path.joinpath(self.selected_file))
         return str(self.path)
-        # s = (".../" if str(self.path).count("/") > 5 else "") + \
-        #     "/".join([s for s in str(self.path).split("/")[-5:]])
-        # if s[0] not in "/.":
-        #     s = "/" + s
-        # return s
 
     def go_home(self):
         self.path = Path("/team_ws") if Path("/team_ws").exists() else Path.home()

@@ -254,7 +254,7 @@ class TrialConfigBuilder(ui.dialog):
             ui.notify("Trial must have at least one kit or module", type="warning")
             return
         
-        path = await FilePicker('~', selection_type="directory")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", selection_type="directory")
 
         if path is None:
             ui.notify("No folder selected")

@@ -147,7 +147,7 @@ def launch_setup(context, *args, **kwargs):
         assembly_robot_1,
         assembly_robot_2,
         gantry_welder
-    ] + [score_logger] if db_path != "" else []
+    ] + ([score_logger] if db_path != "" else [])
 
 def generate_launch_description():
     declared_arguments = []

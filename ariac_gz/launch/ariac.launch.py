@@ -130,6 +130,14 @@ def launch_setup(context, *args, **kwargs):
         )
     )
 
+    score_logger = Node(
+        package="ariac_setup",
+        executable="score_logger",
+        output="screen",
+        arguments=['--db-path',  db_path],
+        parameters=[{'use_sim_time': True}]
+    )
+
     return [
         gz,
         sensor_spawner,
@@ -139,7 +147,7 @@ def launch_setup(context, *args, **kwargs):
         assembly_robot_1,
         assembly_robot_2,
         gantry_welder
-    ]
+    ] + [score_logger] if db_path != "" else []
 
 def generate_launch_description():
     declared_arguments = []

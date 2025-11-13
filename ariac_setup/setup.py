@@ -24,7 +24,8 @@ setup(
     entry_points={
         'console_scripts': [
           'sensor_startup = ariac_setup.sensor_spawner:main',
-          'finish_startup = ariac_setup.gz_interface:main'
+          'finish_startup = ariac_setup.gz_interface:main',
+          'score_logger = ariac_setup.score_logger:main'
         ],
     },
 )

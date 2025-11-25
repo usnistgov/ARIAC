@@ -2,6 +2,8 @@ import os
 import tempfile
 import xml.etree.ElementTree as ET
 
+import asyncio
+
 from jsonschema import ValidationError
 
 from launch import LaunchDescription
@@ -24,6 +26,7 @@ from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
 from ariac_setup.yaml_validation import TrialConfigValidator, UserConfigValidator
+from ariac_setup.utils import ROSAsyncAdapter
 from ariac_setup.user_config_parser import UserConfigParser, ParsingError
 from ariac_setup.structures import Cheats
 
@@ -48,6 +51,11 @@ def launch_setup(context, *args, **kwargs):
             launch_arguments=[('gz_args', [gz_args]), ('on_exit_shutdown', 'true')]
     )
 
+    gz_sim_ready = Node(
+        package="ariac_setup",
+        executable="ready"
+    )
+
     gz_sim_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -57,20 +65,11 @@ def launch_setup(context, *args, **kwargs):
         output="screen"
     )
 
-    sensor_spawner = Node(
+    startup = Node(
         package="ariac_setup",
-        executable="sensor_startup",
+        executable="startup",
         output="screen",
         arguments=['--user-config-path',  LaunchConfiguration("user_config")],
-        parameters=[{'use_sim_time': True}]
-    )
-
-    finish_startup = Node(
-        package="ariac_setup",
-        executable="finish_startup",
-        output="screen",
-        arguments=['--user-config-path',  LaunchConfiguration("user_config")],
-        parameters=[{'use_sim_time': True}]
     )
 
     inspection_robot_1 =  IncludeLaunchDescription(
@@ -120,25 +119,25 @@ def launch_setup(context, *args, **kwargs):
         ]
     )
 
-    bridge_and_startup = RegisterEventHandler(
+    startup_when_ready = RegisterEventHandler(
         OnProcessExit(
-            target_action=sensor_spawner,
+            target_action=gz_sim_ready,
             on_exit=[
                 gz_sim_bridge,
-                finish_startup
+                startup,
+                inspection_robot_1,
+                inspection_robot_2,
+                assembly_robot_1,
+                assembly_robot_2,
+                gantry_welder
             ]
         )
     )
 
     return [
         gz,
-        sensor_spawner,
-        bridge_and_startup,
-        inspection_robot_1,
-        inspection_robot_2,
-        assembly_robot_1,
-        assembly_robot_2,
-        gantry_welder
+        gz_sim_ready,
+        startup_when_ready,
     ]
 
 def generate_launch_description():

@@ -42,6 +42,8 @@ class SensorSpawner(Node):
         
             if not success or not response.data:
                 raise ParsingError(f'Error when creating sensor: {sensor.name}')
+            
+            self.get_logger().info(f"Added sensor {sensor.name} publishing to {' and '.join(sensor.topics)}")
 
     def _entity_factory_from_sensor(self, sensor: Sensor):
         ef = entity_factory_pb2.EntityFactory()

@@ -22,7 +22,7 @@ RUN curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyri
 # Initialize rosdep
 RUN rosdep init || true
 
-RUN apt-get update && apt-get install -y  && rosdep update
+RUN apt-get update && apt-get upgrade -y && rosdep update
 
 # ================================================================
 # Create ARIAC workspace
@@ -34,12 +34,12 @@ WORKDIR $ROS_WS
 # Copy ARIAC packages into workspace
 COPY ./ $ROS_WS/src/
 
-RUN pip3 install -r $ROS_WS/src/ariac_app/requirements.txt --break-system-packages
+RUN apt-get update && pip3 install -r $ROS_WS/src/ariac_app/requirements.txt --break-system-packages
 
 # ================================================================
 # Resolve dependencies with rosdep
 # ================================================================
-RUN rosdep install --from-paths src --ignore-src -r -y
+RUN apt-get update && rosdep install --from-paths src --ignore-src -r -y
 
 # ================================================================
 # Build workspace

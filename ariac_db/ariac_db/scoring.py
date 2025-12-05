@@ -1,6 +1,8 @@
 import yaml
 import os
 
+from tabulate import tabulate
+
 from ament_index_python import get_package_share_directory
 
 from ariac_db.structures import (
@@ -26,7 +28,10 @@ class ARIACScorer:
         self.tau_d = scoring_constants["NOMINAL_HIGH_PRIORITY_EXECUTION_DURATION"]
         self.deductions = PenaltyDeductions(**scoring_constants["PENALTIES"])
         self.weights = Weights(**scoring_constants["WEIGHTS"])
-        
+
+    def format_str(self, s: str, width):
+        return "|"+f"{s:^{width}}"+"|"
+
     def score_penalties(self, run: Run, penalties: list[Penalty]) -> PenaltyResults:
         results = PenaltyResults()
         for penalty in penalties:
@@ -114,3 +119,85 @@ class ARIACScorer:
         total_score -= self.score_penalties(run, penalties).total()
         
         return total_score
+    
+    def get_run_score_table(self, run: Run, trial: Trial, orders: list[OrderSubmission], penalties: list[Penalty]) -> str:
+        kits_score = self.score_kits(orders, trial)
+        modules_score = self.score_modules(orders, trial)
+        bonuses = self.score_bonuses(run, trial, orders)
+        penalty_results = self.score_penalties(run, penalties)
+        run_score = self.score_run(run, trial, orders, penalties)
+
+        results_headers = ["Title", "Score"]
+        results_data = [
+            ["Run score", f"{run_score:.1f}"],
+            ["Kits score", f"{kits_score:.1f}"],
+            ["Modules score", f"{modules_score:.1f}"],
+            ["Total bonus score", f"{bonuses.total():.1f}"],
+            ["Total penalty score", f"{penalty_results.total():.1f}"],
+        ]
+        results_table = tabulate(results_data, headers=results_headers, tablefmt="simple", floatfmt=("", ".1f"))
+        results_table_lines = results_table.split("\n")
+
+        results_width = len(results_table_lines[0])
+        
+        table = ""
+        table += self.format_str("="*results_width, results_width) + "\n"
+        table += self.format_str("Results", results_width) + "\n"
+        table += self.format_str(f"(All runs completed: {not run.aborted})", results_width) + "\n"
+        table += self.format_str("-"*results_width, results_width) + "\n"
+        for line in results_table_lines:
+            table += self.format_str(line, results_width) + "\n"
+        table += self.format_str("="*results_width, results_width)
+
+        return table
+    
+    def get_bonus_score_table(self, bonuses: BonusResults) -> str:
+        bonuses_headers = ["Description", "Total"]
+        bonuses_data = [
+            ["Trial time execution bonus", f"{bonuses.b1.amount:.1f}"],
+            ["Inspection speed bonus", f"{bonuses.b2.amount:.1f}"],
+            ["High priority speed bonus", f"{bonuses.b3.amount:.1f}"],
+            ["Sensor cost bonus", f"{bonuses.b4.amount:.1f}"],
+            ["Defect classification bonus", f"{bonuses.b5.amount:.1f}"]
+        ]
+        bonus_table = tabulate(bonuses_data, headers=bonuses_headers, tablefmt="simple", floatfmt=("", ".1f"))
+        bonus_table_lines = bonus_table.split("\n")
+        
+        bonuses_width = len(bonus_table_lines[0])
+
+        table = ""
+
+        table += self.format_str("="*bonuses_width, bonuses_width) + "\n"
+        table += self.format_str('Bonuses', bonuses_width) + "\n"
+        table += self.format_str("-"*bonuses_width, bonuses_width) + "\n"
+        for line in bonus_table_lines:
+            table += self.format_str(line, bonuses_width) + "\n"
+        table += self.format_str("="*bonuses_width, bonuses_width)
+
+        return table
+    
+    def get_penalty_score_table(self, penalty_results: PenaltyResults) -> str:
+        penalties_headers = ["Description", "Occurrences", "Total Deduction"]
+        penalties_data = [
+            ["Non-defective cell in inspection bin", penalty_results.p1.count, f"{penalty_results.p1.total_deduction:.1f}"],
+            ["Cell in conveyor bin", penalty_results.p2.count, f"{penalty_results.p2.total_deduction:.1f}"],
+            ["Object on invalid surface", penalty_results.p3.count, f"{penalty_results.p3.total_deduction:.1f}"],
+            ["AGV collisisions", penalty_results.p4.count, f"{penalty_results.p4.total_deduction:.1f}"],
+            ["Robot collisions", penalty_results.p5.count, f"{penalty_results.p5.total_deduction:.1f}"],
+            ["Sensor cost over budget", penalty_results.p6.count, f"{penalty_results.p6.total_deduction:.1f}"]
+        ]
+        penalty_table = tabulate(penalties_data, headers=penalties_headers, tablefmt="simple", floatfmt=("", ".1f"))
+        penalty_table_lines = penalty_table.split("\n")
+
+        penalties_width = len(penalty_table_lines[0])
+
+        table = ""
+
+        table += self.format_str("="*penalties_width, penalties_width) + "\n"
+        table += self.format_str('Penalties', penalties_width) + "\n"
+        table += self.format_str("-"*penalties_width, penalties_width) + "\n"
+        for line in penalty_table_lines:
+            table += self.format_str(line, penalties_width) + "\n"
+        table += self.format_str("="*penalties_width, penalties_width)
+
+        return table

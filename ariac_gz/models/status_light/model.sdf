@@ -145,6 +145,7 @@
         </geometry>
         <material>
           <diffuse>0.8 0.8 0.0 0.9</diffuse>
+          <emissive>0.8 0.8 0.0 1</emissive>
         </material>
       </visual>
 

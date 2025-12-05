@@ -64,6 +64,13 @@ namespace ariac_plugins{
       std::bind(&AgvTrayPlugin::agv_station_check, this, std::placeholders::_1)
     );
 
+    // Add service to check cells on AGV
+
+    check_kit_quality_srv = ros_node->create_service<ariac_interfaces::srv::CheckKitQuality>(
+      "check_kit_quality",
+      std::bind(&AgvTrayPlugin::check_kit_quality_cb, this, std::placeholders::_1, std::placeholders::_2)
+    );
+
     // Add service for removing cells at recycling
 
     recycle_cells_srv = ros_node->create_service<ariac_interfaces::srv::Trigger>(
@@ -125,12 +132,18 @@ namespace ariac_plugins{
         }
 
         if (!cell_entity.has_value()) {
+          cell_components[slot] = {};
           cell_in_slot[slot].left.in_contact = false;
           cell_in_slot[slot].right.in_contact = false;
           cell_in_slot[slot].left.model_name = "";
           cell_in_slot[slot].right.model_name = "";
           slot_locked[slot] = false;
           continue;
+        } else {
+          auto component = _ecm.Component<gz::sim::components::Cell>(cell_entity.value());
+          if(component != nullptr){
+            cell_components[slot] = component->Data();
+          }
         }
   
         auto cell_link = gz::sim::Model(cell_entity.value()).LinkByName(_ecm, "base_link");
@@ -348,17 +361,57 @@ namespace ariac_plugins{
     agv_station = msg->station_id;
   }
 
-  void AgvTrayPlugin::recycle_cells_cb(const ariac_interfaces::srv::Trigger::Request::SharedPtr, ariac_interfaces::srv::Trigger::Response::SharedPtr rep){
+  void AgvTrayPlugin::check_kit_quality_cb(const ariac_interfaces::srv::CheckKitQuality::Request::SharedPtr, ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr res){
+    std::string msg = "";
+    
+    ariac_components::Cell cell_checking;
+    int cell_type = CellTypes::LI_ION;
+    float total_voltage = 0;
+
+    for(const auto& pair : cell_components){
+      if(!pair.second.has_value()){
+        msg += "Cell in slot " + std::to_string(pair.first) + " not present. ";
+        continue;
+      }
+      cell_checking = pair.second.value();
+      cell_type = cell_checking.cell_type;
+      if(cell_checking.defective){
+        msg += "Cell in slot " + std::to_string(pair.first) + " is defective. ";
+        continue;
+      }
+      if(abs(cell_checking.voltage - nominal_voltages[cell_checking.cell_type] > CellTypes::CELL_VOLTAGE_TOLERANCE)){
+        msg += "Cell in slot " + std::to_string(pair.first) + "is not within the cell voltage tolerance. ";
+        continue;
+      }
+
+      total_voltage += cell_checking.voltage;
+    }
+
+    if (abs(total_voltage - (nominal_voltages[cell_type] * 4)) > CellTypes::KIT_VOLTAGE_TOLERANCE) {
+      msg +="Total voltage of good cells is not within allowed tolerance.";
+    }
+    
+    if(msg != ""){
+      res->is_good = false;
+      res->message = msg;
+      return;
+    }
+
+    res->is_good = true;
+    res->message = "Kit is good";
+  }
+
+  void AgvTrayPlugin::recycle_cells_cb(const ariac_interfaces::srv::Trigger::Request::SharedPtr, ariac_interfaces::srv::Trigger::Response::SharedPtr res){
     
     if (agv_station != ariac_interfaces::msg::AgvStations::RECYCLING){
-      rep->success = false;
-      rep->message = "Unable to run service unless AGV is at recycling station";
+      res->success = false;
+      res->message = "Unable to run service unless AGV is at recycling station";
       return;
     }
 
     recycle_requested = true;
-    rep->success = true;
-    rep->message = "Removal of cells requested";
+    res->success = true;
+    res->message = "Removal of cells requested";
     return;
   }
 

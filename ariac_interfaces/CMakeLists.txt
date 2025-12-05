@@ -40,6 +40,7 @@ set(msg_files
 set(srv_files
   "srv/AttachTool.srv"
   "srv/BidirectionalConveyorControl.srv"
+  "srv/CheckKitQuality.srv"
   "srv/ControlCellFeeder.srv"
   "srv/ConveyorControl.srv"
   "srv/EndCompetition.srv"

@@ -23,8 +23,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-          'sensor_startup = ariac_setup.sensor_spawner:main',
-          'finish_startup = ariac_setup.gz_interface:main'
+          'startup = ariac_setup.startup:main',
+          'ready = ariac_setup.ready:main',
+          'score_logger = ariac_setup.score_logger:main'
         ],
     },
 )

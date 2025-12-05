@@ -34,12 +34,12 @@ WORKDIR $ROS_WS
 # Copy ARIAC packages into workspace
 COPY ./ $ROS_WS/src/
 
-RUN pip3 install -r $ROS_WS/src/ariac_app/requirements.txt --break-system-packages
+RUN apt-get update && pip3 install -r $ROS_WS/src/ariac_app/requirements.txt --break-system-packages
 
 # ================================================================
 # Resolve dependencies with rosdep
 # ================================================================
-RUN rosdep install --from-paths src --ignore-src -r -y
+RUN apt-get update && rosdep install --from-paths src --ignore-src -r -y
 
 # ================================================================
 # Build workspace

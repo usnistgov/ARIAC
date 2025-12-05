@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.2.1 (2025-12-05)
+----------------------
+
+
 2025.2.0 (2025-12-05)
 ----------------------
 * Added new service to AGVs to check the quality of the kit on the AGV

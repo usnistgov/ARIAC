@@ -2,6 +2,11 @@
 Changelog
 ^^^^^^^^^
 
+2025.2.1 (2025-12-05)
+----------------------
+* Added additional defect models for battery cells.
+
+
 2025.2.0 (2025-12-05)
 ----------------------
 * Improved startup and fixed issue with sensors not showing up

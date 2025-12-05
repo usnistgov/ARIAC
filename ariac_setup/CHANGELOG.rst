@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.2.1 (2025-12-05)
+----------------------
+
+
 2025.2.0 (2025-12-05)
 ----------------------
 * Improved startup and fixed issue with sensors not showing up

@@ -62,15 +62,15 @@ void CellFeedPlugin::Configure(
       continue;
     }
 
-    YAML::Node stl = defect_type.second["DAE_FILE"];
+    YAML::Node glb = defect_type.second["GLB_FILE"];
 
-    if (!stl.IsDefined()){
+    if (!glb.IsDefined()){
       throw std::runtime_error("Collada not found in defect config");
-    } else if (!stl.IsScalar()) {
+    } else if (!glb.IsScalar()) {
       throw std::runtime_error("Collada not string");
     }
     
-    defect_type_to_visual[defect_type.first.as<int>()] = stl.as<std::string>();
+    defect_type_to_visual[defect_type.first.as<int>()] = glb.as<std::string>();
     
     defect_types.push_back(defect_type.first.as<int>());
   }

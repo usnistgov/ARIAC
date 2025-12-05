@@ -14,9 +14,13 @@
 #include <rclcpp/rclcpp.hpp>
 #include "rclcpp_action/create_server.hpp"
 
+#include <ariac_components/cell.hpp>
+
 #include <ariac_interfaces/msg/agv_stations.hpp>
 #include <ariac_interfaces/msg/agv_status.hpp>
 #include <ariac_interfaces/msg/agv_tray_status.hpp>
+#include <ariac_interfaces/msg/cell_types.hpp>
+#include <ariac_interfaces/srv/check_kit_quality.hpp>
 #include <ariac_interfaces/srv/trigger.hpp>
 
 #include <thread>
@@ -27,8 +31,8 @@
 #include <cmath>
 
 using AGVStations = ariac_interfaces::msg::AgvStations;
-
 using AGVStatus = ariac_interfaces::msg::AgvStatus;
+using CellTypes = ariac_interfaces::msg::CellTypes;
 
 namespace ariac_plugins
 {
@@ -85,6 +89,7 @@ namespace ariac_plugins
     rclcpp::Publisher<ariac_interfaces::msg::AgvTrayStatus>::SharedPtr agv_slot_info_pub;
     rclcpp::TimerBase::SharedPtr pub_timer;
     rclcpp::Subscription<ariac_interfaces::msg::AgvStatus>::SharedPtr location_subscription;
+    rclcpp::Service<ariac_interfaces::srv::CheckKitQuality>::SharedPtr check_kit_quality_srv;
     rclcpp::Service<ariac_interfaces::srv::Trigger>::SharedPtr recycle_cells_srv;
 
     // SDF Tags
@@ -126,10 +131,23 @@ namespace ariac_plugins
       { 4, {{ false, "", 0.0 }, { false, "", 0.0 }}},
     };
 
+    std::map<int, std::optional<ariac_components::Cell>> cell_components = {
+      { 1, {}},
+      { 2, {}},
+      { 3, {}},
+      { 4, {}}
+    };
+
+    std::map<int, double> nominal_voltages = {
+      {CellTypes::LI_ION, CellTypes::LI_ION_NOMINAL_VOLTAGE},
+      {CellTypes::NIMH, CellTypes::NIMH_NOMINAL_VOLTAGE},
+    };
+
     // Functions
     std::optional<std::string> get_cell_in_contact(const gz::msgs::Contacts &_gz_contacts_msg);
     void agv_station_check(ariac_interfaces::msg::AgvStatus::SharedPtr msg);
-    void recycle_cells_cb(const ariac_interfaces::srv::Trigger::Request::SharedPtr, ariac_interfaces::srv::Trigger::Response::SharedPtr rep);
+    void check_kit_quality_cb(const ariac_interfaces::srv::CheckKitQuality::Request::SharedPtr, ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr);
+    void recycle_cells_cb(const ariac_interfaces::srv::Trigger::Request::SharedPtr, ariac_interfaces::srv::Trigger::Response::SharedPtr);
     void pub_timer_cb();
 
     // GZ CBs

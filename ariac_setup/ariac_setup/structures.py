@@ -53,6 +53,18 @@ class SensorType(IntEnum):
                 return "lidar"
             case _:
                 return super().__str__()
+    
+    @property
+    def topics(self) -> list[str]:
+        match self:
+            case SensorType.BREAKBEAM:
+                return ["status", "change"]
+            case SensorType.DISTANCE:
+                return ["distance"]
+            case SensorType.CAMERA:
+                return ["image", "info"]
+            case SensorType.LIDAR:
+                return ["scan"]
 
 
 class SensorGrade(IntEnum):
@@ -102,6 +114,10 @@ class Sensor:
             self.pose.orientation.z,
             self.pose.orientation.w
         ])
+    
+    @property 
+    def topics(self):
+        return [f'/{self.name}/{t}' for t in self.sensor_type.topics]
     
     def get_xml(self, _: str) -> str:
         raise NotImplementedError

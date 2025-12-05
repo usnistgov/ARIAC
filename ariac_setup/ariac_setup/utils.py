@@ -72,6 +72,23 @@ class ROSAsyncAdapter:
             return await asyncio.wait_for(future, timeout=timeout)
         except asyncio.TimeoutError:
             raise TimeoutError("Blocking function call timed out")
+        
+    @staticmethod
+    async def wait_for_gz_clock():
+        ''' Waits for gz clock to start publishing '''
+        
+        process = await asyncio.create_subprocess_exec(
+            'gz', 'topic', '-e', '-t', '/clock',
+            stdout=asyncio.subprocess.PIPE,
+        )
+        
+        if process.stdout is None:
+            raise RuntimeError("Unable to read from gz topic stdin")
+        
+        await process.stdout.readline()
+        process.terminate()
+        await process.wait()
+            
 
 
 def evaluate_pi_expression(expr) -> float:

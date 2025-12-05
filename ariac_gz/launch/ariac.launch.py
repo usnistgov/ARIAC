@@ -134,11 +134,19 @@ def launch_setup(context, *args, **kwargs):
         )
     )
 
+    score_logger = Node(
+        package="ariac_setup",
+        executable="score_logger",
+        output="screen",
+        arguments=['--db-path',  db_path],
+        parameters=[{'use_sim_time': True}]
+    )
+
     return [
         gz,
         gz_sim_ready,
         startup_when_ready,
-    ]
+    ] + ([score_logger] if db_path != "" else [])
 
 def generate_launch_description():
     declared_arguments = []

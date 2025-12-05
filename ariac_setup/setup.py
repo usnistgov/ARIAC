@@ -23,8 +23,10 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+'score_logger = ariac_setup.score_logger:main'
           'startup = ariac_setup.startup:main',
           'ready = ariac_setup.ready:main',
+          'score_logger = ariac_setup.score_logger:main'
         ],
     },
 )

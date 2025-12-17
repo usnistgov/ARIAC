@@ -5,6 +5,7 @@
 #include <gz/sim/Util.hh>
 #include <gz/sim/Sensor.hh>
 #include <gz/sim/System.hh>
+#include <gz/sim/Joint.hh>
 #include <gz/plugin/Register.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/sim/EventManager.hh>
@@ -84,6 +85,7 @@ namespace ariac_plugins{
     gz::sim::Entity lock_joint;
     gz::sim::Entity gripper_base_link;
     gz::sim::Entity world_entity = 1;
+    std::vector<gz::sim::Joint> suction_cup_joints;
     
     // ROS
     rclcpp::Node::SharedPtr ros_node;

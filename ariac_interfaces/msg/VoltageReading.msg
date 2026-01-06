@@ -1,2 +1,0 @@
-float64 voltage
-uint8 operation_status

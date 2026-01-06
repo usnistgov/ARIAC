@@ -1,9 +1,0 @@
-robotiq_gripper_controller:
-  joint: {
-    type: string,
-    read_only: true,
-    validation: {
-      not_empty<>: null
-    }
-  }
-  

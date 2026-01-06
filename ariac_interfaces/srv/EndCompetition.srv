@@ -1,6 +1,0 @@
-# EndCompetition.srv
-
-bool shutdown_gazebo
----
-bool success
-string message

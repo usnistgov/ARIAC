@@ -1,6 +1,7 @@
 from typing import cast
 
 from rclpy.node import Node
+from rclpy.time import Time
 from rclpy.duration import Duration
 
 from ariac_setup.utils import ROSAsyncAdapter
@@ -76,6 +77,20 @@ class AppNode(Node):
     @property
     def run_id(self) -> int | None:
         return self._run_id
+    
+    @property
+    def current_sim_time(self) -> Time:
+        return self.get_clock().now()
+    
+    @property
+    def time_limit(self) -> int | None:
+        if self._competition_time is None:
+            return None
+        return round(Duration.from_msg(self._competition_time.elapsed).nanoseconds / 1E9 + Duration.from_msg(self._competition_time.remaining).nanoseconds / 1E9)
+    
+    @property
+    def competition_time(self) -> CompetitionTime | None:
+        return self._competition_time
 
     def competition_status_cb(self, msg: CompetitionStatus):
         self._current_state = msg.competition_state

@@ -159,6 +159,14 @@ ament_target_dependencies(RaySensorPlugin
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
+# Recording Plugin
+add_library(RecordingPlugin SHARED src/recording_plugin.cpp)
+target_include_directories(RecordingPlugin PUBLIC include)
+
+ament_target_dependencies(RecordingPlugin
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
 # Robot Collision Plugin
 add_library(RobotCollisionPlugin SHARED src/robot_collision_plugin.cpp)
 target_include_directories(RobotCollisionPlugin PUBLIC include)
@@ -256,6 +264,7 @@ ament_export_libraries(
   PathVelocityPlanner
   PhysicalInspectionPlugin
   RaySensorPlugin
+  RecordingPlugin
   RobotCollisionPlugin
   ShellInsertionPlugin
   StatusLightPlugin
@@ -291,6 +300,7 @@ install(
     LinearConveyorPlugin
     PhysicalInspectionPlugin
     RaySensorPlugin
+    RecordingPlugin
     RobotCollisionPlugin
     ShellInsertionPlugin
     StatusLightPlugin

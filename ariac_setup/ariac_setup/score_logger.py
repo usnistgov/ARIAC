@@ -19,8 +19,8 @@ def print_format(s: str, results_width=60):
     print("|"+f"{s:^{results_width}}"+"|")
 
 class ScoreLogger(Node):
-    def __init__(self, db_path: str):
-        super().__init__('score_logger')
+    def __init__(self, db_path: str, node_name: str = ""):
+        super().__init__('score_logger' + node_name)
         self.subscription = self.create_subscription(CompetitionStatus, 'competition_status', self.competition_status_cb, 10)
         self.run_id = -1
 
@@ -37,21 +37,21 @@ class ScoreLogger(Node):
         if msg.competition_state==CompetitionStates.ENDED and self.run_id!=-1:
             self.competition_ended.set()
     
-    def output_results(self):        
-        if (run := self.db_manager.get_run(self.run_id)) is None:
-            print(f"Could not find run with id {self.run_id} in database")
-            return
+    def get_results_str(self, run_id: int) -> str|None:        
+        if (run := self.db_manager.get_run(run_id)) is None:
+            print(f"Could not find run with id {run_id} in database")
+            return None
         
         if not run.completed:
             print("Unable to score run since run was not properly completed")
-            return
+            return None
 
         if (trial := self.db_manager.get_trial_for_run(run)) is None:
-            print(f"Could not find trial for run with id {self.run_id} in database")
-            return
+            print(f"Could not find trial for run with id {run_id} in database")
+            return None
 
-        orders = self.db_manager.get_orders_for_run(self.run_id)
-        penalties = self.db_manager.get_penalties_for_run(self.run_id)
+        orders = self.db_manager.get_orders_for_run(run_id)
+        penalties = self.db_manager.get_penalties_for_run(run_id)
 
         scorer = ARIACScorer()
         bonuses = scorer.score_bonuses(run, trial, orders)
@@ -61,9 +61,14 @@ class ScoreLogger(Node):
         bonus_score_table = scorer.get_bonus_score_table(bonuses)
         penalty_score_table = scorer.get_penalty_score_table(penalty_results)
 
-        self.get_logger().info("\n"+run_score_table+"\n\n")
-        self.get_logger().info("\n"+bonus_score_table+"\n\n")
-        self.get_logger().info("\n"+penalty_score_table+"\n\n")
+        s = ""
+        s += "\n"+run_score_table+"\n\n"
+        s += "\n"+bonus_score_table+"\n\n"
+        s += "\n"+penalty_score_table+"\n\n"
+        return s
+    
+    def output_results(self):
+        self.get_logger().info(self.get_results_str(self.run_id))
 
 async def spin_executor(executor: Executor, shutdown_event: asyncio.Event):
     while not shutdown_event.is_set():

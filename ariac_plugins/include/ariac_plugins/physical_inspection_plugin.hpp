@@ -40,13 +40,25 @@ using SubmissionSrvResPtr = SubmissionSrv::Response::SharedPtr;
 namespace ariac_plugins
 {
 enum class InspectionStatus {
-  DOOR_OPEN,
-  DOOR_CLOSED,
-  DOOR_OPENING,
-  DOOR_CLOSING,
   PROCESSING,
   FINISHED_PROCESSING,
-  WAITING_FOR_CELL,
+  WAITING_FOR_CELL
+};
+
+enum class DoorStatus {
+  OPEN,
+  CLOSED,
+  OPENING,
+  CLOSING
+};
+
+struct Cell {
+  std::string name;
+  gz::sim::Entity entity = gz::sim::kNullEntity;
+  float x_pose = -INFINITY;
+  bool report_submitted = false;
+  bool open_door = false;
+  std::optional<ariac_components::Cell> cell_component = std::nullopt;
 };
 
 class PhysicalInspectionPlugin:
@@ -76,11 +88,14 @@ class PhysicalInspectionPlugin:
 
   void validate_report(const ariac_interfaces::msg::InspectionReport&);
 
+  void update_cells(gz::sim::EntityComponentManager&);
+
+  int cell_index_next(bool without_report = false);
+
   // GZ
   gz::sim::Model model;
   gz::sim::Entity model_entity;
   gz::sim::Joint door_joint;
-  gz::sim::Entity current_cell = gz::sim::kNullEntity;
 
   std::shared_ptr<gz::transport::Node> gz_node;
 
@@ -97,26 +112,34 @@ class PhysicalInspectionPlugin:
   // Variables
   double speed = 0.0;
 
+  int cell_index_at_door = -1;
+  int reported_index = -1;
+
   const double door_x = 1.1;
   const double closed_position = 0.0;
   const double opened_position = 0.785;
 
   const double report_height_threshold = 0.005; // ±5mm
   const double report_angle_threshold = 0.26; // ±15°
+
+  bool set_to_opening = true;
   
   std::map<std::string, double> cell_positions = {
     {"open_door", 1.0},
     {"close_door", 1.25},
   };
 
+  std::vector<std::string> already_noticed_cells = {};
+
   std::map<int, std::vector<ariac_interfaces::msg::CellDefect>> defect_info;
 
-  std::vector<std::string> cells_on_conveyor;
+  // std::vector<std::string> cells_on_conveyor;
+  std::vector<Cell> cells_on_conveyor;
 
-  std::optional<ariac_components::Cell> current_cell_data = std::nullopt;
   ariac_components::InspectionResults inspection_results;
 
-  InspectionStatus status = InspectionStatus::DOOR_CLOSED;
+  InspectionStatus inspection_status = InspectionStatus::WAITING_FOR_CELL;
+  DoorStatus door_status = DoorStatus::CLOSED;
 };
 }
 

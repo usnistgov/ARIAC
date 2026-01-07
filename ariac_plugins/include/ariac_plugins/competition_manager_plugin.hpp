@@ -113,13 +113,10 @@ class CompetitionManagerPlugin:
     bool orders_complete();
 
 
-    SubmissionResponse check_kit(int cell_type, std::vector<ariac_components::Cell> submission_cells);
     SubmissionResponse check_module(gz::sim::EntityComponentManager &_ecm, ariac_components::Module module);
 
     bool connect_to_database(std::string trial_config);
 
-    void handle_kit_order_submission(gz::sim::EntityComponentManager &_ecm);
-    void handle_high_priority_order_submission(gz::sim::EntityComponentManager &_ecm);
     void handle_module_order_submission(gz::sim::EntityComponentManager &_ecm);
 
     void handle_competition_end(gz::sim::EntityComponentManager &_ecm);
@@ -127,10 +124,6 @@ class CompetitionManagerPlugin:
 
     std::string create_temp_file();
     int get_agv_at_shipping();
-
-    std::vector<ariac_components::Cell> get_cells_in_bbox(
-      gz::sim::EntityComponentManager &_ecm,
-      gz::math::AxisAlignedBox bbox);
 
     std::vector<ariac_components::Module> get_modules_in_bbox(
       gz::sim::EntityComponentManager &_ecm,
@@ -225,9 +218,7 @@ class CompetitionManagerPlugin:
       {3, AGVStations::INSPECTION},
     };
 
-    SubmissionResponse kitting_submission_response;
     SubmissionResponse module_submission_response;
-    SubmissionResponse high_priority_submission_response;
   };
 }
 

@@ -125,156 +125,128 @@ void PhysicalInspectionPlugin::PreUpdate(
 {
   if (_info.paused) {return;}
 
-  update_cells(_ecm);
-
   _ecm.SetComponentData<gz::sim::components::InspectionResults>(model_entity, inspection_results);
 
-  switch (door_status) {
-    case DoorStatus::CLOSED:
-      door_joint.SetVelocity(_ecm, {0.0});
-      break;
+  switch (status) {
 
-    case DoorStatus::OPENING:
-      door_joint.SetVelocity(_ecm, {max_speed});
+  case InspectionStatus::DOOR_CLOSED:
+    // Do nothing
+    door_joint.SetVelocity(_ecm, {-max_speed});
+    break;
 
-      // Check if door has fully opened
-      if (door_joint.Position(_ecm).has_value() && door_joint.Position(_ecm).value().size() > 0) {
-        if (door_joint.Position(_ecm).value()[0] >= opened_position) {
-          door_joint.SetVelocity(_ecm, {0.0});
-          door_status = DoorStatus::OPEN;
-        }
-      }
+  case InspectionStatus::PROCESSING: {
+    // Find the x position of the cell closest to the front of the door
+    double x_position = 0;
 
-      break;
+    current_cell = gz::sim::kNullEntity;
+    current_cell_data = std::nullopt;
 
-    case DoorStatus::OPEN: {
-      if (cell_index_at_door == -1){
-        break;
-      }
+    for (const std::string& name : cells_on_conveyor) {
+      if (!_ecm.EntityByName(name).has_value()) { continue; }
 
-      if (cells_on_conveyor[cell_index_at_door].entity == gz::sim::kNullEntity){
-        break;
-      }
+      gz::sim::Entity entity = _ecm.EntityByName(name).value();
 
-      if (cells_on_conveyor[cell_index_at_door].x_pose >= cell_positions["close_door"]) {
-        door_status = DoorStatus::CLOSING;
-      }
+      auto pose = gz::sim::Link(gz::sim::Model(entity).LinkByName(_ecm, "base_link")).WorldPose(_ecm);
 
-      break;
-    }
-
-    case DoorStatus::CLOSING:
-      door_joint.SetVelocity(_ecm, {-max_speed});
-
-      // Check if door has fully closed
-      if (door_joint.Position(_ecm).has_value() && door_joint.Position(_ecm).value().size() > 0) {
-        if (door_joint.Position(_ecm).value()[0] <= closed_position) {
-          cells_on_conveyor.erase(cells_on_conveyor.begin() + cell_index_at_door);
-          door_joint.SetVelocity(_ecm, {0.0});
-          door_status = DoorStatus::CLOSED;
-        }
-      }
-      break;  
-  }
-
-  switch (inspection_status) {
-
-    case InspectionStatus::PROCESSING: {
-
-      int current_cell_index = cell_index_next(true);
-
-      if (cells_on_conveyor[current_cell_index].entity == gz::sim::kNullEntity) {
-        inspection_status = InspectionStatus::FINISHED_PROCESSING;
-        gzwarn << "All cells on conveyor have report.\n";
-        break;
-      }
-
-      bool has_cell_component = _ecm.EntityHasComponentType(cells_on_conveyor[current_cell_index].entity, gz::sim::components::Cell::typeId);
-      if (!has_cell_component) {
-        inspection_status = InspectionStatus::FINISHED_PROCESSING;
-        gzwarn << "Unable to get cell component.\n";
-        break;
-      }
-
-      auto cell_component = _ecm.Component<gz::sim::components::Cell>(cells_on_conveyor[current_cell_index].entity);
-      if (!cell_component) {
-        inspection_status = InspectionStatus::FINISHED_PROCESSING;
-        gzwarn << "Cell component is null ptr.\n";
-        break;
+      if (!pose.has_value()) { 
+        gzwarn << "Unable to get pose for model " << name << std::endl;
+        continue; 
       }
       
-      cells_on_conveyor[current_cell_index].cell_component = cell_component->Data();
+      double cell_x = pose.value().Pos().X();
 
-      reported_index = current_cell_index;
-
-      inspection_status = InspectionStatus::FINISHED_PROCESSING;
-
-      break;
-    }
-
-    case InspectionStatus::FINISHED_PROCESSING:
-      // Do nothing
-      break;
-
-    case InspectionStatus::WAITING_FOR_CELL: {
-      // Wait until cell is at open_position
-
-      int next_cell_index = cell_index_next();
-
-      if (next_cell_index != -1){
-        if(cells_on_conveyor[next_cell_index].x_pose >= cell_positions["open_door"] && cells_on_conveyor[next_cell_index].open_door) {
-          cell_index_at_door = next_cell_index;
-          door_status = DoorStatus::OPENING;
-          set_to_opening = false;
-        } else if (cells_on_conveyor[next_cell_index].report_submitted && !cells_on_conveyor[next_cell_index].open_door) {
-          // Remove cell from list if it should not be opened
-          cells_on_conveyor.erase(cells_on_conveyor.begin() + next_cell_index);
-        }
+      if (cell_x > x_position && cell_x < door_x) {
+        current_cell = entity;
+        x_position = cell_x;
       }
+    }
 
+    if (current_cell == gz::sim::kNullEntity) {
+      status = InspectionStatus::FINISHED_PROCESSING;
+      gzwarn << "Unable to locate correct cell to open door for.\n";
       break;
     }
-  }
-}
 
-void PhysicalInspectionPlugin::update_cells(gz::sim::EntityComponentManager &_ecm){
-  // Update entity
-  for (Cell& cell : cells_on_conveyor) {
-    if (cell.entity != gz::sim::kNullEntity) {continue;}
-    if (!_ecm.EntityByName(cell.name).has_value()) { continue; }
-
-    gz::sim::Entity entity = _ecm.EntityByName(cell.name).value();
-
-    if (entity == gz::sim::kNullEntity){
-      continue;
+    bool has_cell_component = _ecm.EntityHasComponentType(current_cell, gz::sim::components::Cell::typeId);
+    if (!has_cell_component) {
+      status = InspectionStatus::FINISHED_PROCESSING;
+      gzwarn << "Unable to get cell component.\n";
+      break;
     }
 
-    cell.entity = entity;
-  }
-
-  std::vector<int> cell_indicies_to_remove = {};
-  for (int i = 0; i < cells_on_conveyor.size(); i++) {
-    if (cells_on_conveyor[i].entity == gz::sim::kNullEntity) {continue;}
-
-    auto link_entity = gz::sim::Model(cells_on_conveyor[i].entity).LinkByName(_ecm, "base_link");
-    if (link_entity == gz::sim::kNullEntity) {
-      cell_indicies_to_remove.push_back(i);
-      continue;
-    }
-    auto pose = gz::sim::Link(link_entity).WorldPose(_ecm);
-
-    if (!pose.has_value()) {
-      gzwarn << "Unable to get pose for model " << cells_on_conveyor[i].name << std::endl;
-      continue;
+    auto cell_component = _ecm.Component<gz::sim::components::Cell>(current_cell);
+    if (!cell_component) {
+      status = InspectionStatus::FINISHED_PROCESSING;
+      gzwarn << "Cell component is null ptr.\n";
+      break;
     }
     
-    double cell_x = pose.value().Pos().X();
+    current_cell_data = cell_component->Data();
 
-    cells_on_conveyor[i].x_pose = cell_x;
+    status = InspectionStatus::FINISHED_PROCESSING;
+
+    break;
   }
 
-  for(int i = cell_indicies_to_remove.size() - 1; i >= 0; i--){
-    cells_on_conveyor.erase(cells_on_conveyor.begin()+cell_indicies_to_remove[i]);
+  case InspectionStatus::FINISHED_PROCESSING:
+    // Do nothing
+    break;
+
+  case InspectionStatus::WAITING_FOR_CELL: {
+    // Wait until cell is at open_position
+
+    auto pose = gz::sim::Link(gz::sim::Model(current_cell).LinkByName(_ecm, "base_link")).WorldPose(_ecm);
+
+    if (!pose.has_value()) { 
+      gzwarn << "Unable to get pose for cell\n";
+    }
+
+    if (pose.value().Pos().X() >= cell_positions["open_door"]) {
+      status = InspectionStatus::DOOR_OPENING;
+    }
+
+    break;
+  }
+
+  case InspectionStatus::DOOR_OPENING:
+    door_joint.SetVelocity(_ecm, {max_speed});
+
+    // Check if door has fully opened
+    if (door_joint.Position(_ecm).has_value() && door_joint.Position(_ecm).value().size() > 0) {
+      if (door_joint.Position(_ecm).value()[0] >= opened_position) {
+        door_joint.SetVelocity(_ecm, {0.0});
+        status = InspectionStatus::DOOR_OPEN;
+      }
+    }
+
+    break;
+  
+  case InspectionStatus::DOOR_OPEN: {
+    // Wait until cell is at close_position
+    auto pose = gz::sim::Link(gz::sim::Model(current_cell).LinkByName(_ecm, "base_link")).WorldPose(_ecm);
+
+    if (!pose.has_value()) { 
+      gzwarn << "Unable to get pose for cell\n";
+    }
+
+    if (pose.value().Pos().X() >= cell_positions["close_door"]) {
+      status = InspectionStatus::DOOR_CLOSING;
+    }
+
+    break;
+  }
+  
+  case InspectionStatus::DOOR_CLOSING:
+    door_joint.SetVelocity(_ecm, {-max_speed});
+
+    // Check if door has fully closed
+    if (door_joint.Position(_ecm).has_value() && door_joint.Position(_ecm).value().size() > 0) {
+      if (door_joint.Position(_ecm).value()[0] <= closed_position) {
+        door_joint.SetVelocity(_ecm, {0.0});
+        status = InspectionStatus::DOOR_CLOSED;
+      }
+    }
+    break;  
   }
 }
 
@@ -288,36 +260,31 @@ void PhysicalInspectionPlugin::submission_cb(
     return;
   }
 
-  inspection_status = InspectionStatus::PROCESSING;
-
-  while (inspection_status == InspectionStatus::PROCESSING) { }
-
-  if(reported_index == -1){
+  if (status != InspectionStatus::DOOR_CLOSED) {
     response->success = false;
-    response->message = "Unable to find cell for report.";
+    response->message = "Door is not closed";
     return;
   }
 
+  status = InspectionStatus::PROCESSING;
+
+  while (status == InspectionStatus::PROCESSING) { }
+
   validate_report(request->report);
 
-  if (!cells_on_conveyor[reported_index].cell_component.has_value()) {
+  if (!current_cell_data.has_value()) {
     response->success = false;
     response->message = "Unable to process report.";
     return;
   }
 
-  cells_on_conveyor[reported_index].report_submitted = true;
-
-  inspection_status = InspectionStatus::WAITING_FOR_CELL;
   if (request->report.passed) {
-    cells_on_conveyor[reported_index].open_door = true;
+    status = InspectionStatus::WAITING_FOR_CELL;
     response->message = "Passing inspection report received. Door will open for cell.";
   } else {
-    door_status = DoorStatus::CLOSED;
+    status = InspectionStatus::DOOR_CLOSED;
     response->message = "Failing inspection report received. Door will remain closed for cell.";
   }
-
-  reported_index = -1;
 
   response->success = true;
 }
@@ -325,31 +292,29 @@ void PhysicalInspectionPlugin::submission_cb(
 void PhysicalInspectionPlugin::conveyor_contact_msg_cb(
   const gz::msgs::Contacts &_gz_contacts_msg)
 {
+  // Save list of cell names on conveyor
+  std::vector<std::string> cell_names;
   for (int i = 0; i < _gz_contacts_msg.contact_size(); ++i){
-    Cell cell_struct;
     std::string collision = _gz_contacts_msg.contact(i).collision2().name();
 
     if (collision.find("cell") == std::string::npos) { continue; }
-    
-    std::string cell_name = collision.substr(0, collision.find("::"));
-    if (std::find(already_noticed_cells.begin(), already_noticed_cells.end(), cell_name) != already_noticed_cells.end()) {continue;}
 
-    already_noticed_cells.push_back(cell_name);
-    cell_struct.name = cell_name;
-    cells_on_conveyor.push_back(cell_struct);
+    cell_names.push_back(collision.substr(0, collision.find("::")));
   }
+
+  cells_on_conveyor = cell_names;
 }
 
 void PhysicalInspectionPlugin::validate_report(const ariac_interfaces::msg::InspectionReport &report) {
-  if (!cells_on_conveyor[reported_index].cell_component.has_value()) { return; }
+  if (!current_cell_data.has_value()) { return; }
 
   inspection_results.num_reports_submitted++;
 
-  double report_time = ros_node->get_clock()->now().nanoseconds()/1e9 - cells_on_conveyor[reported_index].cell_component->time_created;
+  double report_time = ros_node->get_clock()->now().nanoseconds()/1e9 - current_cell_data->time_created;
 
   inspection_results.avg_report_time += (report_time - inspection_results.avg_report_time) / inspection_results.num_reports_submitted;
 
-  auto cell = cells_on_conveyor[reported_index].cell_component.value();
+  auto cell = current_cell_data.value();
 
   if (report.passed != cell.defective) { 
     gzmsg << "Inspection report correct\n";
@@ -400,29 +365,4 @@ void PhysicalInspectionPlugin::validate_report(const ariac_interfaces::msg::Insp
     gzmsg << "Inspection report classification correct\n";
     inspection_results.num_correct_report_classifications++;
   }
-}
-
-int PhysicalInspectionPlugin::cell_index_next(bool without_report){
-  if (cells_on_conveyor.size() == 0){
-    return -1;
-  }
-  
-  int min_index=-1;
-  float smallest_difference = INFINITY, difference;
-
-  for (int i = 0; i < cells_on_conveyor.size(); i++) {
-    if(without_report && cells_on_conveyor[i].report_submitted){
-      continue;
-    }
-
-    // Small buffer so the door can open
-    difference = cell_positions["open_door"] - cells_on_conveyor[i].x_pose + 0.005;
-
-    if(difference > 0 && difference < smallest_difference){
-      smallest_difference = difference;
-      min_index = i;
-    }
-  }
-  
-  return min_index;
 }

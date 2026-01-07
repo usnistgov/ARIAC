@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="bottom_shell">
+    <allow_auto_disable>true</allow_auto_disable>
+
+    <link name="base_link">
+      <inertial auto="true"/>
+      
+      <visual name="shell_visual">
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/bottom_shell.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="vg_4_collision">
+        <density>20000</density>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/collision/bottom_shell.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <sensor name='contact_sensor' type='contact'>
+        <update_rate>5</update_rate>
+        <contact>
+          <collision>vg_4_collision</collision>
+        </contact>
+      </sensor>
+        
+    </link>
+
+    <link name="bead_1_link">
+      <inertial auto="true"/>
+      <visual name="bead_visual_1">
+        <pose>-0.012 0 0.002 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/weld_bead.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.4 0.4 0.4 0.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="bead_collision_1">
+        <density>1</density>
+        <pose>-0.012 0 0.0021 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.006</radius>
+            <length>0.0002</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="bead_2_link">
+      <inertial auto="true"/>
+      <visual name="bead_visual_2">
+        <pose>0.012 0 0.002 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/weld_bead.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.4 0.4 0.4 0.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="bead_collision_2">
+        <density>1</density>
+        <pose>0.012 0 0.0021 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.006</radius>
+            <length>0.0002</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="bead_1_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>bead_1_link</child>
+    </joint>
+
+    <joint name="bead_2_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>bead_2_link</child>
+    </joint>
+
+    <link name="slot_1_link">
+      <inertial auto="true"/>
+      <pose> -0.036 0 0.005 0 0 0</pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.001</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <sensor name='collision_detector' type='contact'>
+        <contact>
+          <collision>collision</collision>
+        </contact>
+      </sensor>
+    </link>
+
+    <link name="slot_2_link">
+      <inertial auto="true"/>
+      <pose> -0.012 0 0.005 0 0 0</pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.001</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <sensor name='collision_detector' type='contact'>
+        <contact>
+          <collision>collision</collision>
+        </contact>
+      </sensor>
+    </link>
+
+    <link name="slot_3_link">
+      <inertial auto="true"/>
+      <pose> 0.012 0 0.005 0 0 0</pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.001</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <sensor name='collision_detector' type='contact'>
+        <contact>
+          <collision>collision</collision>
+        </contact>
+      </sensor>
+    </link>
+
+    <link name="slot_4_link">
+      <inertial auto="true"/>
+      <pose> 0.036 0 0.005 0 0 0</pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.001</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <sensor name='collision_detector' type='contact'>
+        <contact>
+          <collision>collision</collision>
+        </contact>
+      </sensor>
+    </link>
+
+    <joint name="slot_1_sensor_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>slot_1_link</child>
+    </joint> 
+
+    <joint name="slot_2_sensor_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>slot_2_link</child>
+    </joint> 
+
+    <joint name="slot_3_sensor_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>slot_3_link</child>
+    </joint> 
+
+    <joint name="slot_4_sensor_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>slot_4_link</child>
+    </joint>
+
+    <plugin
+      filename="libBottomShellPlugin.so"
+      name="ariac_plugins::BottomShellPlugin">
+    </plugin>
+  </model>
+</sdf>

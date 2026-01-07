@@ -38,9 +38,45 @@ ament_target_dependencies(AgvMotionPlugin
 )
 target_link_libraries(AgvMotionPlugin PathVelocityPlanner)
 
+# AGV Tray Interface Plugin
+add_library(AgvTrayInterfacePlugin SHARED src/agv_tray_interface_plugin.cpp)
+target_include_directories(AgvTrayInterfacePlugin PUBLIC include)
+
+ament_target_dependencies(AgvTrayInterfacePlugin
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
+# Cheat Tools Plugin
+add_library(CheatToolsPlugin SHARED src/cheat_tools_plugin.cpp)
+target_include_directories(CheatToolsPlugin PUBLIC include)
+
+ament_target_dependencies(CheatToolsPlugin
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
+# Contact Plugin
+add_library(ContactPlugin SHARED src/contact_plugin.cpp)
+target_include_directories(ContactPlugin PUBLIC include)
+
+ament_target_dependencies(ContactPlugin
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
+# Kit Tray Plugin
+add_library(KitTrayPlugin SHARED src/kit_tray_plugin.cpp)
+target_include_directories(KitTrayPlugin PUBLIC include)
+
+ament_target_dependencies(KitTrayPlugin
+  ${THIS_PACKAGE_INCLUDE_DEPENDS}
+)
+
 
 ament_export_libraries(
   AgvMotionPlugin
+  AgvTrayInterfacePlugin
+  CheatToolsPlugin
+  ContactPlugin
+  KitTrayPlugin
   PathVelocityPlanner
 )
 
@@ -54,6 +90,10 @@ install(
 install(
   TARGETS
     AgvMotionPlugin
+    AgvTrayInterfacePlugin
+    CheatToolsPlugin
+    ContactPlugin
+    KitTrayPlugin
   DESTINATION 
     lib/${PROJECT_NAME}
 )

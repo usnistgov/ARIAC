@@ -1,0 +1,6 @@
+# AttachTool.srv
+
+int8 tool # Available types are in VacuumTools.msg
+---
+bool success
+string message

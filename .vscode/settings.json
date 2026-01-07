@@ -1,0 +1,18 @@
+{
+    "python.analysis.extraPaths": [
+        "/opt/ros/jazzy/lib/python3.12/site-packages/",
+        "${workspaceFolder}/ariac_setup/",
+    ],
+
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportAttributeAccessIssue": "none",
+        "reportMissingModuleSource": "none"
+    },
+
+    "cmake.ignoreCMakeListsMissing": true,
+
+    "terminal.integrated.cwd": "${workspaceFolder}/../../",
+
+    "editor.selectionClipboard": false
+}

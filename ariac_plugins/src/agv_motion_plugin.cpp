@@ -109,18 +109,18 @@ namespace ariac_plugins{
       case AGVMotionStatus::IDLE:
         break;
       case AGVMotionStatus::UNLOCK:
-        if(lock_joint == gz::sim::kNullEntity){
-          gzerr << "Unable to unlock " << agv_model.Name(_ecm) << ". Lock joint does not exist\n";
-        }
+        // if(lock_joint == gz::sim::kNullEntity){
+        //   gzerr << "Unable to unlock " << agv_model.Name(_ecm) << ". Lock joint does not exist\n";
+        // }
 
-        _ecm.RequestRemoveEntity(lock_joint);
+        // _ecm.RequestRemoveEntity(lock_joint);
 
-        lock_joint = gz::sim::kNullEntity;
+        // lock_joint = gz::sim::kNullEntity;
 
         motion_state = AGVMotionStatus::MOVING;
         gzwarn << "AGV " << agv_model.Name(_ecm) << " unlocked and starting motion\n";
 
-        wait_until_iteration = _info.iterations + 50;
+        wait_until_iteration = _info.iterations + 5;
         break;
       case AGVMotionStatus::MOVING:
       {
@@ -139,7 +139,7 @@ namespace ariac_plugins{
         if (velocity_planner.is_finished(current_time)) {
           motion_state = AGVMotionStatus::TELEPORT;
           gzwarn << "AGV " << agv_model.Name(_ecm) << " reached end of path, teleporting to goal\n";
-          wait_until_iteration = _info.iterations + 50;
+          wait_until_iteration = _info.iterations + 5;
           motion_start_time = std::nullopt;
           linear_velocity_vector.Set(0.0, 0.0, 0.0);
           angular_velocity_vector.Set(0.0, 0.0, 0.0);
@@ -148,7 +148,7 @@ namespace ariac_plugins{
           path_velocity_planner::PathVelocity vel = velocity_planner.get_velocity_at_time(current_time);
           
           
-          linear_velocity_vector.Set(vel.linear, 0.0, (agv_pose.Z() < 0.005) ? 0.015 : 0.0);
+          linear_velocity_vector.Set(vel.linear, 0.0, (agv_pose.Z() < 0.001) ? 0.015 : 0.0);
           angular_velocity_vector.Set(0.0, 0.0, vel.angular);
         }
 
@@ -174,14 +174,14 @@ namespace ariac_plugins{
         auto destination = current_waypoints[current_waypoints.size() - 1];
         gz::math::Pose3d goal_pose;
         goal_pose.Set(
-          gz::math::Vector3d(destination.x, destination.y, 0.005),
+          gz::math::Vector3d(destination.x, destination.y, 0.001),
           gz::math::Vector3d(0, 0, station_yaw[current_goal_handle.value()->get_goal()->station_id])
         );
 
         agv_model.SetWorldPoseCmd(_ecm, goal_pose);
         
         status_msg.station_id = current_goal_handle.value()->get_goal()->station_id;
-        wait_until_iteration = _info.iterations + 50;
+        wait_until_iteration = _info.iterations + 5;
         motion_state = AGVMotionStatus::LOCK;
         gzwarn << "AGV " << agv_model.Name(_ecm) << " teleported to station " << std::to_string(status_msg.station_id) << ". Locking\n";
 
@@ -190,27 +190,27 @@ namespace ariac_plugins{
       
       case AGVMotionStatus::LOCK:
       {
-        if(lock_joint != gz::sim::kNullEntity){
-          throw std::runtime_error("Can't lock " + agv_model.Name(_ecm) + " since lock joint is not null");
-        }
-        lock_joint = _ecm.CreateEntity();
+        // if(lock_joint != gz::sim::kNullEntity){
+        //   throw std::runtime_error("Can't lock " + agv_model.Name(_ecm) + " since lock joint is not null");
+        // }
+        // lock_joint = _ecm.CreateEntity();
 
-        std::optional<gz::sim::v8::Entity> floor_entity_opt = _ecm.EntityByName(floor_model_name);
+        // std::optional<gz::sim::v8::Entity> floor_entity_opt = _ecm.EntityByName(floor_model_name);
       
-        if (!floor_entity_opt.has_value()) {
-          throw std::runtime_error("Unable to locate floor entity");
-        }
+        // if (!floor_entity_opt.has_value()) {
+        //   throw std::runtime_error("Unable to locate floor entity");
+        // }
 
-        auto floor_link_entity = gz::sim::Model(floor_entity_opt.value()).LinkByName(_ecm, floor_link_name);
+        // auto floor_link_entity = gz::sim::Model(floor_entity_opt.value()).LinkByName(_ecm, floor_link_name);
 
-        if (floor_link_entity == gz::sim::kNullEntity) {
-          throw std::runtime_error("Unable to locate floor link");
-        }
+        // if (floor_link_entity == gz::sim::kNullEntity) {
+        //   throw std::runtime_error("Unable to locate floor link");
+        // }
         
-        _ecm.CreateComponent(lock_joint, gz::sim::components::DetachableJoint({floor_link_entity, agv_base_link_entity, "fixed"}));
+        // _ecm.CreateComponent(lock_joint, gz::sim::components::DetachableJoint({floor_link_entity, agv_base_link_entity, "fixed"}));
         
         if(current_goal_handle.has_value()){
-          wait_until_iteration = _info.iterations + 100;
+          wait_until_iteration = _info.iterations + 150;
           motion_state = AGVMotionStatus::COMPLETE_GOAL;
           gzwarn << "AGV " << agv_model.Name(_ecm) << " locked. Completing goal\n";
         } else{
@@ -221,27 +221,19 @@ namespace ariac_plugins{
       }
       case AGVMotionStatus::COMPLETE_GOAL:
       {
-        if(!current_goal_handle.has_value()){
-          gzerr << "Current goal handle has no value";
-        } else {
-          try {
-            auto gh = current_goal_handle.value();
-            if (gh && gh->is_active()) {
-              auto result = std::make_shared<MoveAGVAction::Result>();
-              result->status.station_id = status_msg.station_id;
-              result->status.pose = status_msg.pose;
-              gzwarn << "Succeeding action\n";
-              gh->succeed(result);
-            } else {
-              gzerr << "Goal handle not active; cannot succeed\n";
-            }
-          } catch (const std::exception &e) {
-            gzerr << "Exception while completing goal: " << e.what() << "\n";
-          }
+        if(current_goal_handle.has_value()){
+          auto result = std::make_shared<MoveAGVAction::Result>();
+          result->status.station_id = status_msg.station_id;
+          result->status.pose = status_msg.pose;
+          
+          current_goal_handle.value()->succeed(result);
+
           current_goal_handle = std::nullopt;
+        } else {
+          gzerr << "Current goal handle has no value";
         }
         motion_state = AGVMotionStatus::IDLE;
-        // gzwarn << "AGV " << agv_model.Name(_ecm) << " completed goal and is now IDLE\n";
+
         break;
       }
       default:

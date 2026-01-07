@@ -1,0 +1,231 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="top_shell">
+    <allow_auto_disable>true</allow_auto_disable>
+
+    <link name="base_link">
+      <inertial auto="true"/>
+      
+      <visual name="shell_visual">
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/top_shell.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="vg_2_collision">
+        <density>2700</density>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/collision/top_shell_vg_2.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+
+      <collision name="vg_4_collision">
+        <density>2700</density>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/collision/top_shell_vg_4.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+        
+    </link>
+
+    <link name="bead_1_link">
+      <inertial auto="true"/>
+      <visual name="bead_visual_1">
+        <pose>-0.036 0 0.002 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/weld_bead.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.4 0.4 0.4 0.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="bead_collision_1">
+        <density>1</density>
+        <pose>-0.036 0 0.003 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.006</radius>
+            <length>0.002</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="bead_2_link">
+      <inertial auto="true"/>
+      <visual name="bead_visual_2">
+        <pose>-0.012 0 0.002 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/weld_bead.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.4 0.4 0.4 0.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="bead_collision_2">
+        <density>1</density>
+        <pose>-0.012 0 0.003 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.006</radius>
+            <length>0.002</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="bead_3_link">
+      <inertial auto="true"/>
+      <visual name="bead_visual_3">
+        <pose>0.012 0 0.002 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/weld_bead.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.4 0.4 0.4 0.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="bead_collision_3">
+        <density>1</density>
+        <pose>0.012 0 0.003 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.006</radius>
+            <length>0.002</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="bead_4_link">
+      <inertial auto="true"/>
+      <visual name="bead_visual_4">
+        <pose>0.036 0 0.002 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://battery_module/meshes/visual/weld_bead.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <diffuse>0.4 0.4 0.4 0.0</diffuse>
+        </material>
+      </visual>
+
+      <collision name="bead_collision_4">
+        <density>1</density>
+        <pose>0.036 0 0.003 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.006</radius>
+            <length>0.002</length>
+          </cylinder>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="bead_1_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>bead_1_link</child>
+    </joint>
+
+    <joint name="bead_2_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>bead_2_link</child>
+    </joint>
+
+    <joint name="bead_3_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>bead_3_link</child>
+    </joint>
+
+    <joint name="bead_4_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>bead_4_link</child>
+    </joint>
+   
+
+    <link name="slot_1_link">
+      <inertial auto="true"/>
+      <pose> -0.036 0 0.005 0 0 0</pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.001</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <sensor name='collision_detector' type='contact'>
+        <contact>
+          <collision>collision</collision>
+        </contact>
+      </sensor>
+    </link>
+
+    <link name="slot_4_link">
+      <inertial auto="true"/>
+      <pose> 0.036 0 0.005 0 0 0</pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.001</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <sensor name='collision_detector' type='contact'>
+        <contact>
+          <collision>collision</collision>
+        </contact>
+      </sensor>
+    </link>
+
+    <joint name="slot_1_sensor_joint" type="prismatic">
+      <parent>base_link</parent>
+      <child>slot_1_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.001</upper>
+          <effort>10</effort>
+        </limit>
+      </axis>
+    </joint> 
+
+    <joint name="slot_4_sensor_joint" type="prismatic">
+      <parent>base_link</parent>
+      <child>slot_4_link</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.001</upper>
+          <effort>10</effort>
+        </limit>
+      </axis>
+    </joint>
+
+    <plugin
+      filename="libTopShellPlugin.so"
+      name="ariac_plugins::TopShellPlugin">
+    </plugin>
+  </model>
+</sdf>

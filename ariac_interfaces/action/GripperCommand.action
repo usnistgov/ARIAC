@@ -1,0 +1,7 @@
+float64 width
+---
+bool stalled 
+bool reached_goal_width 
+float64 width # final width
+---
+float64 width # current width

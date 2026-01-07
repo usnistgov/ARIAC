@@ -1,0 +1,6 @@
+# CheckKitQuality.srv
+
+uint8 cell_type
+---
+bool is_good
+string message

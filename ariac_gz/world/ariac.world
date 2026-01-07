@@ -81,7 +81,28 @@
       <name>agv3</name>
       <pose>2.85 1.5 0.005 0 0 1.57</pose>
       <uri>model://agv</uri>
-    </include> 
+    </include>
+
+    <include>
+      <name>shipping_kit_tray_shelves</name>
+      <pose>7.3 2.5 0 0 0 1.57</pose>
+      <uri>model://kit_tray_shelves</uri>
+    </include>
+
+    <include>
+      <name>recycling_kit_tray_shelves</name>
+      <pose>1 7.3 0 0 0 3.14</pose>
+      <uri>model://kit_tray_shelves</uri>
+    </include>
+
+    <plugin
+      filename="libCheatToolsPlugin.so"
+      name="ariac_plugins::CheatToolsPlugin">
+
+      <kit_on_agv1>true</kit_on_agv1>
+      <kit_on_agv2>true</kit_on_agv2>
+      <kit_on_agv3>true</kit_on_agv3>
+    </plugin>
 
   </world>
 </sdf>

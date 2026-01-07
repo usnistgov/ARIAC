@@ -22,6 +22,8 @@
 
 #include <path_velocity_planner/velocity_planner.hpp>
 
+#include <ariac_components/penalty.hpp>
+
 #include <ariac_interfaces/msg/agv_stations.hpp>
 #include <ariac_interfaces/msg/agv_status.hpp>
 #include <ariac_interfaces/action/move_agv.hpp>
@@ -160,7 +162,7 @@ namespace ariac_plugins
       path_velocity_planner::VelocityPlanner velocity_planner;
       path_velocity_planner::Direction direction;
 
-      AGVMotionStatus motion_state = AGVMotionStatus::HOLD_POSITION;
+      AGVMotionStatus motion_state = AGVMotionStatus::IDLE;
 
       std::vector<path_velocity_planner::Point> current_waypoints;
   };

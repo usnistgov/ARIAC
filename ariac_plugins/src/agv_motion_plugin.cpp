@@ -106,6 +106,10 @@ namespace ariac_plugins{
     
     switch(motion_state){
       case AGVMotionStatus::IDLE:
+        if (status_msg.station_id == AGVStations::INSPECTION) {
+          motion_state == AGVMotionStatus::HOLD_POSITION;
+        }
+
         break;
       
       case AGVMotionStatus::HOLD_POSITION:
@@ -132,7 +136,21 @@ namespace ariac_plugins{
 
         if (collision_occurred) {
           gzerr << "AGV Collision. Teleporting back to inspection]\n";
+
+          // Create penalty component
+          ariac_components::Penalty penalty = ariac_components::Penalty{
+            ariac_components::PenaltyType::AGV_COLLISION,
+            static_cast<double>(_info.simTime.count()),
+            agv_model.Name(_ecm) + " in collision"
+          };
+
+          gz::sim::Entity penalty_entity = _ecm.CreateEntity();
+          _ecm.CreateComponent(penalty_entity, gz::sim::components::Penalty(penalty));
+
+          motion_start_time = std::nullopt;
+
           motion_state = AGVMotionStatus::TELEPORT;
+          break;
         }
 
         if(!motion_start_time.has_value()){
@@ -145,7 +163,6 @@ namespace ariac_plugins{
         // Check if finished
         if (velocity_planner.is_finished(current_time)) {
           motion_state = AGVMotionStatus::TELEPORT;
-          gzwarn << "AGV " << agv_model.Name(_ecm) << " reached end of path, teleporting to goal\n";
           wait_until_iteration = _info.iterations + teleport_wait_iterations;
           motion_start_time = std::nullopt;
           linear_velocity_vector.Set(0.0, 0.0, 0.0);
@@ -194,13 +211,10 @@ namespace ariac_plugins{
         );
 
         agv_model.SetWorldPoseCmd(_ecm, goal_pose);
+
+        wait_until_iteration = _info.iterations + complete_goal_wait_iterations;
+        motion_state = AGVMotionStatus::COMPLETE_GOAL;
         
-        if(current_goal_handle.has_value()){
-          wait_until_iteration = _info.iterations + complete_goal_wait_iterations;
-          motion_state = AGVMotionStatus::COMPLETE_GOAL;
-        } else{
-          motion_state = AGVMotionStatus::HOLD_POSITION;
-        }
         break;
       }
       
@@ -213,6 +227,7 @@ namespace ariac_plugins{
           
           if (collision_occurred) {
             current_goal_handle.value()->abort(result);
+            collision_occurred = false;
           } else {
             current_goal_handle.value()->succeed(result);
           }
@@ -221,7 +236,7 @@ namespace ariac_plugins{
         } else {
           gzerr << "Current goal handle has no value";
         }
-        motion_state = AGVMotionStatus::HOLD_POSITION;
+        motion_state = AGVMotionStatus::IDLE;
 
         break;
       }
@@ -233,7 +248,8 @@ namespace ariac_plugins{
   rclcpp_action::GoalResponse AgvMotionPlugin::goal_recieved_cb(
     const rclcpp_action::GoalUUID &, std::shared_ptr<const MoveAGVAction::Goal> goal)
   {
-    if (goal->station_id == status_msg.station_id || motion_state != AGVMotionStatus::HOLD_POSITION) {
+    bool valid_state = motion_state == AGVMotionStatus::IDLE || motion_state == AGVMotionStatus::HOLD_POSITION;
+    if (goal->station_id == status_msg.station_id || !valid_state) {
       return rclcpp_action::GoalResponse::REJECT;
     }
 
@@ -289,7 +305,7 @@ namespace ariac_plugins{
     for (int i = 0; i < _gz_contacts_msg.contact_size(); ++i){
       std::string collision = _gz_contacts_msg.contact(i).collision2().name();
 
-      if (collision.find("agv") != std::string::npos){
+      if (collision.find("agv") != std::string::npos && collision.find("tray") == std::string::npos && motion_state == AGVMotionStatus::MOVING){
         
         collision_occurred = true;
       }

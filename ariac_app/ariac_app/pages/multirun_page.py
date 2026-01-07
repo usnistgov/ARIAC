@@ -122,7 +122,7 @@ class MultirunPage:
         if db_path is not None:
             self.db_manager = DatabaseManager(Path(db_path))
             self.cmd += f" db_path:={db_path}"
-            self.score_logger = ScoreLogger(db_path, "multirun")
+            self.score_logger = ScoreLogger(db_path)
         
         self.db_path = db_path
 

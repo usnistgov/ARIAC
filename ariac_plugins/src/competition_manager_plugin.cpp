@@ -89,6 +89,10 @@ void CompetitionManagerPlugin::Configure(
   
   high_priority_pub = ros_node->create_publisher<HighPriorityOrderMsg>("high_priority_orders", 10);
 
+  agv1_info_sub = ros_node->create_subscription<AGVStatus>("/agv1/info", 10, std::bind(&CompetitionManagerPlugin::agv1_station_cb, this, std::placeholders::_1));
+  agv2_info_sub = ros_node->create_subscription<AGVStatus>("/agv2/info", 10, std::bind(&CompetitionManagerPlugin::agv2_station_cb, this, std::placeholders::_1));
+  agv3_info_sub = ros_node->create_subscription<AGVStatus>("/agv3/info", 10, std::bind(&CompetitionManagerPlugin::agv3_station_cb, this, std::placeholders::_1));
+
   status_pub_timer = ros_node->create_wall_timer(
     std::chrono::milliseconds(100),
     std::bind(&CompetitionManagerPlugin::publish_status, this)
@@ -113,18 +117,6 @@ void CompetitionManagerPlugin::PreUpdate(
 {
   if (_info.paused) {
     return;
-  }
-
-  if (detachable_joints_to_delete.size() > 0) {
-    for (auto ent : detachable_joints_to_delete) {
-      _ecm.RequestRemoveEntity(ent);
-    }
-    detachable_joints_to_delete.clear();
-  } else if (cells_to_delete.size() > 0) {
-    for (auto ent : cells_to_delete) {
-      _ecm.RequestRemoveEntity(ent);
-    }
-    cells_to_delete.clear();
   }
 
   switch (competition_state) {
@@ -159,12 +151,6 @@ void CompetitionManagerPlugin::PreUpdate(
 
         high_priority_pub->publish(msg);
       }
-    }
-
-    // Handle kit submission
-    if (kitting_submission_response.status == SubmissionStatus::REQUESTED) {
-      gzmsg << "Handling kitting order\n";
-      handle_kit_order_submission(_ecm);
     }
 
     // Handle module submission
@@ -258,42 +244,63 @@ void CompetitionManagerPlugin::submit_kitting_cb(
     return;
   }
 
-  kitting_submission_response.status = SubmissionStatus::REQUESTED;
+  int agv_at_shipping = get_agv_at_shipping();
 
   rclcpp::Time start_time = ros_node->now();
-  rclcpp::Rate rate(10);
-  while (rclcpp::ok()) {
-    if (kitting_submission_response.status != SubmissionStatus::REQUESTED) {
+  while (rclcpp::ok() && agv_at_shipping == -1) {
+    agv_at_shipping = get_agv_at_shipping();
+    if (agv_at_shipping != -1) {
       break;
-    } else if (ros_node->now() - start_time > rclcpp::Duration::from_seconds(5.0)) {
-      res->success = false;
-      res->message = "Timed out while processing submission";
-      return;
+    } else if (ros_node->now() - start_time > rclcpp::Duration::from_seconds(0.5)) {
+      break;
     }
-    rate.sleep();
   };
 
-  res->message = kitting_submission_response.message;
+  agv_at_shipping = get_agv_at_shipping();
 
-  if (kitting_submission_response.status == SubmissionStatus::SUCCESSFUL) {
-    ariac_db::OrderSubmissionData submission;
-    submission.order_type = ariac_db::OrderType::KIT;
-    submission.announcement_time = 0.0;
-    submission.submission_time = (start_time - competition_time.start).nanoseconds() / 1E9;
-    order_submissions.push_back(submission);
-
-    num_submitted_orders[ariac_db::OrderType::KIT]++;
-
-    res->success = true;
-
-    if (orders_complete()) {
-      competition_state = CompetitionStates::ORDERS_COMPLETE;
-    }
-  } else {
+  if (agv_at_shipping == -1) {
+    res->message = "No AGV at shipping station";
     res->success = false;
+    return;
   }
 
-  kitting_submission_response.status = SubmissionStatus::NOT_REQUESTED;
+  RCLCPP_INFO_STREAM(ros_node->get_logger(), "AGV AT SHIPPING: " << agv_at_shipping);
+
+  gz::msgs::Empty gz_req;
+  gz::msgs::Boolean gz_res;
+  bool result;
+  unsigned int timeout = 6000;
+
+  start_time = ros_node->now();
+  bool executed = gz_node->Request("/agv"+std::to_string(agv_at_shipping)+"/handle_kit", gz_req, timeout, gz_res, result);
+
+  if(!executed){
+    res->success = false;
+    res->message = "GZ SRV for handling kit not executed";
+    return;
+  }
+
+  if(!gz_res.data()){
+    res->success = false;
+    res->message = "Kit not successfully submitted";
+    return;
+  }
+
+  ariac_db::OrderSubmissionData submission;
+  submission.order_type = ariac_db::OrderType::KIT;
+  submission.announcement_time = 0.0;
+  submission.submission_time = (start_time - competition_time.start).nanoseconds() / 1E9;
+  order_submissions.push_back(submission);
+
+  num_submitted_orders[ariac_db::OrderType::KIT]++;
+
+  res->success = true;
+  res->message = "Kit successfully submitted";
+
+  if (orders_complete()) {
+    competition_state = CompetitionStates::ORDERS_COMPLETE;
+  }
+
 }
 
 void CompetitionManagerPlugin::submit_high_priority_cb(
@@ -406,6 +413,7 @@ void CompetitionManagerPlugin::publish_status() {
   // Check if all orders are announced and complete
   CompetitionStatus status;
   status.competition_state = competition_state;
+  status.run_id = run_id;
   status.time = competition_time;
   
   if (competition_state == CompetitionStates::STARTED || competition_state == CompetitionStates::ENDED){
@@ -414,8 +422,6 @@ void CompetitionManagerPlugin::publish_status() {
 
     status.num_kits_remaining = status.num_kits - num_submitted_orders[ariac_db::OrderType::KIT];
     status.num_modules_remaining = status.num_modules - num_submitted_orders[ariac_db::OrderType::MODULE];
-
-    status.run_id = run_id;
   }
 
   competition_status_pub->publish(status);
@@ -624,36 +630,37 @@ SubmissionResponse CompetitionManagerPlugin::check_module(
   return response;
 }
 
-void CompetitionManagerPlugin::handle_kit_order_submission(
-  gz::sim::EntityComponentManager &_ecm) 
-{
-  auto submission_cells = get_cells_in_bbox(_ecm, shipping_bbox);
+// void CompetitionManagerPlugin::handle_kit_order_submission(
+//   gz::sim::EntityComponentManager &_ecm) 
+// {
+//   auto submission_cells = get_cells_in_bbox(_ecm, shipping_bbox);
 
-  std::vector<gz::sim::Entity> kit_detachable_joints;
-  _ecm.Each<gz::sim::components::DetachableJoint>(
-      [&](const gz::sim::Entity &entity,
-          const gz::sim::components::DetachableJoint *detachable_joint)
-          -> bool {
-        auto data = detachable_joint->Data();
-        for (auto cell : submission_cells) {
-          auto base_link =
-              gz::sim::Model(cell.cell_entity).LinkByName(_ecm, "base_link");
-          if (data.childLink == base_link || data.parentLink == base_link) {
-            kit_detachable_joints.push_back(entity);
-          }
-        }
-        return kit_detachable_joints.size() != 4;
-      });
+//   std::vector<gz::sim::Entity> kit_detachable_joints;
+//   _ecm.Each<gz::sim::components::DetachableJoint>(
+//       [&](const gz::sim::Entity &entity,
+//           const gz::sim::components::DetachableJoint *detachable_joint)
+//           -> bool {
+//         auto data = detachable_joint->Data();
+//         for (auto cell : submission_cells) {
+//           auto base_link =
+//               gz::sim::Model(cell.cell_entity).LinkByName(_ecm, "base_link");
+//           if (data.childLink == base_link || data.parentLink == base_link) {
+//             kit_detachable_joints.push_back(entity);
+//           }
+//         }
+//         return kit_detachable_joints.size() != 4;
+//       });
 
-  kitting_submission_response = check_kit(CellTypes::LI_ION, submission_cells);
+//   kitting_submission_response = check_kit(CellTypes::LI_ION, submission_cells);
 
-  if (kitting_submission_response.status == SubmissionStatus::SUCCESSFUL) {
-    detachable_joints_to_delete = kit_detachable_joints;
-    for (const auto &cell : submission_cells) {
-      cells_to_delete.push_back(cell.cell_entity);
-    }
-  }
-}
+//   if (kitting_submission_response.status == SubmissionStatus::SUCCESSFUL) {
+//     detachable_joints_to_delete = kit_detachable_joints;
+//     for (const auto &cell : submission_cells) {
+//       _ecm.RemoveComponent<gz::sim::components::Cell>(cell.cell_entity);
+//       cells_to_delete.push_back(cell.cell_entity);
+//     }
+//   }
+// }
 
 void CompetitionManagerPlugin::handle_high_priority_order_submission(
   gz::sim::EntityComponentManager &_ecm)
@@ -933,6 +940,28 @@ void CompetitionManagerPlugin::read_trial(std::string filepath) {
       high_priority_orders.push_back(order);
     }
   }
+}
+
+void CompetitionManagerPlugin::agv1_station_cb(ariac_interfaces::msg::AgvStatus::SharedPtr msg){
+  agv_locations[1] = msg->station_id;
+}
+void CompetitionManagerPlugin::agv2_station_cb(ariac_interfaces::msg::AgvStatus::SharedPtr msg){
+  agv_locations[2] = msg->station_id;
+}
+void CompetitionManagerPlugin::agv3_station_cb(ariac_interfaces::msg::AgvStatus::SharedPtr msg){
+  agv_locations[3] = msg->station_id;
+}
+
+int CompetitionManagerPlugin::get_agv_at_shipping(){
+  for(const auto& [agv, location] : agv_locations){
+    if(location == AGVStations::SHIPPING){
+      return agv;
+    }
+    // else {
+    //   RCLCPP_INFO_STREAM(ros_node->get_logger(), "Location for agv_" << agv << ": " << location);
+    // }
+  }
+  return -1;
 }
 
 std::string CompetitionManagerPlugin::create_temp_file() {

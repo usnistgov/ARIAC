@@ -126,6 +126,7 @@ class CompetitionManagerPlugin:
     void shutdown_gazebo();
 
     std::string create_temp_file();
+    int get_agv_at_shipping();
 
     std::vector<ariac_components::Cell> get_cells_in_bbox(
       gz::sim::EntityComponentManager &_ecm,
@@ -141,6 +142,11 @@ class CompetitionManagerPlugin:
     void submit_kitting_cb(const TriggerReqPtr, TriggerResPtr);
     void submit_high_priority_cb(const SubmitHighPriorityOrderReqPtr, SubmitHighPriorityOrderResPtr);
     void submit_module_cb(const TriggerReqPtr, TriggerResPtr);
+
+    // ROS Subscriber Callbacks
+    void agv1_station_cb(ariac_interfaces::msg::AgvStatus::SharedPtr msg);
+    void agv2_station_cb(ariac_interfaces::msg::AgvStatus::SharedPtr msg);
+    void agv3_station_cb(ariac_interfaces::msg::AgvStatus::SharedPtr msg);
 
     // ROS
     rclcpp::Node::SharedPtr ros_node;
@@ -160,6 +166,10 @@ class CompetitionManagerPlugin:
     rclcpp::Service<Trigger>::SharedPtr submit_kitting_srv;
     rclcpp::Service<SubmitHighPriorityOrder>::SharedPtr submit_high_priority_srv;
     rclcpp::Service<Trigger>::SharedPtr submit_module_srv;
+
+    rclcpp::Subscription<ariac_interfaces::msg::AgvStatus>::SharedPtr agv1_info_sub;
+    rclcpp::Subscription<ariac_interfaces::msg::AgvStatus>::SharedPtr agv2_info_sub;
+    rclcpp::Subscription<ariac_interfaces::msg::AgvStatus>::SharedPtr agv3_info_sub;
 
     rclcpp::Time end_time;
 
@@ -207,6 +217,12 @@ class CompetitionManagerPlugin:
       {ariac_db::OrderType::KIT, 0},
       {ariac_db::OrderType::MODULE, 0},
       {ariac_db::OrderType::HIGH_PRIORITY, 0}
+    };
+
+    std::map<int, int> agv_locations = {
+      {1, AGVStations::INSPECTION},
+      {2, AGVStations::INSPECTION},
+      {3, AGVStations::INSPECTION},
     };
 
     SubmissionResponse kitting_submission_response;

@@ -268,7 +268,6 @@ class Camera(Sensor):
             element = self._find_required(element, tag)
 
         self._find_required(element, 'horizontal_fov').text = str(self.fov)
-        self._find_required(element, 'camera_info_topic').text = f'{self.name}_gz_info_topic'
             
         # Set image parameters
         image = self._find_required(element, 'image')

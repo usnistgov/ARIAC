@@ -18,8 +18,8 @@ endforeach()
 
 install(DIRECTORY
   config
-  models
   launch
+  models
   world
   DESTINATION share/${PROJECT_NAME}
 )

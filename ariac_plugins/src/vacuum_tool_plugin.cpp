@@ -62,9 +62,6 @@ void VacuumToolPlugin::Configure(
   for(int i = 1; i <= suction_cup_count; i++){
     std::string name = topic;
     topic_names.push_back(name.replace(topic.find("{n}"), 3, std::to_string(i)));
-    auto joint = gz::sim::Joint(model.JointByName(_ecm, "suction_" + std::to_string(i) + "_joint"));
-    joint.EnablePositionCheck(_ecm, true);
-    suction_cup_joints.push_back(joint);
   }
   
   if (tool_type == VacuumTools::VG_2) {
@@ -118,7 +115,7 @@ void VacuumToolPlugin::Configure(
   lock_tool_to_stand();
 }
 
-void VacuumToolPlugin::PreUpdate(const gz::sim::UpdateInfo &_info,
+void VacuumToolPlugin::PreUpdate(const gz::sim::UpdateInfo &,
     gz::sim::EntityComponentManager &_ecm)
 {
   switch (lock_state)
@@ -152,23 +149,8 @@ void VacuumToolPlugin::PreUpdate(const gz::sim::UpdateInfo &_info,
     lock_joint = gz::sim::kNullEntity;
 
     lock_state = VacuumToolLockState::UNLOCKED;
-
-    for (auto joint:suction_cup_joints){
-      joint.ResetPosition(_ecm, {0.0});
-    }
     break;
   }
-
-  // if (_info.iterations % 1000 == 0 && tool_type == VacuumTools::VG_2) {
-  //   for (auto joint:suction_cup_joints){
-  //     std::optional<std::vector<double>> position_vector = joint.Position(_ecm);
-
-  //     if (position_vector.has_value()){
-  //       gzwarn << joint.Name(_ecm).value_or("No name") << " position: " << position_vector.value()[0] << std::endl;
-  //     }
-  //   }
-  // }
-  
 
   // If malfunction is active check if should be cleared
   if (malfunction_active && std::all_of(pad_contacts.begin(), pad_contacts.end(),
@@ -260,13 +242,7 @@ void VacuumToolPlugin::detach_object_cb(const TriggerReqPtr request, TriggerResP
   lock_state = VacuumToolLockState::UNLOCK_REQUESTED;
 
   response->success = wait_for_state(VacuumToolLockState::UNLOCKED);
-  if (response->success){
-    response->message = "Object detached";
-    attach_shell_name = "";
-  }
-  else{
-    response->message = "Unable to release object";
-  }
+  response->message = response->success ? "Object detached" : "Unable to release object";
 }
 
 bool VacuumToolPlugin::lock_tool_to_stand(){

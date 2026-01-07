@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="assembly_robot_2">
+  <xacro:include filename="$(find ariac_description)/urdf/robot_macro.xacro"/>
+
+  <xacro:robot 
+    name="assembly_robot_2"
+    model="ur5e"
+    x="3.7"
+    y="5.8"
+    z="0.4"
+    yaw="0.0"
+    controllers="$(find ariac_description)/config/assembly_robot_2_controllers.yaml"
+    initial_positions="$(find ariac_description)/config/assembly_robot_2_positions.yaml"
+    has_gripper="false">
+  </xacro:robot>
+
+  <link name="assembly_robot_2_ur_to_robotiq_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="file://$(find ariac_description)/meshes/robotiq/visual/ur_to_robotiq_adapter.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="file://$(find ariac_description)/meshes/robotiq/collision/ur_to_robotiq_adapter.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.01" />
+        <origin xyz="0 0 0" />
+        <inertia ixx="0.000044" ixy="0.0" ixz="0.0" iyy="0.000027" iyz="0.0" izz="0.000027" />
+      </inertial>
+    </link>
+
+  <link name="tool_changer_link">
+    <visual name="visual">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="file://$(find ariac_description)/meshes/tool_changer/tool_changer.glb"/>
+      </geometry>
+    </visual>
+
+    <collision>
+      <origin xyz="0 0 -0.01" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.005" length="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="10"/>
+      <inertia ixx="0.4" ixy="0.0" ixz="0.0" iyy="0.4" iyz="0.0" izz="0.2"/>
+    </inertial>
+    
+  </link>
+
+  <joint name="assembly_robot_2_ur_to_robotiq_joint" type="fixed">
+    <parent link="assembly_robot_2_wrist_3_link"/>
+    <child link="assembly_robot_2_ur_to_robotiq_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="assembly_robot_2_ur_to_robotiq_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <joint name="tool_changer_joint" type="fixed">
+    <parent link="assembly_robot_2_ur_to_robotiq_link"/>
+    <child link="tool_changer_link"/>
+    <origin xyz="0 0 0.0339" rpy="0 0 0"/>
+  </joint>
+
+  <gazebo reference="tool_changer_joint">
+    <preserveFixedJoint>true</preserveFixedJoint>
+  </gazebo>
+
+  <gazebo reference="tool_changer_link">
+    <sensor name='contact_sensor' type='contact'>
+      <update_rate>30</update_rate>
+      <contact>
+        <collision>tool_changer_link_collision</collision>
+      </contact>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="libToolChangerPlugin.so" name="ariac_plugins::ToolChangerPlugin">
+      <ros>
+        <namespace>assembly_robot_2/tool_changer</namespace>
+      </ros>
+    </plugin>
+  </gazebo>
+  
+</robot>

@@ -1,0 +1,173 @@
+<?xml version="1.0" ?>
+<sdf version="1.11">
+  <model name="status_light">
+    
+    <static>true</static>
+    
+    <link name="base_link">
+
+      <visual name="base_visual">
+        <pose>0 0 0.2105 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.05 0.05 0.421</size>
+          </box>
+        </geometry>
+        <material>
+          <diffuse>0.753 0.753 0.753 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="base_cylinder">
+        <pose>0 0 0.446 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.05</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.753 0.753 0.753 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="red_light_visual">
+        <pose>0 0 0.481 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>1.0 0.0 0.0 0.9</diffuse>
+        </material>
+      </visual>
+
+      <visual name="divider_1">
+        <pose>0 0 0.496 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.753 0.753 0.753 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="purple_light_visual">
+        <pose>0 0 0.511 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.58 0.0 0.827 0.9</diffuse>
+        </material>
+      </visual>
+
+      <visual name="divider_2">
+        <pose>0 0 0.526 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.753 0.753 0.753 1.0</diffuse>
+        </material>
+      </visual>
+
+      <visual name="green_light_visual">
+        <pose>0 0 0.541 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.0 1.0 0.0 0.9</diffuse>
+        </material>
+      </visual>
+      
+      <visual name="divider_3">
+        <pose>0 0 0.556 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.753 0.753 0.753 1.0</diffuse>
+        </material>
+      </visual>
+      
+      <visual name="blue_light_visual">
+        <pose>0 0 0.571 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.0 0.0 1.0 0.9</diffuse>
+        </material>
+      </visual>
+
+      <visual name="divider_4">
+        <pose>0 0 0.586 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.753 0.753 0.753 1.0</diffuse>
+        </material>
+      </visual>
+      
+      <visual name="yellow_light_visual">
+        <pose>0 0 0.601 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.02</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.8 0.8 0.0 0.9</diffuse>
+          <emissive>0.8 0.8 0.0 1</emissive>
+        </material>
+      </visual>
+
+      <visual name="cap">
+        <pose>0 0 0.616 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.01</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.753 0.753 0.753 1.0</diffuse>
+        </material>
+      </visual>
+
+    </link>
+
+    <plugin
+      filename="libStatusLightPlugin.so"
+      name="ariac_plugins::StatusLightPlugin"/>
+
+  </model>
+
+</sdf>

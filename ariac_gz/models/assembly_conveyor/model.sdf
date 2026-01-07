@@ -1,0 +1,206 @@
+<?xml version="1.0" ?>
+<sdf version="1.11">
+  <model name="assembly_conveyor">
+    <link name="base">
+
+      <visual name="base_visual">
+        <geometry>
+          <mesh>
+            <uri>model://assembly_conveyor/meshes/assembly_conveyor.gltf</uri>
+          </mesh>  
+        </geometry>
+      </visual>
+
+      <collision name="base_collision">
+        <density>2700</density>
+        <geometry>
+          <mesh>
+            <uri>model://assembly_conveyor/meshes/base.stl</uri>
+          </mesh>  
+        </geometry>
+      </collision>
+
+      <inertial auto="true"/>
+    </link>
+
+    <link name="section_1_belt">
+      <collision name="section_1_belt">
+        <pose>0.34075 0 0.4245 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.6815 0.2 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+
+      <sensor name='contact_detector' type='contact'>
+        <update_rate>30</update_rate>
+          <contact>
+            <collision>section_1_belt</collision>
+          </contact>
+      </sensor>
+    </link>
+
+    <link name="section_2_belt">
+      <collision name="section_2_belt">
+        <pose>0.7 0.1 0.4225 0 0 1.57</pose>
+        <geometry>
+          <box>
+            <size>0.4 0.2 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="section_3_belt">
+      <collision name="section_3_belt">
+        <pose>1.2525 0.4 0.4205 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>1.305 0.2 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="module_submission_link">
+      <collision name="module_submission">
+        <pose>1.955 0.4 0.42 0 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.1 0.1 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="module_submission_joint" type="fixed">
+      <parent>base</parent>
+      <child>module_submission_link</child>
+    </joint>
+
+    <joint name="belt_1_joint" type="prismatic">
+      <parent>base</parent>
+      <child>section_1_belt</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.01</lower>
+          <upper>0.01</upper>
+          <effort>100</effort>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="belt_2_joint" type="prismatic">
+      <parent>base</parent>
+      <child>section_2_belt</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-0.15</lower>
+          <upper>0.15</upper>
+          <effort>100</effort>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="belt_3_joint" type="prismatic">
+      <parent>base</parent>
+      <child>section_3_belt</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.01</lower>
+          <upper>0.01</upper>
+          <effort>100</effort>
+        </limit>
+      </axis>
+    </joint>
+
+    <link name="bottom_shell_insertion_link">
+      <pose> 0.15 0.0 0.425 0 0 0 </pose>
+    </link>
+
+    <joint name="bottom_shell_insertion_joint" type="fixed">
+      <parent>base</parent>
+      <child>bottom_shell_insertion_link</child>
+    </joint>
+
+    <link name="section_1_tf_link">
+      <pose> 0 0.0 0.425 0 0 0 </pose>
+    </link>
+
+    <joint name="section_1_tf_joint" type="fixed">
+      <parent>base</parent>
+      <child>section_1_tf_link</child>
+    </joint>
+
+    <link name="section_2_tf_link">
+      <pose> 0.7 -0.1 0.423 0 0 1.571 </pose>
+    </link>
+
+    <joint name="section_2_tf_joint" type="fixed">
+      <parent>base</parent>
+      <child>section_2_tf_link</child>
+    </joint>
+
+    <link name="section_3_tf_link">
+      <pose> 0.6 0.4 0.421 0 0 0 </pose>
+    </link>
+
+    <joint name="section_3_tf_joint" type="fixed">
+      <parent>base</parent>
+      <child>section_3_tf_link</child>
+    </joint>
+
+    <plugin
+      filename="libLinearConveyorPlugin.so"
+      name="ariac_plugins::LinearConveyorPlugin">
+      <ros>
+        <namespace>assembly_conveyor/section_1</namespace>
+      </ros>
+      <joint_name>belt_1_joint</joint_name>
+      <max_speed>0.1</max_speed>
+    </plugin>
+
+    <plugin
+      filename="libLinearConveyorPlugin.so"
+      name="ariac_plugins::LinearConveyorPlugin">
+      <ros>
+        <namespace>assembly_conveyor/section_2</namespace>
+      </ros>
+      <joint_name>belt_2_joint</joint_name>
+      <max_speed>0.1</max_speed>
+    </plugin>
+
+    <plugin
+      filename="libLinearConveyorPlugin.so"
+      name="ariac_plugins::LinearConveyorPlugin">
+      <ros>
+        <namespace>assembly_conveyor/section_3</namespace>
+      </ros>
+      <bidirectional>true</bidirectional>
+      <joint_name>belt_3_joint</joint_name>
+      <max_speed>0.3</max_speed>
+    </plugin>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>base</base_link>
+      <static>true</static>
+      <child link="bottom_shell_insertion_link" frame="bottom_shell_insertion_frame"/>
+      <child link="section_1_tf_link" frame="section_1_frame"/>
+      <child link="section_2_tf_link" frame="section_2_frame"/>
+      <child link="section_3_tf_link" frame="section_3_frame"/>
+    </plugin>
+
+    <joint name="assembly_conveyor_to_world" type="fixed">
+      <parent>world</parent>
+      <child>base</child>
+    </joint>
+    
+  </model>
+
+</sdf>

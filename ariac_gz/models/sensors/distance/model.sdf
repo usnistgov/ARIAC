@@ -1,0 +1,56 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="distance_sensor">
+    <static>true</static>
+    <link name="distance_sensor_link">
+      
+      <visual name="visual">
+        <pose>-0.0225 0 -0.0075 0 0 0</pose>
+
+        <geometry>
+          <mesh>
+            <scale>1.5 1.5 1.5</scale>
+            <uri>model://sensors/distance/meshes/distance_sensor.glb</uri>
+          </mesh>
+        </geometry>
+
+      </visual>
+
+      <sensor type="gpu_lidar" name="distance_sensor">
+        <topic>distance_0_gz_topic</topic>
+        
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>0</min_angle>
+              <max_angle>0</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.001</min>
+            <max>2.0</max>
+            <resolution>0.0001</resolution>
+          </range>
+        </lidar>
+
+        <update_rate>5</update_rate>
+
+        <plugin name="ariac_plugins::RaySensorPlugin" filename="libRaySensorPlugin.so">
+          <sensor_name>distance_0</sensor_name>
+          <sensor_type>distance</sensor_type>
+        </plugin>
+
+      </sensor>
+    </link>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>distance_sensor_link</base_link>
+      <static>true</static>
+      <sensor>true</sensor>
+    </plugin>
+  </model>
+</sdf>

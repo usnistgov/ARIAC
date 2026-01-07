@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["ID", "SEED", "DEFECT_RATE", "TIME_LIMIT", "NUM_KITS", "NUM_MODULES"],
+  "properties": {
+    "ID": { 
+      "type": "string",
+      "pattern": "^[A-Z0-9]{8}$" 
+    },
+    "SEED": { "type": "integer", "minimum": 0 },
+    "DEFECT_RATE": { "type": "number", "minimum": 0, "maximum": 1},
+    "POSSIBLE_DEFECTS": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "TIME_LIMIT": { 
+      "type": "integer", 
+      "minimum": 100
+    },
+    "NUM_KITS": { "type": "integer", "minimum": 0 },
+    "NUM_MODULES": { "type": "integer", "minimum": 0 },
+    "CHALLENGES": {
+      "type": "object",
+      "properties": {
+        "CONVEYOR_MALFUNCTIONS": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["START_TIME", "DURATION"],
+            "properties": {
+              "START_TIME": { "type": "integer", "minimum": 0},
+              "DURATION": { "type": "integer", "minimum": 1}
+            },
+            "additionalProperties": false
+          }
+        },
+        "VACUUM_TOOL_MALFUNCTIONS": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["TOOL", "GRASP_OCCURRENCE"],
+            "properties": {
+              "TOOL": { "type": "integer", "minimum": 1, "maximum": 2},
+              "GRASP_OCCURRENCE": { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "VOLTAGE_TESTER_MALFUNCTIONS": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["START_TIME", "DURATION", "TESTER"],
+            "properties": {
+              "START_TIME": { "type": "integer" },
+              "DURATION": { "type": "integer" },
+              "TESTER": {"type": "integer", "minimum": 1, "maximum": 2}
+            },
+            "additionalProperties": false
+          }
+        },
+        "HIGH_PRIORITY_ORDERS": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["START_TIME", "ID"],
+            "properties": {
+              "ID": {"type": "string"},
+              "START_TIME": { "type": "integer" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

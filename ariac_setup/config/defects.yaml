@@ -1,0 +1,86 @@
+DEFECT_TYPES:
+  1:
+    GLB_FILE: defect_1.glb
+    DESCRIPTION: single bulge
+    DEFECTS:
+      - TYPE: 2
+        THETA: -0.213
+        Z: 0.0469
+  2:
+    GLB_FILE: defect_2.glb
+    DESCRIPTION: single dent
+    DEFECTS:
+      - TYPE: 1
+        THETA: 0.295
+        Z: 0.01424
+  3:
+    GLB_FILE: defect_3.glb
+    DESCRIPTION: single scratch
+    DEFECTS:
+      - TYPE: 3
+        THETA: -1.479
+        Z: 0.03479
+  4:
+    GLB_FILE: defect_4.glb
+    DESCRIPTION: vertical scratch and bulge
+    DEFECTS:
+      - TYPE: 2
+        THETA: 0.175
+        Z: 0.03558
+      - TYPE: 3
+        THETA: -1.479
+        Z: 0.03479
+  5:
+    GLB_FILE: defect_5.glb
+    DESCRIPTION: single horizontal scratch
+    DEFECTS:
+      - TYPE: 3
+        THETA: 0.7898
+        Z: 0.025413
+  6:
+    GLB_FILE: defect_6.glb
+    DESCRIPTION: single diagonal scratch
+    DEFECTS:
+      - TYPE: 3
+        THETA: -0.1284
+        Z: 0.049778
+  7:
+    GLB_FILE: defect_7.glb
+    DESCRIPTION: bulge and dent
+    DEFECTS:
+      - TYPE: 2
+        THETA: 1.0312
+        Z: 0.054227
+      - TYPE: 1
+        THETA: -0.9761
+        Z: 0.031305
+  8:
+    GLB_FILE: defect_8.glb
+    DESCRIPTION: horizontal scratch and dent
+    DEFECTS:
+      - TYPE: 3
+        THETA: 0.064
+        Z: 0.050396
+      - TYPE: 1
+        THETA: 0.3678
+        Z: 0.022512
+  9:
+    GLB_FILE: defect_9.glb
+    DESCRIPTION: double diagonal scratch
+    DEFECTS:
+      - TYPE: 3
+        THETA: -0.2891
+        Z: 0.04016
+      - TYPE: 3
+        THETA: 1.8007
+        Z: 0.05136
+  10:
+    GLB_FILE: defect_10.glb
+    DESCRIPTION: double bulge
+    DEFECTS:
+      - TYPE: 2
+        THETA: -0.1758
+        Z: 0.01632
+      - TYPE: 2
+        THETA: 2.5374
+        Z: 0.05517

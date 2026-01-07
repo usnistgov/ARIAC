@@ -66,6 +66,60 @@
     </include>
 
     <include>
+      <name>inspection_conveyor</name>
+      <pose>1 1 0.001 0 0 0</pose>
+      <uri>model://inspection_conveyor</uri>
+    </include>
+
+    <include>
+      <name>inspection_1_robot_stand</name>
+      <pose>1.6 0.6 0 0 0 0</pose>
+      <uri>model://robot_stand</uri>
+    </include>
+
+    <include>
+      <name>inspection_2_robot_stand</name>
+      <pose>2.5 1 0 0 0 0</pose>
+      <uri>model://robot_stand</uri>
+    </include> 
+
+    <include>
+      <name>voltage_testing_stand</name>
+      <pose>2.0 0.8 0 0 0 0</pose>
+      <uri>model://voltage_testing_stand</uri>
+    </include>
+
+     <include>
+      <name>inspection_bin</name>
+      <pose>1.14 1.15 0.01 0 0 1.57</pose>
+      <uri>model://bins/disposal_bin</uri>
+    </include>
+
+    <include>
+      <name>inspection_conveyor_bin</name>
+      <pose>1.6 1 0.01 0 0 0</pose>
+      <uri>model://bins/disposal_bin</uri>
+    </include>
+
+    <include>
+      <name>recycling_bin</name>
+      <pose>2.5 0.6 0.01 0 0 1.57</pose>
+      <uri>model://bins/recycling_bin</uri>
+    </include>
+
+    <include>
+      <name>voltage_tester_1</name>
+      <pose>2.0 0.875 0.435 0 0 1.57</pose>
+      <uri>model://voltage_tester</uri>
+    </include>
+
+    <include>
+      <name>voltage_tester_2</name>
+      <pose>2.0 .725 0.435 0 0 1.57</pose>
+      <uri>model://voltage_tester</uri>
+    </include>
+
+    <include>
       <name>agv1</name>
       <pose>2.15 1.5 0.005 0 0 1.57</pose>
       <uri>model://agv</uri>
@@ -81,7 +135,121 @@
       <name>agv3</name>
       <pose>2.85 1.5 0.005 0 0 1.57</pose>
       <uri>model://agv</uri>
+    </include> 
+
+    <include>
+      <name>assembly_1_robot_stand</name>
+      <pose>5.0 5.0 0 0 0 0</pose>
+      <uri>model://robot_stand</uri>
     </include>
+
+    <include>
+      <name>assembly_2_robot_stand</name>
+      <pose>3.7 5.8 0 0 0 0</pose>
+      <uri>model://robot_stand</uri>
+    </include> 
+    
+    <include>
+      <name>assembly_table</name>
+      <pose>3.7 5.2 0 0 0 0</pose>
+      <uri>model://assembly_table</uri>
+    </include>
+
+     <include>
+      <name>tool_holder</name>
+      <pose>3.6 5.2 0.43 0 0 3.14</pose>
+      <uri>model://tool_holder</uri>
+    </include>
+
+    <include>
+      <name>vg_2</name>
+      <pose>3.52 5.2675 0.59937 0 0 0</pose>
+      <uri>model://vacuum_tools/vg_2</uri>
+    </include>
+    
+    <include>
+      <name>vg_4</name>
+      <pose>3.68 5.2675 0.59937 0 0 0</pose>
+      <uri>model://vacuum_tools/vg_4</uri>
+    </include>
+
+    <include>
+      <name>assembly_conveyor_bin</name>
+      <pose>4.2 5.355 0.01 0 0 1.57</pose>
+      <uri>model://bins/disposal_bin</uri>
+    </include>
+
+    <include>
+      <name>assembly_conveyor</name>
+      <pose>4.6 4.85 0.001 0 0 1.57</pose>
+      <uri>model://assembly_conveyor</uri>
+    </include>
+
+    <include>
+      <name>inspection_status_light</name>
+      <pose>0.475 1.075 0 0 0.0 0</pose>
+      <uri>model://status_light</uri>
+    </include>
+
+    <include>
+      <name>assembly_status_light</name>
+      <pose>4.475 5.425 0 0 0.0 0</pose>
+      <uri>model://status_light</uri>
+    </include> 
+
+    <include>
+      <name>shelf_1</name>
+      <pose>8.5 2.25 0 0 0 1.57</pose>
+      <uri>model://shelf</uri>
+    </include>
+
+    <include>
+      <name>shelf_2</name>
+      <pose>8.5 5.75 0 0 0 -1.57</pose>
+      <uri>model://shelf</uri>
+    </include>
+
+    <include>
+      <name>shelf_3</name>
+      <pose>9.5 1.25 0 0 0 -1.57</pose>
+      <uri>model://shelf</uri>
+    </include>
+
+    <include>
+      <name>boxes</name>
+      <pose>9.5 1.54 0.55 0 0 -0.4</pose>
+      <uri>model://boxes</uri>
+    </include>
+
+    <include>
+      <name>shelf_4</name>
+      <pose>9.5 6.75 0 0 0 1.57</pose>
+      <uri>model://shelf</uri>
+    </include>
+
+    <include>
+      <name>walls</name>
+      <pose>0 0 0 0 0 0</pose>
+      <uri>model://walls</uri>
+    </include>
+
+    <include>
+      <name>trolly_box_1</name>
+      <pose>-0.5 7.3 0 0 0 3.14</pose>
+      <uri>model://TrolleyBox1</uri>
+    </include>
+
+    <include>
+      <name>trolly_box_2</name>
+      <pose>7.3 1.0 0 0 0 -1.57</pose>
+      <uri>model://TrolleyBox1</uri>
+    </include>
+
+    <!-- <include>
+      <name>trolly_box</name>
+      <pose>2 -2.6 0 0 0 0</pose>
+      <uri>model://TrolleyBox1</uri>
+    </include> -->
 
     <include>
       <name>shipping_kit_tray_shelves</name>
@@ -96,12 +264,21 @@
     </include>
 
     <plugin
+      filename="libCompetitionManagerPlugin.so"
+      name="ariac_plugins::CompetitionManagerPlugin">
+      <trial_config_file></trial_config_file>
+      <competitor_name></competitor_name>
+      <sensor_cost></sensor_cost>
+    </plugin> 
+
+    <plugin
       filename="libCheatToolsPlugin.so"
       name="ariac_plugins::CheatToolsPlugin">
+    </plugin>
 
-      <kit_on_agv1>true</kit_on_agv1>
-      <kit_on_agv2>true</kit_on_agv2>
-      <kit_on_agv3>true</kit_on_agv3>
+    <plugin
+      filename="libShellInsertionPlugin.so"
+      name="ariac_plugins::ShellInsertionPlugin">
     </plugin>
 
   </world>

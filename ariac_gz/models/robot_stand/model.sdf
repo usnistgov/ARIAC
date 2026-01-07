@@ -1,0 +1,46 @@
+<?xml version="1.0" ?>
+<sdf version="1.11">
+  <model name="robot_stand">
+    <static>true</static>
+    
+    <link name="stand">
+
+      <visual name="visual">
+        <pose>0 0 0 -1.57 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://robot_stand/meshes/robot_stand.gltf</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="collision">
+        <density>2700</density>
+        <pose>0 0 0.199 0 0 0</pose>
+        <geometry>
+          <box>
+            <size> 0.3 0.3 0.398 </size>
+          </box>
+        </geometry>
+      </collision>
+
+      <inertial auto="true"/>
+
+      <sensor name='collision_detector' type='contact'>
+        <update_rate>30</update_rate>
+          <contact>
+            <collision>collision</collision>
+          </contact>
+      </sensor>
+
+    </link>
+
+    <plugin
+      filename="libEntityDisposalPlugin.so"
+      name="ariac_plugins::EntityDisposalPlugin">
+      <contact_link>stand</contact_link>
+    </plugin>
+  
+  </model>
+
+</sdf>

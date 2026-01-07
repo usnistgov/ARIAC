@@ -1,0 +1,196 @@
+<?xml version="1.0" ?>
+<sdf version="1.11">
+  <model name="inspection_conveyor">
+    <link name="conveyor_base">
+
+      <visual name="base_visual">
+        <pose>-0.5 -0.05 0.42 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://inspection_conveyor/meshes/conveyor.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <collision name="base_collision">
+        <density>2700</density>
+        <pose>0 0 0.2 0 0 0</pose>
+        <geometry>
+          <box>
+            <size> 1 0.1 0.4 </size>
+          </box>
+        </geometry>
+      </collision>
+
+      <inertial auto="true"/>
+
+    </link>
+
+    <link name="conveyor_belt">
+      <pose> 0 0 0.421 0 0 0 </pose>
+      <collision name="belt_collision">
+        <density>2700</density>
+        <pose>0 0 -0.01 0 0 0</pose>
+        <geometry>
+          <box>
+            <size> 1 0.1 0.02 </size>
+          </box>
+        </geometry>
+      </collision>
+      
+      <inertial auto="true"/>
+
+      <sensor name='contact_sensor' type='contact'>
+        <update_rate>30</update_rate>
+          <contact>
+            <collision>belt_collision</collision>
+          </contact>
+      </sensor>
+
+    </link>
+
+    <link name="inspection_door">
+      <pose> 0.05 0 0.425 0 0 -0.785 </pose>
+      
+      <collision name="collision">
+        <density>2700</density>
+        <pose>0 0 0.04 0 0 0</pose>
+        <geometry>
+          <box>
+            <size> 0.01 0.125 0.08 </size>
+          </box>
+        </geometry>
+      </collision>
+
+      <visual name="visual">
+        <pose>0 0 0.04 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://inspection_conveyor/meshes/conveyor_door.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <inertial auto="true"/>
+    </link>
+
+    <link name="inspection_door_belt">
+      <pose relative_to="inspection_door">-0.006 0 0 0 0 0</pose>
+      
+      <collision name="collision">
+        <pose>0 0 0.04 0 0 0</pose>
+        <geometry>
+          <box>
+            <size> 0.002 0.125 0.08 </size>
+          </box>
+        </geometry>
+      </collision>
+
+    </link>
+
+    <joint name="inspection_conveyor_to_world" type="fixed">
+      <parent>world</parent>
+      <child>conveyor_base</child>
+    </joint>
+
+    <joint name="belt_joint" type="prismatic">
+      <parent>conveyor_base</parent>
+      <child>conveyor_belt</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+         <lower>0</lower>
+          <upper>0.05</upper>
+          <effort>100</effort>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="door_joint" type="revolute">
+      <pose relative_to="inspection_door">0 -0.0625 0 0 0 0</pose>
+      <parent>conveyor_base</parent>
+      <child>inspection_door</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.8</upper>
+          <effort>1000</effort>
+        </limit>
+      </axis>
+    </joint>
+
+    <joint name="door_belt_joint" type="prismatic">
+      <parent>inspection_door</parent>
+      <child>inspection_door_belt</child>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+         <lower>0</lower>
+          <upper>0.01</upper>
+          <effort>100</effort>
+        </limit>
+      </axis>
+    </joint>
+
+    <link name="cell_feed_link">
+      <pose> -0.45 0 0.421 0 0 0 </pose>
+    </link>
+
+    <joint name="cell_feed_joint" type="fixed">
+      <parent>conveyor_base</parent>
+      <child>cell_feed_link</child>
+    </joint>
+
+    <plugin
+      filename="libLinearConveyorPlugin.so"
+      name="ariac_plugins::LinearConveyorPlugin">
+      <ros>
+        <namespace>inspection_conveyor</namespace>
+      </ros>
+      <controllable>false</controllable>
+      <joint_name>belt_joint</joint_name>
+      <travel>0.01</travel>
+      <can_malfunction>true</can_malfunction>
+    </plugin>
+
+    <plugin
+      filename="libLinearConveyorPlugin.so"
+      name="ariac_plugins::LinearConveyorPlugin">
+      <ros>
+        <namespace>inspection_conveyor/door</namespace>
+      </ros>
+      <controllable>false</controllable>
+      <joint_name>door_belt_joint</joint_name>
+      <travel>0.005</travel>
+    </plugin>
+
+    <plugin
+      filename="libCellFeedPlugin.so"
+      name="ariac_plugins::CellFeedPlugin">
+      <ros>
+        <namespace>inspection_conveyor/cell_feed</namespace>
+      </ros>
+    </plugin>
+
+    <plugin
+      filename="libPhysicalInspectionPlugin.so"
+      name="ariac_plugins::PhysicalInspectionPlugin">
+      <ros>
+        <namespace>inspection_conveyor/inspection</namespace>
+      </ros>
+      <joint_name>door_joint</joint_name>
+      <max_speed>4.0</max_speed>
+    </plugin>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>conveyor_base</base_link>
+      <static>true</static>
+      <child link="cell_feed_link" frame="cell_feed_frame"/>
+    </plugin>
+  
+  </model>
+
+</sdf>

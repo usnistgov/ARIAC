@@ -33,6 +33,61 @@
 
     </link>
 
+    <link name="tray_link">
+      <pose relative_to="base_link">0 0 0.35 0 0 -1.57</pose>
+    </link>
+
+    <link name="center_slot_link">
+      <pose relative_to="tray_link">0.0 0.0 0.0095 0.0 0.0 0.0</pose>
+    </link>
+
+    <joint name="center_slot_joint" type="fixed">
+      <parent>tray_link</parent>
+      <child>center_slot_link</child>
+    </joint>
+
+    <link name="slot_1_link">
+      <pose relative_to="tray_link">-0.065 0.05 0.032 0 0 0</pose>
+
+    </link>
+
+    <link name="slot_2_link">
+      <pose relative_to="tray_link">0.065 0.05 0.032 0 0 0</pose>
+    </link>
+
+    <link name="slot_3_link">
+      <pose relative_to="tray_link">-0.065 -0.05 0.032 0 0 0</pose>
+    </link>
+
+    <link name="slot_4_link">
+      <pose relative_to="tray_link">0.065 -0.05 0.032 0 0 0</pose>
+    </link>
+
+    <joint name="tray_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>tray_link</child>
+    </joint>
+
+    <joint name="slot_1_joint" type="fixed">
+      <parent>tray_link</parent>
+      <child>slot_1_link</child>
+    </joint>
+
+    <joint name="slot_2_joint" type="fixed">
+      <parent>tray_link</parent>
+      <child>slot_2_link</child>
+    </joint>
+
+    <joint name="slot_3_joint" type="fixed">
+      <parent>tray_link</parent>
+      <child>slot_3_link</child>
+    </joint>
+
+    <joint name="slot_4_joint" type="fixed">
+      <parent>tray_link</parent>
+      <child>slot_4_link</child>
+    </joint>
+
     <plugin
       filename="libAgvMotionPlugin.so"
       name="ariac_plugins::AgvMotionPlugin">
@@ -41,6 +96,18 @@
     <plugin
       filename="libAgvTrayInterfacePlugin.so"
       name="ariac_plugins::AgvTrayInterfacePlugin">
+    </plugin>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>base_link</base_link>
+      <static>false</static>
+      <child link="tray_link" frame="tray_frame"/>
+      <child link="slot_1_link" frame="slot1_frame" parent_frame="tray_frame" parent_link="tray_link"/>
+      <child link="slot_2_link" frame="slot2_frame" parent_frame="tray_frame" parent_link="tray_link"/>
+      <child link="slot_3_link" frame="slot3_frame" parent_frame="tray_frame" parent_link="tray_link"/>
+      <child link="slot_4_link" frame="slot4_frame" parent_frame="tray_frame" parent_link="tray_link"/>
     </plugin>
 
   

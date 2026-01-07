@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<sdf version="1.11">
+  <model name="camera">
+    <static>true</static>
+
+    <link name="link">
+      <visual name="camera">
+        <pose>0 0 0.009 0 -1.57 0</pose>
+        <geometry>
+          <mesh>
+            <uri>model://sensors/camera/meshes/camera.glb</uri>
+          </mesh>
+        </geometry>
+      </visual>
+
+      <sensor type="camera" name="rgb_camera">
+        <topic>camera_0_gz_topic</topic>
+        <always_on>true</always_on>
+        <visualize>true</visualize>
+        <update_rate>15</update_rate>
+        
+        <camera>
+          <camera_info_topic>camera_0_gz_info_topic</camera_info_topic>
+          <horizontal_fov>0.873</horizontal_fov> <!-- ~50 degrees -->
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.05</near>
+            <far>5.0</far>
+          </clip>
+        </camera>
+
+        <plugin filename="libImagePlugin.so" name="ariac_plugins::ImagePlugin">
+          <sensor_name>camera_0</sensor_name>
+        </plugin>
+
+      </sensor>
+    </link>
+
+    <plugin
+      filename="libTFPublisherPlugin.so"
+      name="ariac_plugins::TFPublisherPlugin">
+      <base_link>link</base_link>
+      <static>true</static>
+      <sensor>true</sensor>
+    </plugin>
+  </model>
+</sdf>

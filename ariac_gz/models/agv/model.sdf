@@ -24,6 +24,13 @@
         </geometry>
       </collision>
 
+      <sensor name='collision_detector' type='contact'>
+        <update_rate>30</update_rate>
+        <contact>
+          <collision>collision</collision>
+        </contact>
+      </sensor>
+
     </link>
 
     <plugin

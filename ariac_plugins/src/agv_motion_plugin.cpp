@@ -67,7 +67,7 @@ namespace ariac_plugins{
     gz_node = std::make_shared<gz::transport::Node>();
 
     // Subscribe to gz contact topic 
-    std::string gz_contact_topic = "/world/ariac/model/" + agv_name + "/link/agv/sensor/collision_detector/contact";
+    std::string gz_contact_topic = "/world/ariac/model/" + agv_name + "/link/base_link/sensor/collision_detector/contact";
     gz_node->Subscribe(gz_contact_topic, &AgvMotionPlugin::contact_msg_cb, this);
 
     // Create action server
@@ -92,7 +92,6 @@ namespace ariac_plugins{
     gz::sim::EntityComponentManager &_ecm)
   {
     if(wait_until_iteration.has_value() && _info.iterations < wait_until_iteration){
-      // gzwarn << "AGV " << agv_model.Name(_ecm) << " waiting until iteration " << wait_until_iteration.value() << "\n";
       return;
     }
     wait_until_iteration = std::nullopt;
@@ -108,24 +107,32 @@ namespace ariac_plugins{
     switch(motion_state){
       case AGVMotionStatus::IDLE:
         break;
-      case AGVMotionStatus::UNLOCK:
-        // if(lock_joint == gz::sim::kNullEntity){
-        //   gzerr << "Unable to unlock " << agv_model.Name(_ecm) << ". Lock joint does not exist\n";
-        // }
+      
+      case AGVMotionStatus::HOLD_POSITION:
+      {
+        if (status_msg.station_id == AGVStations::IN_TRANSIT) {
+          gzerr << "Cannot hold position while in transit\n";
+          motion_state = AGVMotionStatus::IDLE;
+          break;
+        }
 
-        // _ecm.RequestRemoveEntity(lock_joint);
+        auto velocities = compute_hold_position_velocity(status_msg.station_id, agv_pose);
 
-        // lock_joint = gz::sim::kNullEntity;
+        agv_base_link.SetLinearVelocity(_ecm, velocities.first);
+        agv_base_link.SetAngularVelocity(_ecm, velocities.second);
 
-        motion_state = AGVMotionStatus::MOVING;
-        gzwarn << "AGV " << agv_model.Name(_ecm) << " unlocked and starting motion\n";
-
-        wait_until_iteration = _info.iterations + 5;
         break;
+      }
+
       case AGVMotionStatus::MOVING:
       {
         if(!current_goal_handle.has_value()){
           throw std::runtime_error(agv_model.Name(_ecm) + " in motion without a valid goal handle\n");
+        }
+
+        if (collision_occurred) {
+          gzerr << "AGV Collision. Teleporting back to inspection]\n";
+          motion_state = AGVMotionStatus::TELEPORT;
         }
 
         if(!motion_start_time.has_value()){
@@ -139,7 +146,7 @@ namespace ariac_plugins{
         if (velocity_planner.is_finished(current_time)) {
           motion_state = AGVMotionStatus::TELEPORT;
           gzwarn << "AGV " << agv_model.Name(_ecm) << " reached end of path, teleporting to goal\n";
-          wait_until_iteration = _info.iterations + 5;
+          wait_until_iteration = _info.iterations + teleport_wait_iterations;
           motion_start_time = std::nullopt;
           linear_velocity_vector.Set(0.0, 0.0, 0.0);
           angular_velocity_vector.Set(0.0, 0.0, 0.0);
@@ -147,8 +154,7 @@ namespace ariac_plugins{
           // Pass current time to waypoint planner
           path_velocity_planner::PathVelocity vel = velocity_planner.get_velocity_at_time(current_time);
           
-          
-          linear_velocity_vector.Set(vel.linear, 0.0, (agv_pose.Z() < 0.001) ? 0.015 : 0.0);
+          linear_velocity_vector.Set(vel.linear, 0.0, (agv_pose.Z() < z_threshold) ? z_lift_velocity : 0.0);
           angular_velocity_vector.Set(0.0, 0.0, vel.angular);
         }
 
@@ -156,7 +162,7 @@ namespace ariac_plugins{
         agv_base_link.SetAngularVelocity(_ecm, angular_velocity_vector);
 
         // Publish feedback
-        if (_info.iterations % (1000 / feedback_rate) == 0){
+        if (_info.iterations % (feedback_publish_interval / feedback_rate) == 0){
           auto feedback = std::make_shared<MoveAGVAction::Feedback>();
           feedback->status.station_id = AGVStations::IN_TRANSIT;
           feedback->status.pose = status_msg.pose;
@@ -170,55 +176,34 @@ namespace ariac_plugins{
         if(!current_goal_handle.has_value()){
           throw std::runtime_error(agv_model.Name(_ecm) + " in teleport without a valid goal handle\n");
         }
-        // Teleport to destination pose
-        auto destination = current_waypoints[current_waypoints.size() - 1];
+        
+        path_velocity_planner::Point teleport_location;
+        
+        if (collision_occurred) {
+          teleport_location = start_location.value();
+          status_msg.station_id = station_yaw[AGVStations::INSPECTION];
+        } else {
+          teleport_location = current_waypoints[current_waypoints.size() - 1];
+          status_msg.station_id = current_goal_handle.value()->get_goal()->station_id;
+        }
+
         gz::math::Pose3d goal_pose;
         goal_pose.Set(
-          gz::math::Vector3d(destination.x, destination.y, 0.001),
-          gz::math::Vector3d(0, 0, station_yaw[current_goal_handle.value()->get_goal()->station_id])
+          gz::math::Vector3d(teleport_location.x, teleport_location.y, z_threshold),
+          gz::math::Vector3d(0, 0,  station_yaw[status_msg.station_id])
         );
 
         agv_model.SetWorldPoseCmd(_ecm, goal_pose);
         
-        status_msg.station_id = current_goal_handle.value()->get_goal()->station_id;
-        wait_until_iteration = _info.iterations + 5;
-        motion_state = AGVMotionStatus::LOCK;
-        gzwarn << "AGV " << agv_model.Name(_ecm) << " teleported to station " << std::to_string(status_msg.station_id) << ". Locking\n";
-
-        break;
-      }
-      
-      case AGVMotionStatus::LOCK:
-      {
-        // if(lock_joint != gz::sim::kNullEntity){
-        //   throw std::runtime_error("Can't lock " + agv_model.Name(_ecm) + " since lock joint is not null");
-        // }
-        // lock_joint = _ecm.CreateEntity();
-
-        // std::optional<gz::sim::v8::Entity> floor_entity_opt = _ecm.EntityByName(floor_model_name);
-      
-        // if (!floor_entity_opt.has_value()) {
-        //   throw std::runtime_error("Unable to locate floor entity");
-        // }
-
-        // auto floor_link_entity = gz::sim::Model(floor_entity_opt.value()).LinkByName(_ecm, floor_link_name);
-
-        // if (floor_link_entity == gz::sim::kNullEntity) {
-        //   throw std::runtime_error("Unable to locate floor link");
-        // }
-        
-        // _ecm.CreateComponent(lock_joint, gz::sim::components::DetachableJoint({floor_link_entity, agv_base_link_entity, "fixed"}));
-        
         if(current_goal_handle.has_value()){
-          wait_until_iteration = _info.iterations + 150;
+          wait_until_iteration = _info.iterations + complete_goal_wait_iterations;
           motion_state = AGVMotionStatus::COMPLETE_GOAL;
-          gzwarn << "AGV " << agv_model.Name(_ecm) << " locked. Completing goal\n";
         } else{
-          motion_state = AGVMotionStatus::IDLE;
-          gzwarn << "AGV " << agv_model.Name(_ecm) << " locked with no current goal. Switching to IDLE\n";
+          motion_state = AGVMotionStatus::HOLD_POSITION;
         }
         break;
       }
+      
       case AGVMotionStatus::COMPLETE_GOAL:
       {
         if(current_goal_handle.has_value()){
@@ -226,25 +211,29 @@ namespace ariac_plugins{
           result->status.station_id = status_msg.station_id;
           result->status.pose = status_msg.pose;
           
-          current_goal_handle.value()->succeed(result);
+          if (collision_occurred) {
+            current_goal_handle.value()->abort(result);
+          } else {
+            current_goal_handle.value()->succeed(result);
+          }
 
           current_goal_handle = std::nullopt;
         } else {
           gzerr << "Current goal handle has no value";
         }
-        motion_state = AGVMotionStatus::IDLE;
+        motion_state = AGVMotionStatus::HOLD_POSITION;
 
         break;
       }
       default:
-        throw std::runtime_error("BAD");
+        throw std::runtime_error("motion state not valid");
     }
   }
 
   rclcpp_action::GoalResponse AgvMotionPlugin::goal_recieved_cb(
     const rclcpp_action::GoalUUID &, std::shared_ptr<const MoveAGVAction::Goal> goal)
   {
-    if (goal->station_id == status_msg.station_id || motion_state != AGVMotionStatus::IDLE) {
+    if (goal->station_id == status_msg.station_id || motion_state != AGVMotionStatus::HOLD_POSITION) {
       return rclcpp_action::GoalResponse::REJECT;
     }
 
@@ -287,7 +276,7 @@ namespace ariac_plugins{
     
     current_goal_handle = goal_handle;
 
-    motion_state = AGVMotionStatus::UNLOCK;
+    motion_state = AGVMotionStatus::MOVING;
   }
 
   void AgvMotionPlugin::pub_timer_cb()
@@ -328,6 +317,7 @@ namespace ariac_plugins{
           goal_locations[AGVStations::ASSEMBLY]
         };
         break;
+      
       case AGVPath::ASSEMBLY_TO_INSPECTION:
         waypoints = {
           start,
@@ -340,6 +330,7 @@ namespace ariac_plugins{
         };
         std::reverse(waypoints.begin(), waypoints.end());
         break;
+      
       case AGVPath::INSPECTION_TO_SHIPPING:
         waypoints = {
           start,
@@ -352,6 +343,7 @@ namespace ariac_plugins{
           goal_locations[AGVStations::SHIPPING]
         };
         break;
+      
       case AGVPath::SHIPPING_TO_INSPECTION:
         waypoints = {
           start,
@@ -365,6 +357,7 @@ namespace ariac_plugins{
         };
         std::reverse(waypoints.begin(), waypoints.end());
         break;
+      
       case AGVPath::INSPECTION_TO_RECYCLING:
         waypoints = {
           start,
@@ -377,6 +370,7 @@ namespace ariac_plugins{
           goal_locations[AGVStations::RECYCLING]
         };
         break;
+      
       case AGVPath::RECYCLING_TO_INSPECTION:
         waypoints = {
           start,
@@ -390,6 +384,7 @@ namespace ariac_plugins{
         };
         std::reverse(waypoints.begin(), waypoints.end());
         break;
+      
       case AGVPath::SHIPPING_TO_RECYCLING:
         waypoints = {
           goal_locations[AGVStations::SHIPPING],
@@ -402,6 +397,7 @@ namespace ariac_plugins{
           goal_locations[AGVStations::RECYCLING]
         };
         break;
+      
       default:
         throw std::runtime_error("Invalid path requested");
     }
@@ -420,5 +416,48 @@ namespace ariac_plugins{
     ros_pose.orientation.z = gz_pose.Rot().Z();
     ros_pose.orientation.w = gz_pose.Rot().W();
     return ros_pose;
+  }
+
+  std::pair<gz::math::Vector3d, gz::math::Vector3d> AgvMotionPlugin::compute_hold_position_velocity(
+    int station_id, const gz::math::Pose3d &current_pose)
+  {
+    // Determine target position
+    double target_x, target_y;
+
+    if (station_id == AGVStations::INSPECTION) {
+      if (!start_location.has_value()) {
+        throw std::runtime_error("Start location not set, unable to hold position");
+      }
+      target_x = start_location.value().x;
+      target_y = start_location.value().y;
+    } else {
+      target_x = goal_locations[station_id].x;
+      target_y = goal_locations[station_id].y;
+    }
+
+    double target_yaw = station_yaw[station_id];
+
+    // Helper to compute simple proportional control velocity
+    auto compute_vel = [this](double current, double target) -> double {
+      if (current == target) return 0.0;
+      return (current < target) ? hold_position_velocity : -hold_position_velocity;
+    };
+
+    // Compute desired velocities in world frame
+    double world_vx = compute_vel(current_pose.X(), target_x);
+    double world_vy = compute_vel(current_pose.Y(), target_y);
+    double rot_vel = compute_vel(current_pose.Yaw(), target_yaw);
+
+    // Transform world velocities to AGV body frame using rotation matrix
+    double cos_yaw = std::cos(target_yaw);
+    double sin_yaw = std::sin(target_yaw);
+
+    double x_vel = cos_yaw * world_vx + sin_yaw * world_vy;
+    double y_vel = -sin_yaw * world_vx + cos_yaw * world_vy;
+
+    gz::math::Vector3d linear_vel(x_vel, y_vel, (current_pose.Z() < z_threshold) ? z_lift_velocity : 0.0);
+    gz::math::Vector3d angular_vel(0.0, 0.0, rot_vel);
+
+    return {linear_vel, angular_vel};
   }
 }

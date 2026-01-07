@@ -50,10 +50,9 @@ namespace ariac_plugins
 {
   enum class AGVMotionStatus {
     IDLE,
-    UNLOCK,
+    HOLD_POSITION,
     MOVING,
     TELEPORT,
-    LOCK,
     COMPLETE_GOAL
   };
 
@@ -97,6 +96,8 @@ namespace ariac_plugins
       // Functions
       std::vector<path_velocity_planner::Point> get_waypoints(AGVPath path);
       geometry_msgs::msg::Pose gz_to_ros_pose(const gz::math::Pose3d &gz_pose);
+      std::pair<gz::math::Vector3d, gz::math::Vector3d> compute_hold_position_velocity(
+        int station_id, const gz::math::Pose3d &current_pose);
 
       // GZ 
       gz::sim::Model agv_model;
@@ -126,6 +127,14 @@ namespace ariac_plugins
       const std::string floor_model_name = "floor";
       const std::string floor_link_name = "floor";
 
+      // Motion control parameters
+      const double hold_position_velocity = 0.005;
+      const double z_threshold = 0.001;
+      const double z_lift_velocity = 0.015;
+      const int teleport_wait_iterations = 5;
+      const int complete_goal_wait_iterations = 150;
+      const int feedback_publish_interval = 1000;
+
       std::optional<double> motion_start_time = std::nullopt;
 
       // Class variables
@@ -151,7 +160,7 @@ namespace ariac_plugins
       path_velocity_planner::VelocityPlanner velocity_planner;
       path_velocity_planner::Direction direction;
 
-      AGVMotionStatus motion_state = AGVMotionStatus::LOCK;
+      AGVMotionStatus motion_state = AGVMotionStatus::HOLD_POSITION;
 
       std::vector<path_velocity_planner::Point> current_waypoints;
   };

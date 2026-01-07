@@ -103,8 +103,7 @@ namespace ariac_plugins{
         if (!current_tray_name.has_value()) {
           throw std::runtime_error("No tray name set");
         }
-
-        gzerr << "Inserting tray\n";
+        
         spawn_tray(pose_opt.value(), current_tray_name.value());
         tray_status = TrayState::LOCKING;
         wait_until_iteration = _info.iterations + 5;

@@ -107,7 +107,7 @@ namespace ariac_plugins{
     switch(motion_state){
       case AGVMotionStatus::IDLE:
         if (status_msg.station_id == AGVStations::INSPECTION) {
-          motion_state == AGVMotionStatus::HOLD_POSITION;
+          motion_state = AGVMotionStatus::HOLD_POSITION;
         }
 
         break;

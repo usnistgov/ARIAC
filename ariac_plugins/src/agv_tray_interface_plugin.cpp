@@ -309,107 +309,38 @@ namespace ariac_plugins{
   }
 
   void AgvTrayInterfacePlugin::check_kit_quality_cb(const ariac_interfaces::srv::CheckKitQuality::Request::SharedPtr req, ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr res){
-    gzmsg<<"Inside check kit quality cb";
-    if(agv_station != AGVStations::INSPECTION){
+    if (agv_station != AGVStations::INSPECTION){
       res->is_good = false;
-      res->message = "AGV must be at inspection to check kit quality ";
+      res->message = "AGV must be at inspection to check kit quality";
       return;
     }
 
-    if(kit_component == std::nullopt){
-      res->is_good = false;
-      res->message = "Could not find a kit component on tray model";
-      return;
-    }
-    
-    std::string msg = "";
-    
-    float total_voltage = 0;
-
-    for(const auto& [slot, cell_info] : kit_component->slots){
-      if(!cell_info.has_value()){
-        msg += "Cell in slot " + std::to_string(slot) + " not present. ";
-        continue;
-      }
-
-      ariac_components::SlotCellInfo cell_being_checked = cell_info.value();
-      if(cell_being_checked.cell_type != req->cell_type){
-        msg += "Cell in slot " + std::to_string(slot) + " is not the correct type.";
-        continue;
-      }
-      if(cell_being_checked.defective){
-        msg += "Cell in slot " + std::to_string(slot) + " is defective. ";
-        continue;
-      }
-      if(abs(cell_being_checked.voltage - nominal_voltages[req->cell_type]) > CellTypes::CELL_VOLTAGE_TOLERANCE){
-        msg += "Cell in slot " + std::to_string(slot) + "is not within the cell voltage tolerance. ";
-        continue;
-      }
-
-      total_voltage += cell_being_checked.voltage;
-    }
-
-    if (abs(total_voltage - (nominal_voltages[req->cell_type] * 4)) > CellTypes::KIT_VOLTAGE_TOLERANCE) {
-      msg +="Total voltage of good cells is not within allowed tolerance.";
-    }
-    
-    if(msg != ""){
-      res->is_good = false;
-      res->message = msg;
-      return;
-    }
-
-    res->is_good = true;
-    res->message = "Kit is good";
+    auto kit_validation = validate_kit(req->cell_type);
+    res->is_good = kit_validation->is_good;
+    res->message = kit_validation->message;
   }
 
   bool AgvTrayInterfacePlugin::handle_kitting_submission(
-    const gz::msgs::Empty &req, 
+    const gz::msgs::Int32 &req, 
     gz::msgs::Boolean &res
   ){
+    int cell_type = req.data();
+    if(cell_type != CellTypes::LI_ION && cell_type != CellTypes::NIMH){
+      gzerr << "Entered cell type (" << cell_type << ") is not valid\n";
+      res.set_data(false);
+      return false;
+    }
+
     if (agv_station != AGVStations::SHIPPING){
       gzerr << "AGV not at shipping";
       res.set_data(false);
       return false;
     }
 
-    if(kit_component == std::nullopt){
-      res.set_data(false);
-      gzerr << "Could not find a kit component on tray model\n";
-      return false;
-    }
+    ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr kit_quality = validate_kit(cell_type);
 
-    float total_voltage = 0;
-
-    for(const auto& [slot, cell_info] : kit_component->slots){
-      if(!cell_info.has_value()){
-        gzerr << "Cell in slot " << std::to_string(slot) << " not present. ";
-        res.set_data(false);
-        return false;
-      }
-
-      ariac_components::SlotCellInfo cell_being_checked = cell_info.value();
-      if(cell_being_checked.cell_type != CellTypes::LI_ION){
-        gzerr << "Cell in slot " << std::to_string(slot) << " is not the correct type.";
-        res.set_data(false);
-        return false;
-      }
-      if(cell_being_checked.defective){
-        gzerr << "Cell in slot " << std::to_string(slot) << " is defective. ";
-        res.set_data(false);
-        return false;
-      }
-      if(abs(cell_being_checked.voltage - nominal_voltages[CellTypes::LI_ION]) > CellTypes::CELL_VOLTAGE_TOLERANCE){
-        gzerr << "Cell in slot " << std::to_string(slot) << "is not within the cell voltage tolerance. ";
-        res.set_data(false);
-        return false;
-      }
-
-      total_voltage += cell_being_checked.voltage;
-    }
-
-    if (abs(total_voltage - (nominal_voltages[CellTypes::LI_ION] * 4)) > CellTypes::KIT_VOLTAGE_TOLERANCE) {
-      gzerr << "Total voltage of good cells is not within allowed tolerance.";
+    if(!kit_quality->is_good){
+      gzerr << kit_quality->message << "\n";
       res.set_data(false);
       return false;
     }
@@ -427,9 +358,67 @@ namespace ariac_plugins{
       }
     };
 
-
     res.set_data(true);
     return true;
+  }
+
+  ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr AgvTrayInterfacePlugin::validate_kit(int cell_type){
+    
+    ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr res = std::make_shared<ariac_interfaces::srv::CheckKitQuality::Response>();
+    if(cell_type != CellTypes::LI_ION && cell_type != CellTypes::NIMH){
+      res->is_good = false;
+      res->message = "Entered cell type (" + std::to_string(cell_type) + ") is not valid";
+      return res;
+    }
+
+    if(kit_component == std::nullopt){
+      res->is_good = false;
+      res->message = "Could not find kit component on tray model";
+      return res;
+    }
+
+    res->message = "";
+
+    float total_voltage = 0;
+
+    for(const auto& [slot, cell_info] : kit_component->slots){
+      if(!cell_info.has_value()){
+        res->message += "Cell in slot" + std::to_string(slot) + ") is not valid. ";
+      }
+
+      ariac_components::SlotCellInfo cell_being_checked = cell_info.value();
+      
+      total_voltage += cell_being_checked.voltage;
+
+      if(cell_being_checked.cell_type != cell_type){
+        res->message += "Cell in slot " + std::to_string(slot) + " is not the correct type. ";
+        continue;
+      }
+      if(cell_being_checked.defective){
+        res->message += "Cell in slot " + std::to_string(slot) + " is defective. ";
+        continue;
+      }
+      if(abs(cell_being_checked.voltage - nominal_voltages[cell_type]) > CellTypes::CELL_VOLTAGE_TOLERANCE){
+        res->message += "Cell in slot " + std::to_string(slot) + " is not within the cell voltage tolerance. ";
+      }
+    }
+
+    if (res->message != ""){
+      res->is_good = false;
+      return res;
+    }
+
+
+    if (abs(total_voltage - (nominal_voltages[cell_type] * 4)) > CellTypes::KIT_VOLTAGE_TOLERANCE) {
+      res->message = "Total voltage of good cells is not within allowed tolerance.";
+      res->is_good = false;
+      return res;
+    }
+
+    res->message = "Kit is good";
+    res->is_good = true;
+
+    return res;
   }
 
   void AgvTrayInterfacePlugin::spawn_tray(gz::math::Pose3d agv_pose, std::string name){

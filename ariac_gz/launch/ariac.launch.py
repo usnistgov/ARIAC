@@ -222,6 +222,7 @@ def get_gz_args(trial_config: str, team_config: UserConfigParser, db_path: str, 
             case Cheats.KITS_ON_AGVS:
                 elements.append(ET.Element("kit_on_agv1"))
                 elements.append(ET.Element("kit_on_agv2"))
+                elements.append(ET.Element("kit_on_agv3"))
             case Cheats.HIGH_PRIORITY_KIT:
                 elements.append(ET.Element("kit_on_agv1"))
                 elements.append(ET.Element("agv1_high_priority"))

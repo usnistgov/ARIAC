@@ -1,5 +1,5 @@
-#ifndef ARIAC_PLUGINS__CELL_FEED_PLUGIN_HPP
-#define ARIAC_PLUGINS__CELL_FEED_PLUGIN_HPP
+#ifndef ARIAC_PLUGINS__CHEAT_TOOLS_PLUGIN_HPP_
+#define ARIAC_PLUGINS__CHEAT_TOOLS_PLUGIN_HPP_
 
 // GZ
 #include <gz/sim/Model.hh>
@@ -28,9 +28,7 @@
 #include <ariac_interfaces/msg/competition_status.hpp>
 
 // Custom ARIAC Components
-#include <ariac_components/trial.hpp>
 #include <ariac_components/cell.hpp>
-#include <ariac_components/feed_results.hpp>
 #include <ariac_components/module.hpp>
 
 // ROS SRVS
@@ -71,7 +69,6 @@ class CheatToolsPlugin:
   public gz::sim::ISystemPreUpdate
 {
   public:
-  ~CheatToolsPlugin() override;
 
   void Configure (
     const gz::sim::Entity &_entity,
@@ -111,6 +108,7 @@ class CheatToolsPlugin:
   };
 
   std::string sdf_path;
+  std::shared_ptr<const sdf::Element> sdf;
 
   int cell_count = 0;
   int request_step = -1;
@@ -172,4 +170,4 @@ class CheatToolsPlugin:
 };
 }
 
-#endif // ARIAC_PLUGINS__CELL_FEED_PLUGIN_HPP
+#endif // ARIAC_PLUGINS__CHEAT_TOOLS_PLUGIN_HPP_

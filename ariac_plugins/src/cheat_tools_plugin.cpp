@@ -8,10 +8,6 @@ GZ_ADD_PLUGIN(
 )
 
 using namespace ariac_plugins;
-
-CheatToolsPlugin::~CheatToolsPlugin()
-{
-}
   
 void CheatToolsPlugin::Configure(
   const gz::sim::Entity &_entity,
@@ -27,57 +23,73 @@ void CheatToolsPlugin::Configure(
 
   sdf_path = ament_index_cpp::get_package_share_directory("ariac_gz") + "/models/battery_cell/model.sdf";
 
-  if(_sdf->HasElement("kit_on_agv1") && _sdf->Get<bool>("kit_on_agv1")){
-    if(_sdf->HasElement("agv1_high_priority")){
-      complete_kit(1, _sdf->Get<bool>("agv1_high_priority"));
-    } else {
-      complete_kit(1, false);
-    }
-  }
+  sdf = _sdf;
 
-  if(_sdf->HasElement("kit_on_agv2") && _sdf->Get<bool>("kit_on_agv2")){
-    if(_sdf->HasElement("agv2_high_priority")){
-      complete_kit(2, _sdf->Get<bool>("agv2_high_priority"));
-    } else {
-      complete_kit(2, false);
-    }
-  }
-
-  if(_sdf->HasElement("kit_on_agv3") && _sdf->Get<bool>("kit_on_agv3")){
-    if(_sdf->HasElement("agv3_high_priority")){
-      complete_kit(3, _sdf->Get<bool>("agv3_high_priority"));
-    } else {
-      complete_kit(3, false);
-    }
-  }
-
-  if(_sdf->HasElement("module") && _sdf->Get<bool>("module")){
-    complete_module();
-    if(_sdf->HasElement("module_has_welds") && _sdf->Get<bool>("module_has_welds")){
-      welds_requested = true;
-    }
-  }
-
-  if(_sdf->HasElement("partial_module") && _sdf->Get<bool>("partial_module")){
-    partial_module();
-  }
-
-  if(_sdf->HasElement("flipped_module") && _sdf->Get<bool>("flipped_module")){
-    complete_module();
-    if(_sdf->HasElement("module_has_welds") && _sdf->Get<bool>("module_has_welds")){
-      welds_requested = true;
-    }
-    teleport_bottom_shell = TeleportStatus::REQUESTED;
-  }
-
-  if(_sdf->HasElement("cells_in_voltage_testers") && _sdf->Get<bool>("cells_in_voltage_testers")){
-    spawn_cells_in_voltage_testers();
-  }
+  
 }
 
 void CheatToolsPlugin::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm)
 {
-  if(!welds_requested && components_to_add.size() == 0 && (teleport_bottom_shell == TeleportStatus::NOT_NEEDED || teleport_bottom_shell == TeleportStatus::TELEPORTED)){return;}
+  if (_info.iterations < 1000) {
+    return;
+  } else if (_info.iterations == 1000) {
+
+    if(sdf->HasElement("kit_on_agv1") && sdf->Get<bool>("kit_on_agv1")){
+      if(sdf->HasElement("agv1_high_priority")){
+        complete_kit(1, sdf->Get<bool>("agv1_high_priority"));
+      } else {
+        complete_kit(1, false);
+      }
+    }
+
+    if(sdf->HasElement("kit_on_agv2") && sdf->Get<bool>("kit_on_agv2")){
+      if(sdf->HasElement("agv2_high_priority")){
+        complete_kit(2, sdf->Get<bool>("agv2_high_priority"));
+      } else {
+        complete_kit(2, false);
+      }
+    }
+
+    if(sdf->HasElement("kit_on_agv3") && sdf->Get<bool>("kit_on_agv3")){
+      if(sdf->HasElement("agv3_high_priority")){
+        complete_kit(3, sdf->Get<bool>("agv3_high_priority"));
+      } else {
+        complete_kit(3, false);
+      }
+    }
+
+    if(sdf->HasElement("module") && sdf->Get<bool>("module")){
+      complete_module();
+      if(sdf->HasElement("module_has_welds") && sdf->Get<bool>("module_has_welds")){
+        welds_requested = true;
+      }
+    }
+
+    if(sdf->HasElement("partial_module") && sdf->Get<bool>("partial_module")){
+      partial_module();
+    }
+
+    if(sdf->HasElement("flipped_module") && sdf->Get<bool>("flipped_module")){
+      complete_module();
+      if(sdf->HasElement("module_has_welds") && sdf->Get<bool>("module_has_welds")){
+        welds_requested = true;
+      }
+      teleport_bottom_shell = TeleportStatus::REQUESTED;
+    }
+
+    if(sdf->HasElement("cells_in_voltage_testers") && sdf->Get<bool>("cells_in_voltage_testers")){
+      spawn_cells_in_voltage_testers();
+    }
+
+  }
+  
+  if(!welds_requested && components_to_add.size() == 0 && 
+    (teleport_bottom_shell == TeleportStatus::NOT_NEEDED || 
+    teleport_bottom_shell == TeleportStatus::TELEPORTED))
+  {
+    return;
+  }
+  
   for(const auto& pair : components_to_add){
     if(!_ecm.EntityByName(pair.first).has_value()) {return;}
   }

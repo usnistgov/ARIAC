@@ -35,7 +35,7 @@ def _sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, _sigint_handler)
 
 def shutdown():
-    ui.navigate.to('/')
+    ui.navigate.to('/multirun')
     if app_utils.is_gazebo_running():
         app_utils.kill_gazebo()
 
@@ -43,12 +43,12 @@ app.on_startup(lambda: threading.Thread(target=ros_main, daemon=True).start())
 app.on_shutdown(shutdown)
 
 try:
-    os.environ["START_PAGE"]="/home_page"
+    os.environ["START_PAGE"]="/multirun_setup"
     ui.run(
         title="ARIAC App",
         reload=False,
         favicon='🤖',
-        show=False
+        show=False,
     )
 
 except KeyboardInterrupt:

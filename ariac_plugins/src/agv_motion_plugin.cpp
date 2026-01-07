@@ -103,7 +103,7 @@ namespace ariac_plugins{
     auto agv_pose = pose_opt.value();
 
     status_msg.pose = gz_to_ros_pose(agv_pose);
-    
+
     switch(motion_state){
       case AGVMotionStatus::IDLE:
         if (status_msg.station_id == AGVStations::INSPECTION) {

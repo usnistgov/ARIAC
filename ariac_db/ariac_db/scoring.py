@@ -138,12 +138,12 @@ class ARIACScorer:
         results_table = tabulate(results_data, headers=results_headers, tablefmt="simple", floatfmt=("", ".1f"))
         results_table_lines = results_table.split("\n")
 
-        results_width = len(results_table_lines[0])
+        results_width = len(results_table_lines[0]) + 5
         
         table = ""
         table += self.format_str("="*results_width, results_width) + "\n"
         table += self.format_str("Results", results_width) + "\n"
-        table += self.format_str(f"(All runs completed: {not run.aborted})", results_width) + "\n"
+        table += self.format_str(f"(All orders completed: {not run.aborted})", results_width) + "\n"
         table += self.format_str("-"*results_width, results_width) + "\n"
         for line in results_table_lines:
             table += self.format_str(line, results_width) + "\n"

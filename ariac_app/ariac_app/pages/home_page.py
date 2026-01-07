@@ -32,12 +32,15 @@ CHEAT_OPTIONS = {
 }
 
 
-@ui.page("/")
+@ui.page("/home_page")
 class HomePage:
     def __init__(self):
         self.trial_select = TrialSelect()
         self.user_select = UserSelect()
         self.db_select = DatabaseSelect()
+
+        self.headless = "False"
+        self.record = "False"
 
         with frame(page_name="Home"):
             with ui.card().classes("w-5/6 items-center max-w-xl"):
@@ -57,12 +60,27 @@ class HomePage:
                     self.cheat_select = ui.select(
                         CHEAT_OPTIONS,
                         clearable=True,
+                        value=app.storage.general.get("cheat_value", None),
+                        on_change=self.set_cheat_storage
                     )
+                ui.separator()
+
+                with ui.row().classes('w-full items-center justify-between'):
+                    ui.label("Headless").classes('text-sm font-bold')
+                    ui.toggle(["True", "False"]).bind_value(self, "headless")
+
+                with ui.row().classes('w-full items-center justify-between'):
+                    ui.label("Record").classes('text-sm font-bold')
+                    ui.toggle(["True", "False"]).bind_value(self, "record")
+                
                 ui.separator()
 
                 ui.button(
                     "Confirm", icon="chevron_right", on_click=self.run
                 ).props("glossy").tooltip("Confirm settings for run")
+    
+    def set_cheat_storage(self):
+        app.storage.general["cheat_value"] = self.cheat_select.value
 
     def run(self):
         if is_gazebo_running():
@@ -78,12 +96,13 @@ class HomePage:
             if self.db_select.chip.enabled:
                 ui.notify(f"Running with db: {self.db_select.path}", type="info")
 
-            target = f"/run?trial={self.trial_select.path}&user_config={self.user_select.path}"
+            target = f"/run?trial={self.trial_select.path}&user_config={self.user_select.path}&headless={self.headless}&record={self.record}"
 
             if self.db_select.path is not None:
                 target += f"&db_path={self.db_select.path}"
 
             if self.cheat_select.value:
+                app.storage.general["cheat_value"] = self.cheat_select.value
                 target += f"&cheat={self.cheat_select.value}"
 
             ui.navigate.to(target)
@@ -198,7 +217,7 @@ class TrialSelect(SelectFrame):
         self.chip_on()
 
     async def _select(self):
-        path = await FilePicker("~", extension=".yaml")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", extension=".yaml")
 
         if path is None:
             ui.notify("Trial selection cancelled")
@@ -352,7 +371,7 @@ class UserSelect(SelectFrame):
         self.chip_on()
 
     async def _select(self):
-        path = await FilePicker("~", extension=".yaml")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", extension=".yaml")
 
         if path is None:
             ui.notify("Trial selection cancelled")
@@ -470,7 +489,7 @@ class DatabaseSelect:
         self.chip.disable()
 
     async def _create(self):
-        path = await FilePicker("~", selection_type="directory")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", selection_type="directory")
 
         if path is None:
             ui.notify("No folder selected")
@@ -497,7 +516,7 @@ class DatabaseSelect:
         self._chip_on()
 
     async def _select(self):
-        path = await FilePicker("~", extension=".db")
+        path = await FilePicker("/team_ws" if os.path.exists("/team_ws") else "~", extension=".db")
 
         if path is None:
             ui.notify("Database selection cancelled")

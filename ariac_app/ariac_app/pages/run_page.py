@@ -11,14 +11,22 @@ from ament_index_python.packages import get_packages_with_prefixes, get_package_
 from ariac_interfaces.msg import CompetitionStates
 
 from ariac_app.theme import frame
-from ariac_app.components.process_log import ProcessLog
+from ariac_app.components.process_manager import ProcessManager
 from ariac_app.dialogs.confirmation import Confirmation
 from ariac_app import ros_globals, app_utils
 
 
 @ui.page('/run')
 class RunPage:
-    def __init__(self, trial: str | None = None, user_config: str | None = None, db_path: str | None = None, cheat: int | None = None):
+    def __init__(
+            self, 
+            trial: str | None = None, 
+            user_config: str | None = None, 
+            headless: str | None = None,
+            record: str | None = None,
+            db_path: str | None = None, 
+            cheat: int | None = None
+        ):
         if trial is None or user_config is None:
             print("Trial and user config must be selected to run a trial")
             ui.navigate.to("/")
@@ -29,7 +37,7 @@ class RunPage:
             ui.navigate.to("/")
             return
             
-        self.cmd = f"ros2 launch ariac_gz ariac.launch.py trial_config:={trial} user_config:={user_config} gz_log_level:=info"
+        self.cmd = f"ros2 launch ariac_gz ariac.launch.py trial_config:={trial} user_config:={user_config} gz_log_level:=info headless:={headless} record:={record}"
         
         if db_path is not None:
             self.cmd += f" db_path:={db_path}"
@@ -42,7 +50,11 @@ class RunPage:
         self.status_display = StatusDisplay()
         self.control_panel = ControlPanel()
         self.command_select = UserCommandSelect()
-        self.run_log: ProcessLog | None = None
+        self.run_log: ProcessManager | None = None
+
+        self.recorded = False
+        if record is not None:
+            self.recorded = record.lower() == "true"
 
         self.content()
 
@@ -53,37 +65,20 @@ class RunPage:
     def content(self):
         with frame(page_name='Run', show_menu=False):
             with ui.column().classes("w-5/6 max-w-3xl"):
-                # with ui.tabs().props("dense") as tabs:
-                #     ui.tab('Status')
-                #     ui.tab('Control')
-                #     # ui.tab('Run Logs')
-                #     ui.tab('Team Process')
-
-                # with ui.tab_panels(tabs, value='Status').classes('w-full justify-center items-center') as self.tabs:
-                #     # with ui.tab_panel('Status'):
-                #         self.status_display.content()
-                #     # with ui.tab_panel('Control'):
-                #         self.control_panel.content()
-                #     # with ui.tab_panel("Run Logs"):
-                #     #     self.run_log.content()
-                #     # with ui.tab_panel('Team Process') as self.user_tab:
-                #         self.command_select.content()
                 with ui.card().classes("w-full items-center"):
                     self.status_display.content()
-                # ui.separator()
-                # with ui.card().classes("w-full items-center"):
-                #     self.control_panel.content()
-                # ui.separator()
                 with ui.card().classes("w-full items-center"):
                     self.command_select.content()
 
             self.run_button = ui.button("Start Run", on_click=self.manage_run, color="green", icon="play_circle").classes('text-lg')
-
-            # self.tabs.on_value_change(lambda e: self._scroll_logs(e))
     
     async def manage_run(self):
         if self.run_log is None:
-            self.run_log = ProcessLog(self.cmd)
+            if getattr(ros_globals, 'shutting_down', False):
+                ui.notify('Shutdown in progress, not starting run', type='warning')
+                return
+
+            self.run_log = ProcessManager(self.cmd)
             self.run_button.text = "End Run"
             self.run_button.props('color=red icon=dangerous')
             return
@@ -143,6 +138,11 @@ class RunPage:
         if app_utils.is_gazebo_running():
             print("Gazebo is still running, killing process")
             app_utils.kill_gazebo()
+        
+        if self.recorded:
+            for recorder in ["inspection", "assembly", "environment"]:
+                if ros_globals.node:
+                    ros_globals.node.get_logger().info(f"{recorder.upper()} video can be found at /tmp/{recorder}_recorder_run_id_{ros_globals.node.run_id}.mp4")
 
         node = ros_globals.node
 
@@ -202,20 +202,29 @@ class StatusDisplay:
         self.chips: dict[int, ui.chip] = {}
         self.labels: dict[str, ui.label] = {}
 
+        self.kit_progress = 0
+        self.module_progress = 0
+
+        self.kit_progress_component = None
+        self.module_progress_component = None
+
     def content(self):
         with ui.row().classes("w-full justify-start"):
             ui.label("Competition Status").classes("text-sm text-gray-500")
         with ui.row().classes("w-full justify-center items-center"):
-            # ui.label("State").classes("text-base font-bold")
 
             for state, info in self.state_info.items():
                 self.chips[state] = ui.chip(info['label'], icon=info['icon']).props(self.CHIP_OFF_PROPS)
 
         with ui.row().classes("w-full justify-center items-center"):
-            # ui.label("Time").classes("text-base font-bold")
-        
+            self.kit_progress_component = ui.circular_progress(size="xl", show_value=False).bind_value(self, "kit_progress")
+            with self.kit_progress_component:
+                self.kitting_progress_label = ui.label("Kits").props('text-sm')     
             self.time_progress = ui.linear_progress(show_value=False).classes("w-80")
             self.labels["time_label"] = ui.label('00:00 / 00:00').classes('text-base')
+            self.module_progress_component = ui.circular_progress(size="xl", show_value=False).bind_value(self, "module_progress")
+            with self.module_progress_component:
+                self.module_progress_label = ui.label("Modules").props('text-sm') 
 
         ui.timer(0.1, self.update)
 
@@ -230,6 +239,14 @@ class StatusDisplay:
                 chip.props(self.state_info[state]['on_props'])
             else:
                 chip.props(self.CHIP_OFF_PROPS)
+        
+        if node.total_kits and node.kits_remaining:
+            self.kit_progress = (node.total_kits - node.kits_remaining) / node.total_kits
+            self.kitting_progress_label.text = f"Kits:\n{node.total_kits - node.kits_remaining}/{node.total_kits}"
+        
+        if node.total_modules and node.modules_remaining:
+            self.module_progress = (node.total_modules - node.modules_remaining) / node.total_modules
+            self.module_progress_label.text = f"Modules:\n{node.total_modules - node.modules_remaining}/{node.total_modules}"
         
         if node.time_elapsed is not None and node.time_remaining is not None:
             elapsed = node.time_elapsed
@@ -309,16 +326,18 @@ class UserCommandSelect:
     def __init__(self):
         self.packages = self.get_package_names()
 
-        self.command_type: Literal["run", "launch"] = "run"
-        self.selected_package = ""
-        self.selected_file = ""
+        self.validate_team_storage_values()
+        self.command_type: Literal["run", "launch"] = app.storage.general.get("team_command_type", "run")
+        self.selected_package = app.storage.general.get("selected_team_package", "")
+        self.selected_file = app.storage.general.get("selected_team_file", "")
+
         self.command = "No command"
 
         self.file_selection: ui.select | None = None
         self.button: ui.button
         self.container: ui.column
     
-        self.log: ProcessLog | None = None
+        self.log: ProcessManager | None = None
     
     def content(self):
         with ui.row().classes("w-full justify-start"):
@@ -329,70 +348,64 @@ class UserCommandSelect:
                 on_change=self.update_package_select
             ).classes("text-sm").props("spread no-caps").bind_value(self, 'command_type')
 
-            # with ui.row().classes("w-full items-center justify-center"):
             ui.select(
                 self.packages, 
                 label="Package", 
                 on_change=self.update_package_select
             ).classes("w-64").bind_value(self, "selected_package")
 
+            available_options = self.get_available_options()
             self.file_selection = ui.select(
-                [],
+                available_options,
                 label="File",
-                on_change=self.exe_selected
+                on_change=self.exe_selected,
             ).classes("w-64").bind_value(self, "selected_file")
-            
+            self.file_selection.set_options(available_options)
+
             with ui.row().classes("w-full items-center justify-center"):
                 ui.label().classes("text-sm font-bold").bind_text(self, "command")
                 self.button = ui.button(text="", icon="arrow_forward", on_click=self.start_stop_process).props("flat round dense")
                 self.button.tooltip("Run this ros command")
-                self.button.disable()
-        
-        ui.timer(0.1, self.update)
-
-    def update(self):
-        if self.command is None:
-            self.button.disable()
-        else:
-            self.button.enable()
-
-        if self.log is not None:
-            self.button.props('icon=cancel')
 
     async def start_stop_process(self):
         if self.log is None:
             if not self.command:
                 ui.notify("Command is None", type="negative")
                 return 
-            
-            self.log = ProcessLog(self.command)
+            if getattr(ros_globals, 'shutting_down', False):
+                ui.notify('Shutdown in progress, not starting process', type='warning')
+                return
 
-            # with self.container:
-            #     self.log.content()
+            self.log = ProcessManager(self.command)
+
+            self.button.props('icon=cancel')
 
         else:
-            self.button.disable()
-            self.button.props('loading')
+            self.button.props(add='loading')
 
             await self.log.close()
 
+            await asyncio.sleep(10)
+
             self.log = None
 
-            # self.container.clear()
+            self.button.props(remove='loading')
+
             self.button.props('icon=arrow_forward')
 
     def get_package_names(self) -> list[str]:
         return [p for p, pre in get_packages_with_prefixes().items() if pre!="/opt/ros/jazzy" and p not in UserCommandSelect.ARIAC_PACKAGES and "moveit_config" not in p]
 
-    def update_package_select(self):
-        
-        self.selected_file = ""
+    def update_package_select(self):        
+        app.storage.general["team_command_type"] = self.command_type
+        app.storage.general["selected_team_package"] = self.selected_package
 
         if self.file_selection is None:
             return
 
         if not self.selected_package:
             self.file_selection.set_options([])
+            self.selected_file = ""
             return
 
         match self.command_type:
@@ -409,9 +422,51 @@ class UserCommandSelect:
         self.file_selection.set_options(options)
     
     def exe_selected(self):
+        app.storage.general["selected_team_file"] = self.selected_file
         if self.selected_file and self.selected_package:
             self.command = f"ros2 {self.command_type} {self.selected_package} {self.selected_file}"
         else:
             self.command = "No command"
-    
-    
+
+    def reset_team_storage_values(self):
+        app.storage.general["team_command_type"] = "run"
+        app.storage.general["selected_team_package"] = ""
+        app.storage.general["selected_team_file"] = ""
+
+    def validate_team_storage_values(self):
+        if (command_type:=app.storage.general.get("team_command_type", None)) is None or \
+            None in [app.storage.general.get(var, None) for var in ["selected_team_package", "selected_team_file"]]:
+            self.reset_team_storage_values()
+            return
+        
+        if app.storage.general["selected_team_package"] not in self.packages:
+            self.reset_team_storage_values()
+            return
+        
+        match command_type:
+            case 'run':
+                dir = Path(get_package_prefix(app.storage.general["selected_team_package"])).joinpath('lib', app.storage.general["selected_team_package"])
+            case 'launch':
+                dir = Path(get_package_share_directory(app.storage.general["selected_team_package"]), "launch")
+        
+        if not dir.exists():
+            self.reset_team_storage_values()
+            return
+        
+        if app.storage.general["selected_team_file"] not in [f.name for f in dir.iterdir() if os.access(f, os.X_OK) and f.is_file()]:
+            self.reset_team_storage_values()
+            return
+        
+    def get_available_options(self) -> list[str]:
+        if app.storage.general["selected_team_package"] == "":
+            return []
+        
+        match self.command_type:
+            case 'run':
+                dir = Path(get_package_prefix(app.storage.general["selected_team_package"])).joinpath('lib', app.storage.general["selected_team_package"])
+            case 'launch':
+                dir = Path(get_package_share_directory(app.storage.general["selected_team_package"]), "launch")
+            
+        if dir.exists():
+            return [f.name for f in dir.iterdir() if os.access(f, os.X_OK) and f.is_file()]
+        return []

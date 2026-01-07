@@ -19,6 +19,9 @@ setup(
     license='BSD-3-Clause',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ['app = ariac_app.app:main'],
+        'console_scripts': [
+          'app = ariac_app.app:main',
+          'multirun_app = ariac_app.multirun_app:main'
+        ],
     },
 )

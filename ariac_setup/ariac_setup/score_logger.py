@@ -18,12 +18,8 @@ from ariac_setup.utils import ROSAsyncAdapter
 def print_format(s: str, results_width=60):
     print("|"+f"{s:^{results_width}}"+"|")
 
-class ScoreLogger(Node):
-    def __init__(self, db_path: str, node_name: str = ""):
-        super().__init__('score_logger' + node_name)
-        self.subscription = self.create_subscription(CompetitionStatus, 'competition_status', self.competition_status_cb, 10)
-        self.run_id = -1
-
+class ScoreLogger:
+    def __init__(self, db_path: str):
         try:
             self.db_manager = DatabaseManager(Path(db_path))
         except DatabaseError as e:
@@ -31,11 +27,6 @@ class ScoreLogger(Node):
             return
 
         self.competition_ended = asyncio.Event()
-
-    def competition_status_cb(self, msg: CompetitionStatus):
-        self.run_id = msg.run_id
-        if msg.competition_state==CompetitionStates.ENDED and self.run_id!=-1:
-            self.competition_ended.set()
     
     def get_results_str(self, run_id: int) -> str|None:        
         if (run := self.db_manager.get_run(run_id)) is None:
@@ -67,8 +58,22 @@ class ScoreLogger(Node):
         s += "\n"+penalty_score_table+"\n\n"
         return s
     
+class ScoreLoggerNode(Node):
+    def __init__(self, db_path: str):
+        super().__init__('score_logger')
+        self.score_logger = ScoreLogger(db_path)
+        self.subscription = self.create_subscription(CompetitionStatus, 'competition_status', self.competition_status_cb, 10)
+        self.run_id = -1
+
+        self.competition_ended = asyncio.Event()
+
+    def competition_status_cb(self, msg: CompetitionStatus):
+        self.run_id = msg.run_id
+        if msg.competition_state==CompetitionStates.ENDED and self.run_id!=-1:
+            self.competition_ended.set()
+    
     def output_results(self):
-        self.get_logger().info(self.get_results_str(self.run_id))
+        self.get_logger().info(self.score_logger.get_results_str(self.run_id))
 
 async def spin_executor(executor: Executor, shutdown_event: asyncio.Event):
     while not shutdown_event.is_set():
@@ -78,7 +83,7 @@ async def spin_executor(executor: Executor, shutdown_event: asyncio.Event):
 async def run(db_path: str):
     rclpy.init()
 
-    logger = ScoreLogger(db_path)
+    logger = ScoreLoggerNode(db_path)
 
     executor = MultiThreadedExecutor()
     executor.add_node(logger)

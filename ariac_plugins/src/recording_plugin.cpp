@@ -24,8 +24,6 @@ void RecordingPlugin::Configure(const gz::sim::Entity &_entity,
 {
   recorder_name = gz::sim::Model(_entity).Name(_ecm);
 
-  gzwarn << "\n\n\n\n\nMade recorder named: " + recorder_name + "\n\n\n\n\n\n";
-
   gz_node = std::make_shared<gz::transport::Node>();
 
   if (!rclcpp::ok()){
@@ -34,14 +32,12 @@ void RecordingPlugin::Configure(const gz::sim::Entity &_entity,
 
   if(_sdf->HasElement("recording_width")){
     recording_width = _sdf->Get<int>("recording_width");
-    std::cout << "RECORDING WIDTH" << recording_width << std::endl;
   } else {
     recording_width = 1920;
   }
 
   if(_sdf->HasElement("recording_height")){
     recording_height = _sdf->Get<int>("recording_height");
-    std::cout << "RECORDING HEIGHT" << recording_height << std::endl;
   } else {
     recording_height = 1080;
   }
@@ -55,7 +51,6 @@ void RecordingPlugin::Configure(const gz::sim::Entity &_entity,
 
   executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
   executor->add_node(ros_node);
-  // executor->add_callback_group(pub_cb_group, ros_node->get_node_base_interface());
 
   auto spin = [this](){
     while(rclcpp::ok()){
@@ -64,8 +59,6 @@ void RecordingPlugin::Configure(const gz::sim::Entity &_entity,
   };
 
   thread_executor_spin = std::thread(spin);
-  RCLCPP_INFO_STREAM(ros_node->get_logger(), "recorder name: " << recorder_name);
-
 
   tmp_path = recorder_name+".mp4";
 
@@ -114,8 +107,7 @@ void RecordingPlugin::rename_recording() {
   gzmsg << "Moving mp4 to target of " + goal_path + " from " + tmp_path;
   try {
     std::filesystem::rename(tmp_path, goal_path);
-    std::cout << "Video moved successfully";
   } catch (const std::filesystem::filesystem_error& e) {
-    std::cerr << "Error: " << e.what() << '\n';
+    throw std::runtime_error("Could not move file from " + tmp_path + " to " + goal_path);
   }
 }

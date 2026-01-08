@@ -21,9 +21,6 @@
             <far>20</far>
           </clip>
         </camera>
-
-        
-
       </sensor>
     </link>
   </model>

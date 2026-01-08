@@ -147,7 +147,7 @@ namespace ariac_plugins
       std::map<int, path_velocity_planner::Point> goal_locations = {
         {AGVStations::ASSEMBLY, { 5, 4.5 }},
         {AGVStations::SHIPPING, { 6.5, 2.55 }},
-        {AGVStations::RECYCLING, { 1.0, 6.2}}
+        {AGVStations::RECYCLING, { 1.0, 6.3}}
       };
       std::map<int, double> station_yaw = {
         {AGVStations::INSPECTION, M_PI_2},

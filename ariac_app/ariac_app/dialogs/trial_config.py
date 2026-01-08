@@ -217,19 +217,19 @@ class TrialConfigBuilder(ui.dialog):
         self.challenges_grid.update()
     
     async def add_challenge(self, original_challenge: Challenge | None = None):
+        challenge = None
         print("Inside add challenge: ", original_challenge)
-        if original_challenge is not None:
-            match(self.challenge_to_add.value):
-                case "Conveyor malfunction":
-                    challenge = await AddConveyorMalfunction(original_challenge) # type: ignore
-                case "Vacuum tool malfunction":
-                    challenge = await AddVacuumToolMalfunction(original_challenge) # type: ignore
-                case "Voltage tester malfunction":
-                    challenge = await AddVoltageTesterMalfunction(original_challenge) # type: ignore
-                case "High priority order":
-                    challenge = await AddHighPriorityOrder(original_challenge) # type: ignore
-                case _:
-                    raise ValueError("Invalid challenge in add_challenge")
+        match(self.challenge_to_add.value):
+            case "Conveyor malfunction":
+                challenge = await AddConveyorMalfunction(original_challenge) # type: ignore
+            case "Vacuum tool malfunction":
+                challenge = await AddVacuumToolMalfunction(original_challenge) # type: ignore
+            case "Voltage tester malfunction":
+                challenge = await AddVoltageTesterMalfunction(original_challenge) # type: ignore
+            case "High priority order":
+                challenge = await AddHighPriorityOrder(original_challenge) # type: ignore
+            case _:
+                raise ValueError("Invalid challenge in add_challenge")
         
         if challenge is None:
             return

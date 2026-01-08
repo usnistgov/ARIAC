@@ -458,8 +458,8 @@ def get_gz_args(trial_config: str, team_config: UserConfigParser, db_path: str, 
             ET.SubElement(include, "uri").text = f"model://recorders/{recorder_type}_recorder"
 
             plugin = ET.SubElement(include, "plugin", {
-                "filename": "libAriacRecordingPlugin.so",
-                "name": "ariac_plugins::AriacRecordingPlugin"
+                "filename": "libRecordingPlugin.so",
+                "name": "ariac_plugins::RecordingPlugin"
             })
 
             ET.SubElement(plugin, "recording_width").text = str(RECORDER_RESOLUTIONS[recorder_name][0])

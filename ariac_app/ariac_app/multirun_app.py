@@ -34,8 +34,6 @@ def _sigint_handler(signum, frame):
 
 signal.signal(signal.SIGINT, _sigint_handler)
 
-print("Should intercept signal")
-
 def shutdown():
     ui.navigate.to('/multirun')
     if app_utils.is_gazebo_running():

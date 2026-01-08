@@ -134,10 +134,10 @@ namespace ariac_plugins
       // Ros Service CBs
       void recycle_cells_cb(const ariac_interfaces::srv::Trigger::Request::SharedPtr, ariac_interfaces::srv::Trigger::Response::SharedPtr);
       void check_kit_quality_cb(const ariac_interfaces::srv::CheckKitQuality::Request::SharedPtr, ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr);
-
+      
       // GZ Service Callbacks
-      bool handle_kitting_submission(const gz::msgs::Empty &, gz::msgs::Boolean &);
-
+      bool handle_kitting_submission(const gz::msgs::Int32 &, gz::msgs::Boolean &);
+      ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr validate_kit(int cell_type);
       void spawn_tray(gz::math::Pose3d agv_pose, std::string tray_name);
   };
 }

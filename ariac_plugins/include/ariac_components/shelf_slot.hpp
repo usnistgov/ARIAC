@@ -12,15 +12,49 @@ namespace ariac_components
 {
   struct ShelfSlot
   {
-    inline static const std::vector<gz::math::Pose3d> SLOT_TRANSFORMS = {
-      gz::math::Pose3d(-0.49, 0.0, 0.505, 0.0, 0.0, 0.0),
-      gz::math::Pose3d(-0.20, 0.0, 0.505, 0.0, 0.0, 0.0),
-      gz::math::Pose3d(0.20, 0.0, 0.505, 0.0, 0.0, 0.0),
-      gz::math::Pose3d(0.49, 0.0, 0.505, 0.0, 0.0, 0.0),
-      gz::math::Pose3d(-0.49, 0.0, 1.005, 0.0, 0.0, 0.0),
-      gz::math::Pose3d(-0.20, 0.0, 1.005, 0.0, 0.0, 0.0),
-      gz::math::Pose3d(0.20, 0.0, 1.005, 0.0, 0.0, 0.0),
-      gz::math::Pose3d(0.49, 0.0, 1.005, 0.0, 0.0, 0.0)
+    inline static const std::vector<gz::math::Pose3d> KIT_TRAY_SHELF_SLOTS = {
+      gz::math::Pose3d(-0.45, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.15, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.15, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.45, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.45, 0.0, 0.450, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.15, 0.0, 0.450, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.15, 0.0, 0.450, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.45, 0.0, 0.450, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.45, 0.0, 0.775, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.15, 0.0, 0.775, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.15, 0.0, 0.775, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.45, 0.0, 0.775, 0.0, 0.0, 0.0),
+    };
+
+    inline static const std::vector<gz::math::Pose3d> HIGH_PRIO_SHELF_SLOTS = {
+      gz::math::Pose3d(-0.15, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.15, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.15, 0.0, 0.450, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.15, 0.0, 0.450, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.15, 0.0, 0.775, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.15, 0.0, 0.775, 0.0, 0.0, 0.0)
+    };
+
+    inline static const std::vector<gz::math::Pose3d> MODULE_SHELF_SLOTS = {
+      gz::math::Pose3d(-0.525, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.315, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.105, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.105, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.315, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.525, 0.0, 0.125, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.525, 0.0, 0.350, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.315, 0.0, 0.350, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.105, 0.0, 0.350, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.105, 0.0, 0.350, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.315, 0.0, 0.350, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.525, 0.0, 0.350, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.525, 0.0, 0.575, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.315, 0.0, 0.575, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(-0.105, 0.0, 0.575, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.105, 0.0, 0.575, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.315, 0.0, 0.575, 0.0, 0.0, 0.0),
+      gz::math::Pose3d(0.525, 0.0, 0.575, 0.0, 0.0, 0.0),
     };
 
     int index = 0;

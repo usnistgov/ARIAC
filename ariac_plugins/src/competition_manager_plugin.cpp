@@ -135,7 +135,9 @@ void CompetitionManagerPlugin::PreUpdate(
   case CompetitionStates::READY:
     break;
 
-  case CompetitionStates::STARTED: {
+  case CompetitionStates::STARTED:
+  case CompetitionStates::ORDERS_COMPLETE:
+  {
     // Update time
     update_competition_time();
 
@@ -165,17 +167,6 @@ void CompetitionManagerPlugin::PreUpdate(
     break;
   
   }
-
-  case CompetitionStates::ORDERS_COMPLETE:
-    update_competition_time();
-
-    if (bottom_shell_to_lock.has_value()){
-      gzwarn << "Locking module to shelf\n";
-      lock_to_shelf(_ecm, bottom_shell_to_lock.value());
-      bottom_shell_to_lock = std::nullopt;
-    }
-
-    break;
 
   case CompetitionStates::ENDED:
     if (!end_handled) {
@@ -421,13 +412,11 @@ void CompetitionManagerPlugin::publish_status() {
   status.run_id = run_id;
   status.time = competition_time;
   
-  if (competition_state == CompetitionStates::STARTED || competition_state == CompetitionStates::ENDED){
-    status.num_kits = trial.num_kits;
-    status.num_modules = trial.num_modules;
+  status.num_kits = trial.num_kits;
+  status.num_modules = trial.num_modules;
 
-    status.num_kits_remaining = status.num_kits - num_submitted_orders[ariac_db::OrderType::KIT];
-    status.num_modules_remaining = status.num_modules - num_submitted_orders[ariac_db::OrderType::MODULE];
-  }
+  status.num_kits_remaining = status.num_kits - num_submitted_orders[ariac_db::OrderType::KIT];
+  status.num_modules_remaining = status.num_modules - num_submitted_orders[ariac_db::OrderType::MODULE];
 
   competition_status_pub->publish(status);
 }

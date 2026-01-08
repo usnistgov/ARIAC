@@ -179,7 +179,6 @@ namespace ariac_plugins{
 
         _ecm.RequestRemoveEntity(lock_joint);
         lock_joint = gz::sim::kNullEntity;
-        kit_component = std::nullopt;
         tray_status = TrayState::MOVING_TO_SHELF;
 
         wait_until_iteration = _info.iterations + 5;
@@ -189,7 +188,25 @@ namespace ariac_plugins{
       
       case TrayState::MOVING_TO_SHELF:
       {
-        auto shelf_entity_opt = _ecm.EntityByName(shelf_model_names[agv_station]);
+        std::string shelf_name;
+        std::vector<gz::math::Pose3d> slots = ariac_components::ShelfSlot::KIT_TRAY_SHELF_SLOTS;
+
+        if (agv_station == AGVStations::RECYCLING){
+          shelf_name = "recycled_kit_shelves";
+        } else if(agv_station == AGVStations::SHIPPING){
+          shelf_name = "kit_shelves";
+          if (kit_component.has_value() && 
+              kit_component.value().slots[1].has_value() && 
+              kit_component.value().slots[1].value().cell_type == CellTypes::NIMH)
+          {
+            shelf_name = "high_priority_kit_shelves";
+            slots = ariac_components::ShelfSlot::HIGH_PRIO_SHELF_SLOTS;
+          }
+        }
+
+        kit_component = std::nullopt;
+
+        auto shelf_entity_opt = _ecm.EntityByName(shelf_name);
         
         if(!shelf_entity_opt.has_value()){
           throw std::runtime_error("Could not find shelf entity");
@@ -230,7 +247,7 @@ namespace ariac_plugins{
 
         auto tray_model = gz::sim::Model(tray_entity.value());
 
-        tray_model.SetWorldPoseCmd(_ecm, shelf_world_pose_opt.value() * shelf_slot.SLOT_TRANSFORMS[shelf_slot.index]);
+        tray_model.SetWorldPoseCmd(_ecm, shelf_world_pose_opt.value() * slots[shelf_slot.index]);
         shelf_slot.index++;
         
         _ecm.SetComponentData<gz::sim::components::ShelfSlot>(shelf_entity_opt.value(), shelf_slot);

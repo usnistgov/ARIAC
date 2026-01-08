@@ -119,12 +119,39 @@
     </joint>
 
     <link name="bottom_shell_insertion_link">
-      <pose> 0.15 0.0 0.43 0 0 0 </pose>
+      <pose> 0.15 0.0 0.425 0 0 0 </pose>
     </link>
 
     <joint name="bottom_shell_insertion_joint" type="fixed">
       <parent>base</parent>
       <child>bottom_shell_insertion_link</child>
+    </joint>
+
+    <link name="section_1_tf_link">
+      <pose> 0 0.0 0.425 0 0 0 </pose>
+    </link>
+
+    <joint name="section_1_tf_joint" type="fixed">
+      <parent>base</parent>
+      <child>section_1_tf_link</child>
+    </joint>
+
+    <link name="section_2_tf_link">
+      <pose> 0.7 -0.1 0.423 0 0 1.571 </pose>
+    </link>
+
+    <joint name="section_2_tf_joint" type="fixed">
+      <parent>base</parent>
+      <child>section_2_tf_link</child>
+    </joint>
+
+    <link name="section_3_tf_link">
+      <pose> 0.6 0.4 0.421 0 0 0 </pose>
+    </link>
+
+    <joint name="section_3_tf_joint" type="fixed">
+      <parent>base</parent>
+      <child>section_3_tf_link</child>
     </joint>
 
     <plugin
@@ -164,6 +191,9 @@
       <base_link>base</base_link>
       <static>true</static>
       <child link="bottom_shell_insertion_link" frame="bottom_shell_insertion_frame"/>
+      <child link="section_1_tf_link" frame="section_1_frame"/>
+      <child link="section_2_tf_link" frame="section_2_frame"/>
+      <child link="section_3_tf_link" frame="section_3_frame"/>
     </plugin>
 
     <joint name="assembly_conveyor_to_world" type="fixed">

@@ -182,11 +182,8 @@ void BottomShellPlugin::PreUpdate(
 
       teleport_step = _info.iterations;
       
-      gzmsg << "Teleported shell\n";
       break;
     case BottomShellTeleportState::JOINT_NEEDED:
-
-      gzmsg << "Creating joint\n";
 
       lock_joint = _ecm.CreateEntity();
 
@@ -196,15 +193,12 @@ void BottomShellPlugin::PreUpdate(
         "fixed"}));
 
       teleport_state = BottomShellTeleportState::JOINT_REMOVAL;
-      gzmsg << "Joint created\n";
+
       break;
     case BottomShellTeleportState::JOINT_REMOVAL:
       if(_info.iterations - teleport_step < 100){
         break;
       }
-
-
-      gzmsg << "Deleting joint\n";
 
       _ecm.RequestRemoveEntity(lock_joint);
 

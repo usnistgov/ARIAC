@@ -32,6 +32,7 @@
 #include <ariac_components/penalty.hpp>
 #include <ariac_components/inspection_results.hpp>
 #include <ariac_components/feed_results.hpp>
+#include <ariac_components/shelf_slot.hpp>
 
 // ROS
 #include <rclcpp/rclcpp.hpp>
@@ -121,6 +122,8 @@ class CompetitionManagerPlugin:
 
     void handle_competition_end(gz::sim::EntityComponentManager &_ecm);
     void shutdown_gazebo();
+
+    void lock_to_shelf(gz::sim::EntityComponentManager &_ecm, gz::sim::Entity bottom_shell_entity);
 
     std::string create_temp_file();
     int get_agv_at_shipping();
@@ -219,6 +222,8 @@ class CompetitionManagerPlugin:
     };
 
     SubmissionResponse module_submission_response;
+
+    std::optional<gz::sim::Entity> bottom_shell_to_lock = std::nullopt;
   };
 }
 

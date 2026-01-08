@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <sdf version="1.11">
-  <model name="module_shelf">
+  <model name="module_shelves">
   
     <static>true</static>
 
@@ -8,7 +8,7 @@
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://module_shelf/meshes/module_shelf.gltf</uri>
+            <uri>model://module_shelves/meshes/module_shelf.gltf</uri>
           </mesh>
         </geometry>
       </visual>

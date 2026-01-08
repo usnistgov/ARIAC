@@ -192,14 +192,14 @@ namespace ariac_plugins{
         std::vector<gz::math::Pose3d> slots = ariac_components::ShelfSlot::KIT_TRAY_SHELF_SLOTS;
 
         if (agv_station == AGVStations::RECYCLING){
-          shelf_name = "recycling_kit_tray_shelves";
+          shelf_name = "recycled_kit_shelves";
         } else if(agv_station == AGVStations::SHIPPING){
-          shelf_name = "shipping_kit_tray_shelves";
+          shelf_name = "kit_shelves";
           if (kit_component.has_value() && 
               kit_component.value().slots[1].has_value() && 
               kit_component.value().slots[1].value().cell_type == CellTypes::NIMH)
           {
-            shelf_name = "high_priority_tray_shelves";
+            shelf_name = "high_priority_kit_shelves";
             slots = ariac_components::ShelfSlot::HIGH_PRIO_SHELF_SLOTS;
           }
         }

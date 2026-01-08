@@ -142,7 +142,7 @@ void CompetitionManagerPlugin::PreUpdate(
     update_competition_time();
 
     // Handle publish high priority order
-    for (const auto order : high_priority_orders) {
+    for (auto &order : high_priority_orders) {
       if (order.published) {
         continue;
       }
@@ -152,6 +152,7 @@ void CompetitionManagerPlugin::PreUpdate(
         msg.id = order.id;
 
         high_priority_pub->publish(msg);
+        order.published = true;
       }
     }
 
@@ -572,7 +573,14 @@ void CompetitionManagerPlugin::handle_module_order_submission(
   module_submission_response = check_module(_ecm, module);
 
   // Teleport module to shelf
-  std::string shelf_name = "assembly_module_shelf";
+  std::string shelf_name;
+
+  if (module_submission_response.status == SubmissionStatus::SUCCESSFUL) {
+    shelf_name = "module_shelves";
+  } else {
+    shelf_name = "recycled_module_shelves";
+  }
+
   std::vector<gz::math::Pose3d> slots = ariac_components::ShelfSlot::MODULE_SHELF_SLOTS;
 
   auto shelf_entity_opt = _ecm.EntityByName(shelf_name);

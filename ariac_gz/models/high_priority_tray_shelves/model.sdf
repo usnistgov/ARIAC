@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <sdf version="1.11">
-  <model name="kit_tray_shelves">
+  <model name="high_priority_tray_shelves">
   
     <static>true</static>
 
@@ -8,7 +8,7 @@
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://kit_tray_shelves/meshes/kit_tray_shelf.gltf</uri>
+            <uri>model://high_priority_tray_shelves/meshes/high_priority_tray_shelf.gltf</uri>
           </mesh>
         </geometry>
       </visual>

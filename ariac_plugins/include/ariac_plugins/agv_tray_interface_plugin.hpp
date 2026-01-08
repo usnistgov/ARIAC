@@ -87,11 +87,6 @@ namespace ariac_plugins
 
       // General Information
       const std::string floor_link_name = "floor";
-      
-      std::map<int, std::string> shelf_model_names = {
-        {AGVStations::SHIPPING, "shipping_kit_tray_shelves"},
-        {AGVStations::RECYCLING, "recycling_kit_tray_shelves"}
-      };
 
       std::map<int, double> nominal_voltages = {
         {CellTypes::LI_ION, CellTypes::LI_ION_NOMINAL_VOLTAGE},

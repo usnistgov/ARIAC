@@ -156,11 +156,25 @@ void CompetitionManagerPlugin::PreUpdate(
     // Handle module submission
     if (module_submission_response.status == SubmissionStatus::REQUESTED) {
       handle_module_order_submission(_ecm);
+    } else if (bottom_shell_to_lock.has_value()){
+      gzwarn << "Locking module to shelf\n";
+      lock_to_shelf(_ecm, bottom_shell_to_lock.value());
+      bottom_shell_to_lock = std::nullopt;
     }
+    
+    break;
+  
   }
 
   case CompetitionStates::ORDERS_COMPLETE:
     update_competition_time();
+
+    if (bottom_shell_to_lock.has_value()){
+      gzwarn << "Locking module to shelf\n";
+      lock_to_shelf(_ecm, bottom_shell_to_lock.value());
+      bottom_shell_to_lock = std::nullopt;
+    }
+
     break;
 
   case CompetitionStates::ENDED:
@@ -568,12 +582,47 @@ void CompetitionManagerPlugin::handle_module_order_submission(
 
   module_submission_response = check_module(_ecm, module);
 
-  for (const auto &[slot, entity] : module.cell_entities) {
-    _ecm.RequestRemoveEntity(entity);
+  // Teleport module to shelf
+  std::string shelf_name = "assembly_module_shelf";
+  std::vector<gz::math::Pose3d> slots = ariac_components::ShelfSlot::MODULE_SHELF_SLOTS;
+
+  auto shelf_entity_opt = _ecm.EntityByName(shelf_name);
+  
+  if(!shelf_entity_opt.has_value()){
+    throw std::runtime_error("Could not find module shelf entity");
   }
 
-  _ecm.RequestRemoveEntity(module.bottom_shell_entity);
-  _ecm.RequestRemoveEntity(module.top_shell_entity);
+  ariac_components::ShelfSlot shelf_slot;
+
+  if(!_ecm.EntityHasComponentType(shelf_entity_opt.value(), gz::sim::components::ShelfSlot::typeId)){
+    _ecm.CreateComponent<gz::sim::components::ShelfSlot>(shelf_entity_opt.value(), gz::sim::components::ShelfSlot(shelf_slot));
+  } else {
+    auto component = _ecm.Component<gz::sim::components::ShelfSlot>(shelf_entity_opt.value());
+    if (component == nullptr) {
+      throw std::runtime_error("Could not find shelf slot component");
+    }
+    shelf_slot = component->Data();
+  }
+  
+  auto shelf_base_link_entity = gz::sim::Model(shelf_entity_opt.value()).LinkByName(_ecm, "base_link");
+  if (shelf_base_link_entity == gz::sim::kNullEntity) {
+    throw std::runtime_error("Unable to find shelf base link");
+  }
+
+  gz::sim::Link shelf_base_link = gz::sim::Link(shelf_base_link_entity);
+  auto shelf_world_pose_opt = shelf_base_link.WorldPose(_ecm);
+  if (!shelf_world_pose_opt.has_value()){
+    throw std::runtime_error("Could not find world pose for shelf_base_link");
+  }
+  
+  auto bottom_shell_model = gz::sim::Model(module.bottom_shell_entity);
+
+  bottom_shell_model.SetWorldPoseCmd(_ecm, shelf_world_pose_opt.value() * slots[shelf_slot.index]);
+  shelf_slot.index++;
+  
+  _ecm.SetComponentData<gz::sim::components::ShelfSlot>(shelf_entity_opt.value(), shelf_slot);
+
+  bottom_shell_to_lock = module.bottom_shell_entity;
 }
 
 void CompetitionManagerPlugin::handle_competition_end(
@@ -862,4 +911,23 @@ bool CompetitionManagerPlugin::orders_complete() {
   return num_submitted_orders[ariac_db::OrderType::KIT] == trial.num_kits &&
     num_submitted_orders[ariac_db::OrderType::MODULE] == trial.num_modules &&
     num_submitted_orders[ariac_db::OrderType::HIGH_PRIORITY] == high_priority_orders.size();
+}
+
+void CompetitionManagerPlugin::lock_to_shelf(
+  gz::sim::EntityComponentManager &_ecm,
+  gz::sim::Entity bottom_shell_entity)
+{
+  gz::sim::Entity floor_link = _ecm.EntityByComponents(gz::sim::components::Name("floor"), gz::sim::components::Link());
+
+  if (floor_link == gz::sim::kNullEntity) {
+    throw std::runtime_error("Unable to locate floor link");
+  }
+
+  auto bottom_shell_link = gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link");
+
+  if (bottom_shell_link == gz::sim::kNullEntity) {
+    throw std::runtime_error("Unable to get base link for bottom_shell");
+  }
+
+  _ecm.CreateComponent(_ecm.CreateEntity(), gz::sim::components::DetachableJoint({floor_link, bottom_shell_link, "fixed"}));
 }

@@ -16,7 +16,7 @@ class ParamSetter(Node):
         sim_time_param = Parameter('use_sim_time', Parameter.Type.BOOL, True)
         self.set_parameters([sim_time_param])
 
-    async def set_param(self, target_node_name: str, param_name: str, param_value: Any, timeout: float = 5.0) -> bool:
+    async def set_param(self, target_node_name: str, param_name: str, param_value: Any, timeout: float = 10.0) -> bool:
 
         # Create a client to the target node's parameter service
         client = self.create_client(srv_type=SetParameters, srv_name=f'/{target_node_name}/set_parameters')

@@ -70,10 +70,11 @@ class MultirunPage:
             trials: str | None = None,
             headless: str | None = None,
             record: str | None = None,
+            save_unscored_videos: str | None = None,
             db_path: str | None = None
           ):
                 
-        if successful_runs is None or max_runs is None or runs_to_score is None or trials is None or headless is None or record is None:
+        if successful_runs is None or max_runs is None or runs_to_score is None or trials is None or headless is None or record is None or save_unscored_videos is None:
             print("Trials, successful runs, and max runs have to be entered")
             ui.navigate.to("/")
             return
@@ -98,6 +99,8 @@ class MultirunPage:
         self.completed_trials = 0
         self.total_runs = self.max_runs * len(self.trials_to_run)
         self.runs_completed_ratio = 0.0
+
+        self.save_unscored_videos = save_unscored_videos.lower() == "true"
 
         self.current_trial = "None"
 
@@ -160,13 +163,15 @@ class MultirunPage:
             self.run_button = ui.button("Start Runs", on_click=self.run_comp_button_func, color="green", icon="play_circle").classes('text-lg')
             self.stop_button = ui.button("Stop", on_click=self.quit, color="red", icon="dangerous").classes('text-lg')
     
+    # replace the old button handler:
     async def run_comp_button_func(self):
-        await run.io_bound(self.run_competition)
-    
-    def run_competition(self):
+        asyncio.create_task(self.run_competition_async())
+
+    # new async version of the runner (replace the old run_competition)
+    async def run_competition_async(self):
         if self.max_runs is None or self.successful_run_threshold is None or ros_globals.node is None:
             return
-        
+
         if Path("/results").exists():
             results_dir = Path("/results") / "team_results"
         else:
@@ -177,9 +182,9 @@ class MultirunPage:
         results_dir = results_dir / f"competition_run_{competition_run}"
         results_dir.mkdir(mode=0o777, exist_ok=True, parents=True)
         os.chmod(results_dir, 0o777)
-        
+
         self.run_button.disable()
-        
+
         for trial in self.trials_to_run:
             self.completed_runs_of_trial = 0
             self.current_trial = Path(trial).name
@@ -193,23 +198,27 @@ class MultirunPage:
 
                 ros_globals.node.reset()
                 self.trial_infos[trial].run_count += 1
-                successful = asyncio.run(self.run_trial(trial))
+
+                # run_trial is async, await it instead of using asyncio.run
+                successful = await self.run_trial(trial)
+
                 if successful:
                     self.trial_infos[trial].successful_count += 1
                     if self.trial_infos[trial].successful_count >= self.successful_run_threshold:
                         self.run_info_table.update(self.trial_infos)
                         break
+
                 self.runs_completed_ratio = (self.completed_trials * self.max_runs + self.completed_runs_of_trial) / self.total_runs
                 self.run_info_table.update(self.trial_infos)
 
-            
-            self.organize_files(trial, trial_dir_path)
-            
+            # This is blocking (file moves + video work) — run it in a threadpool
+            await run.io_bound(self.organize_files, trial, trial_dir_path)
+
             self.completed_runs_of_trial = 0
             self.completed_trials += 1
             self.runs_completed_ratio = (self.completed_trials * self.max_runs) / self.total_runs
             self.trials_completed_label.set_text(f"Trials completed: {self.completed_trials}")
-            
+
             if self.quitting or ros_globals.shutting_down:
                 print(f"self.quitting: {self.quitting}\tshutting_down: {ros_globals.shutting_down}")
                 print("Quitting detected")
@@ -274,7 +283,8 @@ class MultirunPage:
                         with open(logs_dir / "score.txt", "w") as f:
                             f.write(score_output)
 
-            if scored:
+            file_not_found = False
+            if scored or self.save_unscored_videos:
                 videos_dir = run_dir / "videos"
                 videos_dir.mkdir(mode=0o777, parents=True)
                 os.chmod(videos_dir, 0o777)
@@ -283,23 +293,35 @@ class MultirunPage:
                     current_video_path = Path(current_video_path_str)
                     try:
                         shutil.move(current_video_path, videos_dir / target)
-                        self.video_combiner.create_video(
-                            str(videos_dir / "inspection.mp4"),
-                            str(videos_dir / "assembly.mp4"),
-                            str(videos_dir / "environment.mp4"),
-                            str(videos_dir / "combined.mp4"),
-                            trial_id=Path(trial_path).name.split(".")[0],
-                            run_id=str(run_id),
-                            kits_completed=self.trial_infos[trial_path].run_infos[run_id].kits_completed, # type: ignore
-                            modules_completed=self.trial_infos[trial_path].run_infos[run_id].modules_completed, # type: ignore
-                            kits_requested=ros_globals.node.total_kits, # type: ignore
-                            modules_requested=ros_globals.node.total_modules, # type: ignore
-                            score=score,
-                            time_limit_seconds=-1 if ros_globals.node is None or ros_globals.node.time_limit is None \
-                                               else ros_globals.node.time_limit,
-                        )
                     except FileNotFoundError as e:
                         print(f"Could not move file since it does not exist.\nError: {e}")
+                        file_not_found = True
+                        continue
+                if file_not_found:
+                    continue
+                        
+                
+                if score != -inf:
+                    self.video_combiner.create_video(
+                        str(videos_dir / "inspection.mp4"),
+                        str(videos_dir / "assembly.mp4"),
+                        str(videos_dir / "environment.mp4"),
+                        str(videos_dir / "combined.mp4"),
+                        trial_id=Path(trial_path).name.split(".")[0],
+                        run_id=str(run_id),
+                        kits_completed=self.trial_infos[trial_path].run_infos[run_id].kits_completed, # type: ignore
+                        modules_completed=self.trial_infos[trial_path].run_infos[run_id].modules_completed, # type: ignore
+                        kits_requested=ros_globals.node.total_kits, # type: ignore
+                        modules_requested=ros_globals.node.total_modules, # type: ignore
+                        score=score,
+                        time_limit_seconds=-1 if ros_globals.node is None or ros_globals.node.time_limit is None \
+                                            else ros_globals.node.time_limit,
+                    )
+                    if not scored:
+                        (videos_dir / "inspection.mp4").unlink(True)
+                        (videos_dir / "assembly.mp4").unlink(True)
+                        (videos_dir / "environment.mp4").unlink(True)
+
                 
     async def cleanup_before_start(self):
         for p in psutil.process_iter(['pid', 'cmdline']):
@@ -464,7 +486,13 @@ class MultirunPage:
             print("Gazebo is still running, killing process")
             app_utils.kill_gazebo()
     
-    async def quit(self):
+    async def quit(self, event=None, navigate: bool = True):
+        """Stop processes and optionally navigate back to the root page.
+
+        The optional `event` parameter keeps the signature compatible with
+        NiceGUI `on_click` handlers. Set `navigate=False` when quitting from
+        a client-disconnect handler to avoid using a deleted client.
+        """
         self.quitting = True
         await self.kill_processes()
 
@@ -472,8 +500,15 @@ class MultirunPage:
 
         if node is not None:
             node.reset()
-        
-        ui.navigate.to("/")
+
+        if navigate:
+            try:
+                ui.navigate.to("/")
+            except Exception:
+                # If the client has already been deleted (disconnect flow),
+                # attempting to navigate will warn/use the client. Ignore
+                # any errors here since we're already quitting.
+                pass
 
     async def check_process(self):
         if not self.competition_process:
@@ -487,10 +522,12 @@ class MultirunPage:
     async def _handle_disconnect(self):
         if not self.competition_process:
             return
-        
+
         if self.competition_process.is_running or (self.team_process is not None and self.team_process.is_running):
             print('Client disconnected before all processes were ended. Stopping all processes...')
-            await self.quit()
+            # Don't attempt to navigate during disconnect handling because the
+            # client may have been deleted; just stop processes.
+            await self.quit(navigate=False)
 
 class RunInfoTable:
     def __init__(self, max_runs: int, successful_run_threshold):
@@ -626,11 +663,11 @@ class VideoCombiner:
             # Inspection frame
             self.display_boxed_string(canvas, "1", 0, 0)
             # Environment 1
-            self.display_boxed_string(canvas, "1", 1150, 600)
+            self.display_boxed_string(canvas, "1", 1150, 570)
             # Assembly frame
             self.display_boxed_string(canvas, "2", 0, height)
             # Environment 2
-            self.display_boxed_string(canvas, "2", 1430, 200)
+            self.display_boxed_string(canvas, "2", 1400, 270)
 
             # -----------------------------------
             # Add text to bottom-right white area

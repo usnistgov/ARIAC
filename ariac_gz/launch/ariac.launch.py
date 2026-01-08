@@ -38,19 +38,13 @@ from ariac_setup.structures import Cheats
 RECORDER_POSITIONS = {
     "inspection_recorder": [0.43, 2.08, 1.03, 0.0, 0.45, -0.82],
     "assembly_recorder": [5.36, 6.59, 1.67, 0.0, 0.71, -2.42],
-    "environment_recorder": [3.24, 0.89, 3.82, 0.0, 1.15, 1.57]
+    "environment_recorder": [3.63, 0.54, 4.61, 0.0, 1.15, 1.57]
 }
 
 RECORDER_RESOLUTIONS = {
     "inspection_recorder": (1080, 540),
     "assembly_recorder": (1080, 540),
     "environment_recorder": (840, 1080)
-}
-
-RECORDER_POSITIONS = {
-    "inspection_recorder": [0.43, 2.08, 1.03, 0.0, 0.45, -0.82],
-    "assembly_recorder": [5.36, 6.59, 1.67, 0.0, 0.71, -2.42],
-    "environment_recorder": [3.24, 0.89, 3.82, 0.0, 1.15, 1.57]
 }
 
 class SchemaValidator:

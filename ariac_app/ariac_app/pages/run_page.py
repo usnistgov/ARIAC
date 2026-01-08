@@ -129,8 +129,8 @@ class RunPage:
         if self.run_log and self.run_log.is_running:
             tasks.append(self.run_log.close())
 
-        if self.command_select.log is not None and self.command_select.log.is_running:
-            tasks.append(self.command_select.log.close())
+        if self.command_select.process is not None and self.command_select.process.is_running:
+            tasks.append(self.command_select.process.close())
 
         if tasks:
             await asyncio.gather(*tasks)
@@ -163,7 +163,7 @@ class RunPage:
         if not self.run_log:
             return
         
-        if self.run_log.is_running or (self.command_select.log is not None and self.command_select.log.is_running):
+        if self.run_log.is_running or (self.command_select.process is not None and self.command_select.process.is_running):
             print('Client disconnected before all processes were ended. Stopping all processes...')
             await self._stop_processes()
 
@@ -217,14 +217,22 @@ class StatusDisplay:
                 self.chips[state] = ui.chip(info['label'], icon=info['icon']).props(self.CHIP_OFF_PROPS)
 
         with ui.row().classes("w-full justify-center items-center"):
-            self.kit_progress_component = ui.circular_progress(size="xl", show_value=False).bind_value(self, "kit_progress")
-            with self.kit_progress_component:
-                self.kitting_progress_label = ui.label("Kits").props('text-sm')     
+            
+            with ui.column().classes("w-auto justify-center items-center"):
+                ui.label("Kits").props('text-sm')
+                self.kit_progress_component = ui.circular_progress(size="xl", show_value=False).bind_value(self, "kit_progress")
+                with self.kit_progress_component:
+                    self.kitting_progress_label = ui.label("0/0").props('text-sm')  
+            
+            with ui.column().classes("w-auto justify-center items-center"):
+                ui.label("Modules").props('text-sm')
+                self.module_progress_component = ui.circular_progress(size="xl", show_value=False).bind_value(self, "module_progress")
+                with self.module_progress_component:
+                    self.module_progress_label = ui.label("0/0").props('text-sm')    
+        
+        with ui.row().classes("w-full justify-center items-center"):
             self.time_progress = ui.linear_progress(show_value=False).classes("w-80")
             self.labels["time_label"] = ui.label('00:00 / 00:00').classes('text-base')
-            self.module_progress_component = ui.circular_progress(size="xl", show_value=False).bind_value(self, "module_progress")
-            with self.module_progress_component:
-                self.module_progress_label = ui.label("Modules").props('text-sm') 
 
         ui.timer(0.1, self.update)
 
@@ -242,11 +250,11 @@ class StatusDisplay:
         
         if node.total_kits and node.kits_remaining:
             self.kit_progress = (node.total_kits - node.kits_remaining) / node.total_kits
-            self.kitting_progress_label.text = f"Kits:\n{node.total_kits - node.kits_remaining}/{node.total_kits}"
+            self.kitting_progress_label.text = f"{node.total_kits - node.kits_remaining}/{node.total_kits}"
         
         if node.total_modules and node.modules_remaining:
             self.module_progress = (node.total_modules - node.modules_remaining) / node.total_modules
-            self.module_progress_label.text = f"Modules:\n{node.total_modules - node.modules_remaining}/{node.total_modules}"
+            self.module_progress_label.text = f"{node.total_modules - node.modules_remaining}/{node.total_modules}"
         
         if node.time_elapsed is not None and node.time_remaining is not None:
             elapsed = node.time_elapsed
@@ -337,7 +345,7 @@ class UserCommandSelect:
         self.button: ui.button
         self.container: ui.column
     
-        self.log: ProcessManager | None = None
+        self.process: ProcessManager | None = None
     
     def content(self):
         with ui.row().classes("w-full justify-start"):
@@ -368,7 +376,7 @@ class UserCommandSelect:
                 self.button.tooltip("Run this ros command")
 
     async def start_stop_process(self):
-        if self.log is None:
+        if self.process is None:
             if not self.command:
                 ui.notify("Command is None", type="negative")
                 return 
@@ -376,18 +384,22 @@ class UserCommandSelect:
                 ui.notify('Shutdown in progress, not starting process', type='warning')
                 return
 
-            self.log = ProcessManager(self.command)
+            self.process = ProcessManager(self.command)
 
             self.button.props('icon=cancel')
 
         else:
             self.button.props(add='loading')
 
-            await self.log.close()
+            tasks = []
 
-            await asyncio.sleep(10)
+            if self.process and self.process.is_running:
+                tasks.append(self.process.close())
 
-            self.log = None
+            if tasks:
+                await asyncio.gather(*tasks)
+
+            self.process = None
 
             self.button.props(remove='loading')
 

@@ -96,7 +96,7 @@ class AppNode(Node):
         self._current_state = msg.competition_state
         self._competition_time = msg.time
 
-        if msg.competition_state == CompetitionStates.STARTED:
+        if msg.competition_state in [CompetitionStates.STARTED, CompetitionStates.ORDERS_COMPLETE]:
             self._kits_remaining = msg.num_kits_remaining
             self._modules_remaining = msg.num_modules_remaining
             self._total_kits = msg.num_kits

@@ -2,6 +2,13 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.0 (2026-01-09)
+----------------------
+* Refactored AGV system with improved tray handling and collision detection
+* Added simulation recording capability for playback
+* Updated physical inspection system logic
+* Fixed crash in check_kit_quality service with invalid cells
+
 2025.2.1 (2025-12-05)
 ----------------------
 

@@ -2,6 +2,14 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.0 (2026-01-09)
+----------------------
+* Separated kit tray from AGV into standalone model
+* Added high priority tray shelf models
+* Updated shelf models with improved mesh assets
+* Added recorder models for simulation playback
+* Fixed lidar sensor visual position offset
+
 2025.2.1 (2025-12-05)
 ----------------------
 * Added additional defect models for battery cells.

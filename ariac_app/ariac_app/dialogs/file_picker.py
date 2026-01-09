@@ -11,16 +11,21 @@ class FilePicker(ui.dialog):
         super().__init__()
 
         self.path = Path(directory).expanduser()
+        self.selected_file: str | None = None
+
         self.upper_limit = Path('/')
 
         self.selection_type = selection_type
 
         self.extension = extension
 
-        with self, ui.card():
-            with ui.row().classes('w-96 justify-end'):
-                ui.button(icon='home', on_click=self.go_home)
-                ui.button(icon='subdirectory_arrow_left', on_click=self.go_up)
+        with self, ui.card().classes('w-3/4 max-w-lg'):
+            with ui.row().classes('w-full items-center justify-between'):
+                with ui.row().classes('w-full justify-end'):
+                    ui.button(icon='home', on_click=self.go_home)
+                    ui.button(icon='subdirectory_arrow_left', on_click=self.go_up)
+                with ui.row().classes('w-full justify-begin'):
+                    ui.label().bind_text_from(self, "label_path").classes('text-xs font-mono')
 
             self.grid = ui.aggrid(
                 {
@@ -42,8 +47,14 @@ class FilePicker(ui.dialog):
         
         self.update_grid()
 
+    @property
+    def label_path(self):
+        if self.selected_file:
+            return str(self.path.joinpath(self.selected_file))
+        return str(self.path)
+
     def go_home(self):
-        self.path = Path.home()
+        self.path = Path("/team_ws") if Path("/team_ws").exists() else Path.home()
         self.update_grid()
 
     def go_up(self):
@@ -52,7 +63,8 @@ class FilePicker(ui.dialog):
             self.update_grid()
 
     def update_grid(self) -> None:
-        self.ok_button.disable()
+        if self.extension is not None:
+            self.ok_button.disable()
 
         paths = list(self.path.glob('*'))
         paths = [p for p in paths if not p.name.startswith('.')]
@@ -70,25 +82,64 @@ class FilePicker(ui.dialog):
             }
             for p in paths
         ]
-        
+
         self.grid.update()
 
     def handle_double_click(self, e: events.GenericEventArguments) -> None:
-        self.path = Path(e.args['data']['path'])
-        if self.path.is_dir():
+        if Path(e.args['data']['path']).is_dir():
+            self.path = Path(e.args['data']['path'])
             self.update_grid()
 
     def handle_selection(self, e: events.GenericEventArguments) -> None:
-        path = Path(e.args['data']['path'])
+        if isinstance(e.args, dict):
+            payload = e.args
+        elif isinstance(e.args, (list, tuple)) and e.args:
+            payload = e.args[0]
+        else:
+            payload = {}
+
+        path_str = None
+        if isinstance(payload, dict):
+            path_str = (
+                payload.get('path') or                             
+                (payload.get('data') or {}).get('path') or         
+                payload.get('selected')                            
+            )
+
+        if not path_str:
+            self.selected_file = None
+            self.ok_button.disable()
+            return
+
+        path = Path(path_str)
+
+        self.selected_file = None
 
         if path.is_file() and self.selection_type == "file":
-            self.ok_button.enable()
+            selected_flag = False
+
+            if isinstance(payload, dict) and 'selected' in payload:
+                selected_flag = bool(payload['selected'])
+
+            else:
+                selected_flag = True
+
+            if selected_flag:
+                self.ok_button.enable()
+                self.selected_file = path.name
+            else:
+                self.ok_button.disable()
+
         elif path.is_dir() and self.selection_type == "directory":
             self.ok_button.enable()
+
         else:
             self.ok_button.disable()
+
 
     async def _handle_ok(self):
         row = await self.grid.get_selected_row()
         if row is not None:
             self.submit(Path(row['path']))
+        else:
+            self.submit(self.path)

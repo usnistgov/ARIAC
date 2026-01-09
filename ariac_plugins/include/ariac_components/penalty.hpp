@@ -1,8 +1,10 @@
-#pragma once
+#ifndef ARIAC_COMPONENTS_PENALTY_HH_
+#define ARIAC_COMPONENTS_PENALTY_HH_
 
 #include <string>
 #include <gz/sim/components/Component.hh>
 #include <gz/sim/components/Factory.hh>
+#include <gz/sim/config.hh>
 
 namespace ariac_components
 {
@@ -13,30 +15,59 @@ namespace ariac_components
     AGV_COLLISION,
     ROBOT_COLLISION
   };
-  
-  struct Penalty{
+
+  struct Penalty
+  {
     PenaltyType type;
     double time;
     std::string description;
 
-    static bool equal(const ariac_components::Penalty &a, const ariac_components::Penalty &b){
-      return (a.type == b.type &&
-              a.description == b.description && 
-              a.time == b.time);
+    bool operator==(const Penalty &_other) const
+    {
+      return (this->type == _other.type &&
+              this->time == _other.time &&
+              this->description == _other.description);
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const Penalty& p){
-      os << "Time: " << p.time
-         << ", Description: " << p.description;
-      return os;
+    static bool equal(const ariac_components::Penalty &a, const ariac_components::Penalty &b)
+    {
+      return a == b;
     }
   };
+
+  namespace serializers
+  {
+    class PenaltySerializer
+    {
+      public: static std::ostream &Serialize(std::ostream &_out,
+                                             const Penalty &_penalty)
+      {
+        _out << static_cast<int>(_penalty.type) << " "
+             << _penalty.time << " "
+             << _penalty.description;
+        return _out;
+      }
+
+      public: static std::istream &Deserialize(std::istream &_in,
+                                               Penalty &_penalty)
+      {
+        int type_value;
+        _in >> type_value
+            >> _penalty.time
+            >> _penalty.description;
+        _penalty.type = static_cast<PenaltyType>(type_value);
+        return _in;
+      }
+    };
+  }
 }
 
 namespace gz::sim::components
 {
-  struct PenaltyTag;
-  using Penalty = Component<ariac_components::Penalty, PenaltyTag>;
-
-  GZ_SIM_REGISTER_COMPONENT("Penalty", Penalty)
+  using Penalty = Component<ariac_components::Penalty,
+                            class PenaltyTag,
+                            ariac_components::serializers::PenaltySerializer>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.Penalty", Penalty)
 }
+
+#endif

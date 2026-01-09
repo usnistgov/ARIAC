@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.0 (2026-01-09)
+----------------------
+* Added CheckKitQuality service for kit verification on AGVs
+
 2025.2.1 (2025-12-05)
 ----------------------
 

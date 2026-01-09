@@ -10,6 +10,8 @@
 #include <gz/transport/Node.hh>
 #include <gz/math/Pose3.hh>
 #include <gz/math/Vector3.hh>
+#include <gz/plugin/Register.hh>
+#include <gz/common/Console.hh>
 
 #include <rclcpp/rclcpp.hpp>
 #include "rclcpp_action/create_server.hpp"
@@ -20,11 +22,11 @@
 
 #include <path_velocity_planner/velocity_planner.hpp>
 
+#include <ariac_components/penalty.hpp>
+
 #include <ariac_interfaces/msg/agv_stations.hpp>
 #include <ariac_interfaces/msg/agv_status.hpp>
 #include <ariac_interfaces/action/move_agv.hpp>
-
-#include <ariac_components/penalty.hpp>
 
 #include <thread>
 #include <chrono>
@@ -48,19 +50,11 @@ using GoalHandlePtr = std::shared_ptr<GoalHandle>;
 namespace ariac_plugins
 {
   enum class AGVMotionStatus {
-    CONFIGURE,
     IDLE,
-    PROCESSING,
+    HOLD_POSITION,
     MOVING,
-    MOTION_FINISHED,
-    TELEPORTING
-  };
-
-  enum class AGVLockState {
-    LOCKED,
-    UNLOCKED,
-    LOCK_REQUESTED,
-    UNLOCK_REQUESTED
+    TELEPORT,
+    COMPLETE_GOAL
   };
 
   enum class AGVPath {
@@ -76,13 +70,11 @@ namespace ariac_plugins
   class AgvMotionPlugin:
     public gz::sim::System,
     public gz::sim::ISystemConfigure,
-    public gz::sim::ISystemPreUpdate,
-    public gz::sim::ISystemUpdate
+    public gz::sim::ISystemPreUpdate
   {
-    public: 
-      AgvMotionPlugin();
-  
-      ~AgvMotionPlugin() override;
+    public:
+        AgvMotionPlugin();
+        ~AgvMotionPlugin() override;
       
       void Configure (
         const gz::sim::Entity &_entity,
@@ -91,7 +83,6 @@ namespace ariac_plugins
         gz::sim::EventManager &_event_manager) override;
       
       void PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm) final;
-      void Update(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm) override;
 
     private: 
       // GZ Callbacks
@@ -104,16 +95,16 @@ namespace ariac_plugins
       void pub_timer_cb();
 
       // Functions
-      bool is_at_target_pose(gz::math::Pose3d current_pose);
-      std::pair<path_velocity_planner::Point, double> get_destination();
+      std::vector<path_velocity_planner::Point> get_waypoints(AGVPath path);
       geometry_msgs::msg::Pose gz_to_ros_pose(const gz::math::Pose3d &gz_pose);
+      std::pair<gz::math::Vector3d, gz::math::Vector3d> compute_hold_position_velocity(
+        int station_id, const gz::math::Pose3d &current_pose);
 
       // GZ 
-      gz::sim::Model model;
+      gz::sim::Model agv_model;
       gz::sim::Link agv_base_link;
-      gz::sim::Entity floor_link_entity;
-      gz::sim::Entity agv_base_link_entity;
-      gz::sim::Entity lock_joint;
+      gz::sim::Entity agv_base_link_entity = gz::sim::kNullEntity;
+      gz::sim::Entity lock_joint = gz::sim::kNullEntity;
       std::shared_ptr<gz::transport::Node> gz_node;
 
       // ROS 
@@ -121,10 +112,10 @@ namespace ariac_plugins
       rclcpp::executors::MultiThreadedExecutor::SharedPtr executor;
       std::thread thread_executor_spin;
       ActionServerPtr action_server;
-      GoalHandlePtr current_goal_handle;
+      std::optional<GoalHandlePtr> current_goal_handle = std::nullopt;
       rclcpp::Publisher<AGVStatus>::SharedPtr agv_info_pub;
       rclcpp::TimerBase::SharedPtr pub_timer;
-      AGVStatus info_msg;
+      AGVStatus status_msg;
 
       // Parameters
       const double v_max = 0.8;
@@ -132,29 +123,37 @@ namespace ariac_plugins
       const double goal_distance_threshold = 0.001;
       const double goal_angle_threshold = (M_PI / 180) * 2; // 2 degrees
       const double timeout = 15;
-      const double feedback_rate = 10;
-      const std::string link_name = "agv";
+      const int feedback_rate = 10;
+      const std::string link_name = "base_link";
       const std::string floor_model_name = "floor";
       const std::string floor_link_name = "floor";
 
+      // Motion control parameters
+      const double hold_position_velocity = 0.005;
+      const double z_threshold = 0.001;
+      const double z_lift_velocity = 0.015;
+      const int teleport_wait_iterations = 5;
+      const int complete_goal_wait_iterations = 150;
+      const int feedback_publish_interval = 1000;
+
+      std::optional<double> motion_start_time = std::nullopt;
+
       // Class variables
-      int destination_station;
-
+      std::optional<int> wait_until_iteration;
       bool collision_occurred = false;
-      
-      gz::math::Pose3d current_pose;
-      gz::math::Pose3d goal_pose;
-      
-      double start_time;
-      double last_feedback_time;
+      std::optional<path_velocity_planner::Point> start_location = std::nullopt;
 
-      std::string agv_name;
-      std::string segment_profile;
-
-      std::map<std::string, path_velocity_planner::Point> start_locations;
-      std::map<int, path_velocity_planner::Point> goal_locations;
-      std::map<int, double> location_rotations;
-      std::map<std::string, std::map<AGVPath, std::vector<path_velocity_planner::Point>>> waypoints;
+      std::map<int, path_velocity_planner::Point> goal_locations = {
+        {AGVStations::ASSEMBLY, { 5, 4.5 }},
+        {AGVStations::SHIPPING, { 6.5, 2.55 }},
+        {AGVStations::RECYCLING, { 1.0, 6.3}}
+      };
+      std::map<int, double> station_yaw = {
+        {AGVStations::INSPECTION, M_PI_2},
+        {AGVStations::ASSEMBLY, 0},
+        {AGVStations::SHIPPING, -M_PI_2},
+        {AGVStations::RECYCLING, M_PI_2}
+      };
 
       gz::math::Vector3d linear_velocity_vector; 
       gz::math::Vector3d angular_velocity_vector; 
@@ -162,9 +161,9 @@ namespace ariac_plugins
       path_velocity_planner::VelocityPlanner velocity_planner;
       path_velocity_planner::Direction direction;
 
-      AGVLockState lock_state = AGVLockState::UNLOCKED;
-      AGVMotionStatus motion_state = AGVMotionStatus::CONFIGURE;
-      AGVPath current_path;
+      AGVMotionStatus motion_state = AGVMotionStatus::IDLE;
+
+      std::vector<path_velocity_planner::Point> current_waypoints;
   };
 }
 

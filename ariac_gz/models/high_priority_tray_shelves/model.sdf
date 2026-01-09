@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<sdf version="1.11">
+  <model name="high_priority_tray_shelves">
+  
+    <static>true</static>
+
+    <link name="base_link">
+      <visual name="visual">
+        <geometry>
+          <mesh>
+            <uri>model://high_priority_tray_shelves/meshes/high_priority_tray_shelf.gltf</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>

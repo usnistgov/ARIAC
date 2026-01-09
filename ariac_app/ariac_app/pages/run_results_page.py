@@ -30,6 +30,11 @@ class RunResultsPage:
             ui.notify(f"Could not find run with id {run_id} in database", type="negative")
             ui.navigate.to("/")
             return
+
+        if not self.run.completed:
+            ui.notify(f"The run with id {run_id} was not completed", type="negative")
+            ui.navigate.to("/")
+            return
         
         self.trial = self.db_manager.get_trial_for_run(self.run)
 

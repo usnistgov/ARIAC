@@ -91,46 +91,36 @@ class FilePicker(ui.dialog):
             self.update_grid()
 
     def handle_selection(self, e: events.GenericEventArguments) -> None:
-        # --- Extract payload safely across versions ---
-        # NiceGUI typically puts the payload inside e.args[0], but older versions used dict-like e.args.
-        if isinstance(e.args, dict):                     # old style: e.args['data'], e.args['selected']
+        if isinstance(e.args, dict):
             payload = e.args
         elif isinstance(e.args, (list, tuple)) and e.args:
-            payload = e.args[0]                          # new style: {'data': {'path': ...}}
+            payload = e.args[0]
         else:
             payload = {}
 
-        # --- Extract path (NEW) ---
-        # new versions use: payload['data']['path']
         path_str = None
         if isinstance(payload, dict):
             path_str = (
-                payload.get('path') or                             # very new structure
-                (payload.get('data') or {}).get('path') or         # new 1.x structure
-                payload.get('selected')                             # old structure
+                payload.get('path') or                             
+                (payload.get('data') or {}).get('path') or         
+                payload.get('selected')                            
             )
 
         if not path_str:
-            # Cannot determine path; disable button and return
             self.selected_file = None
             self.ok_button.disable()
             return
 
         path = Path(path_str)
 
-        # Reset selected file each time before evaluating
         self.selected_file = None
 
-        # --- Handle FILE selection ---
         if path.is_file() and self.selection_type == "file":
-            # Check for "selected" flag (old NiceGUI)
             selected_flag = False
 
-            # Old versions: payload['selected'] == True/False
             if isinstance(payload, dict) and 'selected' in payload:
                 selected_flag = bool(payload['selected'])
 
-            # New versions: treat a valid file selection as selected=True
             else:
                 selected_flag = True
 
@@ -140,12 +130,10 @@ class FilePicker(ui.dialog):
             else:
                 self.ok_button.disable()
 
-        # --- Handle DIRECTORY selection ---
         elif path.is_dir() and self.selection_type == "directory":
             self.ok_button.enable()
 
         else:
-            # Mismatched selection (e.g., clicked a dir when expecting file)
             self.ok_button.disable()
 
 

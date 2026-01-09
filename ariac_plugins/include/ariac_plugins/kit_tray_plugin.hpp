@@ -34,7 +34,6 @@
 #include <memory>
 #include <string>
 #include <cmath>
-#include <mutex>
 
 using AGVStations = ariac_interfaces::msg::AgvStations;
 using AGVStatus = ariac_interfaces::msg::AgvStatus;

@@ -581,8 +581,6 @@ class CompetitionRunPage:
 
         if self.competition_process.is_running or (self.team_process is not None and self.team_process.is_running):
             print('Client disconnected before all processes were ended. Stopping all processes...')
-            # Don't attempt to navigate during disconnect handling because the
-            # client may have been deleted; just stop processes.
             await self.quit(navigate=False)
 
 class RunInfoTable:

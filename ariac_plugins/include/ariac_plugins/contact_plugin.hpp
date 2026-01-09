@@ -21,7 +21,6 @@
 #include <memory>
 #include <string>
 #include <cmath>
-#include <mutex>
 
 namespace ariac_plugins
 {
@@ -59,8 +58,6 @@ namespace ariac_plugins
 
     // GZ Callbacks
     void contact_msg_cb(const gz::msgs::Contacts &_gz_contacts_msg);
-
-    // Mutex for protecting callback/shared state
   };
 }
 

@@ -160,7 +160,6 @@ void CompetitionManagerPlugin::PreUpdate(
     if (module_submission_response.status == SubmissionStatus::REQUESTED) {
       handle_module_order_submission(_ecm);
     } else if (bottom_shell_to_lock.has_value()){
-      gzwarn << "Locking module to shelf\n";
       lock_to_shelf(_ecm, bottom_shell_to_lock.value());
       bottom_shell_to_lock = std::nullopt;
     }

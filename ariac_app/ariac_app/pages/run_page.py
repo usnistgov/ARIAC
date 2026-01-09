@@ -248,12 +248,12 @@ class StatusDisplay:
             else:
                 chip.props(self.CHIP_OFF_PROPS)
         
-        if node.total_kits and node.kits_remaining:
-            self.kit_progress = (node.total_kits - node.kits_remaining) / node.total_kits
+        if node.total_kits is not None and node.kits_remaining is not None:
+            self.kit_progress = (node.total_kits - node.kits_remaining) / node.total_kits if node.total_kits != 0 else 1
             self.kitting_progress_label.text = f"{node.total_kits - node.kits_remaining}/{node.total_kits}"
         
-        if node.total_modules and node.modules_remaining:
-            self.module_progress = (node.total_modules - node.modules_remaining) / node.total_modules
+        if node.total_modules is not None and node.modules_remaining is not None:
+            self.module_progress = (node.total_modules - node.modules_remaining) / node.total_modules if node.total_modules != 0 else 1
             self.module_progress_label.text = f"{node.total_modules - node.modules_remaining}/{node.total_modules}"
         
         if node.time_elapsed is not None and node.time_remaining is not None:

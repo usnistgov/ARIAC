@@ -14,8 +14,8 @@ from ariac_app.pages.home_page import HomePage
 from ariac_app.pages.run_page import RunPage
 from ariac_app.pages.run_results_page import RunResultsPage
 from ariac_app.pages.results_page import ResultsPage
-from ariac_app.pages.multirun_setup import MultirunSetupPage
-from ariac_app.pages.multirun_page import MultirunPage
+from ariac_app.pages.competition_setup_page import CompetitionRunSetupPage
+from ariac_app.pages.competition_page import CompetitionRunPage
 
 def main():
     pass
@@ -35,7 +35,7 @@ def _sigint_handler(signum, frame):
 signal.signal(signal.SIGINT, _sigint_handler)
 
 def shutdown():
-    ui.navigate.to('/multirun')
+    ui.navigate.to('/competition')
     if app_utils.is_gazebo_running():
         app_utils.kill_gazebo()
 
@@ -43,7 +43,7 @@ app.on_startup(lambda: threading.Thread(target=ros_main, daemon=True).start())
 app.on_shutdown(shutdown)
 
 try:
-    os.environ["START_PAGE"]="/multirun_setup"
+    os.environ["START_PAGE"]="/competition_setup"
     ui.run(
         title="ARIAC App",
         reload=False,

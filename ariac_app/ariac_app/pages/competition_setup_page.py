@@ -27,8 +27,8 @@ class TrialPath:
             return False
         
 
-@ui.page("/multirun_setup")
-class MultirunSetupPage:
+@ui.page("/competition_setup")
+class CompetitionRunSetupPage:
     def __init__(self):
         self.available_paths = []
 
@@ -43,7 +43,7 @@ class MultirunSetupPage:
         self.record = "True"
         self.save_unscored_videos = "False"
 
-        with frame(page_name="Multirun Setup"):
+        with frame(page_name="competition Setup"):
             with ui.card().classes("w-5/6 items-center max-w-xl"):
 
                 self.trials_selection.content()
@@ -91,7 +91,7 @@ class MultirunSetupPage:
             ui.notify("No trials selected. Cannot start running trials", type="warning")
             return
         
-        target = f"/multirun?successful_runs={self.successful_runs_per_trial}&max_runs={self.max_runs_per_trial}&runs_to_score={self.runs_to_score}"
+        target = f"/competition?successful_runs={self.successful_runs_per_trial}&max_runs={self.max_runs_per_trial}&runs_to_score={self.runs_to_score}"
         
         target += "&trials=" + ",".join([str(path) for path in selected_trial_paths])
 

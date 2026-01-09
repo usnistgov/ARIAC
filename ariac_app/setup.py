@@ -21,7 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
           'app = ariac_app.app:main',
-          'multirun_app = ariac_app.multirun_app:main'
+          'competition_app = ariac_app.competition_app:main'
         ],
     },
 )

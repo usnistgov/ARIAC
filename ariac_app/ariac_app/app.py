@@ -14,8 +14,8 @@ from ariac_app.pages.home_page import HomePage
 from ariac_app.pages.run_page import RunPage
 from ariac_app.pages.run_results_page import RunResultsPage
 from ariac_app.pages.results_page import ResultsPage
-from ariac_app.pages.multirun_setup import MultirunSetupPage
-from ariac_app.pages.multirun_page import MultirunPage
+from ariac_app.pages.competition_setup_page import CompetitionRunSetupPage
+from ariac_app.pages.competition_page import CompetitionRunPage
 
 def main():
     pass

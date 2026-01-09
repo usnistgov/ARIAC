@@ -10,7 +10,7 @@ ENV LC_ALL=C.UTF-8
 
 # Install dependencies: build tools, rosdep, colcon, vcs, etc.
 RUN apt-get update && apt-get install -y \
-    build-essential git python3-pip \
+    build-essential git python3-pip ffmpeg \
     python3-colcon-common-extensions python3-rosdep python3-vcstool \
     curl lsb-release gnupg
 

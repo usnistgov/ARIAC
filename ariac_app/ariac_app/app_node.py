@@ -95,13 +95,12 @@ class AppNode(Node):
     def competition_status_cb(self, msg: CompetitionStatus):
         self._current_state = msg.competition_state
         self._competition_time = msg.time
-
-        if msg.competition_state == CompetitionStates.STARTED:
-            self._kits_remaining = msg.num_kits_remaining
-            self._modules_remaining = msg.num_modules_remaining
-            self._total_kits = msg.num_kits
-            self._total_modules = msg.num_modules
-            self._run_id = msg.run_id
+    
+        self._kits_remaining = msg.num_kits_remaining
+        self._modules_remaining = msg.num_modules_remaining
+        self._total_kits = msg.num_kits
+        self._total_modules = msg.num_modules
+        self._run_id = msg.run_id
 
     async def start_competition(self) -> tuple[bool, str]:
         try:

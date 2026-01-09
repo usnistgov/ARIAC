@@ -27,8 +27,8 @@ class TrialPath:
             return False
         
 
-@ui.page("/multirun_setup")
-class MultirunSetupPage:
+@ui.page("/competition_setup")
+class CompetitionRunSetupPage:
     def __init__(self):
         self.available_paths = []
 
@@ -41,8 +41,9 @@ class MultirunSetupPage:
         
         self.headless = "False"
         self.record = "True"
+        self.save_unscored_videos = "False"
 
-        with frame(page_name="Multirun Setup"):
+        with frame(page_name="competition Setup"):
             with ui.card().classes("w-5/6 items-center max-w-xl"):
 
                 self.trials_selection.content()
@@ -70,6 +71,10 @@ class MultirunSetupPage:
                 with ui.row().classes('w-full items-center justify-between'):
                     ui.label("Record").classes('text-sm font-bold')
                     ui.toggle(["True", "False"]).bind_value(self, "record")
+                
+                with ui.row().classes('w-full items-center justify-between'):
+                    ui.label("Save Unscored Videos").classes('text-sm font-bold')
+                    ui.toggle(["True", "False"]).bind_value(self, "save_unscored_videos")
 
                 ui.button(
                     "Run", icon="chevron_right", on_click=self.run
@@ -86,13 +91,15 @@ class MultirunSetupPage:
             ui.notify("No trials selected. Cannot start running trials", type="warning")
             return
         
-        target = f"/multirun?successful_runs={self.successful_runs_per_trial}&max_runs={self.max_runs_per_trial}&runs_to_score={self.runs_to_score}"
+        target = f"/competition?successful_runs={self.successful_runs_per_trial}&max_runs={self.max_runs_per_trial}&runs_to_score={self.runs_to_score}"
         
         target += "&trials=" + ",".join([str(path) for path in selected_trial_paths])
 
         target += f"&headless={self.headless}"
 
         target += f"&record={self.record}"
+
+        target += f"&save_unscored_videos={self.save_unscored_videos}"
 
         if self.db_select.path is not None:
             target += f"&db_path={self.db_select.path}"

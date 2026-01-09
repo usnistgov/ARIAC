@@ -84,7 +84,7 @@ class ProcessManager:
         if self.log_file is not None:
             try:
                 if self._reader_thread is not None:
-                    self._reader_thread.join(timeout=0.5)
+                    self._reader_thread.join(timeout=2.0)
             except Exception:
                 pass
             try:

@@ -400,7 +400,8 @@ namespace ariac_plugins{
 
     for(const auto& [slot, cell_info] : kit_component->slots){
       if(!cell_info.has_value()){
-        res->message += "Cell in slot" + std::to_string(slot) + ") is not valid. ";
+        res->message += "Cell in slot" + std::to_string(slot) + " is not valid. ";
+        continue;
       }
 
       ariac_components::SlotCellInfo cell_being_checked = cell_info.value();

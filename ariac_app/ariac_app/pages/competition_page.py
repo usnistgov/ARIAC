@@ -651,8 +651,8 @@ class VideoCombiner:
     
     def create_video(
             self,
-            inspection_path: str, 
-            assembly_path: str, 
+            inspection_path: str,
+            assembly_path: str,
             environment_path: str,
             target_path: str,
             trial_id: str,
@@ -663,6 +663,8 @@ class VideoCombiner:
             modules_requested: int,
             score: float =0.0,
             time_limit_seconds=1000,
+            crf: int = 23,
+            preset: str = "fast",
         ):
         caps = [cv2.VideoCapture(v) for v in [inspection_path, assembly_path, environment_path]]
         fps = int(caps[0].get(cv2.CAP_PROP_FPS))
@@ -678,10 +680,11 @@ class VideoCombiner:
             "-s", f"{self.target_width}x{self.target_height}",
             "-r", str(fps),
             "-i", "-",
-            "-c:v", "h264_nvenc",
-            "-preset", "fast",
-            "-b:v", "10M",
-            target_path
+            "-c:v", "libx264",
+            "-crf", str(crf),
+            "-preset", preset,
+            "-pix_fmt", "yuv420p",
+            target_path,
         ]
 
         process = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE,

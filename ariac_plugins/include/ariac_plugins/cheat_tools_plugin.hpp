@@ -22,6 +22,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 // ROS MSGS
+#include <ariac_interfaces/msg/cell_defect.hpp>
 #include <ariac_interfaces/msg/cell_types.hpp>
 #include <ariac_interfaces/msg/cell_feeder_status.hpp>
 #include <ariac_interfaces/msg/competition_states.hpp>
@@ -116,6 +117,7 @@ class CheatToolsPlugin:
   bool log_cell_info = false;
   std::string bottom_shell_name;
   std::vector<std::string> logged_cells = {};
+  std::map<int, std::vector<ariac_interfaces::msg::CellDefect>> defect_info;
 
   std::map<int, std::string> cell_colors =
   {

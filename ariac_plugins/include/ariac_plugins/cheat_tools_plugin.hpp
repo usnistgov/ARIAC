@@ -113,7 +113,9 @@ class CheatToolsPlugin:
   int cell_count = 0;
   int request_step = -1;
   bool welds_requested = false;
+  bool log_cell_info = false;
   std::string bottom_shell_name;
+  std::vector<std::string> logged_cells = {};
 
   std::map<int, std::string> cell_colors =
   {

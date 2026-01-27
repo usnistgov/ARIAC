@@ -80,7 +80,38 @@ void CheatToolsPlugin::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::Enti
     if(sdf->HasElement("cells_in_voltage_testers") && sdf->Get<bool>("cells_in_voltage_testers")){
       spawn_cells_in_voltage_testers();
     }
+    
+    if(sdf->HasElement("log_cell_info") && sdf->Get<bool>("log_cell_info")){
+      log_cell_info = true;
+      gzmsg << "Log cell info set to true" << "\n\n\n\n\n\n\n\n\n\n\n";
+    } else {
+      gzmsg << "Log cell info not found in sdf" << "\n\n\n\n\n\n\n\n\n\n\n";
+    }
 
+  }
+
+  if(log_cell_info){
+    _ecm.Each<gz::sim::components::Cell>(
+      [&](const gz::sim::Entity &entity,
+          const gz::sim::components::Cell *cell) -> bool {
+            auto c_data = cell->Data();
+            if(std::find(logged_cells.begin(), logged_cells.end(), c_data.cell_name) == logged_cells.end()){
+              gzmsg << "Cell " << c_data.cell_name << ":\n";
+              gzmsg << "\tType: " << (c_data.cell_type==1 ? "Lithium Ion" : "NIMH") << "\n";
+              gzmsg << "\tVoltage: " << c_data.voltage << "\n";
+              if (c_data.defective){
+                gzmsg << "\tDefective: True\n";
+                gzmsg << "\tDefect type: " << c_data.defect_type << "\n";
+                gzmsg << "\tRotation: " << c_data.rotation << "\n";
+              } else {
+                gzmsg << "\tDefective: False\n";
+              }
+              
+              logged_cells.push_back(c_data.cell_name);
+            }
+            return true;
+        }
+    );
   }
   
   if(!welds_requested && components_to_add.size() == 0 && 

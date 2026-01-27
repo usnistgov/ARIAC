@@ -221,6 +221,8 @@ def launch_setup(context, *args, **kwargs):
     user_config = LaunchConfiguration("user_config").perform(context)
     db_path = LaunchConfiguration("db_path").perform(context)
     cheat_selection = int(LaunchConfiguration("cheat_selection").perform(context))
+    log_cell_info_val = LaunchConfiguration("log_cell_info").perform(context)
+    log_cell_info = str(log_cell_info_val).lower() == "true"
     gz_log_arg = LaunchConfiguration("gz_log_level").perform(context)
 
     if db_path != "":
@@ -244,7 +246,7 @@ def launch_setup(context, *args, **kwargs):
     if team_config is None:
         return
 
-    gz_args = get_gz_args(trial_config, team_config, db_path, cheat_selection, gz_log_arg, record)
+    gz_args = get_gz_args(trial_config, team_config, db_path, cheat_selection, gz_log_arg, record, log_cell_info)
 
     if headless:
         gz_args += " -s --headless-rendering"
@@ -384,6 +386,10 @@ def generate_launch_description():
         DeclareLaunchArgument("cheat_selection", default_value="0", description="Decides which cheat to load in")
     )
 
+    declared_arguments.append(
+        DeclareLaunchArgument("log_cell_info", default_value="false", description="Cheat tool for logging the info about the cell when spawned")
+    )
+
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
 
 def check_db_validity(db_path: Path):
@@ -422,7 +428,7 @@ def validate_configs(trial_config, user_config) -> UserConfigParser | None:
     
     return user_config
 
-def get_gz_args(trial_config: str, team_config: UserConfigParser, db_path: str, cheat_selection: int, gz_log_arg: str, record) -> str:
+def get_gz_args(trial_config: str, team_config: UserConfigParser, db_path: str, cheat_selection: int, gz_log_arg: str, record, log_cell_info: bool) -> str:
     world_file = os.path.join(get_package_share_directory('ariac_gz'), 'world', 'ariac.world')
     tree = ET.parse(world_file)
 
@@ -461,7 +467,7 @@ def get_gz_args(trial_config: str, team_config: UserConfigParser, db_path: str, 
 
             world_element.append(include)
                 
-    if cheat_tools_plugin is not None and cheat_selection in Cheats:
+    if cheat_tools_plugin is not None and (cheat_selection in Cheats or log_cell_info):
         elements: list[ET.Element]  = []
         match(cheat_selection):
             case Cheats.CELLS_IN_VOLTAGE_TESTERS:
@@ -484,6 +490,8 @@ def get_gz_args(trial_config: str, team_config: UserConfigParser, db_path: str, 
             case Cheats.MODULE_WITH_WELDS:
                 elements.append(ET.Element("module"))
                 elements.append(ET.Element("module_has_welds"))
+        if log_cell_info:
+            elements.append(ET.Element("log_cell_info"))
         for e in elements:
             e.text = "true"
         cheat_tools_plugin.extend(elements)

@@ -39,6 +39,7 @@
 #include "angles/angles.h"
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <tinyxml2.h>
+#include <mutex>
 
 using AGVStations = ariac_interfaces::msg::AgvStations;
 using AGVStatus = ariac_interfaces::msg::AgvStatus;
@@ -104,6 +105,7 @@ namespace ariac_plugins
       gz::sim::Entity agv_base_link_entity;
 
       std::optional<ariac_components::Kit> kit_component = std::nullopt; 
+      std::mutex kit_mutex_;
 
       gz::math::Pose3d tray_transform = gz::math::Pose3d(0.0, 0.0, 0.35, 0.0, 0.0, 1.57);
       gz::math::Pose3d tray_spawn_transform = gz::math::Pose3d(0.0, 0.0, 0.3501, 0.0, 0.0, 1.57);

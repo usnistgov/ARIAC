@@ -66,10 +66,16 @@
         </geometry>
       </collision>
       <sensor name='contact_sensor' type='contact'>
-        <update_rate>5</update_rate>
+        <update_rate>30</update_rate>
         <contact>
           <collision>collision</collision>
         </contact>
+        <plugin
+          filename="libContactPlugin.so"
+          name="ariac_plugins::ContactPlugin">
+          <search_term>vg_2</search_term>
+          <update_rate>30</update_rate>
+        </plugin>
       </sensor>
     </link>
 
@@ -86,10 +92,16 @@
         </geometry>
       </collision>
       <sensor name='contact_sensor' type='contact'>
-        <update_rate>5</update_rate>
+        <update_rate>30</update_rate>
         <contact>
           <collision>collision</collision>
         </contact>
+        <plugin
+          filename="libContactPlugin.so"
+          name="ariac_plugins::ContactPlugin">
+          <search_term>vg_2</search_term>
+          <update_rate>30</update_rate>
+        </plugin>
       </sensor>
     </link>
 

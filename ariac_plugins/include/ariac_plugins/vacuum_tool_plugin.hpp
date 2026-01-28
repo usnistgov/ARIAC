@@ -2,6 +2,7 @@
 #define ARIAC_PLUGINS__VACUUM_TOOL_PLUGIN_HPP_
 
 #include <gz/sim/Model.hh>
+#include <gz/sim/Joint.hh>
 #include <gz/sim/Util.hh>
 #include <gz/sim/Sensor.hh>
 #include <gz/sim/System.hh>
@@ -10,7 +11,9 @@
 #include <gz/sim/EventManager.hh>
 #include <gz/sim/components.hh>
 #include <gz/transport/Node.hh>
+
 #include <gz/msgs/contacts.pb.h>
+#include <gz/msgs/stringmsg_v.pb.h>
 
 #include <ariac_components/trial.hpp>
 
@@ -66,17 +69,17 @@ namespace ariac_plugins{
     void detach_object_cb(const TriggerReqPtr request, TriggerResPtr response);
 
     // GZ callbacks
-    void contact_sensor_1_cb(const gz::msgs::Contacts &);
-    void contact_sensor_2_cb(const gz::msgs::Contacts &);
-    void contact_sensor_3_cb(const gz::msgs::Contacts &);
-    void contact_sensor_4_cb(const gz::msgs::Contacts &);
+    void contact_sensor_1_cb(const gz::msgs::StringMsg_V &);
+    void contact_sensor_2_cb(const gz::msgs::StringMsg_V &);
+    void contact_sensor_3_cb(const gz::msgs::StringMsg_V &);
+    void contact_sensor_4_cb(const gz::msgs::StringMsg_V &);
 
     bool wait_for_state(VacuumToolLockState);
     bool should_malfunction();
     void clear_malfunction();
 
     // Functions
-    std::optional<std::string> shell_in_contact(const gz::msgs::Contacts &);
+    std::optional<std::string> shell_in_contact(const gz::msgs::StringMsg_V &);
     bool lock_tool_to_stand();
       
     // GZ
@@ -84,6 +87,7 @@ namespace ariac_plugins{
     gz::sim::Entity lock_joint;
     gz::sim::Entity gripper_base_link;
     gz::sim::Entity world_entity = 1;
+    std::vector<gz::sim::Joint> suction_cup_joints = {};
     
     // ROS
     rclcpp::Node::SharedPtr ros_node;

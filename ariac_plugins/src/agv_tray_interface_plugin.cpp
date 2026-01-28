@@ -156,7 +156,8 @@ namespace ariac_plugins{
         if (component == nullptr) {
           throw std::runtime_error("Unable to get kit component for tray");
         }
-
+        
+        std::lock_guard<std::mutex> lock(kit_mutex_);
         kit_component = component->Data();
 
         if(_info.iterations % 100 == 0){
@@ -381,6 +382,7 @@ namespace ariac_plugins{
 
   ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr AgvTrayInterfacePlugin::validate_kit(int cell_type){
     
+    std::lock_guard<std::mutex> lock(kit_mutex_);
     ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr res = std::make_shared<ariac_interfaces::srv::CheckKitQuality::Response>();
     if(cell_type != CellTypes::LI_ION && cell_type != CellTypes::NIMH){
       res->is_good = false;

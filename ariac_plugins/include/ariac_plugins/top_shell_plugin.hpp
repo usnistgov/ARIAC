@@ -24,6 +24,14 @@ namespace ariac_plugins
     UNLOCKED
   };
 
+  enum class TopShellTeleportState {
+    IDLE,
+    READY,
+    JOINT_NEEDED,
+    JOINT_REMOVAL,
+    FINISHED
+  };
+
   class TopShellPlugin:
     public gz::sim::System,
     public gz::sim::ISystemConfigure,
@@ -47,12 +55,14 @@ namespace ariac_plugins
       // GZ CBs
       void slot_1_contact_msg_cb(const gz::msgs::Contacts &);
       void slot_4_contact_msg_cb(const gz::msgs::Contacts &);
+      void base_contact_msg_cb(const gz::msgs::Contacts &);
 
       // GZ
       std::shared_ptr<gz::transport::Node> gz_node;
 
       gz::sim::Model top_shell_model;
 
+      gz::sim::Entity bottom_shell_entity = gz::sim::kNullEntity;
       gz::sim::Entity shell_base_link = gz::sim::kNullEntity;
 
       gz::sim::Entity lock_joint;
@@ -67,6 +77,13 @@ namespace ariac_plugins
         { 1, { false, "" } },
         { 4, { false, "" } },
       };
+
+      int teleport_step;
+      TopShellTeleportState teleport_state = TopShellTeleportState::IDLE;
+
+      gz::math::Pose3d flipped_bottom_shell_pose = gz::math::Pose3d(0.0, 0.0, 0.0, M_PI, 0.0, M_PI);
+
+      gz::sim::Entity section_3_link_entity;
 
       std::map<int, std::string> topic_names;
 

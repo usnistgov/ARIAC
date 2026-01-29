@@ -31,6 +31,10 @@ void TopShellPlugin::Configure(
   gz_node->Subscribe(topic_names[1], &TopShellPlugin::slot_1_contact_msg_cb, this);
   gz_node->Subscribe(topic_names[4], &TopShellPlugin::slot_4_contact_msg_cb, this);
 
+  std::string base_topic = "/world/ariac/model/" + top_shell_model.Name(_ecm) + "/link/base_link/sensor/contact_sensor/contact";
+
+  gz_node->Subscribe(base_topic, &TopShellPlugin::base_contact_msg_cb, this);
+
   shell_base_link = top_shell_model.LinkByName(_ecm, "base_link");
 }
 
@@ -63,6 +67,7 @@ void TopShellPlugin::PreUpdate(
     auto module_shell_entity = get_base_module_shell(_ecm, cell_entity.value());
 
     auto module = _ecm.Component<Module>(module_shell_entity);
+    bottom_shell_entity = module_shell_entity;
     auto currentState = module->Data();
     
     currentState.top_shell_entity = top_shell_model.Entity();
@@ -73,6 +78,82 @@ void TopShellPlugin::PreUpdate(
     );
 
     lock_state = TopShellLockState::LOCKED;
+  }
+
+  switch(teleport_state){
+    case TopShellTeleportState::IDLE:
+      break;
+    case TopShellTeleportState::READY:
+    {
+      if (bottom_shell_entity == gz::sim::kNullEntity){
+        break;
+      }
+
+      gz::sim::Entity bottom_shell_has_parent = false;
+      _ecm.Each<gz::sim::components::DetachableJoint>(
+        [&](
+          const gz::sim::Entity &entity,
+          const gz::sim::components::DetachableJoint *detachable_joint
+        ) -> bool {
+          if(detachable_joint->Data().childLink == gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link")){
+            bottom_shell_has_parent = true;
+            return false;
+          }
+          return true;
+        }
+      );
+
+      if(bottom_shell_has_parent){
+        break;
+      }
+      
+      std::optional<gz::math::Pose3d> bottom_shell_pose = gz::sim::Link(gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link")).WorldPose(_ecm);
+      
+      if(!bottom_shell_pose.has_value()){
+        break;
+      }
+
+      gz::math::Pose3d target_pose = flipped_bottom_shell_pose;
+
+      target_pose.SetX(bottom_shell_pose.value().X());
+      target_pose.SetY(bottom_shell_pose.value().Y());
+      target_pose.SetZ(bottom_shell_pose.value().Z());
+      gz::sim::Model(bottom_shell_entity).SetWorldPoseCmd(_ecm, target_pose);
+      teleport_state = TopShellTeleportState::JOINT_NEEDED;
+
+      teleport_step = _info.iterations;
+      
+      break;
+    }
+    case TopShellTeleportState::JOINT_NEEDED:
+
+      lock_joint = _ecm.CreateEntity();
+
+      _ecm.CreateComponent(lock_joint, gz::sim::components::DetachableJoint({
+        section_3_link_entity, 
+        gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link"), 
+        "fixed"}));
+
+      teleport_state = TopShellTeleportState::JOINT_REMOVAL;
+
+      break;
+    case TopShellTeleportState::JOINT_REMOVAL:
+      if(_info.iterations - teleport_step < 100){
+        break;
+      }
+
+      _ecm.RequestRemoveEntity(lock_joint);
+
+      lock_joint = gz::sim::kNullEntity;
+
+      teleport_state = TopShellTeleportState::FINISHED;
+      break;
+    
+    case TopShellTeleportState::FINISHED:
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -117,6 +198,18 @@ void TopShellPlugin::slot_4_contact_msg_cb(const gz::msgs::Contacts &_gz_contact
     cell_in_slot[4] = std::make_pair(true, cell.value());
   } else {
     cell_in_slot[4] = std::make_pair(false, "");
+  }
+}
+
+void TopShellPlugin::base_contact_msg_cb(const gz::msgs::Contacts &_gz_contacts_msg){
+  if(teleport_state != TopShellTeleportState::IDLE){
+    return;
+  }
+  for (int i = 0; i < _gz_contacts_msg.contact_size(); ++i){
+    std::string collision = _gz_contacts_msg.contact(i).collision2().name();
+    if (collision.find("section_3_belt") != std::string::npos){
+      teleport_state = TopShellTeleportState::READY;
+    }
   }
 }
 

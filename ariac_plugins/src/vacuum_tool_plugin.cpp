@@ -56,7 +56,7 @@ void VacuumToolPlugin::Configure(
   gz_node = std::make_shared<gz::transport::Node>();
 
   std::vector<std::string> topic_names; 
-  std::string topic = "/world/ariac/model/" + model.Name(_ecm) + "/link/suction_{n}_link/sensor/contact_sensor/contact";
+  std::string topic = model.Name(_ecm) + "/suction_{n}_link/contact_sensor";
 
   int suction_cup_count = tool_type == VacuumTools::VG_2 ? 2 : 4;
   for(int i = 1; i <= suction_cup_count; i++){
@@ -67,11 +67,17 @@ void VacuumToolPlugin::Configure(
   if (tool_type == VacuumTools::VG_2) {
     gz_node->Subscribe(topic_names[0], &VacuumToolPlugin::contact_sensor_1_cb, this);
     gz_node->Subscribe(topic_names[1], &VacuumToolPlugin::contact_sensor_2_cb, this);
+    suction_cup_joints.push_back(gz::sim::Joint(gz::sim::Model(model).JointByName(_ecm, "suction_1_joint")));
+    suction_cup_joints.push_back(gz::sim::Joint(gz::sim::Model(model).JointByName(_ecm, "suction_2_joint")));
   } else if(tool_type == VacuumTools::VG_4) {
     gz_node->Subscribe(topic_names[0], &VacuumToolPlugin::contact_sensor_1_cb, this);
     gz_node->Subscribe(topic_names[1], &VacuumToolPlugin::contact_sensor_2_cb, this);
     gz_node->Subscribe(topic_names[2], &VacuumToolPlugin::contact_sensor_3_cb, this);
     gz_node->Subscribe(topic_names[3], &VacuumToolPlugin::contact_sensor_4_cb, this);
+    suction_cup_joints.push_back(gz::sim::Joint(gz::sim::Model(model).JointByName(_ecm, "suction_1_joint")));
+    suction_cup_joints.push_back(gz::sim::Joint(gz::sim::Model(model).JointByName(_ecm, "suction_2_joint")));
+    suction_cup_joints.push_back(gz::sim::Joint(gz::sim::Model(model).JointByName(_ecm, "suction_3_joint")));
+    suction_cup_joints.push_back(gz::sim::Joint(gz::sim::Model(model).JointByName(_ecm, "suction_4_joint")));
   }
 
   // ROS setup
@@ -149,6 +155,9 @@ void VacuumToolPlugin::PreUpdate(const gz::sim::UpdateInfo &,
     lock_joint = gz::sim::kNullEntity;
 
     lock_state = VacuumToolLockState::UNLOCKED;
+    for(gz::sim::Joint joint : suction_cup_joints){
+      joint.ResetPosition(_ecm, {0.0});
+    }
     break;
   }
 
@@ -167,15 +176,9 @@ void VacuumToolPlugin::vg_2_attach_cb(const TriggerReqPtr request, TriggerResPtr
     return;
   }
   
-  if (!pad_contacts[1].in_contact || !pad_contacts[2].in_contact) {
+  if (!pad_contacts[1].in_contact && !pad_contacts[2].in_contact) {
     response->success = false;
-    response->message = "Both suction cups must be in contact with the shell";
-    return;
-  }
-  
-  if (pad_contacts[1].model_name != pad_contacts[2].model_name){
-    response->success = false;
-    response->message = "Suction cups are in contact with different shells";
+    response->message = "Suction cups must be in contact with the shell";
     return;
   }
   
@@ -201,15 +204,9 @@ void VacuumToolPlugin::vg_4_attach_cb(const TriggerReqPtr request, TriggerResPtr
     return;
   }
   
-  if (!pad_contacts[1].in_contact || !pad_contacts[2].in_contact || !pad_contacts[3].in_contact || !pad_contacts[4].in_contact) {
+  if ((!pad_contacts[1].in_contact && !pad_contacts[2].in_contact) || (!pad_contacts[3].in_contact && !pad_contacts[4].in_contact)) {
     response->success = false;
-    response->message = "All suction cups must be in contact with the shell";
-    return;
-  }
-  
-  if (pad_contacts[1].model_name != pad_contacts[2].model_name || pad_contacts[3].model_name != pad_contacts[4].model_name){
-    response->success = false;
-    response->message = "Suction cups are in contact with different shells";
+    response->message = "Suction cups must be in contact with the shell";
     return;
   }  
   
@@ -221,8 +218,12 @@ void VacuumToolPlugin::vg_4_attach_cb(const TriggerReqPtr request, TriggerResPtr
 
   if(pad_contacts[1].model_name.find("bottom") != std::string::npos){
     attach_shell_name = pad_contacts[1].model_name;
-  } else {
+  } else if (pad_contacts[2].model_name.find("bottom") != std::string::npos){
+    attach_shell_name = pad_contacts[2].model_name;
+  } else if (pad_contacts[3].model_name.find("bottom") != std::string::npos){
     attach_shell_name = pad_contacts[3].model_name;
+  } else {
+    attach_shell_name = pad_contacts[4].model_name;
   }
 
   lock_state = VacuumToolLockState::LOCK_REQUESTED;
@@ -270,61 +271,43 @@ bool VacuumToolPlugin::lock_tool_to_stand(){
   return result;
 }
 
-void VacuumToolPlugin::contact_sensor_1_cb(const gz::msgs::Contacts &_gz_contacts_msg)
+void VacuumToolPlugin::contact_sensor_1_cb(const gz::msgs::StringMsg_V &msg)
 {
-  auto shell = shell_in_contact(_gz_contacts_msg);
+  auto shell = shell_in_contact(msg);
 
   pad_contacts[1] = PadContact{shell.has_value(), shell.has_value() ? shell.value() : ""};
 }
 
-void VacuumToolPlugin::contact_sensor_2_cb(const gz::msgs::Contacts &_gz_contacts_msg)
+void VacuumToolPlugin::contact_sensor_2_cb(const gz::msgs::StringMsg_V &msg)
 {
-  auto shell = shell_in_contact(_gz_contacts_msg);
+  auto shell = shell_in_contact(msg);
 
   pad_contacts[2] = PadContact{shell.has_value(), shell.has_value() ? shell.value() : ""};
 }
 
-void VacuumToolPlugin::contact_sensor_3_cb(const gz::msgs::Contacts &_gz_contacts_msg)
+void VacuumToolPlugin::contact_sensor_3_cb(const gz::msgs::StringMsg_V &msg)
 {
-  auto shell = shell_in_contact(_gz_contacts_msg);
+  auto shell = shell_in_contact(msg);
 
   pad_contacts[3] = PadContact{shell.has_value(), shell.has_value() ? shell.value() : ""};
 }
 
-void VacuumToolPlugin::contact_sensor_4_cb(const gz::msgs::Contacts &_gz_contacts_msg)
+void VacuumToolPlugin::contact_sensor_4_cb(const gz::msgs::StringMsg_V &msg)
 {
-  auto shell = shell_in_contact(_gz_contacts_msg);
+  auto shell = shell_in_contact(msg);
 
   pad_contacts[4] = PadContact{shell.has_value(), shell.has_value() ? shell.value() : ""};
 }
 
-std::optional<std::string> VacuumToolPlugin::shell_in_contact(const gz::msgs::Contacts &_gz_contacts_msg)
+std::optional<std::string> VacuumToolPlugin::shell_in_contact(const gz::msgs::StringMsg_V &msg)
 {
-  std::string collision;
-  for (int i = 0; i < _gz_contacts_msg.contact_size(); ++i){
-    collision = _gz_contacts_msg.contact(i).collision2().name();
+  auto data = msg.data();
 
-    std::string collision_name = "";
-  
-    switch (tool_type)
-    {
-    case VacuumTools::VG_2:
-      collision_name = "vg_2";
-      break;
-
-    case VacuumTools::VG_4:
-      collision_name = "vg_4";
-      break;
-    }
-
-    if (collision.find(collision_name) != std::string::npos){
-      return collision.substr(0, collision.find("::")); // model name
-    }
-
-    
+  if(data.empty()){
+    return std::nullopt;
   }
 
-  return std::nullopt;
+  return data.at(0);
 }
 
 

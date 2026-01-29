@@ -639,6 +639,7 @@ void CompetitionManagerPlugin::handle_competition_end(
 
   std::vector<ariac_db::PenaltyData> penalties;
   std::vector<double> agv_collision_times;
+  std::vector<std::pair<double, std::string>> robot_collision_times;
 
   double competition_start_ns = rclcpp::Time(competition_time.start).nanoseconds();
 
@@ -653,6 +654,16 @@ void CompetitionManagerPlugin::handle_competition_end(
           }
         }
         agv_collision_times.push_back(p.time);
+      }
+
+      if(p.type == ariac_components::PenaltyType::ROBOT_COLLISION){
+        std::string robot_name = p.description.substr(0, p.description.find(' '));
+        for (const auto [t, robot] : robot_collision_times){
+          if (abs(p.time - t) < 5*1e9 && robot == robot_name){
+            return true;
+          }
+        }
+        robot_collision_times.push_back(std::make_pair(p.time, robot_name));
       }
 
       ariac_db::PenaltyData penalty_data;

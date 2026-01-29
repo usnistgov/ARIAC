@@ -103,7 +103,6 @@ class CompetitionRunSetupPage:
 
         if self.db_select.path is not None:
             target += f"&db_path={self.db_select.path}"
-        print(target)
         ui.navigate.to(target)
 
 class TrialsSelectionFrame:

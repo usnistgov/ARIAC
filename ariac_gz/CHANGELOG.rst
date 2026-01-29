@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.1 (2026-01-29)
+----------------------
+* Added new launch argument for logging cell info
+
 2025.3.0 (2026-01-09)
 ----------------------
 * Separated kit tray from AGV into standalone model

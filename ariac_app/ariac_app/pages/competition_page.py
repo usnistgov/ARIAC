@@ -97,9 +97,8 @@ class CompetitionRunPage:
         self.trials_to_run: list[str] = list(trials.split(","))
         self.trial_infos: dict[str, TrialInfo] = {trial_path: TrialInfo() for trial_path in self.trials_to_run}
 
-        self.completed_runs_of_trial = 0
         self.completed_trials = 0
-        self.total_runs = self.max_runs * len(self.trials_to_run)
+        self.total_completed_runs = self.successful_run_threshold * len(self.trials_to_run)
         self.runs_completed_ratio = 0.0
 
         self.save_unscored_videos = save_unscored_videos.lower() == "true"
@@ -144,9 +143,9 @@ class CompetitionRunPage:
         self.quitting = False
 
         # Prevents disconnects from timeouts
-        self.heartbeat_timer = ui.timer(30.0, lambda: None)
+        self.heartbeat_timer = ui.timer(10.0, lambda: None)
 
-        ui.context.client.on_disconnect(self._handle_disconnect)
+        # ui.context.client.on_disconnect(self._handle_disconnect)
 
         self.timer = ui.timer(1.0, self.check_process)
 
@@ -227,7 +226,6 @@ class CompetitionRunPage:
         self.run_button.disable()
 
         for trial in self.trials_to_run:
-            self.completed_runs_of_trial = 0
             self.current_trial = Path(trial).name
             trial_dir_path = team_dir / self.current_trial.split(".")[0]
             trial_dir_path.mkdir(mode=0o777, parents=True, exist_ok=True)
@@ -249,15 +247,14 @@ class CompetitionRunPage:
                         self.run_info_table.update(self.trial_infos)
                         break
 
-                self.runs_completed_ratio = (self.completed_trials * self.max_runs + self.completed_runs_of_trial) / self.total_runs
+                self.runs_completed_ratio = (self.completed_trials * self.successful_run_threshold + self.trial_infos[trial].successful_count) / self.total_completed_runs
                 self.run_info_table.update(self.trial_infos)
 
             # This is blocking (file moves + video work) — run it in a threadpool
             await run.io_bound(self.organize_files, trial, trial_dir_path, team_dir)
 
-            self.completed_runs_of_trial = 0
             self.completed_trials += 1
-            self.runs_completed_ratio = (self.completed_trials * self.max_runs) / self.total_runs
+            self.runs_completed_ratio = (self.completed_trials * self.successful_run_threshold) / self.total_completed_runs
             self.trials_completed_label.set_text(f"Trials completed: {self.completed_trials}")
 
             if self.quitting or ros_globals.shutting_down:
@@ -654,8 +651,8 @@ class VideoCombiner:
     
     def create_video(
             self,
-            inspection_path: str, 
-            assembly_path: str, 
+            inspection_path: str,
+            assembly_path: str,
             environment_path: str,
             target_path: str,
             trial_id: str,
@@ -666,6 +663,8 @@ class VideoCombiner:
             modules_requested: int,
             score: float =0.0,
             time_limit_seconds=1000,
+            crf: int = 23,
+            preset: str = "fast",
         ):
         caps = [cv2.VideoCapture(v) for v in [inspection_path, assembly_path, environment_path]]
         fps = int(caps[0].get(cv2.CAP_PROP_FPS))
@@ -681,10 +680,11 @@ class VideoCombiner:
             "-s", f"{self.target_width}x{self.target_height}",
             "-r", str(fps),
             "-i", "-",
-            "-c:v", "h264_nvenc",
-            "-preset", "fast",
-            "-b:v", "10M",
-            target_path
+            "-c:v", "libx264",
+            "-crf", str(crf),
+            "-preset", preset,
+            "-pix_fmt", "yuv420p",
+            target_path,
         ]
 
         process = subprocess.Popen(ffmpeg_cmd, stdin=subprocess.PIPE,

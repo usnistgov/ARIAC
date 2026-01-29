@@ -2,6 +2,13 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.1 (2026-01-29)
+----------------------
+* Added cheat for logging cell information and defects
+* Updated the AGV tray spawning to handle extra cells on the tray
+* Updated the vacuum tool plugin to fix the suction cups are in contact with different shells error
+* Robot collision penalty fix to avoid too many penalties in a short amount of time
+
 2025.3.0 (2026-01-09)
 ----------------------
 * Refactored AGV system with improved tray handling and collision detection

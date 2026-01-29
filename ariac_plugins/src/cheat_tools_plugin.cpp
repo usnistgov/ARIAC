@@ -25,7 +25,43 @@ void CheatToolsPlugin::Configure(
 
   sdf = _sdf;
 
+  // Read defect config file
+  std::string share_dir = ament_index_cpp::get_package_share_directory("ariac_setup");
+  YAML::Node config = YAML::LoadFile(share_dir + "/config/defects.yaml"); 
   
+  YAML::Node defect_types_node = config["DEFECT_TYPES"];
+
+  if (!defect_types_node.IsDefined() || !defect_types_node.IsMap()){
+    throw std::runtime_error("Defect Types not found in config");
+  }
+
+  for (const auto& defect_type_node : defect_types_node){
+    int defect_type = defect_type_node.first.as<int>();
+    
+    YAML::Node defects_list_node = defect_type_node.second["DEFECTS"];
+
+    if (!defects_list_node.IsDefined() || !defects_list_node.IsSequence()){
+      throw std::runtime_error("Error reading defects in config");
+    }
+
+    std::vector<ariac_interfaces::msg::CellDefect> defects_vector;
+
+    for (const auto& defect : defects_list_node){
+      ariac_interfaces::msg::CellDefect d;
+
+      if (!defect["TYPE"].IsDefined() || !defect["THETA"].IsDefined() || !defect["Z"].IsDefined()) {
+        throw std::runtime_error("Defect not properly structured");
+      }
+
+      d.defect_type = defect["TYPE"].as<int>();
+      d.theta = defect["THETA"].as<double>();
+      d.z = defect["Z"].as<double>(); 
+
+      defects_vector.push_back(d);
+    }
+
+    defect_info[defect_type] = defects_vector;
+  }
 }
 
 void CheatToolsPlugin::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm)
@@ -80,7 +116,56 @@ void CheatToolsPlugin::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::Enti
     if(sdf->HasElement("cells_in_voltage_testers") && sdf->Get<bool>("cells_in_voltage_testers")){
       spawn_cells_in_voltage_testers();
     }
+    
+    if(sdf->HasElement("log_cell_info") && sdf->Get<bool>("log_cell_info")){
+      log_cell_info = true;
+    }
 
+  }
+
+  if(log_cell_info){
+    _ecm.Each<gz::sim::components::Cell>(
+      [&](const gz::sim::Entity &entity,
+          const gz::sim::components::Cell *cell) -> bool {
+            auto c_data = cell->Data();
+            if(std::find(logged_cells.begin(), logged_cells.end(), c_data.cell_name) == logged_cells.end()){
+              gzmsg << "Cell " << c_data.cell_name << ":\n";
+              gzmsg << "\tType: " << (c_data.cell_type==1 ? "Lithium Ion" : "NIMH") << "\n";
+              gzmsg << "\tVoltage: " << c_data.voltage << "\n";
+              gzmsg << "\tRotation: " << c_data.rotation << "\n";
+              if (c_data.defective){
+                gzmsg << "\tDefective: True\n";
+                gzmsg << "\tDefect type: " << c_data.defect_type << "\n";
+                gzmsg << "\tDefects:\n";
+                for (const auto& defect : defect_info[static_cast<int>(c_data.defect_type)]){
+                  switch (defect.defect_type)
+                  {
+                  case 1:
+                    gzmsg << "\t - Type: Dent\n";
+                    break;
+                  case 2:
+                    gzmsg << "\t - Type: Bulge\n";
+                    break;
+                  case 3:
+                    gzmsg << "\t - Type: Scratch\n";
+                    break;
+                  default:
+                    gzmsg << "\tCould not find defect type\n";
+                    break;
+                  }
+                  gzmsg << "\t   Relative theta: " << defect.theta << "\n";
+                  gzmsg << "\t   Absolute theta: " << defect.theta + c_data.rotation << "\n";
+                  gzmsg << "\t   Z: " << defect.z << "\n";
+                }
+              } else {
+                gzmsg << "\tDefective: False\n";
+              }
+              
+              logged_cells.push_back(c_data.cell_name);
+            }
+            return true;
+        }
+    );
   }
   
   if(!welds_requested && components_to_add.size() == 0 && 

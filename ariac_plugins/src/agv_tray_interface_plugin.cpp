@@ -91,6 +91,10 @@ namespace ariac_plugins{
     switch(tray_status){
       case TrayState::INSERTING:
       {
+        if(_info.iterations - insert_iteration < 500){
+          break;
+        }
+        insert_iteration = -1;
         current_tray_name = agv_name + "_tray_" + std::to_string(tray_index);
         tray_index++;
 
@@ -156,7 +160,8 @@ namespace ariac_plugins{
         if (component == nullptr) {
           throw std::runtime_error("Unable to get kit component for tray");
         }
-
+        
+        std::lock_guard<std::mutex> lock(kit_mutex_);
         kit_component = component->Data();
 
         if(_info.iterations % 100 == 0){
@@ -284,6 +289,7 @@ namespace ariac_plugins{
     
         _ecm.CreateComponent(_ecm.CreateEntity(), gz::sim::components::DetachableJoint({floor_link, tray_link, "fixed"}));
         
+        insert_iteration = _info.iterations;
         tray_status = TrayState::INSERTING;
         
         break;
@@ -381,6 +387,7 @@ namespace ariac_plugins{
 
   ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr AgvTrayInterfacePlugin::validate_kit(int cell_type){
     
+    std::lock_guard<std::mutex> lock(kit_mutex_);
     ariac_interfaces::srv::CheckKitQuality::Response::SharedPtr res = std::make_shared<ariac_interfaces::srv::CheckKitQuality::Response>();
     if(cell_type != CellTypes::LI_ION && cell_type != CellTypes::NIMH){
       res->is_good = false;

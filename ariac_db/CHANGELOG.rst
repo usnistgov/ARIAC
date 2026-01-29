@@ -2,6 +2,10 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.1 (2026-01-29)
+----------------------
+
+
 2025.3.0 (2026-01-09)
 ----------------------
 * Updated scoring system for new competition features

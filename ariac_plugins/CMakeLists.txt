@@ -89,6 +89,9 @@ target_include_directories(CheatToolsPlugin PUBLIC include)
 ament_target_dependencies(CheatToolsPlugin
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
+target_link_libraries(CheatToolsPlugin
+  yaml-cpp
+)
 
 # Competition Manager Plugin
 add_library(CompetitionManagerPlugin SHARED src/competition_manager_plugin.cpp)

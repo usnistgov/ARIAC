@@ -97,6 +97,12 @@
       filename="libAgvTrayInterfacePlugin.so"
       name="ariac_plugins::AgvTrayInterfacePlugin">
     </plugin>
+    
+    <plugin
+      filename="libEntityDisposalPlugin.so"
+      name="ariac_plugins::EntityDisposalPlugin">
+      <contact_link>base_link</contact_link>
+    </plugin>
 
     <plugin
       filename="libTFPublisherPlugin.so"

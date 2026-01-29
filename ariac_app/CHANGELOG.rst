@@ -4,6 +4,8 @@ Changelog
 
 2025.3.1 (2026-01-29)
 ----------------------
+* Removed disconnect on competition app
+* Fixed progress bar
 
 
 2025.3.0 (2026-01-09)

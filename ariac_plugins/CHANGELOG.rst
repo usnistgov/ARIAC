@@ -2,6 +2,11 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.2 (2026-01-29)
+----------------------
+* Fixed defective cell counting error
+
+
 2025.3.1 (2026-01-29)
 ----------------------
 * Added cheat for logging cell information and defects

@@ -247,6 +247,10 @@ ariac_components::Cell CellFeedPlugin::get_next_cell()
   cell.cell_name = cell_names[cell.cell_type] + "_cell_" + std::to_string(feed_results.cell_counts[cell.cell_type]);
   
   cell.defective = (defect_distribution(rng) <= defect_rate) ? true : false;
+
+  if(cell.defective){
+    feed_results.num_defective++;
+  }
   
   cell.defect_type = cell.defective ? defect_types[defect_type_distribution(rng)] : 0;
 

@@ -341,7 +341,7 @@ void CompetitionManagerPlugin::submit_high_priority_cb(
 
   ariac_db::OrderSubmissionData submission;
   submission.order_type = ariac_db::OrderType::HIGH_PRIORITY;
-  submission.announcement_time = 0.0;
+  submission.announcement_time = order.value()->announcement_time;
   submission.submission_time = (start_time - competition_time.start).nanoseconds() / 1E9;
   order_submissions.push_back(submission);
 

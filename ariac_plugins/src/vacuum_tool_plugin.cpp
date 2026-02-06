@@ -337,8 +337,9 @@ bool VacuumToolPlugin::should_malfunction()
     return false;
   }
 
-  malfunction_active = std::find_if(malfunctions.begin(), malfunctions.end(), 
-    [this](const auto& p) { return p.second && p.first == grasp_occurrence; }
+  malfunction_active = std::find_if(
+    malfunctions.begin(), malfunctions.end(), 
+    [this](const auto& p) { return !p.second && p.first == grasp_occurrence; }
   ) != malfunctions.end();
   
   return malfunction_active;

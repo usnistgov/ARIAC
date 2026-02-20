@@ -133,9 +133,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using Module = Component<ariac_components::Module,
-                           class ModuleTag,
-                           ariac_components::serializers::ModuleSerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.Module", Module)
+                           class ModuleTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.Module", Module);
 }
 
 #endif

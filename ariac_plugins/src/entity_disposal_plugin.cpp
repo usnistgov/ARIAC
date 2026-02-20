@@ -81,10 +81,13 @@ void EntityDisposalPlugin::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::
     cell = _ecm.Component<gz::sim::components::Cell>(model_entity.value())->Data();
   }
   
-  auto penalty = handle_penalty(cell, _info.simTime.count());
-  if (penalty.has_value()) {
+  if (
+    model_type != ModelType::RecyclingBin &&
+    !(model_type == ModelType::InspectionBin && cell.value().defective)
+  ){
+    auto penalty = handle_penalty(cell, _info.simTime.count());
     gz::sim::Entity penalty_entity = _ecm.CreateEntity();
-    _ecm.CreateComponent(penalty_entity, gz::sim::components::Penalty(penalty.value()));
+    _ecm.CreateComponent(penalty_entity, gz::sim::components::Penalty(penalty));
   }
   
   // Create a vector of all detachable joints in the world
@@ -158,20 +161,20 @@ void EntityDisposalPlugin::contact_msg_cb(const gz::msgs::Contacts &_gz_contacts
   }
 }
 
-std::optional<ariac_components::Penalty> EntityDisposalPlugin::handle_penalty(
+ariac_components::Penalty EntityDisposalPlugin::handle_penalty(
   std::optional<ariac_components::Cell> cell, double time)
 {
 
-  std::optional<ariac_components::Penalty> penalty = std::nullopt;
+  ariac_components::Penalty penalty;
   
   switch (model_type) {
   case ModelType::InspectionBin:
     if (cell.has_value()) {
-      penalty = cell.value().defective ? std::nullopt : std::make_optional(ariac_components::Penalty{
+      penalty = ariac_components::Penalty{
         ariac_components::PenaltyType::GOOD_CELL_IN_INSPECTION_BIN,
         time,
         "Non-defective cell: " + model_in_contact.name + " dropped into inspection bin"
-      });
+      };
     }
     break;
   
@@ -183,15 +186,19 @@ std::optional<ariac_components::Penalty> EntityDisposalPlugin::handle_penalty(
     };
     break;
   
-  case ModelType::RecyclingBin:
-    penalty = std::nullopt;
-    break;
-  
   case ModelType::Other:
     penalty = ariac_components::Penalty{
       ariac_components::PenaltyType::OBJECT_ON_INVALID_SURFACE,
       time,
       model_in_contact.name + " in contact with " + object_name
+    };
+    break;
+  
+  default:
+    penalty = ariac_components::Penalty{
+      ariac_components::PenaltyType::OBJECT_ON_INVALID_SURFACE,
+      -1,
+      "INVALID PENALTY. IGNORE"
     };
     break;
   }

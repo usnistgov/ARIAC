@@ -42,6 +42,84 @@ void TopShellPlugin::PreUpdate(
   const gz::sim::UpdateInfo &_info,
   gz::sim::EntityComponentManager &_ecm)
 {
+  if(teleport_state != TopShellTeleportState::FINISHED){
+    switch(teleport_state){
+      case TopShellTeleportState::IDLE:
+        break;
+      case TopShellTeleportState::READY:
+      {
+        if (bottom_shell_entity == gz::sim::kNullEntity){
+          break;
+        }
+
+        gz::sim::Entity bottom_shell_has_parent = false;
+        _ecm.Each<gz::sim::components::DetachableJoint>(
+          [&](
+            const gz::sim::Entity &entity,
+            const gz::sim::components::DetachableJoint *detachable_joint
+          ) -> bool {
+            if(detachable_joint->Data().childLink == gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link")){
+              bottom_shell_has_parent = true;
+              return false;
+            }
+            return true;
+          }
+        );
+
+        if(bottom_shell_has_parent){
+          break;
+        }
+        
+        std::optional<gz::math::Pose3d> bottom_shell_pose = gz::sim::Link(gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link")).WorldPose(_ecm);
+        
+        if(!bottom_shell_pose.has_value()){
+          break;
+        }
+
+        gz::math::Pose3d target_pose = flipped_bottom_shell_pose;
+
+        target_pose.SetX(bottom_shell_pose.value().X());
+        target_pose.SetY(bottom_shell_pose.value().Y());
+        target_pose.SetZ(bottom_shell_pose.value().Z());
+        gz::sim::Model(bottom_shell_entity).SetWorldPoseCmd(_ecm, target_pose);
+        teleport_state = TopShellTeleportState::JOINT_NEEDED;
+
+        teleport_step = _info.iterations;
+        
+        break;
+      }
+      case TopShellTeleportState::JOINT_NEEDED:
+
+        lock_joint = _ecm.CreateEntity();
+
+        _ecm.CreateComponent(lock_joint, gz::sim::components::DetachableJoint({
+          section_3_link_entity, 
+          gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link"), 
+          "fixed"}));
+
+        teleport_state = TopShellTeleportState::JOINT_REMOVAL;
+
+        break;
+      case TopShellTeleportState::JOINT_REMOVAL:
+        if(_info.iterations - teleport_step < 100){
+          break;
+        }
+
+        _ecm.RequestRemoveEntity(lock_joint);
+
+        lock_joint = gz::sim::kNullEntity;
+
+        teleport_state = TopShellTeleportState::FINISHED;
+        break;
+      
+      case TopShellTeleportState::FINISHED:
+        break;
+
+      default:
+        break;
+    }
+  }
+  
   if(lock_state == TopShellLockState::LOCKED){
     return;
   }
@@ -78,82 +156,6 @@ void TopShellPlugin::PreUpdate(
     );
 
     lock_state = TopShellLockState::LOCKED;
-  }
-
-  switch(teleport_state){
-    case TopShellTeleportState::IDLE:
-      break;
-    case TopShellTeleportState::READY:
-    {
-      if (bottom_shell_entity == gz::sim::kNullEntity){
-        break;
-      }
-
-      gz::sim::Entity bottom_shell_has_parent = false;
-      _ecm.Each<gz::sim::components::DetachableJoint>(
-        [&](
-          const gz::sim::Entity &entity,
-          const gz::sim::components::DetachableJoint *detachable_joint
-        ) -> bool {
-          if(detachable_joint->Data().childLink == gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link")){
-            bottom_shell_has_parent = true;
-            return false;
-          }
-          return true;
-        }
-      );
-
-      if(bottom_shell_has_parent){
-        break;
-      }
-      
-      std::optional<gz::math::Pose3d> bottom_shell_pose = gz::sim::Link(gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link")).WorldPose(_ecm);
-      
-      if(!bottom_shell_pose.has_value()){
-        break;
-      }
-
-      gz::math::Pose3d target_pose = flipped_bottom_shell_pose;
-
-      target_pose.SetX(bottom_shell_pose.value().X());
-      target_pose.SetY(bottom_shell_pose.value().Y());
-      target_pose.SetZ(bottom_shell_pose.value().Z());
-      gz::sim::Model(bottom_shell_entity).SetWorldPoseCmd(_ecm, target_pose);
-      teleport_state = TopShellTeleportState::JOINT_NEEDED;
-
-      teleport_step = _info.iterations;
-      
-      break;
-    }
-    case TopShellTeleportState::JOINT_NEEDED:
-
-      lock_joint = _ecm.CreateEntity();
-
-      _ecm.CreateComponent(lock_joint, gz::sim::components::DetachableJoint({
-        section_3_link_entity, 
-        gz::sim::Model(bottom_shell_entity).LinkByName(_ecm, "base_link"), 
-        "fixed"}));
-
-      teleport_state = TopShellTeleportState::JOINT_REMOVAL;
-
-      break;
-    case TopShellTeleportState::JOINT_REMOVAL:
-      if(_info.iterations - teleport_step < 100){
-        break;
-      }
-
-      _ecm.RequestRemoveEntity(lock_joint);
-
-      lock_joint = gz::sim::kNullEntity;
-
-      teleport_state = TopShellTeleportState::FINISHED;
-      break;
-    
-    case TopShellTeleportState::FINISHED:
-      break;
-
-    default:
-      break;
   }
 }
 

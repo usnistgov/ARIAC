@@ -25,6 +25,42 @@
         
     </link>
 
+    <link name="antistick_link1">
+      <inertial auto="true"/>
+      <pose> 0.025 0 -0.06305 0 0 0 </pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="antistick_link2">
+      <inertial auto="true"/>
+      <pose> -0.025 0 -0.06305 0 0 0 </pose>
+      <collision name="collision">
+        <density>1</density>
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="antistick_joint1" type="fixed">
+      <parent>base_link</parent>
+      <child>antistick_link1</child>
+    </joint>
+
+    <joint name="antistick_joint2" type="fixed">
+      <parent>base_link</parent>
+      <child>antistick_link2</child>
+    </joint>
+
     <link name="contact_link">
       <inertial auto="true"/>
       <pose> 0 0 -0.00505 0 0 0</pose>
@@ -112,7 +148,7 @@
         <xyz>0 0 1</xyz>
         <limit>
           <lower>0</lower>
-          <upper>0.001</upper>
+          <upper>0.004</upper>
           <effort>10</effort>
         </limit>
       </axis>
@@ -125,7 +161,7 @@
         <xyz>0 0 1</xyz>
         <limit>
           <lower>0</lower>
-          <upper>0.001</upper>
+          <upper>0.004</upper>
           <effort>10</effort>
         </limit>
       </axis>

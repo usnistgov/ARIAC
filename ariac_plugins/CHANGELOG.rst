@@ -7,6 +7,7 @@ Changelog
 * Improved vacuum tool design for reduced stickiness
 * Reduced deserialization error frequency
 * Reduced top shell wobble on section 3 of assembly conveyor
+* Fixed AGV tray status incorrectness
 
 2025.3.4 (2026-02-06)
 ----------------------

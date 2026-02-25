@@ -1,6 +1,11 @@
 ^^^^^^^^^
 Changelog
 ^^^^^^^^^
+
+2025.3.5 (2026-02-25)
+----------------------
+* Improved vacuum tool design for reduced stickiness
+
 2025.3.4 (2026-02-06)
 ----------------------
 

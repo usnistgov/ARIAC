@@ -91,7 +91,7 @@ namespace ariac_plugins{
 
       // Functions
       void contact_msg_cb(const gz::msgs::Contacts &_gz_contacts_msg);
-      std::optional<ariac_components::Penalty> handle_penalty(std::optional<ariac_components::Cell>, double time);
+      ariac_components::Penalty handle_penalty(std::optional<ariac_components::Cell>, double time);
   };
 }
 

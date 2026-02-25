@@ -69,9 +69,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using FeedResults = Component<ariac_components::FeedResults,
-                                class FeedResultsTag,
-                                ariac_components::serializers::FeedResultsSerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.FeedResults", FeedResults)
+                                class FeedResultsTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.FeedResults", FeedResults);
 }
 
 #endif

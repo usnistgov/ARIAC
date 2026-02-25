@@ -65,9 +65,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using Penalty = Component<ariac_components::Penalty,
-                            class PenaltyTag,
-                            ariac_components::serializers::PenaltySerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.Penalty", Penalty)
+                            class PenaltyTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.Penalty", Penalty);
 }
 
 #endif

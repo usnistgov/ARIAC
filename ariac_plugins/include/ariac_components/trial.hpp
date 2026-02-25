@@ -202,9 +202,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using Trial = Component<ariac_components::Trial,
-                          class TrialTag,
-                          ariac_components::serializers::TrialSerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.Trial", Trial)
+                          class TrialTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.Trial", Trial);
 }
 
 #endif

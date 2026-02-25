@@ -59,9 +59,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using InspectionResults = Component<ariac_components::InspectionResults,
-                                      class InspectionResultsTag,
-                                      ariac_components::serializers::InspectionResultsSerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.InspectionResults", InspectionResults)
+                                      class InspectionResultsTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.InspectionResults", InspectionResults);
 }
 
 #endif

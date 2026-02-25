@@ -70,9 +70,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using Cell = Component<ariac_components::Cell,
-                         class CellTag,
-                         ariac_components::serializers::CellSerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.Cell", Cell)
+                         class CellTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.Cell", Cell);
 }
 
 #endif

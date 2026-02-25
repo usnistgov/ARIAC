@@ -107,9 +107,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using Kit = Component<ariac_components::Kit,
-                        class KitTag,
-                        ariac_components::serializers::KitSerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.Kit", Kit)
+                        class KitTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.Kit", Kit);
 }
 
 #endif

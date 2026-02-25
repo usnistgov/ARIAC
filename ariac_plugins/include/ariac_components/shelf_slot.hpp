@@ -127,9 +127,8 @@ namespace ariac_components
 namespace gz::sim::components
 {
   using ShelfSlot = Component<ariac_components::ShelfSlot,
-                              class ShelfSlotTag,
-                              ariac_components::serializers::ShelfSlotSerializer>;
-  GZ_SIM_REGISTER_COMPONENT("ariac_components.ShelfSlot", ShelfSlot)
+                              class ShelfSlotTag>;
+  GZ_SIM_REGISTER_COMPONENT("ariac_components.ShelfSlot", ShelfSlot);
 }
 
 #endif

@@ -62,6 +62,16 @@ namespace ariac_components
   }
 }
 
+inline std::ostream& operator<<(std::ostream& _out, const ariac_components::Penalty &_penalty)
+{
+  return ariac_components::serializers::PenaltySerializer::Serialize(_out, _penalty);
+}
+
+inline std::istream& operator>>(std::istream& _in, ariac_components::Penalty &_penalty)
+{
+  return ariac_components::serializers::PenaltySerializer::Deserialize(_in, _penalty);
+}
+
 namespace gz::sim::components
 {
   using Penalty = Component<ariac_components::Penalty,

@@ -2,6 +2,11 @@
 Changelog
 ^^^^^^^^^
 
+2025.3.6 (2026-04-27)
+----------------------
+* Fixed top shell wobble and stability issues
+* Reduced penalty deserialization issues
+
 2025.3.5 (2026-02-25)
 ----------------------
 * Improved vacuum tool design for reduced stickiness

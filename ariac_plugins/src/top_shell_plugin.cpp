@@ -31,6 +31,15 @@ void TopShellPlugin::Configure(
   gz_node->Subscribe(topic_names[1], &TopShellPlugin::slot_1_contact_msg_cb, this);
   gz_node->Subscribe(topic_names[4], &TopShellPlugin::slot_4_contact_msg_cb, this);
 
+  std::optional<gz::sim::Entity> assembly_conveyor_entity_opt = _ecm.EntityByName("assembly_conveyor");
+
+  if(!assembly_conveyor_entity_opt.has_value()){
+    throw std::runtime_error("Could not find assembly conveyor entity");
+  }
+
+  gz::sim::Entity assembly_conveyor_entity = assembly_conveyor_entity_opt.value();
+  section_3_link_entity = gz::sim::Model(assembly_conveyor_entity).LinkByName(_ecm, "section_3_belt");
+
   std::string base_topic = "/world/ariac/model/" + top_shell_model.Name(_ecm) + "/link/base_link/sensor/contact_sensor/contact";
 
   gz_node->Subscribe(base_topic, &TopShellPlugin::base_contact_msg_cb, this);

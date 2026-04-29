@@ -33,6 +33,7 @@
 #include <ariac_components/module.hpp>
 
 // ROS SRVS
+#include <ariac_interfaces/srv/trigger.hpp>
 #include <ariac_interfaces/srv/control_cell_feeder.hpp>
 
 // OTHER
@@ -46,7 +47,10 @@ using CellTypes = ariac_interfaces::msg::CellTypes;
 using CompetitionStates = ariac_interfaces::msg::CompetitionStates;
 using CompetitionStatus = ariac_interfaces::msg::CompetitionStatus;
 using FeederStatusMsg = ariac_interfaces::msg::CellFeederStatus;
+using Trigger = ariac_interfaces::srv::Trigger;
 
+using TriggerReqPtr = Trigger::Request::SharedPtr;
+using TriggerResPtr = Trigger::Response::SharedPtr;
 using ControlSrv = ariac_interfaces::srv::ControlCellFeeder;
 using ControlSrvReqPtr = ControlSrv::Request::SharedPtr;
 using ControlSrvResPtr = ControlSrv::Response::SharedPtr;
@@ -86,6 +90,18 @@ class CheatToolsPlugin:
   std::shared_ptr<gz::transport::Node> gz_node;
 
   TeleportStatus teleport_bottom_shell = TeleportStatus::NOT_NEEDED;
+
+  rclcpp::Node::SharedPtr ros_node;
+  rclcpp::executors::MultiThreadedExecutor::SharedPtr executor;
+  std::thread thread_executor_spin;
+  
+  rclcpp::Service<Trigger>::SharedPtr agv1_spawn_kit_srv;
+  rclcpp::Service<Trigger>::SharedPtr agv2_spawn_kit_srv;
+  rclcpp::Service<Trigger>::SharedPtr agv3_spawn_kit_srv;
+  
+  void agv1_spawn_kit_cb_(const TriggerReqPtr, TriggerResPtr);
+  void agv2_spawn_kit_cb_(const TriggerReqPtr, TriggerResPtr);
+  void agv3_spawn_kit_cb_(const TriggerReqPtr, TriggerResPtr);
 
   // Other methods
   void spawn_cell(ariac_components::Cell cell, gz::math::Pose3d);

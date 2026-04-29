@@ -15,6 +15,18 @@ void CheatToolsPlugin::Configure(
   gz::sim::EntityComponentManager &_ecm,
   gz::sim::EventManager &_event_mgr)
 {
+  if (!rclcpp::ok()){
+    rclcpp::init(0, nullptr);
+  }
+
+  // Create ROS node
+  ros_node = rclcpp::Node::make_shared("cell_feed_plugin");
+
+  rclcpp::Parameter sim_time("use_sim_time", true);
+  ros_node->set_parameter(sim_time);
+
+  ros_node->declare_parameter<double>("feed_rate", 0.0);
+
   // Create GZ Node
   gz_node = std::make_shared<gz::transport::Node>();
 
@@ -24,6 +36,28 @@ void CheatToolsPlugin::Configure(
   sdf_path = ament_index_cpp::get_package_share_directory("ariac_gz") + "/models/battery_cell/model.sdf";
 
   sdf = _sdf;
+
+  agv1_spawn_kit_srv = ros_node->create_service<Trigger>(
+    "agv1/spawn_kit", 
+    std::bind(&CheatToolsPlugin::agv1_spawn_kit_cb_, this, std::placeholders::_1, std::placeholders::_2)
+  );
+  agv2_spawn_kit_srv = ros_node->create_service<Trigger>(
+    "agv2/spawn_kit", 
+    std::bind(&CheatToolsPlugin::agv3_spawn_kit_cb_, this, std::placeholders::_1, std::placeholders::_2)
+  );
+  agv3_spawn_kit_srv = ros_node->create_service<Trigger>(
+    "agv3/spawn_kit", 
+    std::bind(&CheatToolsPlugin::agv3_spawn_kit_cb_, this, std::placeholders::_1, std::placeholders::_2)
+  );
+
+  executor = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+  executor->add_node(ros_node);
+
+  auto spin = [this](){
+    while(rclcpp::ok()){ executor->spin_once(); }
+  };
+
+  thread_executor_spin = std::thread(spin);
 
   // Read defect config file
   std::string share_dir = ament_index_cpp::get_package_share_directory("ariac_setup");
@@ -62,6 +96,36 @@ void CheatToolsPlugin::Configure(
 
     defect_info[defect_type] = defects_vector;
   }
+}
+
+void CheatToolsPlugin::agv1_spawn_kit_cb_(
+  const TriggerReqPtr req,
+  TriggerResPtr res) 
+{
+  complete_kit(1,false);
+  res->message = "Spawning kit";
+  res->success = true;
+  return;
+}
+
+void CheatToolsPlugin::agv2_spawn_kit_cb_(
+  const TriggerReqPtr req,
+  TriggerResPtr res) 
+{
+  complete_kit(2,false);
+  res->message = "Spawning kit";
+  res->success = true;
+  return;
+}
+
+void CheatToolsPlugin::agv3_spawn_kit_cb_(
+  const TriggerReqPtr req,
+  TriggerResPtr res) 
+{
+  complete_kit(3,false);
+  res->message = "Spawning kit";
+  res->success = true;
+  return;
 }
 
 void CheatToolsPlugin::PreUpdate(const gz::sim::UpdateInfo &_info, gz::sim::EntityComponentManager &_ecm)

@@ -43,7 +43,7 @@ void CheatToolsPlugin::Configure(
   );
   agv2_spawn_kit_srv = ros_node->create_service<Trigger>(
     "agv2/spawn_kit", 
-    std::bind(&CheatToolsPlugin::agv3_spawn_kit_cb_, this, std::placeholders::_1, std::placeholders::_2)
+    std::bind(&CheatToolsPlugin::agv2_spawn_kit_cb_, this, std::placeholders::_1, std::placeholders::_2)
   );
   agv3_spawn_kit_srv = ros_node->create_service<Trigger>(
     "agv3/spawn_kit", 

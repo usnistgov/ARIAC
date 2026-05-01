@@ -111,11 +111,19 @@ namespace ariac_plugins{
         break;
       case AGVStations::ASSEMBLY:
         for(const auto& [slot, ent] : lock_joints){
+          if (!collision_slot_cells[slot].has_value()){
+            kit_component.slots.at(slot) = std::nullopt;
+          } else {
+            ariac_components::SlotCellInfo slot_info;
+            slot_info.cell_type = collision_slot_cells[slot].value().type;
+            slot_info.defective = collision_slot_cells[slot].value().defective;
+            slot_info.voltage = collision_slot_cells[slot].value().voltage;
+            kit_component.slots.at(slot) = slot_info;
+          }
           if (ent == gz::sim::kNullEntity){
             continue;
           }
           unlock_slot(slot, _ecm);
-          kit_component.slots.at(slot) = std::nullopt;
           locked_cells[slot] = std::nullopt;
         }
         break;

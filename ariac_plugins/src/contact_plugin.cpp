@@ -30,8 +30,10 @@ namespace ariac_plugins{
     }
     model = model_temp.value();
 
-    std::string topic = "/world/ariac/model/" + model.Name(_ecm) + 
-                        "/link/" + link_obj.Name(_ecm).value() + 
+    model_name = model.Name(_ecm);
+
+    std::string topic = "/world/ariac/model/" + model.Name(_ecm) +
+                        "/link/" + link_obj.Name(_ecm).value() +
                         "/sensor/" + sensor.Name(_ecm).value() + "/contact";
 
     topic_to_publish_to = "/" + model.Name(_ecm) + "/" + link_obj.Name(_ecm).value() + "/" + sensor.Name(_ecm).value();
@@ -50,7 +52,7 @@ namespace ariac_plugins{
       gzmsg << "Unable to publish topic " << topic_to_publish_to;
     }
   }
-  
+
   void ContactPlugin::PreUpdate(
     const gz::sim::UpdateInfo &_info,
     gz::sim::EntityComponentManager &_ecm)
@@ -62,7 +64,9 @@ namespace ariac_plugins{
       pub.Publish(current_contact_msg);
     }
     {
-      if(_info.simTime.count() - last_set_time > 1E8){
+      // if(model_name.find("vg") != std::string::npos && current_contact_msg.data_size() > 0)
+      //   gzwarn << "Time since last set time: " << _info.simTime.count() - last_set_time << "\n";
+      if(_info.simTime.count() - last_set_time > 1E9){
         current_contact_msg = gz::msgs::StringMsg_V();
       }
     }

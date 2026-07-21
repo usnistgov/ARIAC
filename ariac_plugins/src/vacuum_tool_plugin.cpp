@@ -182,6 +182,9 @@ void VacuumToolPlugin::vg_2_attach_cb(const TriggerReqPtr request, TriggerResPtr
     return;
   }
   
+  RCLCPP_WARN_STREAM(ros_node->get_logger(), "Pad 1 in conctact: " << (pad_contacts[1].in_contact ? "true" : "false"));
+  RCLCPP_WARN_STREAM(ros_node->get_logger(), "Pad 2 in conctact: " << (pad_contacts[2].in_contact ? "true" : "false"));
+
   if (!pad_contacts[1].in_contact && !pad_contacts[2].in_contact) {
     response->success = false;
     response->message = "Suction cups must be in contact with the shell";
@@ -209,7 +212,12 @@ void VacuumToolPlugin::vg_4_attach_cb(const TriggerReqPtr request, TriggerResPtr
     response->message = "Already holding object";
     return;
   }
-  
+
+  RCLCPP_WARN_STREAM(ros_node->get_logger(), "Pad 1 in contact: " << (pad_contacts[1].in_contact ? "true" : "false"));
+  RCLCPP_WARN_STREAM(ros_node->get_logger(), "Pad 2 in contact: " << (pad_contacts[2].in_contact ? "true" : "false"));
+  RCLCPP_WARN_STREAM(ros_node->get_logger(), "Pad 3 in contact: " << (pad_contacts[3].in_contact ? "true" : "false"));
+  RCLCPP_WARN_STREAM(ros_node->get_logger(), "Pad 4 in contact: " << (pad_contacts[4].in_contact ? "true" : "false"));
+
   if ((!pad_contacts[1].in_contact && !pad_contacts[2].in_contact) || (!pad_contacts[3].in_contact && !pad_contacts[4].in_contact)) {
     response->success = false;
     response->message = "Suction cups must be in contact with the shell";

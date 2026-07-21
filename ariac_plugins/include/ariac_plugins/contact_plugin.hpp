@@ -52,6 +52,7 @@ namespace ariac_plugins
     // General
     std::string topic_to_publish_to;
     std::string search_term;
+    std::string model_name;
     double last_set_time = -INFINITY;
     int update_rate = 30;
     int iteration_update_mod = 100/30;
